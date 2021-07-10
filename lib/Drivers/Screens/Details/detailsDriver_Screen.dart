@@ -21,11 +21,6 @@ class DetailsDriverScreen extends StatefulWidget {
 class _DetailsDriverScreenState extends State<DetailsDriverScreen> {
 
   final prefs = new PreferenciasUsuario();
- 
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -48,9 +43,8 @@ class _DetailsDriverScreenState extends State<DetailsDriverScreen> {
         IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return HomeDriverScreen();
-            }));
+            Navigator.pushAndRemoveUntil(context,MaterialPageRoute(builder: (context) =>
+            HomeDriverScreen()),(Route<dynamic> route) =>false);
           },
         ),
         SizedBox(width: kDefaultPadding / 2)

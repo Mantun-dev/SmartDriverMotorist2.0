@@ -23,9 +23,9 @@ class PlantillaDriverTitleWithImage extends StatelessWidget {
                 .textTheme
                 .headline4
                 .copyWith(color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 0),
+          ),          
           Row(
+            mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
               RichText(
                 text: TextSpan(
@@ -35,17 +35,20 @@ class PlantillaDriverTitleWithImage extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(width: 220.0),
-              Expanded(
+       
+              Container(                                 
+                width: 150,
+                height: 150,
                 child: Hero(
-                  //aquí esta el otro id
-                  tag: "${plantillaDriver.id}",
-                  child: Image.asset(
-                    plantillaDriver.image,
-                    fit: BoxFit.contain,
+                    //aquí esta el otro id
+                    tag: "${plantillaDriver.id}",
+                    child: Image.asset(
+                      plantillaDriver.image,
+                      fit: BoxFit.contain,
+                    ),
                   ),
-                ),
-              )
+               ),
+              
             ],
           ),
           //validationButtonsScanner(context),

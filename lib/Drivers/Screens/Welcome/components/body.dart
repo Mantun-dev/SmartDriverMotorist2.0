@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Login/login_screen.dart';
-import 'package:flutter_auth/Drivers/Screens/Signup/signup_screen.dart';
 import 'package:flutter_auth/Drivers/Screens/Welcome/components/background.dart';
 import 'package:flutter_auth/components/rounded_button.dart';
-import 'package:flutter_auth/constants.dart';
 import 'package:flutter_svg/svg.dart';
 
 class Body extends StatelessWidget {
@@ -39,21 +37,21 @@ class Body extends StatelessWidget {
                 );
               },
             ),
-            RoundedButton(
-              text: "REGISTRATE",
-              color: kPrimaryLightColor,
-              textColor: Colors.black,
-              press: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return SignUpScreen();
-                    },
-                  ),
-                );
-              },
-            ),
+            // RoundedButton(
+            //   text: "REGISTRATE",
+            //   color: kPrimaryLightColor,
+            //   textColor: Colors.black,
+            //   press: () {
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(
+            //         builder: (context) {
+            //           return SignUpScreen();
+            //         },
+            //       ),
+            //     );
+            //   },
+            // ),
           ],
         ),
       ),

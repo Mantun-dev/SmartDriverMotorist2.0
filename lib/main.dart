@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_auth/Drivers/Screens/Details/components/agents_Trip.dart';
+import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 import 'package:flutter_auth/Drivers/Screens/Welcome/welcome_screen.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/services.dart';
-import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 import 'package:flutter_auth/constants.dart';
-import 'Drivers/Screens/Details/detailsDriver_Screen.dart';
+import 'package:sweetalert/sweetalert.dart';
 import 'Drivers/SharePreferences/preferencias_usuario.dart';
 
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey(debugLabel: "Main Navigator");
 
 void main()async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,23 +23,20 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final GlobalKey<NavigatorState> navigatorKey = GlobalKey(debugLabel: "Main Navigator");
+  final prefs = new PreferenciasUsuario();
   @override
   void initState() { 
     super.initState();
     
-    PushNotificationServices.messageStream.listen((event) {
-       if (event == 'PROCESS_TRIP') {
-        navigatorKey.currentState?.push(
-          MaterialPageRoute(builder: (_) => DetailsDriverScreen(plantillaDriver: plantillaDriver[0]))
-        );        
-       }else if(event == 'PROCESS'){
-        navigatorKey.currentState?.push(
-          MaterialPageRoute(builder: (_) => DetailsDriverScreen(plantillaDriver: plantillaDriver[1]))
-        );  
-       }
-      print(event);    
-    });
+  PushNotificationServices.messageStream.listen((event) {
+      prefs.tripId = event.toString(); 
+        if (event == event) {   
+          navigatorKey.currentState?.push(
+            MaterialPageRoute(builder: (_) =>MyAgent())
+          );        
+        }
+      //print(event);    
+  });
   }
 
   @override
@@ -50,10 +49,21 @@ class _MyAppState extends State<MyApp> {
         primaryColor: kPrimaryColor,
         scaffoldBackgroundColor: Colors.white,
       ),
-      home: WelcomeScreen(),
+      //home: WelcomeScreen(),
+      initialRoute:prefs.nombreUsuario ==null || prefs.nombreUsuario == ""? 'login' :'home',
+      routes: {
+        'login' : (BuildContext context) => WelcomeScreen(),
+        'home' : (BuildContext context) => HomeDriverScreen()
+      },
     );
   }
 
+}
 
-
+void showMyDialog() {
+  return SweetAlert.show(navigatorKey.currentContext,
+    title: "¡Advertencia!",
+    subtitle: "El agente seleccionado ya está agregado al viaje",
+    style: SweetAlertStyle.error
+  ); 
 }

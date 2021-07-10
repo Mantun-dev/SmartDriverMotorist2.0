@@ -50,6 +50,7 @@ class Agente {
         this.neighborhoodName,
         this.districtName,
         this.townName,
+        this.comment,
         this.departmentName,
         this.companyName,
         this.traveled,
@@ -63,6 +64,7 @@ class Agente {
     int agentId;
     String agentEmployeeId;
     String agentUser;
+    String comment;
     String agentFullname;
     String agentPhone;
     String agentEmail;
@@ -81,6 +83,7 @@ class Agente {
         tripId: json["tripId"],
         commentDriver: json["commentDriver"],
         agentId: json["agentId"],
+        comment: json["comment"],
         agentEmployeeId: json["agentEmployeeId"],
         agentUser: json["agentUser"],
         agentFullname: json["agentFullname"],
@@ -106,6 +109,7 @@ class Agente {
         "agentUser": agentUser,
         "agentFullname": agentFullname,
         "agentPhone": agentPhone,
+        "comment": comment,
         "agentEmail": agentEmail,
         "agentReferencePoint": agentReferencePoint,
         "neighborhoodName": neighborhoodName,

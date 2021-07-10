@@ -19,7 +19,7 @@ class HomeDriverScreen extends StatefulWidget {
   _HomeDriverScreenState createState() => _HomeDriverScreenState();
 }
 
-class _HomeDriverScreenState extends State<HomeDriverScreen> {
+class _HomeDriverScreenState extends State<HomeDriverScreen> with AutomaticKeepAliveClientMixin<HomeDriverScreen>{
   Future <List<CountNotifications>> item;
   //GlobalKey _one = GlobalKey();
   @override
@@ -30,6 +30,7 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
     //     ShowCaseWidget.of(context).startShowCase( [_one]));
   }
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       appBar: buildAppBar(context),
       body: Body(),
@@ -80,6 +81,7 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
               return DriverProfilePage();
             }));
+            
           },
         ),        //SizedBox(width: kDefaultPadding / 2)
       ],
@@ -205,5 +207,8 @@ Future<void> _simpleDialog(BuildContext context) async{
         
     ); 
   }
+
+  @override
+  bool get wantKeepAlive => true;
 
 }

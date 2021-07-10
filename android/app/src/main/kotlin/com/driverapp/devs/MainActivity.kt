@@ -1,6 +1,7 @@
-package com.example.driversmart
+package com.driverapp.devs
 
 import io.flutter.embedding.android.FlutterActivity
 
 class MainActivity: FlutterActivity() {
 }
+

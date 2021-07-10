@@ -21,7 +21,7 @@ class _AsignarHorasState extends State<AsignarHoras> {
   Future<List< TripsCompanies>> itemx;
   TextEditingController companyId = new TextEditingController();
   final prefs = new PreferenciasUsuario();
-  String ip = "192.168.0.113:4000";
+  String ip = "https://driver.smtdriver.com";
   
   @override
   void initState() { 
@@ -32,7 +32,6 @@ class _AsignarHorasState extends State<AsignarHoras> {
 
 
 fetchTravelInTrip(String companyId){
-  print(companyId);
   prefs.companyId = companyId;
   if (companyId == companyId) {
     Navigator.push(context,MaterialPageRoute(builder: (context) => Trips(),));      
@@ -76,9 +75,9 @@ fetchTravelInTrip(String companyId){
                       shrinkWrap: true,
                       physics: ClampingScrollPhysics(),
                       itemCount: abc.data.length,
-                      itemBuilder: (context, index){                                                                                                              
+                      itemBuilder: (context, index){  
                           return InkWell(
-                            onTap: (){
+                            onTap: (){                                                                                                
                               fetchTravelInTrip(abc.data[index].companyId.toString());
                             },
                             child: Card(
@@ -120,7 +119,14 @@ fetchTravelInTrip(String companyId){
                                                     width: 170,
                                                     child: Image.asset('assets/images/Alorica_Logo.png'),                                          
                                                   ),
-                                                },                                                
+                                                },
+                                                if (abc.data[index].companyId == 7)... {
+                                                  Container(                                                    
+                                                    height: 80,
+                                                    width: 170,
+                                                    child: Image.asset('assets/images/zero.png'),                                          
+                                                  ),
+                                                },                                                 
                                               ],
                                           ),   
                                         ), 
@@ -151,13 +157,13 @@ fetchTravelInTrip(String companyId){
                                           //     }, 
                                           //   ],
                                           // ),
-                                          Container(                
-                                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                            margin: EdgeInsets.only(bottom: 25),
-                                            decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.red),
-                                            child: Text('${abc.data[index].trips}', style: TextStyle(color: Colors.white, fontSize: 13),
-                                            )
-                                          ),
+                                        Container(                
+                                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                          margin: EdgeInsets.only(bottom: 25),
+                                          decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.red),
+                                          child: Text('${abc.data[index].trips}', style: TextStyle(color: Colors.white, fontSize: 13),
+                                          )
+                                        ),
                                           // Flexible(
                                           //   child: Column(
                                           //     children: [

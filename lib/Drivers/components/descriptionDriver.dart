@@ -1,57 +1,57 @@
-import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
-//import 'package:dropdownfield/dropdownfield.dart';
+//import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter_auth/Drivers/Screens/Details/components/asignar_Horas.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/confirm_trips.dart';
-//import 'package:searchable_dropdown/searchable_dropdown.dart';
+import 'package:flutter_auth/Drivers/Screens/Details/components/databases.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/history_TripDriver.dart';
-//import 'package:flutter_auth/Drivers/Screens/Details/components/process_LeftAgent.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/process_Trip.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
 import 'package:flutter_auth/Drivers/models/DriverData.dart';
 import 'package:flutter_auth/Drivers/models/company.dart';
 import 'package:flutter_auth/Drivers/models/leftTrip.dart';
 import 'package:flutter_auth/Drivers/models/network.dart';
-//import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter_auth/Drivers/models/search.dart';
 import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 import 'package:flutter_auth/Drivers/models/tripsPendin2.dart';
-//import 'package:flutter/scheduler.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+//import 'package:localstorage/localstorage.dart';
 import 'package:searchable_dropdown/searchable_dropdown.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:sweetalert/sweetalert.dart';
 import '../../constants.dart';
 import 'package:intl/intl.dart';
-
 import 'package:http/http.dart' as http;
 import 'dart:convert' show json;
+
 class DriverDescription extends StatefulWidget {
   
   final Company2 item;
   final DriverData itemx;
   final TripsDrivers driverx;
   DriverDescription({Key key, @required this.plantillaDriver,  this.item, this.itemx, this.driverx}) : super(key: key);
-
   final PlantillaDriver plantillaDriver;
 
   @override
   _DriverDescriptionState createState() => _DriverDescriptionState();
 }
 
-class _DriverDescriptionState extends State<DriverDescription> {
+class _DriverDescriptionState extends State<DriverDescription> with AutomaticKeepAliveClientMixin<DriverDescription> {
   Future <List< Company2>>item;
   Future<DriverData> itemx;
   Future <List< TripsDrivers>>driverx;
-
-  String ip = "192.168.0.113:4000";
+   DatabaseHandler handler;
+  
+  String ip = "https://driver.smtdriver.com";
   String barcodeScan = "";
   String companyId;
   int driver;
   List data = [];
   final prefs = new PreferenciasUsuario();
+
+  //arreglo para el agentId
   final tempArr = [];
+
   bool radioShowAndHide = false;
   final dri = [];
   
@@ -64,30 +64,41 @@ class _DriverDescriptionState extends State<DriverDescription> {
   final List<String> hourout = <String>[];
   final List<String> direction = <String>[];
 
- 
-  final dataKey = new GlobalKey();
   
+  final dataKey = new GlobalKey();
   final format = DateFormat("HH:mm");
 
   TextEditingController nameController = TextEditingController();
   TextEditingController agentEmployeeId = new TextEditingController();
   TextEditingController vehicule = new TextEditingController();
   TextEditingController hourOut = TextEditingController();
+  
   @override
   void initState() { 
     super.initState();
     this.fetchCompanys();
     itemx = fetchRefres();
-    driverx = fetchDriversDriver();      
+    driverx = fetchDriversDriver();
+
+    vehicule = new TextEditingController(text: prefs.vehiculo);
+    print(prefs.vehiculo);
+    print(prefs.companyId);
+    this.handler = DatabaseHandler();
+    this.handler.initializeDB().whenComplete(() async {
+      await this.fetchSearchAgents2(agentEmployeeId.text);
+      //await this.scanBarcodeNormal();
+      setState(() {});
+    });
   }
   
 
-
   
- Future<List>fetchDriversDrivers()async{
-   http.Response response = await http.get(Uri.encodeFull('http://$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
+
+
+Future<List>fetchDriversDrivers()async{
+   http.Response response = await http.get(Uri.encodeFull('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
    final data = DriverData.fromJson(json.decode(response.body));
-   http.Response responses = await http.get(Uri.encodeFull('http://$ip/apis/asigmentDriverToCoord/${data.driverId}',));
+   http.Response responses = await http.get(Uri.encodeFull('$ip/apis/asigmentDriverToCoord/${data.driverId}',));
     var jsonData = json.decode(responses.body); 
     if (responses.statusCode == 200) {
       print(responses.body);
@@ -95,7 +106,7 @@ class _DriverDescriptionState extends State<DriverDescription> {
       List<String> countries = [];
       for(int i=0; i < responseBody.length; i++) {
         countries.add(responseBody[i]['driverFullname']);           
-      }
+      }  
       driverId = jsonData;
       return countries;
     }
@@ -103,14 +114,13 @@ class _DriverDescriptionState extends State<DriverDescription> {
       print("error from server : $response");
       throw Exception('Failed to load post');
     }
-
  }
 
 //prueba
 Future<List< TripsDrivers>>fetchDriversDriver()async{
-  http.Response response = await http.get(Uri.encodeFull('http://$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
+  http.Response response = await http.get(Uri.encodeFull('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
   final data = DriverData.fromJson(json.decode(response.body));
-  http.Response responses = await http.get(Uri.encodeFull('http://$ip/apis/asigmentDriverToCoord/${data.driverId}'));
+  http.Response responses = await http.get(Uri.encodeFull('$ip/apis/asigmentDriverToCoord/${data.driverId}'));
 
   var jsonData = json.decode(responses.body);
 
@@ -132,102 +142,94 @@ Future<List< TripsDrivers>>fetchDriversDriver()async{
 
 
 Future< Salida>fetchAgentsLeftPastToProgres(String hourOut, String nameController)async{
-    http.Response responses = await http.get(Uri.encodeFull('http://$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
-    final si = DriverData.fromJson(json.decode(responses.body));
-    if (tempArr.length == 0) {
-      SweetAlert.show(context,
-        title: '¡Viaje vacío!',
-        subtitle: ' No puede guardar este viaje sin\n agregar agentes',
-        style: SweetAlertStyle.error,
-      );
-    }else{
-      if (hourOut != "") {
-        if (si.driverCoord == true) {
-          Map datas = {
-            'companyId' : prefs.companyId,
-            'tripHour' : hourOut,
-            'driverId' : radioShowAndHide==false?si.driverId.toString():prefs.driverIdx,
-            'tripVehicle': nameController,    
-          };
-          print(datas);
-          http.Response response1 = await http.post(Uri.encodeFull('http://$ip/apis/registerDeparture'), body: datas);
-          final send = Salida.fromJson(json.decode(response1.body));
-          prefs.tripId = send.tripId.toString();
-          print(response1.body);
-          for (var i = 0; i < tempArr.length; i++) {
-            Map datas2 = {
-              "agentId": tempArr[i].toString(),
-              "tripId" : send.tripId.toString(),
-              "tripHour" : hourOut
-            };
-            print(datas2);
-            
-            http.Response response3 = await http.post(Uri.encodeFull('http://$ip/apis/registerAgentForOutTrip'), body: datas2);
-            
-            print(response3.body);
-          }
-          if (response1.statusCode == 200) {             
-            http.Response response2 = await http.get(Uri.encodeFull('http://$ip/apis/agentsInTravel/${prefs.tripId}'));
-            
-            Navigator.push(context,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
-            print(response2.body);
-            SweetAlert.show(context,
-              title: send.title,
-              subtitle: send.message,
-              style: SweetAlertStyle.success,
-            );
-          } else {
-            throw Exception('Failed to load Data');
-          }
-        } else {
-          Map datas = {
-          'companyId' : prefs.companyId,
-          'tripHour' : hourOut,
-          'driverId' : si.driverId.toString(),
-          'tripVehicle': nameController,    
-          };
-          print(datas);
-          http.Response response1 = await http.post(Uri.encodeFull('http://$ip/apis/registerDeparture'), body: datas);
-          final send = Salida.fromJson(json.decode(response1.body));
-          prefs.tripId = send.tripId.toString();
-          print(response1.body);
-          for (var i = 0; i < tempArr.length; i++) {
-            Map datas2 = {
-              "agentId": tempArr[i].toString(),
-              "tripId" : send.tripId.toString(),
-              "tripHour" : hourOut
-            };
-            print(datas2);
-            
-            http.Response response3 = await http.post(Uri.encodeFull('http://$ip/apis/registerAgentForOutTrip'), body: datas2);
-            
-            print(response3.body);
-          }
-
-          if (response1.statusCode == 200) { 
-            
-            http.Response response2 = await http.get(Uri.encodeFull('http://$ip/apis/agentsInTravel/${prefs.tripId}'));
-            
-            Navigator.push(context,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
-            print(response2.body);
-            SweetAlert.show(context,
-              title: send.title,
-              subtitle: send.message,
-              style: SweetAlertStyle.success,
-            );
-          } else {
-            throw Exception('Failed to load Data');
-          }
-        }                
-      }else{
-         SweetAlert.show(context,
-          title: '¡Error!',
-          subtitle: 'No ha asignado una hora a este viaje',
-          style: SweetAlertStyle.error,
+    http.Response responses = await http.get(Uri.encodeFull('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
+    final si = DriverData.fromJson(json.decode(responses.body)); 
+    final Database db = await handler.initializeDB();
+    final tables = await db.rawQuery('SELECT * FROM userX ;');   
+      if (tables.length == 0) {
+        SweetAlert.show(context,
+               title: "Alerta",
+               subtitle: "No hay agentes agregados",
+               style: SweetAlertStyle.error,
         );
+      }else{
+         if (si.driverCoord == true) {
+           Map datas = {
+             'companyId' : prefs.companyId,
+             'tripHour' : hourOut,
+             'driverId' : radioShowAndHide==false?si.driverId.toString():prefs.driverIdx,
+             'tripVehicle': prefs.vehiculo,    
+           };
+           http.Response response1 = await http.post(Uri.encodeFull('$ip/apis/registerDeparture2'), body: datas);
+           final send = Salida.fromJson(json.decode(response1.body));
+           prefs.tripId = send.tripId.tripId.toString();
+           for (var i = 0; i < tables.length; i++) {
+             Map datas2 = {
+               "agentId": tables[i]['idsend'].toString(),
+               "tripId" : send.tripId.tripId.toString(),
+               "tripHour" : send.tripId.tripHour
+             };
+              
+             await http.post(Uri.encodeFull('$ip/apis/registerAgentForOutTrip'), body: datas2);
+        
+             
+           }
+           if (response1.statusCode == 200) {             
+             await http.get(Uri.encodeFull('$ip/apis/agentsInTravel/${prefs.tripId}'));
+            
+             Navigator.push(context,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
+            
+             prefs.removeIdCompanyAndVehicle();
+             SweetAlert.show(context,
+               title: send.title,
+               subtitle: send.message,
+               style: SweetAlertStyle.success,
+             );
+             this.handler.cleanTable();
+           } else {
+             throw Exception('Failed to load Data');
+           }
+         } else {
+           Map datas = {
+           'companyId' : prefs.companyId,
+           'driverId' : si.driverId.toString(),
+           'tripVehicle': nameController,    
+           };
+           http.Response response1 = await http.post(Uri.encodeFull('$ip/apis/registerDeparture2'), body: datas);
+           final send = Salida.fromJson(json.decode(response1.body));
+           prefs.tripId = send.tripId.tripId.toString();
+           
+           for (var i = 0; i < tables.length; i++) {
+             Map datas2 = {
+               "agentId": tables[i]['idsend'].toString(),
+               "tripId" : send.tripId.tripId.toString(),
+               "tripHour" : send.tripId.tripHour
+             };
+            
+             await http.post(Uri.encodeFull('$ip/apis/registerAgentForOutTrip'), body: datas2);
+            
+             
+           }
+
+           if (response1.statusCode == 200) { 
+            
+             await http.get(Uri.encodeFull('$ip/apis/agentsInTravel/${prefs.tripId}'));
+            
+             Navigator.push(context,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
+             
+             prefs.removeIdCompanyAndVehicle();
+             SweetAlert.show(context,
+               title: send.title,
+               subtitle: send.message,
+               style: SweetAlertStyle.success,
+             );
+             this.handler.cleanTable();
+           } else {
+             throw Exception('Failed to load Data');
+           }
+         }
       }
-    }
-    
+ 
 }
 
 Future scanBarcodeNormal() async {
@@ -240,15 +242,21 @@ Future scanBarcodeNormal() async {
     "companyId" : prefs.companyId ,
     "agentEmployeeId" : barcodeScan
   };
-  http.Response responsed = await http.post(Uri.encodeFull('http://$ip/apis/searchAgent'), body: data);
+  http.Response responsed = await http.post(Uri.encodeFull('$ip/apis/searchAgent'), body: data);
   final data1 = Search.fromJson(json.decode(responsed.body));  
-
+  final Database db = await handler.initializeDB();
+  final tables = await db.rawQuery('SELECT * FROM userX ;'); 
   if (responsed.statusCode == 200 && data1.ok == true && data1.agent.msg != null) {
-    SweetAlert.show(context,
-        title: '¡No encontrado!',
-        subtitle: data1.agent.msg,
-        style: SweetAlertStyle.error,
+    if (barcodeScan == '${-1}') {
+      print('');
+    }else{
+      SweetAlert.show(context,
+          title: '¡No encontrado!',
+          subtitle: data1.agent.msg,
+          style: SweetAlertStyle.error,
       );
+    }
+    print(data1.agent.msg);
   }else if(responsed.statusCode == 200 && data1.ok == true){
     showDialog(
         context: context,
@@ -291,19 +299,20 @@ Future scanBarcodeNormal() async {
                         subtitle: Text('${data1.agent.departmentName} ${data1.agent.neighborhoodName}\n${data1.agent.agentReferencePoint} '),
                         leading: Icon(Icons.directions , color: kColorAppBar),
                   ),
-                  SizedBox(height: 60),
+                  SizedBox(height: 40),
                   Row(
                     children: [
-                      SizedBox(width: 20),
+                      SizedBox(width: 40),
                       ElevatedButton(
                         style: TextButton.styleFrom(
                           primary: Colors.white,                        
                           backgroundColor: Colors.green
                         ), 
                         onPressed: () => {
-                            
+                          
                           setState(() {
-                            if (noemp.length <= 13) {                              
+                            
+                            if (tables.length <= 13) {                              
                               if (!(noemp.contains(data1.agent.agentEmployeeId)) && !(names.contains(data1.agent.agentEmployeeId)) && 
                                   !(hourout.contains(data1.agent.agentEmployeeId)) && !(direction.contains(data1.agent.agentEmployeeId))) {
                                   noemp.insert(0, '${data1.agent.agentEmployeeId}');
@@ -311,6 +320,14 @@ Future scanBarcodeNormal() async {
                                   hourout.insert(0, '${data1.agent.hourOut}');
                                   direction.insert(0, '${data1.agent.departmentName} ${data1.agent.neighborhoodName}\n${data1.agent.agentReferencePoint}');
                                   tempArr.add(data1.agent.agentId);
+                                  
+                                  User firstUser = User(noempid: '${data1.agent.agentEmployeeId}', nameuser: '${data1.agent.agentFullname}', hourout: '${data1.agent.hourOut}',
+                                  direction:'${data1.agent.departmentName} ${data1.agent.neighborhoodName}\n${data1.agent.agentReferencePoint}', 
+                                  idsend:data1.agent.agentId );
+                                  List<User> listOfUsers = [firstUser];
+                                  this.handler.insertUser(listOfUsers);
+                                  
+                                  //guardar();
                                   
                               }else{
                                 print('yasta we');
@@ -321,7 +338,7 @@ Future scanBarcodeNormal() async {
                                   style: SweetAlertStyle.error
                                 ); 
                               }
-                            }else if(noemp.length > 13){
+                            }else if(tables.length > 13){
                               print('yasta we');
                               Navigator.pop(context); 
                               return SweetAlert.show(context,
@@ -330,7 +347,6 @@ Future scanBarcodeNormal() async {
                                   style: SweetAlertStyle.error
                                 ); 
                             }
-
                             Navigator.pop(context);
                           }),
                             
@@ -352,7 +368,8 @@ Future scanBarcodeNormal() async {
                     
                       ), 
                     ],
-                  ),                    
+                  ),
+                  SizedBox(height: 40),                    
                 ],
               ),
             ),
@@ -366,9 +383,9 @@ Future scanBarcodeNormal() async {
 }
 
 Future<List<Company2>>fetchCompanys()async{
-  http.Response response = await http.get(Uri.encodeFull('http://$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
+  http.Response response = await http.get(Uri.encodeFull('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
   final si = DriverData.fromJson(json.decode(response.body));
-  http.Response responsed = await http.get(Uri.encodeFull('http://$ip/apis/newdeparture/${si.departmentId}'));
+  http.Response responsed = await http.get(Uri.encodeFull('$ip/apis/newdeparture/${si.departmentId}'));
     var jsonData = json.decode(responsed.body); 
     List< Company2> trips = [];
     for (var u in jsonData) {
@@ -388,14 +405,20 @@ Future< Search>fetchSearchAgents2(String agentEmployeeId)async{
     "companyId" : prefs.companyId ,
     "agentEmployeeId" : agentEmployeeId
   };
-  http.Response responsed = await http.post(Uri.encodeFull('http://$ip/apis/searchAgent'), body: data);
+  final Database db = await handler.initializeDB();
+  final tables = await db.rawQuery('SELECT * FROM userX ;');  
+  http.Response responsed = await http.post(Uri.encodeFull('$ip/apis/searchAgent'), body: data);
   final data1 = Search.fromJson(json.decode(responsed.body));  
-    if (responsed.statusCode == 200 && data1.ok == true && data1.agent.msg != null) {  
-      SweetAlert.show(context,
-        title: '¡No encontrado!',
-        subtitle: data1.agent.msg,
-        style: SweetAlertStyle.error,
-      );
+    if (responsed.statusCode == 200 && data1.ok == true && data1.agent.msg != null) { 
+      if (agentEmployeeId == "") {
+        print('');
+      }else{
+        SweetAlert.show(context,
+          title: '¡No encontrado!',
+          subtitle: data1.agent.msg,
+          style: SweetAlertStyle.error,
+        );
+      } 
     }else if(responsed.statusCode == 200 && data1.ok == true){
       showDialog(
         context: context,
@@ -438,26 +461,33 @@ Future< Search>fetchSearchAgents2(String agentEmployeeId)async{
                         subtitle: Text('${data1.agent.departmentName} ${data1.agent.neighborhoodName}\n${data1.agent.agentReferencePoint} '),
                         leading: Icon(Icons.directions , color: kColorAppBar),
                   ),
-                  SizedBox(height: 60),
+                  SizedBox(height: 40),
                   Row(
                     children: [
-                      SizedBox(width: 20),
+                      SizedBox(width: 40),
                       TextButton(
                         style: TextButton.styleFrom(
                           primary: Colors.white,
                           backgroundColor: Colors.green,
                         ),
                         onPressed: () => {                        
-                          setState(() {
-                            if (noemp.length <= 13) {                              
+                          setState(() {                            
+                            if (tables.length <= 13) {                              
                               if (!(noemp.contains(data1.agent.agentEmployeeId)) && !(names.contains(data1.agent.agentEmployeeId)) && 
-                                  !(hourout.contains(data1.agent.agentEmployeeId)) && !(direction.contains(data1.agent.agentEmployeeId))) {
+                                  !(hourout.contains(data1.agent.agentEmployeeId)) && !(direction.contains(data1.agent.agentEmployeeId)) || noemp.length == 0  ) {
                                   noemp.insert(0, '${data1.agent.agentEmployeeId}');
                                   names.insert(0,'${data1.agent.agentFullname}');
                                   hourout.insert(0, '${data1.agent.hourOut}');
                                   direction.insert(0, '${data1.agent.departmentName} ${data1.agent.neighborhoodName}\n${data1.agent.agentReferencePoint}');
                                   tempArr.add(data1.agent.agentId);
-                                  print(data1.agent.agentId);
+
+                                  User firstUser = User(noempid: '${data1.agent.agentEmployeeId}', nameuser: '${data1.agent.agentFullname}', hourout: '${data1.agent.hourOut}',
+                                  direction:'${data1.agent.departmentName} ${data1.agent.neighborhoodName}\n${data1.agent.agentReferencePoint}', 
+                                  idsend:data1.agent.agentId );
+                                  List<User> listOfUsers = [firstUser];
+                                  this.handler.insertUser(listOfUsers);
+                                  //guardar();
+
                               }else{
                                 print('yasta we');
                                 Navigator.pop(context);               
@@ -467,7 +497,7 @@ Future< Search>fetchSearchAgents2(String agentEmployeeId)async{
                                   style: SweetAlertStyle.error
                                 ); 
                               }
-                            }else if(noemp.length > 13){
+                            }else if(tables.length > 13){
                               print('yasta we');
                               Navigator.pop(context); 
                               return SweetAlert.show(context,
@@ -497,7 +527,8 @@ Future< Search>fetchSearchAgents2(String agentEmployeeId)async{
                         child: Text('Cancelar'),
                       ), 
                     ],
-                  ),                    
+                  ), 
+                  SizedBox(height: 40),                   
                 ],
               ),
             ),
@@ -509,44 +540,50 @@ Future< Search>fetchSearchAgents2(String agentEmployeeId)async{
   return Search.fromJson(json.decode(responsed.body));      
 }
 
+  @override
+  bool get wantKeepAlive => true;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context){
     //variable
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: kDefaultPadding),
-      //aquí voy a meter la información
-      child: Column(
-        children: [
-          //aquí llamo el procedimiento que contiene el orden las demás páginas
-          _processCards(context),          
-        ],
+    super.build(context);
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: kDefaultPadding),
+        //aquí voy a meter la información
+        child: Column(
+          children: [
+            //aquí llamo el procedimiento que contiene el orden las demás páginas
+            
+            _processCards(context),          
+          ],
+        ),
       ),
     );
   }
 
 
 
-  Widget _processCards(BuildContext context) {
-    return Column(
-      children: [
-        if (widget.plantillaDriver.id == 1) ...[
-          _mostrarPrimerventana(),
-          SizedBox(height: 20.0),
-        ] else if (widget.plantillaDriver.id == 2) ...[
-          _mostrarSegundaVentana(),
-          SizedBox(height: 20.0),
-        ] else if (widget.plantillaDriver.id == 3) ...[
-          _mostrarTerceraVentana(context),
-          SizedBox(height: 25.0),
-        ] else if (widget.plantillaDriver.id == 4) ...[
-          _mostrarCuartaVentana(),
-          SizedBox(height: 20.0),
-        ]
-      ],
-    );
-  }
+Widget _processCards(BuildContext context) {
+  return Column(
+    children: [
+      if (widget.plantillaDriver.id == 1) ...[
+        _mostrarPrimerventana(),
+        SizedBox(height: 20.0),
+      ] else if (widget.plantillaDriver.id == 2) ...[
+        _mostrarSegundaVentana(),
+        SizedBox(height: 20.0),
+      ] else if (widget.plantillaDriver.id == 3) ...[
+        _mostrarTerceraVentana(context),
+        SizedBox(height: 25.0),
+      ] else if (widget.plantillaDriver.id == 4) ...[
+        _mostrarCuartaVentana(),
+        SizedBox(height: 20.0),
+      ]
+    ],
+  );
+}
 
   Widget _mostrarPrimerventana() {
     return AsignarHoras();
@@ -588,55 +625,28 @@ Future< Search>fetchSearchAgents2(String agentEmployeeId)async{
                 }
               }
             ),
-            SizedBox(height: 20.0),            
-            Text('Hora',style: TextStyle(color: Colors.grey[700],fontWeight: FontWeight.normal,fontSize: 20.0)),
-            SizedBox(height: 20.0),
             Container(
-              decoration: BoxDecoration(
-                  border: Border.all(width: 1, color: Colors.grey),
-                  borderRadius: BorderRadius.all(Radius.circular(4)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
-                      spreadRadius: 5,
-                      blurRadius: 7,
-                      offset: Offset(0, 3), // changes position of shadow
-                    )
-                  ]),
-              margin: EdgeInsets.symmetric(horizontal: 40.0),
-              child: Column(
-                children: [
-                  DateTimeField(
-                    format: format,
-                    controller: hourOut,
-                    onShowPicker: (contexts, currentValue) async {
-                      final time = await showTimePicker(
-                        context: context,
-                        initialTime:
-                            TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
-                      );
-                      return DateTimeField.convert(time);
-                    },
+              width: 300,
+              child: TextField(
+                onChanged: (value){
+                  prefs.vehiculo = value;                  
+                },
+                controller: nameController,
+                decoration: InputDecoration(
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.grey,
                   ),
-                ],
-              ),
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                hintText: "Vehiculo",              
+              )),
             ),
             SizedBox(height: 20.0),
-            TextField(
-              controller: nameController,
-                decoration: InputDecoration(
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Colors.grey,
-                ),
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              hintText: "Vehiculo",
-            )),
-            SizedBox(height: 20.0),
             Row(
-              children: [
-              SizedBox(width: 70.0),
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [            
+              
               ElevatedButton(
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.grey[400]
@@ -644,11 +654,7 @@ Future< Search>fetchSearchAgents2(String agentEmployeeId)async{
               child: Icon(Icons.restore_from_trash),
               onPressed: (){
                 setState(() {
-                  names.removeRange(0, names.length);
-                  noemp.removeRange(0, noemp.length); 
-                  hourout.removeRange(0, hourout.length);
-                  direction.removeRange(0, direction.length);
-                  tempArr.removeRange(0, tempArr.length);
+                  this.handler.cleanTable();                  
                 });                          
               }),
               SizedBox(width: 5.0),
@@ -728,165 +734,179 @@ Future< Search>fetchSearchAgents2(String agentEmployeeId)async{
             ],
             ),
             SizedBox(height: 6.0),
-            Text("Total de agentes: ${names.length}", style: TextStyle(color: Colors.black,fontWeight: FontWeight.normal,fontSize: 16.0)),
+            FutureBuilder(
+              future: this.handler.retrieveUsers(),              
+              builder: (BuildContext context, AsyncSnapshot<List<User>> snapshot) {
+                if (snapshot.hasData) {
+                  noemp.add("${snapshot.data?.length}");
+                  return Text("Total de agentes: ${snapshot.data?.length}");
+                }else{
+                  return CircularProgressIndicator();
+                }
+              },
+            ),            
             SizedBox(height: 6.0),
-           if (names.length == 0)... {  
-              Card(
-                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                 margin: EdgeInsets.symmetric(vertical: 15),
-                 child: Column(
-                   mainAxisSize: MainAxisSize.min,
-                   children: <Widget>[
-                     ListTile(
-                       leading: Icon(Icons.bus_alert),
-                       title: Text('Agentes', style: TextStyle(
-                               color: Colors.black,
-                               fontWeight: FontWeight.normal,
-                               fontSize: 26.0)),
-                       subtitle: Text('No hay agentes en el viaje', style: TextStyle(
-                               color: Colors.red,
-                               fontWeight: FontWeight.normal,
-                               fontSize: 18.0)),
-                     ),                      
-                   ],
-                 ),
-              ),
-             
-           },
             Container(
             height: 380,
-              child: ListView.builder(
-                    padding: const EdgeInsets.all(8),
-                    itemCount: names.length,
-                    itemBuilder: (BuildContext context, int index) {                                 
-                        return Card(
-                            shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                            margin: EdgeInsets.all(4.0),
-                            elevation: 2,
-                            child: Column(
-                              children: <Widget>[                               
-                                  Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        Column(
-                                          children: [
-                                            Icon(
-                                              Icons.confirmation_number,
-                                              color: Colors.green[500],
-                                              size: 35,
-                                            ),
-                                            Text('# No empleado: ',
-                                                style: TextStyle(
-                                                    color: Colors.green[500],
-                                                    fontSize: 17)),
-                                            Text('${noemp[index]} '),
-                                          ],
-                                        ),
-                                        Flexible(
-                                          child: Column(
+              child: FutureBuilder(
+                future: this.handler.retrieveUsers() == null?noemp.length:this.handler.retrieveUsers(),
+                builder: (BuildContext context, AsyncSnapshot<List<User>> snapshot){
+                  if (snapshot.hasData) {                    
+                    return ListView.builder(
+                      padding: const EdgeInsets.all(8),
+                      itemCount: snapshot.data?.length,
+                      itemBuilder: (BuildContext context, int index) {                                                                        
+                          return Card(
+                              shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                              margin: EdgeInsets.all(4.0),
+                              elevation: 2,
+                              child: Column(
+                                children: <Widget>[                               
+                                    Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          Column(
                                             children: [
                                               Icon(
-                                                Icons.account_box_sharp,
+                                                Icons.confirmation_number,
                                                 color: Colors.green[500],
                                                 size: 35,
                                               ),
-                                              Text('Nombre:',
+                                              Text('# No empleado: ',
                                                   style: TextStyle(
                                                       color: Colors.green[500],
                                                       fontSize: 17)),
-                                              Text('${names[index]}'),
+                                              Text('${snapshot.data[index].noempid}'),
                                             ],
                                           ),
-                                        ),
-                                      ],
+                                          Flexible(
+                                            child: Column(
+                                              children: [
+                                                Icon(
+                                                  Icons.account_box_sharp,
+                                                  color: Colors.green[500],
+                                                  size: 35,
+                                                ),
+                                                Text('Nombre:',
+                                                    style: TextStyle(
+                                                        color: Colors.green[500],
+                                                        fontSize: 17)),
+                                                Text('${snapshot.data[index].nameuser}'),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          Column(
+                                            children: [
+                                              Icon(
+                                                Icons.access_alarms ,
+                                                color: Colors.green[500],
+                                                size: 35,
+                                              ),
+                                              Text('Hora salida: ',
+                                                  style: TextStyle(
+                                                      color: Colors.green[500],
+                                                      fontSize: 17)),
+                                              Text('${snapshot.data[index].hourout}'),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        Column(
-                                          children: [
-                                            Icon(
-                                              Icons.access_alarms ,
-                                              color: Colors.green[500],
-                                              size: 35,
-                                            ),
-                                            Text('Hora salida: ',
-                                                style: TextStyle(
-                                                    color: Colors.green[500],
-                                                    fontSize: 17)),
-                                            Text('${hourout[index]}'),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                ),
-                                Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        Column(
-                                          children: [
-                                            Icon(
-                                              Icons.location_pin,
-                                              color: Colors.green[500],
-                                              size: 35,
-                                            ),
-                                            Text('Dirección: ',
-                                                style: TextStyle(
-                                                    color: Colors.green[500],
-                                                    fontSize: 17)),
-                                            Text('${direction[index]}'),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                ),
-                               SizedBox(height: 20.0),
-                               TextButton(
-                                style: TextButton.styleFrom(
-                                  primary: Colors.white,
-                                  backgroundColor: Colors.red,
-                                  shape: RoundedRectangleBorder(
-                                        side: BorderSide(
-                                            color: Colors.red,
-                                            width: 2,
-                                            style: BorderStyle.solid),
-                                        borderRadius: BorderRadius.circular(10)),
-                                ), 
-                                    onPressed: () {
-                                      setState(() {
-                                        
-                                        noemp.remove(noemp[index]);
-                                        names.remove(names[index]);
-                                        hourout.remove(hourout[index]);
-                                        direction.remove(direction[index]);
-                                      });
-                                      
-                                       tempArr.remove(tempArr[index]);
-                                    
-                                    },
-                                    
-                                    child: Text('Quitar',
-                                        style: TextStyle(color: Colors.white)),                                                                    
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          Column(
+                                            children: [
+                                              Icon(
+                                                Icons.location_pin,
+                                                color: Colors.green[500],
+                                                size: 35,
+                                              ),
+                                              Text('Dirección: ',
+                                                  style: TextStyle(
+                                                      color: Colors.green[500],
+                                                      fontSize: 17)),
+                                              Text('${snapshot.data[index].direction}'),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                   ),
-                                  SizedBox(height: 10.0),
-                              ],
-                            ),
-                        );
-                    
-                      }
-                    
-                  )
+                                 SizedBox(height: 20.0),
+                                 TextButton(
+                                  style: TextButton.styleFrom(
+                                    primary: Colors.white,
+                                    backgroundColor: Colors.red,
+                                    shape: RoundedRectangleBorder(
+                                          side: BorderSide(
+                                              color: Colors.red,
+                                              width: 2,
+                                              style: BorderStyle.solid),
+                                          borderRadius: BorderRadius.circular(10)),
+                                  ), 
+                                      onPressed: () async{
+                                        await this.handler.deleteUser(snapshot.data[index].idsend);
+                                        setState(() {
+                                          snapshot.data.remove(snapshot.data[index]);
+                                        });                                    
+                                      },                                      
+                                      child: Text('Quitar',
+                                          style: TextStyle(color: Colors.white)),                                                                    
+                                ),
+                                SizedBox(height: 10.0),
+                                ],
+                              ),
+                          );
+                      
+                        }
+                      
+                    );
+              
+                  }else if(names.length == 0){
+                    return Card(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  margin: EdgeInsets.symmetric(vertical: 15),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      ListTile(
+                        leading: Icon(Icons.bus_alert),
+                        title: Text('Agentes', style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.normal,
+                                fontSize: 26.0)),
+                        subtitle: Text('No hay agentes en el viaje', style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.normal,
+                                fontSize: 18.0)),
+                      ),                      
+                    ],
+                  ),
+                );
+                  }else{
+
+                  return Center(child: CircularProgressIndicator());
+                  }
+                }
+                 
+              )
                   
             ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(width: 110),
                 Column(
@@ -897,8 +917,8 @@ Future< Search>fetchSearchAgents2(String agentEmployeeId)async{
                         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 40)
                       ),              
                       child: Icon(Icons.save),
-                      onPressed: (){
-                        fetchAgentsLeftPastToProgres( hourOut.text, vehicule.text);
+                      onPressed: (){                        
+                        fetchAgentsLeftPastToProgres( hourOut.text, vehicule.text);                        
                       }
                     ), 
                   ],
@@ -937,71 +957,69 @@ Future< Search>fetchSearchAgents2(String agentEmployeeId)async{
                     radioShowAndHide = true;
                   });
                 }
-            }),
-
-            Visibility(
-              maintainSize: true, 
-              maintainAnimation: true,
-              maintainState: true,
-              visible: radioShowAndHide, 
-              child: getSearchableDropdown(context)
-            ),                  
+              } 
+          ),
+          Visibility(
+            maintainSize: true, 
+            maintainAnimation: true,
+            maintainState: true,
+            visible: radioShowAndHide, 
+            child: getSearchableDropdown(context)
+          ),                  
         ],
       ),
     );
   }
 
   Widget getSearchableDropdown(BuildContext context) {
-
     return SearchableDropdown(      
-              items: driverId.map((item) {
-                return new DropdownMenuItem(
-                    child: Text(item['driverFullname']), value: item['driverId']);
-              }).toList(),
-              isExpanded: true,
-              value: driver,
-              searchFn: (String keyword, items) {
-                List<int> ret = [];
-                if (items != null && keyword.isNotEmpty) {
-                  keyword.split(" ").forEach((k) {
-                    int i = 0;
-                    driverId.forEach((item) {
-                      if (k.isNotEmpty &&
-                          (item['driverFullname']
-                              .toString()
-                              .toLowerCase()
-                              .contains(k.toLowerCase()))) {
-                        ret.add(i);
-                      }
-                      i++;
-                    });
-                  });
-                }
-                if (keyword.isEmpty) {
-                  ret = Iterable<int>.generate(items.length).toList();
-                }
-                return (ret);
-              },              
-              isCaseSensitiveSearch: true,              
-              searchHint: new Text(
-                'Seleccione ',
-                style: new TextStyle(fontSize: 20),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  driver = value;
-                  prefs.driverIdx = driver.toString();
-                  print(prefs.driverIdx);
-                });
-                
-              },
+      items: driverId.map((item) {
+        return new DropdownMenuItem(
+            child: Text(item['driverFullname']), value: item['driverId']);
+      }).toList(),
+      isExpanded: true,
+      value: driver,
+      searchFn: (String keyword, items) {
+        List<int> ret = [];
+        if (items != null && keyword.isNotEmpty) {
+          keyword.split(" ").forEach((k) {
+            int i = 0;
+            driverId.forEach((item) {
+              if (k.isNotEmpty &&
+                  (item['driverFullname']
+                      .toString()
+                      .toLowerCase()
+                      .contains(k.toLowerCase()))) {
+                ret.add(i);
+              }
+              i++;
+            });
+          });
+        }
+        if (keyword.isEmpty) {
+          ret = Iterable<int>.generate(items.length).toList();
+        }
+        return (ret);
+      },              
+      isCaseSensitiveSearch: true,              
+      searchHint: new Text(
+        'Seleccione ',
+        style: new TextStyle(fontSize: 20),
+      ),
+      onChanged: (value) {
+        setState(() {
+          driver = value;
+          prefs.driverIdx = driver.toString();
+          print(prefs.driverIdx);
+        });
+        
+      },
               
     );
   }
 
 
   Widget _crearDropdown(BuildContext context) {
-        //List<DropdownMenuItem<String>> lista = new List();
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 40.0),
       child: Row(
@@ -1036,43 +1054,47 @@ Future< Search>fetchSearchAgents2(String agentEmployeeId)async{
   Widget _mostrarCuartaVentana() {
     return HistoryTripDriver();
   }
-
-  // Widget _hoursTime() {
-  //   final format = DateFormat("HH:mm");
-  //   return Container(
-  //     decoration: BoxDecoration(
-  //         border: Border.all(width: 1, color: Colors.grey),
-  //         borderRadius: BorderRadius.all(Radius.circular(4)),
-  //         boxShadow: [
-  //           BoxShadow(
-  //             color: Colors.grey.withOpacity(0.1),
-  //             spreadRadius: 5,
-  //             blurRadius: 7,
-  //             offset: Offset(0, 3), // changes position of shadow
-  //           )
-  //         ]),
-  //     margin: EdgeInsets.symmetric(horizontal: 40.0),
-  //     child: Column(
-  //       children: [
-  //         DateTimeField(
-  //           format: format,
-  //           controller: hourOut,
-  //           onShowPicker: (context, currentValue) async {
-  //             final time = await showTimePicker(
-  //               context: context,
-  //               initialTime:
-  //                   TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
-  //             );
-  //             return DateTimeField.convert(time);
-  //           },
-  //         ),
-  //       ],
-  //     ),
-  //   );
   
-  // }
-  
+ 
 }
 
 
-  
+class User {
+  //final int id;
+  final String noempid;
+  final String nameuser;
+  final String hourout;
+  final String direction;
+  final int idsend;
+ // final String vehicle;
+
+  User(
+      { 
+        //this.id,
+        this.noempid,
+       this.nameuser,
+       this.hourout,
+      this.direction,
+      this.idsend,
+      //this.vehicle
+      });
+
+  User.fromMap(Map<String, dynamic> res)
+      :
+      //id = res["id"], 
+      noempid = res["noempid"],
+        nameuser = res["nameuser"],
+        hourout = res["hourout"],
+        direction = res["direction"],
+        idsend = res["idsend"]
+        //vehicle = res["vehicle"]
+        ;
+
+  Map<String, Object> toMap() {
+    return {
+      //"id" :id ,
+      'noempid':noempid,'nameuser': nameuser, 'hourout': hourout, 'direction': direction, 'idsend': idsend, 
+      //vehicle: 'vehicle'
+      };
+  }
+}

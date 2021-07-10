@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_auth/Drivers/Screens/Details/detailsDriver_Screen.dart';
 import 'package:flutter_auth/Drivers/components/loader.dart';
 import 'package:flutter_auth/Drivers/components/menu_lateralDriver.dart';
 import 'package:flutter_auth/Drivers/models/AgentTripCompleted.dart';
+import 'package:flutter_auth/Drivers/models/agentsInTravelModel.dart';
 import 'package:flutter_auth/Drivers/models/network.dart';
 import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../constants.dart';
 
 void main() {
@@ -24,10 +25,12 @@ class _DataTableExample extends State<MyFinishedTrips> {
   bool checkBoxValue = false;
   final format = DateFormat("HH:mm");
   Future <TripsList3> item;
+  Future <TripsList2> itemx;
   @override
   void initState() { 
     super.initState();
     item = fetchAgentsCompleted();
+    itemx =fetchAgentsInTravel2();
 
   }
   @override
@@ -44,11 +47,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
               IconButton(
                 icon: Icon(Icons.arrow_back),
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return DetailsDriverScreen(
-                      plantillaDriver: plantillaDriver[3],
-                    );
-                  }));
+                  Navigator.of(context).pop();
                 },
               ),
               SizedBox(width: kDefaultPadding / 2)
@@ -56,12 +55,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
           ),
           body: ListView(children: <Widget>[
             SizedBox(height: 40.0),
-            Center(
-                child: Text('Agentes con hora asignada',
-                    style: TextStyle(
-                        color: Colors.grey[700],
-                        fontWeight: FontWeight.bold,
-                        fontSize: 25.0))),
+            Center(child: Text('Agentes con hora asignada',style: TextStyle(color: Colors.grey[700],fontWeight: FontWeight.bold,fontSize: 25.0))),
             SizedBox(height: 10.0),
             _agentToConfirm(),
             SizedBox(height: 20.0),
@@ -143,101 +137,47 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                               }
                                             ],
                                           ),
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              SizedBox(width: 25.0),
-                                              Column(
-                                                children: [
-                                                  Icon(
-                                                    Icons.kitchen,
-                                                    color: Colors.green[500],
-                                                    size: 35,
-                                                  ),
-                                                  Text(' Empresa: ',
-                                                      style: TextStyle(color: Colors.green[500], fontSize: 17)),
-                                                  Text(
-                                                    '${abc.data.trips[0].inTrip[index].companyName}',
-                                                    style: TextStyle(color: kTextColor),
-                                                  ),
-                                                ],
+                                          ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                                title: Text('Nombre: '),
+                                                subtitle: Text('${abc.data.trips[0].inTrip[index].agentFullname}'),
+                                                leading: Icon(Icons.supervised_user_circle_rounded,color: Colors.green[500]),
                                               ),
-                                              Flexible(
-                                                child: Column(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.supervised_user_circle_rounded,
-                                                      color: Colors.green[500],
-                                                      size: 35,
-                                                    ),
-                                                    Text('Nombre: ',
-                                                        style: TextStyle(color: Colors.green[500], fontSize: 17)),
-                                                    Text('${abc.data.trips[0].inTrip[index].agentFullname}', style: TextStyle(color: kTextColor)),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
                                         ],
                                       ),
                                         trailing: SizedBox(),
                                         children: [
-                                          //aqui lo demás
-                                          Padding(
-                                            padding: const EdgeInsets.all(10.0),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                              children: [
-                                                Column(
-                                                  children: [
-                                                    Icon(Icons.phone,
-                                                        color: Colors.green[500], size: 35),
-                                                    Text('Teléfono: ',
-                                                        style: TextStyle(
-                                                            color: Colors.green[500],
-                                                            fontSize: 17)),
-                                                    Text('${abc.data.trips[0].inTrip[index].agentPhone}'),
-                                                  ],
-                                                ),
-                                                Column(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.timer,
-                                                      color: Colors.green[500],
-                                                      size: 35,
-                                                    ),
-                                                    Text('Entrada:',
-                                                        style: TextStyle(
-                                                            color: Colors.green[500],
-                                                            fontSize: 17)),
-                                                    Text('${abc.data.trips[0].inTrip[index].hourIn}'),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
+                                          Container(
+                                                margin: EdgeInsets.only(left: 15),
+                                                child: Column(children: [
+                                                  ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                                    title: Text('Empresa: '),
+                                                    subtitle: Text('${abc.data.trips[0].inTrip[index].companyName}'),
+                                                    leading: Icon(Icons.kitchen,color: Colors.green[500]),
+                                                  ), 
+                                                  ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                                    title: Text('Teléfono: '),
+                                                    subtitle: TextButton(onPressed: () => launch('tel://${abc.data.trips[0].inTrip[index].agentPhone}'),
+                                                    child:  Container(margin: EdgeInsets.only(right: 180),child: Text('${abc.data.trips[0].inTrip[index].agentPhone}',style: TextStyle(color: Colors.blue[500],fontSize: 14)))),
+                                                    leading: Icon(Icons.phone,color: Colors.green[500]),
+                                                  ),
+                                                  ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                                    title: Text('Entrada: '),
+                                                    subtitle: Text('${abc.data.trips[0].inTrip[index].hourIn}'),
+                                                    leading: Icon(Icons.timer,color: Colors.green[500]),
+                                                  ),
+                                                  ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                                    title: Text('Dirección: '),
+                                                    subtitle: Text('${abc.data.trips[0].inTrip[index].agentReferencePoint} \n ${abc.data.trips[0].inTrip[index].neighborhoodName} ${abc.data.trips[0].inTrip[index].districtName}'),
+                                                    leading: Icon(Icons.location_pin,color: Colors.green[500]),
+                                                  ),
+                                                  ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                                    title: Text('Hora de encuentro:'),
+                                                    subtitle: Text('${abc.data.trips[0].inTrip[index].hourForTrip}',style: TextStyle(color: Colors.green,fontWeight: FontWeight.normal,fontSize: 25.0)),
+                                                    leading: Icon(Icons.timer,color: Colors.green[500]),
+                                                  ),
+                                                ],),
                                           ),
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                              children: [
-                                                Column(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.location_pin,
-                                                      color: Colors.green[500],
-                                                      size: 35,
-                                                    ),
-                                                    Text('Dirección: ',
-                                                        style: TextStyle(
-                                                            color: Colors.green[500],
-                                                            fontSize: 17)),
-                                                    Text('${abc.data.trips[0].inTrip[index].agentReferencePoint} \n ${abc.data.trips[0].inTrip[index].neighborhoodName} \n ${abc.data.trips[0].inTrip[index].districtName}'),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          ),
+                                    
                                           SizedBox(height: 20.0),
 
                                           TextButton (
@@ -337,11 +277,11 @@ class _DataTableExample extends State<MyFinishedTrips> {
   }
 
   Widget _agentToCancel() {
-      return FutureBuilder<TripsList3>(
-          future: item,
+      return FutureBuilder<TripsList2>(
+          future: itemx,
           builder: (BuildContext context, abc) {
             if (abc.connectionState == ConnectionState.done) {
-              if (abc.data.trips[1].cancelAgent.length == 0) {
+              if (abc.data.trips[2].cancelados.length == 0) {
                 return Card(
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                           margin: EdgeInsets.symmetric(vertical: 15),
@@ -370,7 +310,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
                       physics: ClampingScrollPhysics(),
-                      itemCount: abc.data.trips[1].cancelAgent.length,
+                      itemCount: abc.data.trips[2].cancelados.length,
                       itemBuilder: (context, index){
                         return Container(
                           width: 500.0,
@@ -392,7 +332,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                         children: <Widget>[
                                           Row(
                                             children: [
-                                              if (abc.data.trips[1].cancelAgent[index].traveled == 1)...{                                                
+                                              if (abc.data.trips[2].cancelados[index].traveled == 1)...{                                                
                                                 Text('✅'),
                                                 Text('Abordó')
                                               } else ...{
@@ -401,99 +341,42 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                               }
                                             ],
                                           ),
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              SizedBox(width: 25.0),
-                                              Column(
-                                                children: [
-                                                  Icon(
-                                                    Icons.kitchen,
-                                                    color: Colors.green[500],
-                                                    size: 35,
-                                                  ),
-                                                  Text(' Empresa: ',
-                                                      style: TextStyle(color: Colors.green[500], fontSize: 17)),
-                                                  Text(
-                                                    '${abc.data.trips[1].cancelAgent[index].companyName}',
-                                                    style: TextStyle(color: kTextColor),
-                                                  ),
-                                                ],
-                                              ),
-                                              Column(
-                                                children: [
-                                                  Icon(
-                                                    Icons.supervised_user_circle_rounded,
-                                                    color: Colors.green[500],
-                                                    size: 35,
-                                                  ),
-                                                  Text('Nombre: ',
-                                                      style: TextStyle(color: Colors.green[500], fontSize: 17)),
-                                                  Text('${abc.data.trips[1].cancelAgent[index].agentFullname}', style: TextStyle(color: kTextColor)),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
+                                          ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                                title: Text('Nombre: '),
+                                                subtitle: Text('${abc.data.trips[2].cancelados[index].agentFullname}'),
+                                                leading: Icon(Icons.supervised_user_circle_rounded,color: Colors.green[500]),
+                                              ),                                          
                                         ],
                                       ),
                                         trailing: SizedBox(),
                                         children: [
-                                          //aqui lo demás
-                                          Padding(
-                                            padding: const EdgeInsets.all(10.0),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                              children: [
-                                                Column(
-                                                  children: [
-                                                    Icon(Icons.phone,
-                                                        color: Colors.green[500], size: 35),
-                                                    Text('Teléfono: ',
-                                                        style: TextStyle(
-                                                            color: Colors.green[500],
-                                                            fontSize: 17)),
-                                                    Text('${abc.data.trips[1].cancelAgent[index].agentPhone}'),
-                                                  ],
-                                                ),
-                                                Column(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.timer,
-                                                      color: Colors.green[500],
-                                                      size: 35,
-                                                    ),
-                                                    Text('Entrada:',
-                                                        style: TextStyle(
-                                                            color: Colors.green[500],
-                                                            fontSize: 17)),
-                                                    Text('${abc.data.trips[1].cancelAgent[index].hourIn}'),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
+                                          Container(
+                                                margin: EdgeInsets.only(left: 15),
+                                                child: Column(children: [
+                                                  ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                                    title: Text('Empresa: '),
+                                                    subtitle: Text('${abc.data.trips[2].cancelados[index].companyName}'),
+                                                    leading: Icon(Icons.kitchen,color: Colors.green[500]),
+                                                  ), 
+                                                  ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                                    title: Text('Teléfono: '),
+                                                    subtitle: TextButton(onPressed: () => launch('tel://${abc.data.trips[2].cancelados[index].agentPhone}'),
+                                                    child:  Container(margin: EdgeInsets.only(right: 180),child: Text('${abc.data.trips[2].cancelados[index].agentPhone}',style: TextStyle(color: Colors.blue[500],fontSize: 14)))),
+                                                    leading: Icon(Icons.phone,color: Colors.green[500]),
+                                                  ),
+                                                  ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                                    title: Text('Entrada: '),
+                                                    subtitle: Text('${abc.data.trips[2].cancelados[index].hourIn}'),
+                                                    leading: Icon(Icons.timer,color: Colors.green[500]),
+                                                  ),
+                                                  ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                                    title: Text('Dirección: '),
+                                                    subtitle: Text('${abc.data.trips[2].cancelados[index].agentReferencePoint} \n${abc.data.trips[2].cancelados[index].neighborhoodName} ${abc.data.trips[2].cancelados[index].districtName}'),
+                                                    leading: Icon(Icons.location_pin,color: Colors.green[500]),
+                                                  ),
+                                                ],),
                                           ),
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                              children: [
-                                                Column(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.location_pin,
-                                                      color: Colors.green[500],
-                                                      size: 35,
-                                                    ),
-                                                    Text('Dirección: ',
-                                                        style: TextStyle(
-                                                            color: Colors.green[500],
-                                                            fontSize: 17)),
-                                                    Text('${abc.data.trips[1].cancelAgent[index].agentReferencePoint} \n ${abc.data.trips[1].cancelAgent[index].neighborhoodName} \n ${abc.data.trips[1].cancelAgent[index].districtName}'),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          ),
+                                                                                   
                                           SizedBox(height: 20.0),
 
                                          TextButton (
@@ -517,7 +400,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                     child: Column(
                                                       children: <Widget>[                                                      
                                                         SizedBox(height: 15),
-                                                        if (abc.data.trips[0].inTrip[index].commentDriver == null)...{
+                                                        if (abc.data.trips[2].cancelados[index].comment == null)...{
                                                           Center(child: Text(
                                                             'Observación',
                                                             style: TextStyle(
@@ -525,17 +408,18 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                             ),)
                                                           
                                                           ),
-                                                          Text('')
+                                                          SizedBox(height: 15),
+                                                          Text('${abc.data.trips[2].cancelados[index].commentDriver}')
                                                         } else...{
                                                           Center(child: Text(
                                                             'Observación',
                                                             style: TextStyle(
                                                               fontSize: 22, fontWeight: FontWeight.bold
                                                             ),),),
-                                                          SizedBox(height: 15),
+                                                          SizedBox(height: 15),                                                          
                                                           Center(
                                                             child: Text(
-                                                              '${abc.data.trips[1].cancelAgent[index].commentDriver}',
+                                                              '${abc.data.trips[2].cancelados[index].comment}',
                                                               style: TextStyle(
                                                                 fontSize: 16,
                                                               ),
@@ -549,7 +433,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                             backgroundColor: Colors.green
                                                           ),
                                                           onPressed: () => {
-                                                              setState((){
+                                                              setState((){                                                                
                                                                 Navigator.pop(context);                                                  
                                                               }),
                                                           },
@@ -585,7 +469,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
                 );          
               }
             } else {
-              return CircularProgressIndicator();
+              return ColorLoader3();
             }
           },
         ); 

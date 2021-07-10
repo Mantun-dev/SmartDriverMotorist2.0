@@ -21,14 +21,14 @@ class Salida {
     String type;
     String title;
     String message;
-    int tripId;
+    TripId tripId;
 
     factory Salida.fromJson(Map<String, dynamic> json) => Salida(
         ok: json["ok"],
         type: json["type"],
         title: json["title"],
         message: json["message"],
-        tripId: json["tripId"],
+        tripId: TripId.fromJson(json["tripId"]),
     );
 
     Map<String, dynamic> toJson() => {
@@ -36,6 +36,26 @@ class Salida {
         "type": type,
         "title": title,
         "message": message,
+        "tripId": tripId.toJson(),
+    };
+}
+
+class TripId {
+    TripId({
+        this.tripId,
+        this.tripHour,
+    });
+
+    int tripId;
+    String tripHour;
+
+    factory TripId.fromJson(Map<String, dynamic> json) => TripId(
+        tripId: json["tripId"],
+        tripHour: json["tripHour"],
+    );
+
+    Map<String, dynamic> toJson() => {
         "tripId": tripId,
+        "tripHour": tripHour,
     };
 }

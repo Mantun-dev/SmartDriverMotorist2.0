@@ -91,18 +91,6 @@ class PreferenciasUsuario {
     _prefs.setString('agentEmployeeId', value.toString());
   }
 
-         // GET y SET del tripHours
-Future saveBoolVaue() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  prefs.setBool('status', true);
- 
-}
-
-Future getBoolVaue() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  prefs.getBool('status');
- 
-}
 
          // GET y SET del salida
   get passwordUser {
@@ -122,6 +110,45 @@ Future getBoolVaue() async {
   set driverIdx( String value ) {
     _prefs.setString('driverIdx', value.toString());
   }
+
+
+             // GET y SET de tokenIdMobile
+  get tokenIdMobile {
+    return _prefs.getString('tokenIdMobile') ?? '';
+  }
+
+  set tokenIdMobile( String value ) {
+    _prefs.setString('tokenIdMobile', value);
+  }
+
+               // GET y SET de tokenIdMobile
+  get phone {
+    return _prefs.getString('phone') ?? '';
+  }
+
+  set phone( String value ) {
+    _prefs.setString('phone', value);
+  }
+
+
+                 // GET y SET de vehiculo
+  get vehiculo {
+    return _prefs.getString('vehiculo') ?? '';
+  }
+
+  set vehiculo( String value ) {
+    _prefs.setString('vehiculo', value);
+  }
+
+  removeIdCompanyAndVehicle(){
+    _prefs.remove('companyId');
+    _prefs.remove('vehiculo ');
+  }
+  remove(){
+    _prefs.remove('nombreUsuario');
+    _prefs.remove('passwordUser');
+  }
+  
 }
 
 

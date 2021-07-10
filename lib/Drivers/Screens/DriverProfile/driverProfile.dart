@@ -50,10 +50,9 @@ class _DataTableExample extends State<DriverProfilePage> {
             actions: <Widget>[
               IconButton(
                 icon: Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return HomeDriverScreen();
-                  }));
+                onPressed: () {                 
+                  Navigator.pushAndRemoveUntil(context,MaterialPageRoute(builder: (context) =>
+                  HomeDriverScreen()),(Route<dynamic> route) =>false);
                 },
               ),
               SizedBox(width: kDefaultPadding / 2)

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_auth/Drivers/Screens/Details/detailsDriver_Screen.dart';
+//import 'package:flutter_auth/Drivers/Screens/Details/detailsDriver_Screen.dart';
 import 'package:flutter_auth/Drivers/components/add_cartDriver.dart';
 import 'package:flutter_auth/Drivers/components/descriptionDriver.dart';
 import 'package:flutter_auth/Drivers/components/plantillaDriver_titleWithImage.dart';
 import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
-import '../../../../constants.dart';
+
 
 class Body extends StatefulWidget {
   final PlantillaDriver plantillaDriver;
@@ -24,16 +24,15 @@ class _BodyState extends State<Body> {
         children: <Widget>[
           //en esta pintamos las páginas después de tocar las imagenes
           SizedBox(            
-            height: size.height,
+            height: size.height,            
             child: Stack(
               children: <Widget>[
                 Container(
-                  margin: EdgeInsets.only(top: size.height * 0.15),
+                  width: size.width,
+                  height: size.height,
+                  margin: EdgeInsets.only(top: size.height * 0.25),
                   padding: EdgeInsets.only(
-                    top: 60.0,
-                    left: kDefaultPadding,
-                    right: 6,
-                  ),
+                    top: 50.0,),
                   decoration: BoxDecoration(                    
                     color: Colors.white,
                     borderRadius: BorderRadius.only(

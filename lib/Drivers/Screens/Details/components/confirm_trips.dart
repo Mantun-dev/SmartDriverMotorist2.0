@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_auth/Drivers/Screens/Details/detailsDriver_Screen.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
 import 'package:flutter_auth/Drivers/components/loader.dart';
 import 'package:flutter_auth/Drivers/components/menu_lateralDriver.dart';
+import 'package:flutter_auth/Drivers/models/DriverData.dart';
 import 'package:flutter_auth/Drivers/models/agentInProgress.dart';
 import 'package:flutter_auth/Drivers/models/messageDriver.dart';
 import 'package:flutter_auth/Drivers/models/messageTripCompleted.dart';
@@ -39,7 +39,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
   final tmpArray = [];
   bool traveled1 = true ;
   final prefs = new PreferenciasUsuario();
-
+  String ip = "https://driver.smtdriver.com";
   
   TextEditingController check = new TextEditingController();
   List<TextEditingController> comment;
@@ -50,22 +50,17 @@ class _DataTableExample extends State<MyConfirmAgent> {
       Map datas = {
         'agentId' : agentId,
         'tripId' : prefs.tripId, 
-        'traveled' : '${flag}'
+        'traveled' : flag.toString()
       };
       print(datas);
     
-      http.Response response = await http.post(Uri.encodeFull('http://$ip/apis/agentCheckIn'), body: datas);
-      setState(() {
+      http.Response response = await http.post(Uri.encodeFull('$ip/apis/agentCheckIn'), body: datas);
+ 
       final resp = Message.fromJson(json.decode(response.body));
       
-      if (response.statusCode == 200 && resp.ok == true) {   
-        //  print(response.body);    
-        //    SweetAlert.show(context,
-        //    title: 'Enviado',
-        //    subtitle: resp.message,
-        //    style: SweetAlertStyle.success
-        //  );
-       } 
+      if (response.statusCode == 200 && resp.ok == true) { 
+        print('enviado');  
+      } 
        else if(response.statusCode == 500){
          SweetAlert.show(context,
              title: 'Opss...',
@@ -73,14 +68,14 @@ class _DataTableExample extends State<MyConfirmAgent> {
              style: SweetAlertStyle.error,
          );
        }
-       });
+
         
        return Message.fromJson(json.decode(response.body));
   }
 
   Future<Driver2>fetchRegisterTripCompleted() async {
 
-    http.Response responses = await http.get(Uri.encodeFull('http://$ip/apis/registerTripAsCompleted/${prefs.tripId}'));
+    http.Response responses = await http.get(Uri.encodeFull('$ip/apis/registerTripAsCompleted/${prefs.tripId}'));
     final si = Driver2.fromJson(json.decode(responses.body));
 
      print(responses.body);
@@ -114,9 +109,9 @@ class _DataTableExample extends State<MyConfirmAgent> {
       'tripId' : tripId,
       'commentDriver': comment
     };
-    http.Response responses = await http.post(Uri.encodeFull('http://$ip/apis/getDriverComment'), body: datas);
+    http.Response responses = await http.post(Uri.encodeFull('$ip/apis/getDriverComment'), body: datas);
     final si = Driver.fromJson(json.decode(responses.body));
-    http.Response response = await http.post(Uri.encodeFull('http://$ip/apis/agentTripSetComment'), body: datas2);
+    http.Response response = await http.post(Uri.encodeFull('$ip/apis/agentTripSetComment'), body: datas2);
      print(responses.body);
      print(response.body);
      if (responses.statusCode == 200 && si.ok == true && responses.statusCode == 200) {         
@@ -141,7 +136,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
       'agentId': agentId,
       'tripId' : tripId
     };
-    http.Response responses = await http.post(Uri.encodeFull('http://$ip/apis/agentDidntGetOut'), body: datas);
+    http.Response responses = await http.post(Uri.encodeFull('$ip/apis/agentDidntGetOut'), body: datas);
     final si = Driver.fromJson(json.decode(responses.body));
 
      print(responses.body);
@@ -162,14 +157,45 @@ class _DataTableExample extends State<MyConfirmAgent> {
       //throw Exception('Failed to load Data');
   }
 
+
+  Future<Driver>fetchTripCancel() async {
+      http.Response responses = await http.get(Uri.encodeFull('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
+      final data = DriverData.fromJson(json.decode(responses.body));
+      http.Response response = await http.get(Uri.encodeFull('$ip/apis/driverCancelTrip/${prefs.tripId}/${data.driverId}'));
+
+      final resp = Driver.fromJson(json.decode(response.body));
+
+        if (response.statusCode == 200 && resp.ok == true) {   
+            print(response.body); 
+           
+            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context)=>
+             HomeDriverScreen()), (Route<dynamic> route) => false);  
+            SweetAlert.show(context,
+            title: 'ok',
+            subtitle: resp.message,
+            style: SweetAlertStyle.success
+            );
+        } 
+        else if(response.statusCode == 500){
+          SweetAlert.show(context,
+              title: 'ok',
+              subtitle: resp.message,
+              style: SweetAlertStyle.error,
+          );
+        }
+      return Driver.fromJson(json.decode(response.body));
+  }
+
   @override
   void initState() { 
     super.initState();
     item = fetchAgentsTripInProgress();
     comment = new List<TextEditingController>();
-    check = new TextEditingController();
+    check = new TextEditingController();    
   }
   
+
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -183,12 +209,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
             actions: <Widget>[
               IconButton(
                 icon: Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return DetailsDriverScreen(
-                      plantillaDriver: plantillaDriver[1],
-                    );
-                  }));
+                onPressed: () {             
+                 Navigator.of(context).pop();
                 },
               ),
               SizedBox(width: kDefaultPadding / 2)
@@ -296,16 +318,12 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                   });                                                                                                   
                                                   abc.data.trips[0].tripAgent[index].traveled  = traveled;   
                                                   if (value == true ) {
-                                                    print('subio');
-                                                    //print(abc.data.trips[0].tripAgent[index].agentId);
-                                                    //tmpArray.add(abc.data.trips[0].tripAgent[index].traveled);                                                   
+                                                    print('subio');                                                 
                                                     fetchCheckAgentTrip(abc.data.trips[0].tripAgent[index].agentId.toString());
                                                                                                                                                        
                                                     print('////////');
                                                   }else if(value == false){                                                       
                                                     print('bajo');
-                                                    //print(abc.data.trips[0].tripAgent[index].agentId);
-                                                    //tmpArray.replaceRange(index, index + 1, [abc.data.trips[0].tripAgent[index].traveled]);
                                                     fetchCheckAgentTrip(abc.data.trips[0].tripAgent[index].agentId.toString());
                                                     print('////////');
                                                   }                                                    
@@ -313,114 +331,49 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                               Text('Abordó '),                                                                                                                                       
                                                   
                                             ],
-                                          ),                                          
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              SizedBox(width: 25.0),
-                                              Column(
-                                                children: [
-                                                  Icon(
-                                                    Icons.kitchen,
-                                                    color: Colors.green[500],
-                                                    size: 35,
-                                                  ),
-                                                  Text(' Empresa: ',
-                                                      style: TextStyle(color: Colors.green[500], fontSize: 17)),
-                                                  Text(
-                                                    '${abc.data.trips[0].tripAgent[index].companyName}',
-                                                    style: TextStyle(color: kTextColor),
-                                                  ),
-                                                  
-                                                ],
-                                              ),
-                                              Flexible(
-                                                child: Column(                                                  
-                                                  children: [
-                                                    Icon(
-                                                      Icons.supervised_user_circle_rounded,
-                                                      color: Colors.green[500],
-                                                      size: 35,
-                                                    ),
-                                                    Text('Nombre: ',
-                                                        style: TextStyle(color: Colors.green[500], fontSize: 17)),
-                                                    Container(
-                                                      padding: EdgeInsets.only(left: 20),                
-                                                      child:Text('${abc.data.trips[0].tripAgent[index].agentFullname}', style: TextStyle(color: kTextColor)),                                                                                                        
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
                                           ),
+                                          ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                                title: Text('Nombre: '),
+                                                subtitle: Text('${abc.data.trips[0].tripAgent[index].agentFullname}'),
+                                                leading: Icon(Icons.supervised_user_circle_rounded,color: Colors.green[500]),
+                                              ),
+                                                                                                                             
                                         ],
                                       ),
                                         trailing: SizedBox(),
                                         children: [
-                                          //aqui lo demás
-                                          Padding(
-                                            padding: const EdgeInsets.all(10.0),
-                                            child: Container(
-                                              margin: EdgeInsets.only(right: 15),
-                                              child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                children: [
-                                                  Column(
-                                                    children: [
-                                                      Icon(Icons.phone,
-                                                          color: Colors.green[500], size: 35),
-                                                      Text('Teléfono: ',
-                                                          style: TextStyle(
-                                                              color: Colors.green[500],
-                                                              fontSize: 17)),
-                                                      TextButton(
-                                                          onPressed: () => launch('tel://${abc.data.trips[0].tripAgent[index].agentPhone}'),
-                                                          child:  Text('${abc.data.trips[0].tripAgent[index].agentPhone}',style: TextStyle(color: Colors.blue[500],fontSize: 14))),                                                    
-                                                    ],
-                                                  ),
-                                                  Column(
-                                                    children: [
-                                                      Icon(
-                                                        Icons.timer,
-                                                        color: Colors.green[500],
-                                                        size: 35,
-                                                      ),
-                                                      Text('Entrada:',
-                                                          style: TextStyle(
-                                                              color: Colors.green[500],
-                                                              fontSize: 17)),
-                                                      Text('${abc.data.trips[0].tripAgent[index].hourIn}'),
-                                                    ],
-                                                  ),
-                                                ],
+                                          Container(
+                                            margin: EdgeInsets.only(left: 15),
+                                            child: Column(children: [
+                                              ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                                title: Text('Empresa: '),
+                                                subtitle: Text('${abc.data.trips[0].tripAgent[index].companyName}'),
+                                                leading: Icon(Icons.kitchen,color: Colors.green[500]),
                                               ),
-                                            ),
+                                              ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                                title: Text('Teléfono: '),
+                                                subtitle: TextButton(onPressed: () => launch('tel://${abc.data.trips[0].tripAgent[index].agentPhone}'),
+                                                child:  Container(margin: EdgeInsets.only(right: 180),child: Text('${abc.data.trips[0].tripAgent[index].agentPhone}',style: TextStyle(color: Colors.blue[500],fontSize: 14)))),
+                                                leading: Icon(Icons.phone,color: Colors.green[500]),
+                                              ),
+                                              ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                                title: Text('Entrada: '),
+                                                subtitle: Text('${abc.data.trips[0].tripAgent[index].hourIn}'),
+                                                leading: Icon(Icons.timer,color: Colors.green[500]),
+                                              ),
+                                              ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                                title: Text('Dirección: '),
+                                                subtitle: Text('${abc.data.trips[0].tripAgent[index].agentReferencePoint} \n ${abc.data.trips[0].tripAgent[index].neighborhoodName} ${abc.data.trips[0].tripAgent[index].districtName}'),
+                                                leading: Icon(Icons.location_pin,color: Colors.green[500]),
+                                              ),
+                                              ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                                title: Text('Hora de encuentro: '),
+                                                subtitle: Text('${abc.data.trips[0].tripAgent[index].hourForTrip}',style:TextStyle(color: Colors.green, fontWeight: FontWeight.normal,fontSize: 25)),
+                                                leading: Icon(Icons.timer,color: Colors.green[500]),                                                    
+                                              ), 
+                                            ],),
                                           ),
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                              children: [
-                                                Column(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.location_pin,
-                                                      color: Colors.green[500],
-                                                      size: 35,
-                                                    ),
-                                                    Text('Dirección: ',
-                                                        style: TextStyle(
-                                                            color: Colors.green[500],
-                                                            fontSize: 17)),
-                                                    Text('${abc.data.trips[0].tripAgent[index].agentReferencePoint} \n ${abc.data.trips[0].tripAgent[index].neighborhoodName} \n ${abc.data.trips[0].tripAgent[index].districtName}'),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          SizedBox(height: 20.0),
-                                          Text('${abc.data.trips[0].tripAgent[index].hourForTrip}',style:TextStyle(color: Colors.red, fontSize: 17)),
-                                          SizedBox(height: 20.0),
+                                                                                   
                                           Row(
                                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                             children: [
@@ -429,7 +382,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                   TextButton (
                                                   style: TextButton.styleFrom(
                                                     primary: Colors.white, // foreground
-                                                    backgroundColor: Color(0xFFFF7043),
+                                                    backgroundColor: Colors.red,
                                                     shape: RoundedRectangleBorder(
                                                         side: BorderSide(
                                                             color: Color(0xFFFF7043),
@@ -575,8 +528,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                 borderRadius: BorderRadius.circular(15.0),
               )),
               child: Text("Completar Viaje"),
-              onPressed: () {
-                                                                
+              onPressed: () {                                                                
                 fetchRegisterTripCompleted();
               },
 
@@ -591,7 +543,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
               )),
               child: Text("Marcar como cancelado"),
               onPressed: () {
-                
+                fetchTripCancel(); 
               },
               
             ),

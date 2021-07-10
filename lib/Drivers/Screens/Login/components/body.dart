@@ -8,10 +8,11 @@ import 'package:flutter_auth/Drivers/Screens/Login/components/background.dart';
 import 'package:flutter_auth/Drivers/Screens/Restore/restore_screen.dart';
 import 'package:flutter_auth/Drivers/Screens/Signup/signup_screen.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
+import 'package:flutter_auth/Drivers/SharePreferences/services.dart';
 import 'package:flutter_auth/Drivers/models/DriverData.dart';
+import 'package:flutter_auth/Drivers/models/dataToken.dart';
 import 'package:flutter_auth/Drivers/models/messageDriver.dart';
 import 'package:flutter_auth/Drivers/models/network.dart';
-
 import 'package:flutter_auth/components/already_have_an_account_acheck.dart';
 import 'package:flutter_auth/Drivers/Screens/forgot_password.dart';
 import 'package:flutter_auth/components/rounded_button.dart';
@@ -36,7 +37,7 @@ class _BodyState extends State<Body> {
   TextEditingController driverPassword = new TextEditingController();
   TextEditingController driverDNI = new TextEditingController();
   final prefs = new PreferenciasUsuario();
-  String ip = "192.168.0.113:4000";
+  String ip = "https://driver.smtdriver.com";
   bool _passwordVisible;
   
      @override
@@ -52,28 +53,48 @@ class _BodyState extends State<Body> {
       'driverDNI' : driverDNI,
       'driverPassword' : driverPassword
     };
-    http.Response responses = await http.get(Uri.encodeFull('http://$ip/apis/refreshingAgentData/${data['driverDNI']}'));
-    final si = DriverData.fromJson(json.decode(responses.body));
-    http.Response response = await http.post(Uri.encodeFull('http://$ip/apis/login'), body: data);
-    final no = Message.fromJson(json.decode(response.body));     
-      if (response.statusCode == 200 && no.ok == true && responses.statusCode == 200) {   
-      setState(() {
-          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context)=>
-          HomeDriverScreen()), (Route<dynamic> route) => false);
-      });
-      
-       SweetAlert.show(context,
-        title: "Bienvenido(a)",
-        subtitle: si.driverFullname,
-        style: SweetAlertStyle.success
-      );
-      return Message.fromJson(json.decode(response.body));
-      } else if (no.ok != true) {
+    String device = "mobile";
+    if (driverDNI == ""&& driverPassword == "") {
         SweetAlert.show(context,
           title: "Alerta",
-          subtitle: no.message,
+          subtitle: "Campos vacios",
           style: SweetAlertStyle.error,
         );
+      }else{
+        http.Response responses = await http.get(Uri.encodeFull('$ip/apis/refreshingAgentData/${data['driverDNI']}'));
+        final si = DriverData.fromJson(json.decode(responses.body));
+        prefs.nombreUsuarioFull = si.driverFullname;
+        prefs.phone = si.driverPhone;
+        Map data2 = {
+          'driverId' : '${si.driverId}',
+          'device' : device,
+          'deviceId': PushNotificationServices.token.toString()
+        };
+    
+
+        http.Response response = await http.post(Uri.encodeFull('$ip/apis/login'), body: data,);
+        final no = Message.fromJson(json.decode(response.body));   
+
+        if (response.statusCode == 200 && no.ok == true && responses.statusCode == 200) {  
+          http.Response responseToken = await http.post(Uri.encodeFull('$ip/apis/registerTokenIdCellPhoneDriver'), body: data2,);
+          final claro = DataToken.fromJson(json.decode(responseToken.body));     
+          prefs.tokenIdMobile = claro.data[0].token;
+            //print(responseToken.body);                          
+          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context)=>
+          HomeDriverScreen()), (Route<dynamic> route) => false);
+          SweetAlert.show(context,
+            title: "Bienvenido(a)",
+            subtitle: si.driverFullname,
+            style: SweetAlertStyle.success
+          );
+          return Message.fromJson(json.decode(response.body));
+          } else if (no.ok != true) {
+            SweetAlert.show(context,
+              title: "Alerta",
+              subtitle: no.message,
+              style: SweetAlertStyle.error,
+            );
+          }
       }
   } 
 
@@ -103,8 +124,6 @@ class _BodyState extends State<Body> {
                 text: "INGRESA ",
                 press: () {
                   fetchUserDriver(driverDNI.text, driverPassword.text);   
-                  fetchRefres();               
-                  //fetchAgentsInTravel2();
                 },
               ),
               SizedBox(height: size.height * 0.03),

@@ -22,7 +22,7 @@ class _HistoryTripDriverState extends State<HistoryTripDriver> {
   Future <List< TripsHistory>>item;
   final prefs = new PreferenciasUsuario();
   TextEditingController tripId = new TextEditingController();
-
+  String ip = "https://driver.smtdriver.com";
   @override
   void initState() { 
     super.initState();
@@ -35,7 +35,7 @@ Future< TripsList3>fetchAgentsCompleted(String tripId)async{
     };
   prefs.tripId = tripId;
 
-  http.Response responsed = await http.get(Uri.encodeFull('http://$ip/apis/agentsInTravel/${datas['tripId']}'));
+  http.Response responsed = await http.get(Uri.encodeFull('$ip/apis/agentsInTravel/${datas['tripId']}'));
 
     if (responsed.statusCode == 200) {  
       Navigator.push(context,MaterialPageRoute(builder: (context) => MyFinishedTrips(),));

@@ -21,7 +21,7 @@ class _ProcessTripState extends State<ProcessTrip> {
   Future<List< TripsCompanies>> itemx;
   TextEditingController companyId = new TextEditingController();
   final prefs = new PreferenciasUsuario();
-  String ip = "192.168.0.113:4000";
+  String ip = "https://driver.smtdriver.com";
     @override
     void initState() { 
       super.initState();
@@ -117,7 +117,14 @@ class _ProcessTripState extends State<ProcessTrip> {
                                                     width: 170,
                                                     child: Image.asset('assets/images/Alorica_Logo.png'),                                          
                                                   ),
-                                                },                                                
+                                                },
+                                                if (abc.data[index].companyId == 7)... {
+                                                  Container(                                                    
+                                                    height: 80,
+                                                    width: 170,
+                                                    child: Image.asset('assets/images/zero.png'),                                          
+                                                  ),
+                                                },                                                 
                                               ],
                                             ),   
                                         ), 

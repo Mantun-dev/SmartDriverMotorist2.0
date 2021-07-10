@@ -11,7 +11,7 @@ description: A new Flutter project.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+version: 1.0.4+5
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -23,6 +23,7 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.3
+  flutter_launcher_icons: ^0.9.0
   flutter_svg: ^0.20.0-nullsafety.3
   getwidget: ^1.2.4
   carousel_slider: ^3.0.0
@@ -42,20 +43,25 @@ dependencies:
   dropdownfield: ^1.0.0
   searchable_dropdown: ^1.1.3
   firebase_messaging: ^10.0.2
-  firebase_core: ^1.1.0
+  firebase_core: ^1.3.0
+  localstorage: ^4.0.0+1
+  back_button_interceptor: ^5.0.1
+  sqflite: ^2.0.0+3
+  path: ^1.8.0
+
+  
+
   
 
 dev_dependencies:
   #change_app_package_name: ^0.1.2
   flutter_test:
     sdk: flutter
-  flutter_launcher_icons:
-
+    
 flutter_icons:
-  android: 'launcher_icons' 
+  android: "launcher_icon"
   ios: true
-  image_path: 'assets/images/IconApp.png'
-  adaptive_icon_background: 'assets/images/IconApp.png'
+  image_path: 'assets/images/iconApp.png'  
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

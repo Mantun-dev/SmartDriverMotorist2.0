@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/detailsDriver_Screen.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/components/driverBackground.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/components/itemDriver_Card.dart';
+//import 'package:flutter_auth/Drivers/components/descriptionDriver.dart';
 import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 import '../../../../constants.dart';
 
@@ -10,10 +11,11 @@ class Body extends StatefulWidget {
   _BodyState createState() => _BodyState();
 }
 
-class _BodyState extends State<Body> {
-  
+class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body>{
+  //final si = DriverDescription();
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return DriverBackground(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -44,13 +46,16 @@ class _BodyState extends State<Body> {
                   ),
                   itemBuilder: (context, index) => ItemDriverCard(
                         plantillaDriver: plantillaDriver[index],
-                        press: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => DetailsDriverScreen(
-                                plantillaDriver: plantillaDriver[index],
-                              ),
-                            )),
+                        press: () {
+                        // si.method();                
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DetailsDriverScreen(
+                                  plantillaDriver: plantillaDriver[index],
+                                ),
+                              ));
+                        } 
                       )),
             ),
           ),
@@ -59,4 +64,7 @@ class _BodyState extends State<Body> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
