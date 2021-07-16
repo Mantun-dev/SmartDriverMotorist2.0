@@ -37,21 +37,6 @@ class Body extends StatelessWidget {
                 );
               },
             ),
-            // RoundedButton(
-            //   text: "REGISTRATE",
-            //   color: kPrimaryLightColor,
-            //   textColor: Colors.black,
-            //   press: () {
-            //     Navigator.push(
-            //       context,
-            //       MaterialPageRoute(
-            //         builder: (context) {
-            //           return SignUpScreen();
-            //         },
-            //       ),
-            //     );
-            //   },
-            // ),
           ],
         ),
       ),

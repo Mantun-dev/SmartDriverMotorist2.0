@@ -1,20 +1,13 @@
 import 'package:flutter/material.dart';
-//import 'package:flutter_auth/Agents/Screens/HomeAgents/homeScreen_Agents.dart';
-// import 'package:flutter_auth/Agents/Screens/Login/components/background.dart';
-// import 'package:flutter_auth/Agents/Screens/Restore/restore_screen.dart';
-// import 'package:flutter_auth/Agents/Screens/Signup/signup_screen.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 import 'package:flutter_auth/Drivers/Screens/Login/components/background.dart';
-import 'package:flutter_auth/Drivers/Screens/Restore/restore_screen.dart';
-import 'package:flutter_auth/Drivers/Screens/Signup/signup_screen.dart';
+
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/services.dart';
 import 'package:flutter_auth/Drivers/models/DriverData.dart';
 import 'package:flutter_auth/Drivers/models/dataToken.dart';
 import 'package:flutter_auth/Drivers/models/messageDriver.dart';
-import 'package:flutter_auth/Drivers/models/network.dart';
-import 'package:flutter_auth/components/already_have_an_account_acheck.dart';
-import 'package:flutter_auth/Drivers/Screens/forgot_password.dart';
+
 import 'package:flutter_auth/components/rounded_button.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:sweetalert/sweetalert.dart';
@@ -127,26 +120,7 @@ class _BodyState extends State<Body> {
                 },
               ),
               SizedBox(height: size.height * 0.03),
-              AlreadyHaveAnAccountCheck(
-                press: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return SignUpScreen();
-                      },
-                    ),
-                  );
-                },
-              ),
-              SizedBox(height: size.height * 0.01),
-              ForgotPassword(
-                press: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return RestoreScreen();
-                  }));
-                },
-              )
+
             ],
           ),
         ),
