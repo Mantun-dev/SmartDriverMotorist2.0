@@ -92,106 +92,52 @@ Future< TripsList3>fetchAgentsCompleted(String tripId)async{
                            child: Column(
                              children: <Widget>[
                                SizedBox(height: 20.0),
-                               Row(
-                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                 children: [
-                                   Column(
-                                     children: [
-                                       Icon(
-                                         Icons.tag,
-                                         color: Colors.green[500],
-                                         size: 35,
-                                       ),
-                                       Text(' Viaje : ',
+                                Container(
+                                                margin: EdgeInsets.only(left: 15),
+                                                child: Column(children: [
+                                                  ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                                    title: Text(' Viaje : ',
+                                           style: TextStyle( fontSize: 17)),
+                                                    subtitle: Text('${abc.data[index].tripId}'),
+                                                    leading: Icon(Icons.tag,color: Colors.green[500]),
+                                                  ), 
+                                                  ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                                    title: Text('Fecha: ',
                                            style: TextStyle(
-                                               color: Colors.green[500], fontSize: 17)),
-                                       Text('${abc.data[index].tripId}'),
-                                     ],
-                                   ),
-                                   Column(
-                                     children: [
-                                       Icon(
-                                         Icons.date_range,
-                                         color: Colors.green[500],
-                                         size: 35,
-                                       ),
-                                       Text('Fecha: ',
-                                           style: TextStyle(
-                                               color: Colors.green[500], fontSize: 17)),
-                                       Text('${abc.data[index].fecha}'),
-                                     ],
-                                   ),
-                                 ],
-                               ),
+                                                fontSize: 17)),
+                                                    subtitle: Text('${abc.data[index].fecha}'),
+                                                    leading: Icon(Icons.date_range,color: Colors.green[500]),
+                                                  ),
+                                                  ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                                    title: Text(' Empresa: ',
+                                             style: TextStyle( fontSize: 17)),
+                                                    subtitle: Text('${abc.data[index].empresa}'),
+                                                    leading: Icon(Icons.kitchen,color: Colors.green[500]),
+                                                  ),
+                                                  ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                                    title: Text('Hora:',
+                                               style: TextStyle( fontSize: 17)),
+                                                    subtitle: Text('${abc.data[index].hora}'),
+                                                    leading: Icon(Icons.timer,color: Colors.green[500]),
+                                                  ),
+                                                  ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                                    title: Text('Agentes: ',
+                                               style: TextStyle( fontSize: 17)),
+                                                    subtitle: Text('${abc.data[index].agentes}'),
+                                                    leading: Icon(Icons.timer,color: Colors.green[500]),
+                                                  ),
+                                                  ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                                    title: Text('Tipo: ',
+                                             style: TextStyle( fontSize: 17)),
+                                                    subtitle: Text('${abc.data[index].tipo}'),
+                                                    leading: Icon(Icons.timer,color: Colors.green[500]),
+                                                  ),
+                                                ],),
+                                              ),
+                               
+                               
+                            
                                SizedBox(height: 20.0),
-                               Row(
-                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                 children: [
-                                   Column(
-                                     children: [
-                                       Icon(
-                                         Icons.kitchen,
-                                         color: Colors.green[500],
-                                         size: 35,
-                                       ),
-                                       Text(' Empresa: ',
-                                           style: TextStyle(
-                                               color: Colors.green[500], fontSize: 17)),
-                                       Text(
-                                         '${abc.data[index].empresa}',
-                                         style: TextStyle(color: kTextColor),
-                                       ),
-                                     ],
-                                   ),
-                                   Column(
-                                     children: [
-                                       Icon(
-                                         Icons.timer,
-                                         color: Colors.green[500],
-                                         size: 35,
-                                       ),
-                                       Text('Hora:',
-                                           style: TextStyle(
-                                               color: Colors.green[500], fontSize: 17)),
-                                       Text('${abc.data[index].hora}'),
-                                     ],
-                                   ),
-                                 ],
-                               ),
-                               SizedBox(height: 20.0),
-                               Row(
-                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                 children: [
-                                   Column(
-                                     children: [
-                                       Icon(
-                                         Icons.supervised_user_circle,
-                                         color: Colors.green[500],
-                                         size: 35,
-                                       ),
-                                       Text('Agentes: ',
-                                           style: TextStyle(
-                                               color: Colors.green[500], fontSize: 17)),
-                                       Text('${abc.data[index].agentes}'),
-                                     ],
-                                   ),
-                                   Column(
-                                     children: [
-                                       Icon(
-                                         Icons.arrow_circle_down_rounded,
-                                         color: Colors.green[500],
-                                         size: 35,
-                                       ),
-                                       Text('Tipo: ',
-                                           style: TextStyle(
-                                               color: Colors.green[500], fontSize: 17)),
-                                       Text('${abc.data[index].tipo}'),
-                                     ],
-                                   ),
-                                 ],
-                               ),
-                               SizedBox(height: 20.0),
-
                                // Usamos una fila para ordenar los botones del card
                                // ignore: deprecated_member_use
                                FlatButton(
@@ -224,7 +170,7 @@ Future< TripsList3>fetchAgentsCompleted(String tripId)async{
                 },
               )
               ],
-            
+  
       ),
     );
  

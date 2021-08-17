@@ -124,6 +124,19 @@ class _ProcessTripState extends State<ProcessTrip> {
                                                     width: 170,
                                                     child: Image.asset('assets/images/zero.png'),                                          
                                                   ),
+                                                }, 
+                                                if (abc.data[index].companyId == 8)... {
+                                                  Container(                                                    
+                                                    height: 80,
+                                                    width: 170,
+                                                    child: Image.asset('assets/images/emerge-bpo-largex5-logo.png'),                                          
+                                                  ),
+                                                }else...{
+                                                  Container(                                                    
+                                                    height: 80,
+                                                    width: 170,
+                                                    child: Image.asset('assets/images/destination.png'),                                          
+                                                  ),
                                                 },                                                 
                                               ],
                                             ),   

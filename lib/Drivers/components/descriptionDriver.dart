@@ -78,8 +78,8 @@ class _DriverDescriptionState extends State<DriverDescription> with AutomaticKee
     super.initState();
     this.fetchCompanys();
     itemx = fetchRefres();
-    driverx = fetchDriversDriver();
-
+    driverx = fetchDriversDriver();  
+      
     vehicule = new TextEditingController(text: prefs.vehiculo);
     print(prefs.vehiculo);
     print(prefs.companyId);
@@ -242,10 +242,12 @@ Future scanBarcodeNormal() async {
     "companyId" : prefs.companyId ,
     "agentEmployeeId" : barcodeScan
   };
+
   http.Response responsed = await http.post(Uri.encodeFull('$ip/apis/searchAgent'), body: data);
   final data1 = Search.fromJson(json.decode(responsed.body));  
   final Database db = await handler.initializeDB();
   final tables = await db.rawQuery('SELECT * FROM userX ;'); 
+  final tables2 = await db.rawQuery("SELECT noempid FROM userX WHERE noempid = '${prefs.nameSalida}'");
   if (responsed.statusCode == 200 && data1.ok == true && data1.agent.msg != null) {
     if (barcodeScan == '${-1}') {
       print('');
@@ -312,15 +314,15 @@ Future scanBarcodeNormal() async {
                           
                           setState(() {
                             
-                            if (tables.length <= 13) {                              
-                              if (!(noemp.contains(data1.agent.agentEmployeeId)) && !(names.contains(data1.agent.agentEmployeeId)) && 
-                                  !(hourout.contains(data1.agent.agentEmployeeId)) && !(direction.contains(data1.agent.agentEmployeeId))) {
+                            if (tables.length <= 13) {                                                            
+                              if (prefs.nameSalida != tables2 ) {
                                   noemp.insert(0, '${data1.agent.agentEmployeeId}');
                                   names.insert(0,'${data1.agent.agentFullname}');
                                   hourout.insert(0, '${data1.agent.hourOut}');
                                   direction.insert(0, '${data1.agent.departmentName} ${data1.agent.neighborhoodName}\n${data1.agent.agentReferencePoint}');
                                   tempArr.add(data1.agent.agentId);
-                                  
+                                  prefs.companyIdAgent = data1.agent.companyId.toString();
+                                  prefs.nameSalida = data1.agent.agentEmployeeId.toString();
                                   User firstUser = User(noempid: '${data1.agent.agentEmployeeId}', nameuser: '${data1.agent.agentFullname}', hourout: '${data1.agent.hourOut}',
                                   direction:'${data1.agent.departmentName} ${data1.agent.neighborhoodName}\n${data1.agent.agentReferencePoint}', 
                                   idsend:data1.agent.agentId );
@@ -407,6 +409,7 @@ Future< Search>fetchSearchAgents2(String agentEmployeeId)async{
   };
   final Database db = await handler.initializeDB();
   final tables = await db.rawQuery('SELECT * FROM userX ;');  
+  final tables2 = await db.rawQuery("SELECT noempid FROM userX WHERE noempid = '${prefs.nameSalida}'");
   http.Response responsed = await http.post(Uri.encodeFull('$ip/apis/searchAgent'), body: data);
   final data1 = Search.fromJson(json.decode(responsed.body));  
     if (responsed.statusCode == 200 && data1.ok == true && data1.agent.msg != null) { 
@@ -473,14 +476,14 @@ Future< Search>fetchSearchAgents2(String agentEmployeeId)async{
                         onPressed: () => {                        
                           setState(() {                            
                             if (tables.length <= 13) {                              
-                              if (!(noemp.contains(data1.agent.agentEmployeeId)) && !(names.contains(data1.agent.agentEmployeeId)) && 
-                                  !(hourout.contains(data1.agent.agentEmployeeId)) && !(direction.contains(data1.agent.agentEmployeeId)) || noemp.length == 0  ) {
+                              if (prefs.nameSalida != tables2) {
                                   noemp.insert(0, '${data1.agent.agentEmployeeId}');
                                   names.insert(0,'${data1.agent.agentFullname}');
                                   hourout.insert(0, '${data1.agent.hourOut}');
                                   direction.insert(0, '${data1.agent.departmentName} ${data1.agent.neighborhoodName}\n${data1.agent.agentReferencePoint}');
                                   tempArr.add(data1.agent.agentId);
-
+                                  prefs.companyIdAgent = data1.agent.companyId.toString();
+                                  prefs.nameSalida = data1.agent.agentEmployeeId.toString();
                                   User firstUser = User(noempid: '${data1.agent.agentEmployeeId}', nameuser: '${data1.agent.agentFullname}', hourout: '${data1.agent.hourOut}',
                                   direction:'${data1.agent.departmentName} ${data1.agent.neighborhoodName}\n${data1.agent.agentReferencePoint}', 
                                   idsend:data1.agent.agentId );
@@ -646,7 +649,7 @@ Widget _processCards(BuildContext context) {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [            
-              
+
               ElevatedButton(
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.grey[400]
@@ -762,90 +765,42 @@ Widget _processCards(BuildContext context) {
                               margin: EdgeInsets.all(4.0),
                               elevation: 2,
                               child: Column(
-                                children: <Widget>[                               
-                                    Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          Column(
-                                            children: [
-                                              Icon(
-                                                Icons.confirmation_number,
-                                                color: Colors.green[500],
-                                                size: 35,
-                                              ),
-                                              Text('# No empleado: ',
-                                                  style: TextStyle(
-                                                      color: Colors.green[500],
-                                                      fontSize: 17)),
-                                              Text('${snapshot.data[index].noempid}'),
-                                            ],
-                                          ),
-                                          Flexible(
-                                            child: Column(
-                                              children: [
-                                                Icon(
-                                                  Icons.account_box_sharp,
-                                                  color: Colors.green[500],
-                                                  size: 35,
-                                                ),
-                                                Text('Nombre:',
-                                                    style: TextStyle(
-                                                        color: Colors.green[500],
-                                                        fontSize: 17)),
-                                                Text('${snapshot.data[index].nameuser}'),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          Column(
-                                            children: [
-                                              Icon(
-                                                Icons.access_alarms ,
-                                                color: Colors.green[500],
-                                                size: 35,
-                                              ),
-                                              Text('Hora salida: ',
-                                                  style: TextStyle(
-                                                      color: Colors.green[500],
-                                                      fontSize: 17)),
-                                              Text('${snapshot.data[index].hourout}'),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
+                                children: <Widget>[   
+                                  Container(
+                                    margin: EdgeInsets.only(left: 15),
+                                    child: Column(children: [
+                                   ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                          title: Text('# No empleado: ',
+                                            style: TextStyle(
+                                                fontSize: 17)),
+                                          subtitle: Text('${snapshot.data[index].noempid}'),
+                                          leading: Icon(Icons.confirmation_number,color: Colors.green[500]),
+                                        ), 
+                                   ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                          title: Text('Nombre:',
+                                              style: TextStyle(
+                                                  fontSize: 17)),
+                                          subtitle: Text('${snapshot.data[index].nameuser}'),
+                                          leading: Icon(Icons.account_box_sharp,color: Colors.green[500]),
+                                        ), 
+                                   ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                          title: Text('Hora salida: ',
+                                              style: TextStyle(
+                                                  fontSize: 17)),
+                                          subtitle: Text('${snapshot.data[index].hourout}'),
+                                          leading: Icon(Icons.access_alarms,color: Colors.green[500]),
+                                        ),
+                                        ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                          title: Text('Dirección: ',
+                                              style: TextStyle(
+                                                  fontSize: 17)),
+                                          subtitle: Text('${snapshot.data[index].direction}'),
+                                          leading: Icon(Icons.location_pin,color: Colors.green[500]),
+                                        ),                               
+
+                                    ],),
                                   ),
-                                  Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          Column(
-                                            children: [
-                                              Icon(
-                                                Icons.location_pin,
-                                                color: Colors.green[500],
-                                                size: 35,
-                                              ),
-                                              Text('Dirección: ',
-                                                  style: TextStyle(
-                                                      color: Colors.green[500],
-                                                      fontSize: 17)),
-                                              Text('${snapshot.data[index].direction}'),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                  ),
-                                 SizedBox(height: 20.0),
+
                                  TextButton(
                                   style: TextButton.styleFrom(
                                     primary: Colors.white,
@@ -858,7 +813,9 @@ Widget _processCards(BuildContext context) {
                                           borderRadius: BorderRadius.circular(10)),
                                   ), 
                                       onPressed: () async{
+                                        final Database db = await handler.initializeDB();
                                         await this.handler.deleteUser(snapshot.data[index].idsend);
+                                        await db.rawQuery("DELETE FROM userX WHERE noempid = '${prefs.nameSalida}'");
                                         setState(() {
                                           snapshot.data.remove(snapshot.data[index]);
                                         });                                    
@@ -1020,6 +977,11 @@ Widget _processCards(BuildContext context) {
 
 
   Widget _crearDropdown(BuildContext context) {
+    final String comp = "Company";
+    final String startekSPS = "Startek SPS";
+    final String starteTGU = "Startek TGU";
+    final String aloricaSPS = "Alorica SPS";
+    final String zerovarianceSPS = "Zero Variance SPS";
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 40.0),
       child: Row(
@@ -1027,17 +989,31 @@ Widget _processCards(BuildContext context) {
           Icon(Icons.location_city),
           SizedBox(width: 20.0),
           Expanded(child:  new DropdownButton(
+            hint: Text(prefs.companyPrueba),
             items: data.map((e) {
               return new DropdownMenuItem(
-                child: Text(e['companyName']),
+                child: Text(e['companyName']==null||e['companyName']==""?prefs.companyPrueba:e['companyName']),
                 value: e['companyId'].toString(),
               );
           }).toList(),
           onChanged: (val){
             setState(() {
-              companyId = val;
-              
-              prefs.companyId = companyId;
+              companyId = val;                          
+              prefs.companyId = companyId; 
+              if (prefs.companyId == "1") {
+                prefs.companyPrueba = comp;
+              }else if(prefs.companyId == "2"){
+                prefs.companyPrueba = startekSPS;
+              }else if(prefs.companyId == "3"){
+                prefs.companyPrueba = starteTGU;
+              }else if(prefs.companyId == "6"){
+                prefs.companyPrueba = aloricaSPS;
+              }else if(prefs.companyId == "7"){
+                prefs.companyPrueba = zerovarianceSPS;
+              }
+              if (prefs.companyId != prefs.companyIdAgent) {                
+                this.handler.cleanTable();                  
+              }             
             });
             print(val);
           },

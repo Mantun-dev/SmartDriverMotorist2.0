@@ -333,10 +333,10 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                           Row(
                                             children: [
                                               if (abc.data.trips[2].cancelados[index].traveled == 1)...{                                                
-                                                Text('✅'),
+                                                Text('✅ '),
                                                 Text('Abordó')
                                               } else ...{
-                                                Text('x',style: TextStyle(color: Colors.red[500], fontSize: 25)),
+                                                Text('x ',style: TextStyle(color: Colors.red[500], fontSize: 25)),
                                                 Text(' no abordó')
                                               }
                                             ],

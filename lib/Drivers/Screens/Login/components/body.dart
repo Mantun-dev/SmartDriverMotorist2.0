@@ -81,7 +81,13 @@ class _BodyState extends State<Body> {
             style: SweetAlertStyle.success
           );
           return Message.fromJson(json.decode(response.body));
-          } else if (no.ok != true) {
+          } else if(no.ok  == false && response.statusCode == 403){
+            SweetAlert.show(context,
+              title: "Acceso no admitido ",
+              subtitle: no.message,
+              style: SweetAlertStyle.error,
+            );
+          }else if (no.ok != true) {
             SweetAlert.show(context,
               title: "Alerta",
               subtitle: no.message,

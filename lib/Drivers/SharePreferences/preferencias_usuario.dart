@@ -111,6 +111,15 @@ class PreferenciasUsuario {
     _prefs.setString('driverIdx', value.toString());
   }
 
+            // GET y SET del salida
+  get nameSalida {
+    return _prefs.getString('nameSalida') ?? '';
+  }
+
+  set nameSalida( String value ) {
+    _prefs.setString('nameSalida', value.toString());
+  }
+
 
              // GET y SET de tokenIdMobile
   get tokenIdMobile {
@@ -140,14 +149,37 @@ class PreferenciasUsuario {
     _prefs.setString('vehiculo', value);
   }
 
+
+
+  get companyPrueba{
+    return _prefs.getString('companyPrueba') ?? '';
+  }
+
+  set companyPrueba( String value ) {
+    _prefs.setString('companyPrueba', value.toString());
+  }
+
+
+           // GET y SET del salida
+  get companyIdAgent {
+    return _prefs.getString('companyIdAgent') ?? '';
+  }
+
+  set companyIdAgent( String value ) {
+    _prefs.setString('companyIdAgent', value.toString());
+  }
+
   removeIdCompanyAndVehicle(){
     _prefs.remove('companyId');
     _prefs.remove('vehiculo ');
+    _prefs.remove('companyPrueba');
   }
   remove(){
     _prefs.remove('nombreUsuario');
     _prefs.remove('passwordUser');
   }
+
+
   
 }
 

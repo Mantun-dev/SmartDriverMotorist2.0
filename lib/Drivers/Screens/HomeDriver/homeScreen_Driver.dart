@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/detailsDriver_Screen.dart';
 import 'package:flutter_auth/Drivers/Screens/DriverProfile/driverProfile.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/components/bodyDriver.dart';
+import 'package:flutter_auth/Drivers/Screens/Welcome/welcome_screen.dart';
 import 'package:flutter_auth/Drivers/components/loader.dart';
 import 'package:flutter_auth/Drivers/components/menu_lateralDriver.dart';
+import 'package:flutter_auth/Drivers/models/DriverData.dart';
 import 'package:flutter_auth/Drivers/models/countNotify.dart';
 import 'package:flutter_auth/Drivers/models/network.dart';
 import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:sweetalert/sweetalert.dart';
 import '../../../constants.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert' show json;
+import 'dart:async';
 //import 'package:showcaseview/showcaseview.dart';
 
 class HomeDriverScreen extends StatefulWidget {
@@ -26,8 +33,35 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> with AutomaticKeepA
   void initState() { 
     super.initState();
     item = fetchCountNotify();
+
+      SchedulerBinding.instance.addPostFrameCallback((_){
+      if (mounted) {
+        
+      setState(() {        
+       this.closeSession();
+      });
+      }
+    });
+    
     // WidgetsBinding.instance.addPostFrameCallback((_) =>
     //     ShowCaseWidget.of(context).startShowCase( [_one]));
+  }
+
+  closeSession()async{
+    http.Response response = await http.get(Uri.encodeFull('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
+    final data1 = DriverData.fromJson(json.decode(response.body));  
+
+    if (data1.driverStatus == 0 || data1.driverStatus == false) {
+      fetchDeleteSession();  
+      prefs.remove(); 
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context)=>
+      WelcomeScreen()), (Route<dynamic> route) => false);
+      SweetAlert.show(context,
+        title: "Lo sentimos",
+        subtitle:"Este usuario está fuera de servicio, \nfavor comunicarse con el cordinador",
+        style: SweetAlertStyle.error
+      );
+    }
   }
   Widget build(BuildContext context) {
     super.build(context);

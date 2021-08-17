@@ -27,7 +27,7 @@ class DriverData {
     String driverPhone;
     String driverFullname;
     String driverType;
-    bool driverStatus;
+    dynamic driverStatus;
     int departmentId;
     String driverUser;
     String driverPassword;

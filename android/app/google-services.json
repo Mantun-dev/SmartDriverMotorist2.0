@@ -1,40 +1,90 @@
 {
-    "project_info": {
-        "project_number": "482980478109",
-        "project_id": "driver-smart-b63de",
-        "storage_bucket": "driver-smart-b63de.appspot.com"
-    },
-    "client": [{
-        "client_info": {
-            "mobilesdk_app_id": "1:482980478109:android:db923be258f75e19db2874",
-            "android_client_info": {
-                "package_name": "com.driverapp.devs"
-            }
-        },
-        "oauth_client": [{
-                "client_id": "482980478109-gopnm5d3ldqaimppdceag7ghr3tr36jo.apps.googleusercontent.com",
-                "client_type": 1,
-                "android_info": {
-                    "package_name": "com.example.driversmart",
-                    "certificate_hash": "9bda1e1e81de4780acadb566f81db888644112ec"
-                }
+  "project_info": {
+    "project_number": "482980478109",
+    "project_id": "driver-smart-b63de",
+    "storage_bucket": "driver-smart-b63de.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:482980478109:android:4ea08bd76e993e2edb2874",
+        "android_client_info": {
+          "package_name": "com.driverapp.devs"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "482980478109-ahhar1m1cvoeu9es9fmlkigvcerlflr3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD53DUXXVDUViIeNrZ3lb8JnH5IRJW8SFQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "482980478109-ahhar1m1cvoeu9es9fmlkigvcerlflr3.apps.googleusercontent.com",
+              "client_type": 3
             },
             {
-                "client_id": "482980478109-ahhar1m1cvoeu9es9fmlkigvcerlflr3.apps.googleusercontent.com",
-                "client_type": 3
+              "client_id": "482980478109-9qbqhig4erk8jq9bo89psbae5ip668el.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.driversmart"
+              }
             }
-        ],
-        "api_key": [{
-            "current_key": "AIzaSyD53DUXXVDUViIeNrZ3lb8JnH5IRJW8SFQ"
-        }],
-        "services": {
-            "appinvite_service": {
-                "other_platform_oauth_client": [{
-                    "client_id": "482980478109-ahhar1m1cvoeu9es9fmlkigvcerlflr3.apps.googleusercontent.com",
-                    "client_type": 3
-                }]
-            }
+          ]
         }
-    }],
-    "configuration_version": "1"
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:482980478109:android:db923be258f75e19db2874",
+        "android_client_info": {
+          "package_name": "com.example.driversmart"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "482980478109-gopnm5d3ldqaimppdceag7ghr3tr36jo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.driversmart",
+            "certificate_hash": "9bda1e1e81de4780acadb566f81db888644112ec"
+          }
+        },
+        {
+          "client_id": "482980478109-ahhar1m1cvoeu9es9fmlkigvcerlflr3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD53DUXXVDUViIeNrZ3lb8JnH5IRJW8SFQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "482980478109-ahhar1m1cvoeu9es9fmlkigvcerlflr3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "482980478109-9qbqhig4erk8jq9bo89psbae5ip668el.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.driversmart"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
 }

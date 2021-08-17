@@ -26,15 +26,14 @@ class _MyAppState extends State<MyApp> {
   final prefs = new PreferenciasUsuario();
   @override
   void initState() { 
-    super.initState();
-    
+    super.initState();    
   PushNotificationServices.messageStream.listen((event) {
       prefs.tripId = event.toString(); 
-        if (event == event) {   
+        // if (event == prefs.tripId) {   
+        // }
           navigatorKey.currentState?.push(
             MaterialPageRoute(builder: (_) =>MyAgent())
           );        
-        }
       //print(event);    
   });
   }

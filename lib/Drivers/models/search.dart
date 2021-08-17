@@ -43,7 +43,8 @@ class Agent {
         this.townName,
         this.departmentName,
         this.hourOut,
-        this.msg
+        this.msg,
+        this.companyId
     });
 
     int agentId;
@@ -60,6 +61,7 @@ class Agent {
     String departmentName;
     String hourOut;
     String msg;
+    int companyId;
 
     factory Agent.fromJson(Map<String, dynamic> json) => Agent(
         agentId: json["agentId"],
@@ -75,7 +77,8 @@ class Agent {
         townName: json["townName"],
         departmentName: json["departmentName"],
         hourOut: json["hourOut"],
-        msg: json["msg"]
+        msg: json["msg"],
+        companyId:  json["companyId"]
     );
 
     Map<String, dynamic> toJson() => {
@@ -92,6 +95,7 @@ class Agent {
         "townName": townName,
         "departmentName": departmentName,
         "hourOut": hourOut,
-        "msg": msg
+        "msg": msg,
+        "companyId": companyId
     };
 }
