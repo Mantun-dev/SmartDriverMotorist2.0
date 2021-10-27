@@ -578,9 +578,26 @@ if (mounted) {
                                                 borderRadius: BorderRadius.circular(10)),
                                             ),
                                             onPressed: () {
-                                              fetchNoConfirm(abc.data.trips[1].noConfirmados[index].agentId.toString(), abc.data.trips[1].noConfirmados[index].tripId.toString());
-                                              Navigator.pushReplacement(context,MaterialPageRoute(builder: (_) => MyAgent()))
-                                                            .then((_) => MyAgent()); 
+                                              SweetAlert.show(context,
+                                                subtitle: "¿Está seguro que desea marcar como no \nconfirmado al agente?",
+                                                style: SweetAlertStyle.confirm,
+                                                confirmButtonText: "Confirmar",
+                                                cancelButtonText: "Cancelar",
+                                                showCancelButton: true, onPress: (bool isConfirm) {
+                                                if(isConfirm){                                                                                  
+                                                  SweetAlert.show(context,subtitle: "Agente marcado como no confirmó", style: SweetAlertStyle.success);
+                                                  new Future.delayed(new Duration(seconds: 2),(){
+                                                  fetchNoConfirm(abc.data.trips[1].noConfirmados[index].agentId.toString(), abc.data.trips[1].noConfirmados[index].tripId.toString());
+                                                                              Navigator.pushReplacement(context,MaterialPageRoute(builder: (_) => MyAgent()))
+                                                                                            .then((_) => MyAgent()); 
+                                                  });                  
+                                                }else{
+                                                  SweetAlert.show(context,subtitle: "¡Cancelado!", style: SweetAlertStyle.success);
+                                                }
+                                                // return false to keep dialog
+                                                return false;
+                                              });
+                                              
                                            },                                                                                        
                                             child: Text('No confirmó',
                                                 style:
@@ -740,8 +757,22 @@ if (mounted) {
             child: Text(" Pasar viaje en proceso"),
             onPressed: () {
 
-              fetchPastInProgress();
-  
+              SweetAlert.show(context,
+                subtitle: "¿Está seguro que desea pasar el viaje en proceso?",
+                style: SweetAlertStyle.confirm,
+                confirmButtonText: "Confirmar",
+                cancelButtonText: "Cancelar",
+                showCancelButton: true, onPress: (bool isConfirm) {
+                if(isConfirm){                                                                                                    
+                  new Future.delayed(new Duration(seconds: 2),(){
+                  fetchPastInProgress();
+                  });                  
+                }else{
+                  SweetAlert.show(context,subtitle: "¡Cancelado!", style: SweetAlertStyle.success);
+                }
+                // return false to keep dialog
+                return false;
+              });
             },
           ),
           SizedBox(width: 5),
@@ -753,7 +784,24 @@ if (mounted) {
             ),
             child: Text("Marcar como cancelado"),
             onPressed: () {
-              fetchTripCancel();
+              SweetAlert.show(context,
+                subtitle: "¿Está seguro que desea cancelar el viaje?",
+                style: SweetAlertStyle.confirm,
+                confirmButtonText: "Confirmar",
+                cancelButtonText: "Cancelar",
+                showCancelButton: true, onPress: (bool isConfirm) {
+                if(isConfirm){                                                                                  
+                  SweetAlert.show(context,subtitle: "El viaje ha sido cancelado", style: SweetAlertStyle.success);
+                  new Future.delayed(new Duration(seconds: 2),(){
+                  fetchTripCancel();
+                  });                  
+                }else{
+                  SweetAlert.show(context,subtitle: "¡No ha sido cancelado el viaje!", style: SweetAlertStyle.success);
+                }
+                // return false to keep dialog
+                return false;
+              });
+              
             },
           ),
         ],

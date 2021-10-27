@@ -55,8 +55,7 @@ class _ProcessTripState extends State<ProcessTrip> {
                             children: <Widget>[
                               ListTile(
                                 leading: Icon(Icons.bus_alert),
-                                title: Text('Agentes', style: TextStyle(
-                                        color: Colors.black,
+                                title: Text('Agentes', style: TextStyle(color: Colors.black,
                                         fontWeight: FontWeight.normal,
                                         fontSize: 26.0)),
                                 subtitle: Text('No hay viajes pendientes', style: TextStyle(
@@ -131,13 +130,7 @@ class _ProcessTripState extends State<ProcessTrip> {
                                                     width: 170,
                                                     child: Image.asset('assets/images/emerge-bpo-largex5-logo.png'),                                          
                                                   ),
-                                                }else...{
-                                                  Container(                                                    
-                                                    height: 80,
-                                                    width: 170,
-                                                    child: Image.asset('assets/images/destination.png'),                                          
-                                                  ),
-                                                },                                                 
+                                                }                                                 
                                               ],
                                             ),   
                                         ), 

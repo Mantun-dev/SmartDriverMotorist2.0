@@ -159,6 +159,25 @@ class PreferenciasUsuario {
     _prefs.setString('companyPrueba', value.toString());
   }
 
+     // GET y SET version
+  get versionNew {
+    return _prefs.getString('versionNew') ?? '';
+  }
+
+  set versionNew( String value ) {
+    _prefs.setString('versionNew', value);
+  }
+
+      // GET y SET version
+  get versionOld {
+    return _prefs.getString('versionOld') ?? '';
+  }
+
+  set versionOld( String value ) {
+    _prefs.setString('versionOld', value);
+  }
+
+
 
            // GET y SET del salida
   get companyIdAgent {
@@ -171,7 +190,7 @@ class PreferenciasUsuario {
 
   removeIdCompanyAndVehicle(){
     _prefs.remove('companyId');
-    _prefs.remove('vehiculo ');
+    _prefs.remove('vehiculo');
     _prefs.remove('companyPrueba');
   }
   remove(){

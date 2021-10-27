@@ -40,12 +40,13 @@ class _BodyState extends State<Body> {
                       topRight: Radius.circular(24),
                     ),
                   ),
-                  child: SingleChildScrollView(                    
+                  child:  SingleChildScrollView(
                     child: Column(
-                      children: <Widget>[
-                        DriverDescription(plantillaDriver: widget.plantillaDriver,),
-                        AddToCartDriver(),
-                      ],
+                        children: <Widget>[
+                          DriverDescription(plantillaDriver: widget.plantillaDriver,),
+                          AddToCartDriver(),
+                        ],
+                      
                     ),
                   ),
                 ),

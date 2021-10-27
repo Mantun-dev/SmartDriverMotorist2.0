@@ -106,8 +106,7 @@ fetchTravelInTrip(String companyId){
                                                   ),
                                                 },
                                                 if (abc.data[index].companyId == 2 || abc.data[index].companyId == 3)... {
-                                                  Container(
-                                                    
+                                                  Container(                                                    
                                                     height: 80,
                                                     width: 170,
                                                     child: Image.asset('assets/images/startek.webp'),                                          
@@ -133,13 +132,7 @@ fetchTravelInTrip(String companyId){
                                                     width: 170,
                                                     child: Image.asset('assets/images/emerge-bpo-largex5-logo.png'),                                          
                                                   ),
-                                                }else...{
-                                                  Container(                                                    
-                                                    height: 80,
-                                                    width: 170,
-                                                    child: Image.asset('assets/images/destination.png'),                                          
-                                                  ),
-                                                }, 
+                                                } 
                                                                                               
                                               ],
                                           ),   

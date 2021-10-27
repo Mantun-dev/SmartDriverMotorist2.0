@@ -1,3 +1,5 @@
+//import 'package:back_button_interceptor/back_button_interceptor.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
@@ -5,6 +7,7 @@ import 'package:flutter_auth/Drivers/components/loader.dart';
 import 'package:flutter_auth/Drivers/components/menu_lateralDriver.dart';
 import 'package:flutter_auth/Drivers/models/DriverData.dart';
 import 'package:flutter_auth/Drivers/models/agentInProgress.dart';
+import 'package:flutter_auth/Drivers/models/comment.dart';
 import 'package:flutter_auth/Drivers/models/messageDriver.dart';
 import 'package:flutter_auth/Drivers/models/messageTripCompleted.dart';
 import 'package:flutter_auth/Drivers/models/network.dart';
@@ -40,9 +43,10 @@ class _DataTableExample extends State<MyConfirmAgent> {
   bool traveled1 = true ;
   final prefs = new PreferenciasUsuario();
   String ip = "https://driver.smtdriver.com";
+  StateSetter _setState;
   
-  TextEditingController check = new TextEditingController();
-  List<TextEditingController> comment;
+  List<TextEditingController> check =  [];
+  List<TextEditingController> comment  = new List();
 
   Future<Message>fetchCheckAgentTrip(String agentId) async {
       int flag = (traveled)? 1: 0;
@@ -115,11 +119,12 @@ class _DataTableExample extends State<MyConfirmAgent> {
      print(responses.body);
      print(response.body);
      if (responses.statusCode == 200 && si.ok == true && responses.statusCode == 200) {         
-       SweetAlert.show(context,
-        title: 'Enviado',
-        subtitle: si.message,
-        style: SweetAlertStyle.success
-      );
+        SweetAlert.show(context,
+          title: 'Enviado',
+          subtitle: si.message,
+          style: SweetAlertStyle.success
+        );
+        Navigator.pop(context);
       } else if (si.ok != true) {
         SweetAlert.show(context,
           title: si.title,
@@ -128,7 +133,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
         );
       }
     return Driver.fromJson(json.decode(responses.body));
-      //throw Exception('Failed to load Data');
   }  
 
   Future<Driver>fetchRegisterAgentDidntGetOut(String agentId, String tripId,) async {
@@ -146,6 +150,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
         subtitle: si.message,
         style: SweetAlertStyle.success
       );
+      Navigator.pushReplacement(context,MaterialPageRoute(builder: (_) => MyConfirmAgent()))
+                                                                          .then((_) => MyConfirmAgent());
       } else if (si.ok != true) {
         SweetAlert.show(context,
           title: si.title,
@@ -154,7 +160,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
         );
       }
     return Driver.fromJson(json.decode(responses.body));
-      //throw Exception('Failed to load Data');
+
   }
 
 
@@ -191,7 +197,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
     super.initState();
     item = fetchAgentsTripInProgress();
     comment = new List<TextEditingController>();
-    check = new TextEditingController();    
+    check = [];    
+
   }
   
 
@@ -287,7 +294,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
                       shrinkWrap: true,
                       physics: ClampingScrollPhysics(),
                       itemCount: abc.data.trips[0].tripAgent.length,
-                      itemBuilder: (context, index){                      
+                      itemBuilder: (context, index){   
+                        check.add(new TextEditingController());                   
                         return Container(
                           width: 500.0,
                           child: Column(
@@ -372,35 +380,38 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                 leading: Icon(Icons.timer,color: Colors.green[500]),                                                    
                                               ), 
                                             ],),
-                                          ),
-                                                                                   
+                                          ),                                                                                  
                                           Row(
                                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                             children: [
-                                              Column(
-                                                children: [
-                                                  TextButton (
-                                                  style: TextButton.styleFrom(
-                                                    primary: Colors.white, // foreground
-                                                    backgroundColor: Colors.red,
-                                                    shape: RoundedRectangleBorder(
-                                                        side: BorderSide(
-                                                            color: Color(0xFFFF7043),
-                                                            width: 2,
-                                                            style: BorderStyle.solid),
-                                                        borderRadius: BorderRadius.circular(10)),
-                                                  ),
-                                                    onPressed: () {
-                                                      fetchRegisterAgentDidntGetOut(abc.data.trips[0].tripAgent[index].agentId.toString(), prefs.tripId );
-                                                    },
-                                                    
-                                                    child: Text('Se pasó por él y no salió',
-                                                        style: TextStyle(color: Colors.white)),
-                                                    
-                                                    
-                                                  ),
-                                                ],
-                                              ),
+                                              if (abc.data.trips[0].tripAgent[index].didntGetOut == 1)... {
+                                                Text('Se pasó por el(ella) pero no salió.',style:TextStyle(color: Colors.orangeAccent, fontWeight: FontWeight.normal,fontSize: 15))
+                                              } else... {
+                                                Column(
+                                                  children: [
+                                                    TextButton (
+                                                    style: TextButton.styleFrom(
+                                                      primary: Colors.white, // foreground
+                                                      backgroundColor: Colors.red,
+                                                      shape: RoundedRectangleBorder(
+                                                          side: BorderSide(
+                                                              color: Color(0xFFFF7043),
+                                                              width: 2,
+                                                              style: BorderStyle.solid),
+                                                          borderRadius: BorderRadius.circular(10)),
+                                                    ),
+                                                      onPressed: () {
+                                                        fetchRegisterAgentDidntGetOut(abc.data.trips[0].tripAgent[index].agentId.toString(), prefs.tripId );                                                        
+                                                      },
+                                                      
+                                                      child: Text('Se pasó por él y no salió',
+                                                          style: TextStyle(color: Colors.white)),
+                                                      
+                                                      
+                                                    ),
+                                                  ],
+                                                ),
+                                              },
                                               Column(
                                                 children: [
                                                   TextButton (
@@ -414,10 +425,14 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                             style: BorderStyle.solid),
                                                         borderRadius: BorderRadius.circular(10)),
                                                     ),
-                                                    onPressed: () {
+                                                    onPressed: ()async {
+                                                      http.Response response = await http.get(Uri.encodeFull('$ip/apis/getDriverComment/${abc.data.trips[0].tripAgent[index].agentId}/${abc.data.trips[0].tripAgent[index].tripId}'));
+                                                      final send = Comment.fromJson(json.decode(response.body));
+                                                      check[index].text = send.comment.commentDriver;
                                                       showGeneralDialog(
                                                         barrierColor: Colors.black.withOpacity(0.5),
-                                                        transitionBuilder: (context, a1, a2, widget) {
+                                                        transitionBuilder: (context, a1, a2, widget) { 
+                                                          _setState = setState;                                         
                                                           return Transform.scale(
                                                             scale: a1.value,
                                                             child: Opacity(
@@ -427,9 +442,9 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                     borderRadius: BorderRadius.circular(16.0)),
                                                                 title: Center(
                                                                     child: Text('¿Razón por la cual no ingresó a la unidad?')),
-                                                                content: TextField(
-                                                                  controller: check,
-                                                                  decoration: InputDecoration(labelText: 'Aquí escriba'),
+                                                                content: TextField(                                                                                                                                  
+                                                                  controller: check[index],
+                                                                                                                                   
                                                                 ),
                                                                 actions: [
                                                                   Text('Observación...', textAlign: TextAlign.center),
@@ -442,8 +457,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                           backgroundColor: Colors.green
                                                                         ),
                                                                         onPressed: () => {
-                                                                          fetchRegisterCommentAgent(abc.data.trips[0].tripAgent[index].agentId.toString(), prefs.tripId , check.text),
-                                                                          Navigator.pop(context),
+                                                                          fetchRegisterCommentAgent(abc.data.trips[0].tripAgent[index].agentId.toString(), prefs.tripId , check[index].text),                                                                         
+                                                                           Navigator.pop(context),
                                                                         },
                                                                         child: Text('Guardar'),                                                                        
                                                                       ),
@@ -472,14 +487,10 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                         pageBuilder: (context, animation1, animation2) {
                                                           return null;
                                                         });
-                                                    },
-                                                    
+                                                    },                                                    
                                                     child: Text('Observaciones',
-                                                        style: TextStyle(color: Colors.white)),
-                                                                                                        
-                                                  ),
-                                          
-                           
+                                                        style: TextStyle(color: Colors.white)),                                                                                                        
+                                                  ),                                                                     
                                                 ],
                                               ),
                                               
@@ -528,8 +539,23 @@ class _DataTableExample extends State<MyConfirmAgent> {
                 borderRadius: BorderRadius.circular(15.0),
               )),
               child: Text("Completar Viaje"),
-              onPressed: () {                                                                
-                fetchRegisterTripCompleted();
+              onPressed: () {   
+                SweetAlert.show(context,
+                subtitle: "¿Está seguro que desea completar el viaje?",
+                style: SweetAlertStyle.confirm,
+                confirmButtonText: "Confirmar",
+                cancelButtonText: "Cancelar",
+                showCancelButton: true, onPress: (bool isConfirm) {
+                if(isConfirm){                                                                                                    
+                  new Future.delayed(new Duration(seconds: 1),(){                  
+                    fetchRegisterTripCompleted();
+                  });                  
+                }else{
+                    SweetAlert.show(context,subtitle: "¡Cancelado!", style: SweetAlertStyle.success);
+                }
+                // return false to keep dialog
+                return false;
+              });                                                             
               },
 
             ),
@@ -543,7 +569,23 @@ class _DataTableExample extends State<MyConfirmAgent> {
               )),
               child: Text("Marcar como cancelado"),
               onPressed: () {
-                fetchTripCancel(); 
+                SweetAlert.show(context,
+                subtitle: "¿Está seguro que desea cancelar el viaje en proceso?",
+                style: SweetAlertStyle.confirm,
+                confirmButtonText: "Confirmar",
+                cancelButtonText: "Cancelar",
+                showCancelButton: true, onPress: (bool isConfirm) {
+                if(isConfirm){                                                                                                    
+                  new Future.delayed(new Duration(seconds: 1),(){
+                    fetchTripCancel(); 
+                  });                  
+                }else{
+                  SweetAlert.show(context,subtitle: "¡No ha sido cancelado el viaje!", style: SweetAlertStyle.success);
+                }
+                // return false to keep dialog
+                return false;
+              });
+                
               },
               
             ),

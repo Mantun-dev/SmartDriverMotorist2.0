@@ -24,12 +24,18 @@ class _DetailsDriverScreenState extends State<DetailsDriverScreen> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       // each product have a color
       backgroundColor: widget.plantillaDriver.color,
       drawer: DriverMenuLateral(),
       appBar: buildAppBar(context),
-      body: Body(plantillaDriver: widget.plantillaDriver),
+      body:  GestureDetector(
+        onTap: () {   
+          FocusScope.of(context).requestFocus(new FocusNode());
+        },
+        child: Body(
+          plantillaDriver: widget.plantillaDriver)),
 
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
     );

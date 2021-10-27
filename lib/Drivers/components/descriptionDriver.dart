@@ -1,4 +1,6 @@
 //import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/asignar_Horas.dart';
@@ -7,6 +9,7 @@ import 'package:flutter_auth/Drivers/Screens/Details/components/databases.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/history_TripDriver.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/process_Trip.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
+import 'package:flutter_auth/Drivers/components/loader.dart';
 import 'package:flutter_auth/Drivers/models/DriverData.dart';
 import 'package:flutter_auth/Drivers/models/company.dart';
 import 'package:flutter_auth/Drivers/models/leftTrip.dart';
@@ -81,8 +84,8 @@ class _DriverDescriptionState extends State<DriverDescription> with AutomaticKee
     driverx = fetchDriversDriver();  
       
     vehicule = new TextEditingController(text: prefs.vehiculo);
-    print(prefs.vehiculo);
-    print(prefs.companyId);
+    //print(prefs.vehiculo);
+    // print(prefs.companyId);
     this.handler = DatabaseHandler();
     this.handler.initializeDB().whenComplete(() async {
       await this.fetchSearchAgents2(agentEmployeeId.text);
@@ -92,7 +95,9 @@ class _DriverDescriptionState extends State<DriverDescription> with AutomaticKee
   }
   
 
-  
+  void clearText() {
+    agentEmployeeId.clear();
+  }
 
 
 Future<List>fetchDriversDrivers()async{
@@ -147,6 +152,7 @@ Future< Salida>fetchAgentsLeftPastToProgres(String hourOut, String nameControlle
     final Database db = await handler.initializeDB();
     final tables = await db.rawQuery('SELECT * FROM userX ;');   
       if (tables.length == 0) {
+        Navigator.pop(context);
         SweetAlert.show(context,
                title: "Alerta",
                subtitle: "No hay agentes agregados",
@@ -160,6 +166,7 @@ Future< Salida>fetchAgentsLeftPastToProgres(String hourOut, String nameControlle
              'driverId' : radioShowAndHide==false?si.driverId.toString():prefs.driverIdx,
              'tripVehicle': prefs.vehiculo,    
            };
+           
            http.Response response1 = await http.post(Uri.encodeFull('$ip/apis/registerDeparture2'), body: datas);
            final send = Salida.fromJson(json.decode(response1.body));
            prefs.tripId = send.tripId.tripId.toString();
@@ -169,7 +176,7 @@ Future< Salida>fetchAgentsLeftPastToProgres(String hourOut, String nameControlle
                "tripId" : send.tripId.tripId.toString(),
                "tripHour" : send.tripId.tripHour
              };
-              
+
              await http.post(Uri.encodeFull('$ip/apis/registerAgentForOutTrip'), body: datas2);
         
              
@@ -177,8 +184,8 @@ Future< Salida>fetchAgentsLeftPastToProgres(String hourOut, String nameControlle
            if (response1.statusCode == 200) {             
              await http.get(Uri.encodeFull('$ip/apis/agentsInTravel/${prefs.tripId}'));
             
+             Navigator.pop(context);
              Navigator.push(context,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
-            
              prefs.removeIdCompanyAndVehicle();
              SweetAlert.show(context,
                title: send.title,
@@ -215,8 +222,8 @@ Future< Salida>fetchAgentsLeftPastToProgres(String hourOut, String nameControlle
             
              await http.get(Uri.encodeFull('$ip/apis/agentsInTravel/${prefs.tripId}'));
             
+             Navigator.pop(context);
              Navigator.push(context,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
-             
              prefs.removeIdCompanyAndVehicle();
              SweetAlert.show(context,
                title: send.title,
@@ -489,6 +496,7 @@ Future< Search>fetchSearchAgents2(String agentEmployeeId)async{
                                   idsend:data1.agent.agentId );
                                   List<User> listOfUsers = [firstUser];
                                   this.handler.insertUser(listOfUsers);
+                                  clearText();
                                   //guardar();
 
                               }else{
@@ -548,6 +556,7 @@ Future< Search>fetchSearchAgents2(String agentEmployeeId)async{
 
   @override
   Widget build(BuildContext context){
+     
     //variable
     super.build(context);
     return GestureDetector(
@@ -579,7 +588,7 @@ Widget _processCards(BuildContext context) {
         SizedBox(height: 20.0),
       ] else if (widget.plantillaDriver.id == 3) ...[
         _mostrarTerceraVentana(context),
-        SizedBox(height: 25.0),
+         SizedBox(height: 35.0),
       ] else if (widget.plantillaDriver.id == 4) ...[
         _mostrarCuartaVentana(),
         SizedBox(height: 20.0),
@@ -597,11 +606,9 @@ Widget _processCards(BuildContext context) {
   }
 
   Widget _mostrarTerceraVentana(BuildContext context) {
-    
-    return SingleChildScrollView( 
-      key: dataKey,     
-      child: Container(
-        child: Column(
+  
+    return   Column(
+
           children: [
             Text('Compañia',
                 style: TextStyle(
@@ -621,7 +628,7 @@ Widget _processCards(BuildContext context) {
                   }else{
                     return Column(
                       children: [
-                        if (abc.data.driverCoord == true) showAndHide()
+                        if (abc.data?.driverCoord == true) showAndHide()
                       ],
                     );
                   }
@@ -642,7 +649,7 @@ Widget _processCards(BuildContext context) {
                   ),
                   borderRadius: BorderRadius.circular(10.0),
                 ),
-                hintText: "Vehiculo",              
+                hintText: prefs.vehiculo,              
               )),
             ),
             SizedBox(height: 20.0),
@@ -749,89 +756,131 @@ Widget _processCards(BuildContext context) {
               },
             ),            
             SizedBox(height: 6.0),
-            Container(
-            height: 380,
-              child: FutureBuilder(
+            FutureBuilder(
                 future: this.handler.retrieveUsers() == null?noemp.length:this.handler.retrieveUsers(),
                 builder: (BuildContext context, AsyncSnapshot<List<User>> snapshot){
-                  if (snapshot.hasData) {                    
-                    return ListView.builder(
-                      padding: const EdgeInsets.all(8),
-                      itemCount: snapshot.data?.length,
-                      itemBuilder: (BuildContext context, int index) {                                                                        
-                          return Card(
-                              shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                              margin: EdgeInsets.all(4.0),
-                              elevation: 2,
-                              child: Column(
-                                children: <Widget>[   
-                                  Container(
-                                    margin: EdgeInsets.only(left: 15),
-                                    child: Column(children: [
-                                   ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
-                                          title: Text('# No empleado: ',
-                                            style: TextStyle(
-                                                fontSize: 17)),
-                                          subtitle: Text('${snapshot.data[index].noempid}'),
-                                          leading: Icon(Icons.confirmation_number,color: Colors.green[500]),
-                                        ), 
-                                   ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
-                                          title: Text('Nombre:',
-                                              style: TextStyle(
-                                                  fontSize: 17)),
-                                          subtitle: Text('${snapshot.data[index].nameuser}'),
-                                          leading: Icon(Icons.account_box_sharp,color: Colors.green[500]),
-                                        ), 
-                                   ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
-                                          title: Text('Hora salida: ',
-                                              style: TextStyle(
-                                                  fontSize: 17)),
-                                          subtitle: Text('${snapshot.data[index].hourout}'),
-                                          leading: Icon(Icons.access_alarms,color: Colors.green[500]),
-                                        ),
-                                        ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
-                                          title: Text('Dirección: ',
-                                              style: TextStyle(
-                                                  fontSize: 17)),
-                                          subtitle: Text('${snapshot.data[index].direction}'),
-                                          leading: Icon(Icons.location_pin,color: Colors.green[500]),
-                                        ),                               
-
-                                    ],),
-                                  ),
-
-                                 TextButton(
-                                  style: TextButton.styleFrom(
-                                    primary: Colors.white,
-                                    backgroundColor: Colors.red,
+                  if (snapshot.hasData) { 
+                    return Container(
+                      child: Column(
+                        children: [
+                          for (var i = 0; i < snapshot.data?.length; i++)... {
+                             Card(
                                     shape: RoundedRectangleBorder(
-                                          side: BorderSide(
-                                              color: Colors.red,
-                                              width: 2,
-                                              style: BorderStyle.solid),
-                                          borderRadius: BorderRadius.circular(10)),
-                                  ), 
-                                      onPressed: () async{
-                                        final Database db = await handler.initializeDB();
-                                        await this.handler.deleteUser(snapshot.data[index].idsend);
-                                        await db.rawQuery("DELETE FROM userX WHERE noempid = '${prefs.nameSalida}'");
-                                        setState(() {
-                                          snapshot.data.remove(snapshot.data[index]);
-                                        });                                    
-                                      },                                      
-                                      child: Text('Quitar',
-                                          style: TextStyle(color: Colors.white)),                                                                    
+                                    borderRadius: BorderRadius.circular(10)),
+                                    margin: EdgeInsets.all(4.0),
+                                    elevation: 2,
+                                    child: Column(
+                                      children: <Widget>[   
+                                        Container(
+                                          margin: EdgeInsets.only(left: 15),
+                                          child: Column(children: [
+                                        ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                                title: Text('# No empleado: ',
+                                                  style: TextStyle(
+                                                      fontSize: 17)),
+                                                subtitle: Text('${snapshot.data[i].noempid}'),
+                                                leading: Icon(Icons.confirmation_number,color: Colors.green[500]),
+                                              ), 
+                                        ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                                title: Text('Nombre:',
+                                                    style: TextStyle(
+                                                        fontSize: 17)),
+                                                subtitle: Text('${snapshot.data[i].nameuser}'),
+                                                leading: Icon(Icons.account_box_sharp,color: Colors.green[500]),
+                                              ), 
+                                        ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                                title: Text('Hora salida: ',
+                                                    style: TextStyle(
+                                                        fontSize: 17)),
+                                                subtitle: Text('${snapshot.data[i].hourout}'),
+                                                leading: Icon(Icons.access_alarms,color: Colors.green[500]),
+                                              ),
+                                              ListTile(contentPadding: EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                                title: Text('Dirección: ',
+                                                    style: TextStyle(
+                                                        fontSize: 17)),
+                                                subtitle: Text('${snapshot.data[i].direction}'),
+                                                leading: Icon(Icons.location_pin,color: Colors.green[500]),
+                                              ),                               
+
+                                          ],),
+                                        ),
+
+                                      TextButton(
+                                        style: TextButton.styleFrom(
+                                          primary: Colors.white,
+                                          backgroundColor: Colors.red,
+                                          shape: RoundedRectangleBorder(
+                                                side: BorderSide(
+                                                    color: Colors.red,
+                                                    width: 2,
+                                                    style: BorderStyle.solid),
+                                                borderRadius: BorderRadius.circular(10)),
+                                        ), 
+                                            onPressed: () async{
+                                              final Database db = await handler.initializeDB();
+                                              await this.handler.deleteUser(snapshot.data[i].idsend);
+                                              await db.rawQuery("DELETE FROM userX WHERE nameuser = '${snapshot.data[i].nameuser}'");
+                                              setState(() {
+                                                snapshot.data.remove(snapshot.data[i]);
+                                              });                                    
+                                            },                                      
+                                            child: Text('Quitar',
+                                                style: TextStyle(color: Colors.white)),                                                                    
+                                      ),
+                                      SizedBox(height: 10.0),
+                                      ],
+                                    ),
                                 ),
-                                SizedBox(height: 10.0),
-                                ],
-                              ),
-                          );
-                      
-                        }
-                      
-                    );
+                            
+                          } ,                 
+
+                          Center(
+                            child: Column(
+                              children: [
+                                ElevatedButton(            
+                                  style: TextButton.styleFrom(                
+                                    backgroundColor: Colors.green[400],
+                                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 40)
+                                  ),              
+                                  child: Icon(Icons.save),
+                                  onPressed: ()async{  
+                                    showGeneralDialog(
+                                    context: context,
+                                    transitionBuilder: (context, a1, a2, widget) {
+                                      return Center(child: ColorLoader3());                    
+                                          },
+                                          transitionDuration: Duration(milliseconds: 200),
+                                          barrierDismissible: false,
+                                          barrierLabel: '',
+                                          pageBuilder: (context, animation1, animation2) {
+                                          return null;
+                                          }
+                                    );                      
+                                      
+                                    await fetchAgentsLeftPastToProgres( hourOut.text, vehicule.text);   
+                                                  
+                                    setState(() {                                     
+                                      this.handler.cleanTable();                  
+                                    });  
+                                  }
+                                ), 
+                              ],
+                            ),
+                          ),
+                // Column(
+                //   children: [
+                //     FloatingActionButton(
+                //         onPressed: () => Scrollable.ensureVisible(dataKey.currentContext, duration: Duration(seconds: 1)),
+                //         child: Icon(Icons.arrow_upward),
+                //     ),   
+                //   ],
+                // )
               
+                        ],
+                      ),
+                    ); 
+                    
                   }else if(names.length == 0){
                     return Card(
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -861,39 +910,11 @@ Widget _processCards(BuildContext context) {
                  
               )
                   
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(width: 110),
-                Column(
-                  children: [
-                    ElevatedButton(            
-                      style: TextButton.styleFrom(                
-                        backgroundColor: Colors.green[400],
-                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 40)
-                      ),              
-                      child: Icon(Icons.save),
-                      onPressed: (){                        
-                        fetchAgentsLeftPastToProgres( hourOut.text, vehicule.text);                        
-                      }
-                    ), 
-                  ],
-                ),
-                SizedBox(width: 40),
-                Column(
-                  children: [
-                    FloatingActionButton(
-                        onPressed: () => Scrollable.ensureVisible(dataKey.currentContext, duration: Duration(seconds: 1)),
-                        child: Icon(Icons.arrow_upward),
-                    ),   
-                  ],
-                )
-              ],
-            ),                                                  
+            
+          
           ],
-        ),
-      ),
+        
+      
     );
   }
 

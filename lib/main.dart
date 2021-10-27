@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/agents_Trip.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
@@ -7,10 +9,19 @@ import 'package:flutter_auth/constants.dart';
 import 'package:sweetalert/sweetalert.dart';
 import 'Drivers/SharePreferences/preferencias_usuario.dart';
 
+
+  class MyHttpoverrides extends HttpOverrides{
+    @override 
+    HttpClient createHttpClient(SecurityContext context){
+      return super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host, int port)=>true;
+    }
+  }
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey(debugLabel: "Main Navigator");
 
 void main()async {
   WidgetsFlutterBinding.ensureInitialized();
+  HttpOverrides.global=new MyHttpoverrides();
   final prefs = new PreferenciasUsuario();
   await PushNotificationServices.initializeApp();
   await prefs.initPrefs();

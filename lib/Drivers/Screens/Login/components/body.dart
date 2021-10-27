@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 import 'package:flutter_auth/Drivers/Screens/Login/components/background.dart';
@@ -54,25 +55,25 @@ class _BodyState extends State<Body> {
           style: SweetAlertStyle.error,
         );
       }else{
+        
         http.Response responses = await http.get(Uri.encodeFull('$ip/apis/refreshingAgentData/${data['driverDNI']}'));
         final si = DriverData.fromJson(json.decode(responses.body));
-        prefs.nombreUsuarioFull = si.driverFullname;
-        prefs.phone = si.driverPhone;
         Map data2 = {
           'driverId' : '${si.driverId}',
           'device' : device,
           'deviceId': PushNotificationServices.token.toString()
         };
-    
 
         http.Response response = await http.post(Uri.encodeFull('$ip/apis/login'), body: data,);
         final no = Message.fromJson(json.decode(response.body));   
 
         if (response.statusCode == 200 && no.ok == true && responses.statusCode == 200) {  
           http.Response responseToken = await http.post(Uri.encodeFull('$ip/apis/registerTokenIdCellPhoneDriver'), body: data2,);
+          prefs.nombreUsuarioFull = si.driverFullname;
+          prefs.phone = si.driverPhone;
+          prefs.nombreUsuario = si.driverUser;
           final claro = DataToken.fromJson(json.decode(responseToken.body));     
-          prefs.tokenIdMobile = claro.data[0].token;
-            //print(responseToken.body);                          
+          prefs.tokenIdMobile = claro.data[0].token;                        
           Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context)=>
           HomeDriverScreen()), (Route<dynamic> route) => false);
           SweetAlert.show(context,
@@ -81,13 +82,13 @@ class _BodyState extends State<Body> {
             style: SweetAlertStyle.success
           );
           return Message.fromJson(json.decode(response.body));
-          } else if(no.ok  == false && response.statusCode == 403){
-            SweetAlert.show(context,
-              title: "Acceso no admitido ",
-              subtitle: no.message,
-              style: SweetAlertStyle.error,
-            );
-          }else if (no.ok != true) {
+        } else if(no.ok  == false && response.statusCode == 403){
+          SweetAlert.show(context,
+            title: "Acceso no admitido ",
+            subtitle: no.message,
+            style: SweetAlertStyle.error,
+          );
+        }else if (no.ok != true) {
             SweetAlert.show(context,
               title: "Alerta",
               subtitle: no.message,
@@ -149,7 +150,7 @@ class _BodyState extends State<Body> {
           border: InputBorder.none,
         ),
         onChanged: ( value ) {
-          prefs.nombreUsuario = value;
+          //prefs.nombreUsuario = value;
         },
     ),
     );
@@ -161,7 +162,7 @@ class _BodyState extends State<Body> {
       controller: driverPassword,
       obscureText:  !_passwordVisible,
       onChanged: (value){
-        prefs.passwordUser = value;
+        //prefs.passwordUser = value;
       },
       cursorColor: kPrimaryColor,
       decoration: InputDecoration(
