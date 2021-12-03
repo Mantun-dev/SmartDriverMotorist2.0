@@ -1,5 +1,5 @@
 //import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
-import 'dart:developer';
+//import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -607,8 +607,7 @@ Widget _processCards(BuildContext context) {
 
   Widget _mostrarTerceraVentana(BuildContext context) {
   
-    return   Column(
-
+    return Column(
           children: [
             Text('Compañia',
                 style: TextStyle(
@@ -635,6 +634,7 @@ Widget _processCards(BuildContext context) {
                 }
               }
             ),
+            
             Container(
               width: 300,
               child: TextField(
@@ -649,14 +649,13 @@ Widget _processCards(BuildContext context) {
                   ),
                   borderRadius: BorderRadius.circular(10.0),
                 ),
-                hintText: prefs.vehiculo,              
+                hintText: prefs.vehiculo == ""?"Vehículo":prefs.vehiculo,              
               )),
             ),
             SizedBox(height: 20.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [            
-
+              children: [          
               ElevatedButton(
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.grey[400]

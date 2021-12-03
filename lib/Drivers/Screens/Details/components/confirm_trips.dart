@@ -86,11 +86,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
      if (responses.statusCode == 200 && si.ok ) {         
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context)=>
       HomeDriverScreen()), (Route<dynamic> route) => false);
-      SweetAlert.show(context,
-       title: '${si.title}',
-       subtitle: si.message,
-       style: SweetAlertStyle.success
-      );
+      
 
       } else if (si.ok != true) {
         SweetAlert.show(context,
@@ -171,16 +167,14 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
       final resp = Driver.fromJson(json.decode(response.body));
 
-        if (response.statusCode == 200 && resp.ok == true) {   
-            print(response.body); 
-           
+        if (response.statusCode == 200 && resp.ok == true) {                         
             Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context)=>
-             HomeDriverScreen()), (Route<dynamic> route) => false);  
-            SweetAlert.show(context,
-            title: 'ok',
-            subtitle: resp.message,
-            style: SweetAlertStyle.success
-            );
+            HomeDriverScreen()), (Route<dynamic> route) => false); 
+            // SweetAlert.show(context,
+            // title: 'ok',
+            // subtitle: resp.message,
+            // style: SweetAlertStyle.success
+            // );
         } 
         else if(response.statusCode == 500){
           SweetAlert.show(context,
@@ -546,8 +540,13 @@ class _DataTableExample extends State<MyConfirmAgent> {
                 confirmButtonText: "Confirmar",
                 cancelButtonText: "Cancelar",
                 showCancelButton: true, onPress: (bool isConfirm) {
-                if(isConfirm){                                                                                                    
-                  new Future.delayed(new Duration(seconds: 1),(){                  
+                if(isConfirm){   
+                  SweetAlert.show(context,
+                    title: 'Completado',
+                    subtitle: 'su viaje ha sido completado',
+                    style: SweetAlertStyle.success
+                    );                                                                                                 
+                  new Future.delayed(new Duration(seconds: 2),(){                  
                     fetchRegisterTripCompleted();
                   });                  
                 }else{
@@ -575,8 +574,13 @@ class _DataTableExample extends State<MyConfirmAgent> {
                 confirmButtonText: "Confirmar",
                 cancelButtonText: "Cancelar",
                 showCancelButton: true, onPress: (bool isConfirm) {
-                if(isConfirm){                                                                                                    
-                  new Future.delayed(new Duration(seconds: 1),(){
+                if(isConfirm){ 
+                  SweetAlert.show(context,
+                    title: 'Cancelado',
+                    subtitle: 'Su viaje ha sido cancelado',
+                    style: SweetAlertStyle.success
+                    );                                                                                                   
+                  new Future.delayed(new Duration(seconds: 2),(){
                     fetchTripCancel(); 
                   });                  
                 }else{

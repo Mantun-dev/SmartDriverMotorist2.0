@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/confirm_trips.dart';
+import 'package:flutter_auth/Drivers/Screens/Details/detailsDriver_Screen.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
 import 'package:flutter_auth/Drivers/components/loader.dart';
+import 'package:flutter_auth/Drivers/components/menu_lateralDriver.dart';
 import 'package:flutter_auth/Drivers/models/network.dart';
+import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 import 'package:flutter_auth/Drivers/models/tripsPendin2.dart';
 
 import '../../../../constants.dart';
@@ -43,7 +46,22 @@ class _ProcessState extends State<Process> {
         appBar: AppBar(
           backgroundColor: Colors.green[700],
           title: Center(child: Text('Viajes en proceso')),
+          actions: <Widget>[
+              IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {      
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => DetailsDriverScreen(
+                                  plantillaDriver: plantillaDriver[0],
+                                )),
+                  );
+                },
+              ),
+              SizedBox(width: kDefaultPadding / 2)
+            ],
         ),
+        drawer: DriverMenuLateral(),  
         body: SingleChildScrollView(
           child: Container(
           width: 500.0,
@@ -194,6 +212,26 @@ class _ProcessState extends State<Process> {
                                             Text('${abc.data[index].tipo}'),
                                           ],
                                         ),
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Flexible(
+                                          child: Column(
+                                            children: [
+                                              Icon(
+                                                Icons.drive_eta_sharp,
+                                                color: Colors.green[500],
+                                                size: 35,
+                                              ),
+                                              Text('Conductor: ',
+                                                  style: TextStyle(
+                                                      color: Colors.green[500], fontSize: 17)),
+                                              Text('${abc.data[index].conductor}'),
+                                            ],
+                                          ),
+                                        ),                                      
                                       ],
                                     ),
                                     SizedBox(height: 20.0),

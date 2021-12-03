@@ -130,7 +130,22 @@ class _ProcessTripState extends State<ProcessTrip> {
                                                     width: 170,
                                                     child: Image.asset('assets/images/emerge-bpo-largex5-logo.png'),                                          
                                                   ),
-                                                }                                                 
+                                                },
+                                                if (abc.data[index].companyId == 9)... {
+                                                  Container(                                                    
+                                                    height: 80,
+                                                    width: 170,
+                                                    child: Image.asset('assets/images/ibex-logo.jpg'),                                          
+                                                  ),
+                                                },
+                                                if (abc.data[index].companyId == 10)... {
+                                                  Container(                                                    
+                                                    height: 80,
+                                                    width: 170,
+                                                    child: Image.asset('assets/images/itel.jpg'),                                          
+                                                  ),
+                                                }   
+
                                               ],
                                             ),   
                                         ), 

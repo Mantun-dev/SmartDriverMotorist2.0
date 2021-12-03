@@ -37,6 +37,8 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body>{
       }
     });
   }
+
+  
   Future<void> _initPackageInfo() async {
     final PackageInfo info = await PackageInfo.fromPlatform();
     setState(() {
@@ -150,8 +152,7 @@ _launchURL() async {
             child: Text(
               "Smart Driver",
               style: Theme.of(context)
-                  .textTheme
-                  .headline5
+                  .textTheme.headline5
                   .copyWith(fontWeight: FontWeight.bold, fontSize: 28),
             ),
           ),

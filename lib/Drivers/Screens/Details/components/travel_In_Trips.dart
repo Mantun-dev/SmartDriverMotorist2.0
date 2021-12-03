@@ -181,6 +181,18 @@ class _TripsState extends State<Trips> {
                                           Text('${abc.data[index].agentes}'),
                                         ],
                                       ),
+                                      Flexible(
+                                        child: Column(
+                                          children: [
+                                            Icon(Icons.drive_eta_sharp,
+                                                color: Colors.green[500], size: 35),
+                                            Text('Conductor: ',
+                                                style: TextStyle(
+                                                    color: Colors.green[500], fontSize: 17)),
+                                            Text('${abc.data[index].conductor}'),
+                                          ],
+                                        ),
+                                      ),
                                     ],
                                   ),
                                   SizedBox(height: 20.0),

@@ -65,7 +65,7 @@ Future<List< TripsPending2>>fetchTripsPending()async{
   List<TripsPending2> trips = [];
 
   for (var u in jsonData) {
-    TripsPending2 trip = TripsPending2(u["tripId"], u["Fecha"], u["Hora"], u["Empresa"], u["Agentes"]);
+    TripsPending2 trip = TripsPending2(u["tripId"], u["Fecha"], u["Hora"], u["Empresa"], u["Agentes"], u["conductor"]);
     trips.add(trip);
   }
   return trips;
@@ -84,7 +84,7 @@ Future<List< TripsHistory>>fetchTripsHistory()async{
   List<TripsHistory> trips = [];
 
   for (var u in jsonData) {
-    TripsHistory trip = TripsHistory(u["tripId"], u["Fecha"], u["Hora"], u["Empresa"], u["Agentes"], u['Tipo']);
+    TripsHistory trip = TripsHistory(u["tripId"], u["Fecha"], u["Hora"], u["Empresa"], u["Agentes"], u['Tipo'], u["conductor"]);
     trips.add(trip);
   }
   return trips;
@@ -133,7 +133,7 @@ Future<List< TripsInProgress>>fetchTripsInProgress()async{
   List<TripsInProgress> trips = [];
 
   for (var u in jsonData) {
-    TripsInProgress trip = TripsInProgress(u["tripId"], u["Fecha"], u["Hora"], u["Empresa"], u["Agentes"], u['Tipo']);
+    TripsInProgress trip = TripsInProgress(u["tripId"], u["Fecha"], u["Hora"], u["Empresa"], u["Agentes"], u['Tipo'], u['conductor']);
     trips.add(trip);
   }
   return trips;

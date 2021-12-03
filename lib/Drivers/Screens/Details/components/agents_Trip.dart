@@ -114,11 +114,11 @@ if (mounted) {
               print(response.body);  
               Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context)=>
               HomeDriverScreen()), (Route<dynamic> route) => false); 
-              SweetAlert.show(context,
-              title: resp.title,
-              subtitle: resp.message,
-              style: SweetAlertStyle.success
-            );
+            //   SweetAlert.show(context,
+            //   title: resp.title,
+            //   subtitle: resp.message,
+            //   style: SweetAlertStyle.success
+            // );
           } 
           else if(response.statusCode == 200 && resp.ok == false){
             SweetAlert.show(context,
@@ -151,11 +151,11 @@ if (mounted) {
            
             Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context)=>
              HomeDriverScreen()), (Route<dynamic> route) => false);  
-            SweetAlert.show(context,
-            title: 'ok',
-            subtitle: resp.message,
-            style: SweetAlertStyle.success
-            );
+            // SweetAlert.show(context,
+            // title: 'ok',
+            // subtitle: resp.message,
+            // style: SweetAlertStyle.success
+            // );
         } 
         else if(response.statusCode == 500){
           SweetAlert.show(context,
@@ -763,7 +763,12 @@ if (mounted) {
                 confirmButtonText: "Confirmar",
                 cancelButtonText: "Cancelar",
                 showCancelButton: true, onPress: (bool isConfirm) {
-                if(isConfirm){                                                                                                    
+                if(isConfirm){  
+                  SweetAlert.show(context,
+                    title: 'Confirmado',
+                    subtitle: 'Su viaje está en proceso',
+                    style: SweetAlertStyle.success
+                  );                                                                                                   
                   new Future.delayed(new Duration(seconds: 2),(){
                   fetchPastInProgress();
                   });                  
@@ -790,7 +795,8 @@ if (mounted) {
                 confirmButtonText: "Confirmar",
                 cancelButtonText: "Cancelar",
                 showCancelButton: true, onPress: (bool isConfirm) {
-                if(isConfirm){                                                                                  
+                if(isConfirm){  
+                                                                                                  
                   SweetAlert.show(context,subtitle: "El viaje ha sido cancelado", style: SweetAlertStyle.success);
                   new Future.delayed(new Duration(seconds: 2),(){
                   fetchTripCancel();
