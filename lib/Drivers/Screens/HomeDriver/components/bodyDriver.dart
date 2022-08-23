@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/detailsDriver_Screen.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/components/driverBackground.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/components/itemDriver_Card.dart';
+import 'package:flutter_auth/Drivers/models/DriverData.dart';
 
 import 'package:flutter_auth/Drivers/models/network.dart';
 //import 'package:flutter_auth/Drivers/components/descriptionDriver.dart';
@@ -10,13 +12,18 @@ import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../constants.dart';
 import 'package:package_info/package_info.dart';
+//import 'package:new_version/new_version.dart';
 
 class Body extends StatefulWidget {
+  final DriverData itemx;
+
+  const Body({Key key, this.itemx}) : super(key: key);
   @override
   _BodyState createState() => _BodyState();
 }
 
 class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body>{
+  Future<DriverData> itemx;
   PackageInfo _packageInfo = PackageInfo(
     appName: 'Unknown',
     packageName: 'Unknown',
@@ -27,33 +34,51 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body>{
   @override
   void initState() { 
     super.initState();
-    _initPackageInfo();
-    fetchVersion(); 
+    //_initPackageInfo();
+    itemx = fetchRefres();
     SchedulerBinding.instance.addPostFrameCallback((_){
       if (mounted) {        
         setState(() {        
-          _showVersionTrue();
+          fetchVersion(); 
+          //_showVersionTrue();
         });
       }
     });
   }
 
+
+
+  fetchVersion()async{  
+      final PackageInfo info = await PackageInfo.fromPlatform(); 
+      String version = "${info.version}";
+      String newVersion = "";
+        print(version);
+      if (newVersion != "") {        
+        final dataVersion = version.split(".");
+        final dataNewVersion = newVersion.split(".");
+        List<int> numbersVersion = dataVersion.map(int.parse).toList();
+        List<int> numbersNewVersion = dataNewVersion.map(int.parse).toList();
+        if (numbersVersion[0] == numbersNewVersion[0] && numbersVersion[1] == numbersNewVersion[1] && numbersVersion[2] == numbersNewVersion[2]) {
+          print("Tamos bien");        
+        } else if(numbersNewVersion == []){
+          print("Tamos bien");
+        } else {
+          print("Hay nueva version we");
+        }
+        print(newVersion.split('.'));      
+      }else{
+        print("Nel perru :V dx");
+      }
+  }
   
-  Future<void> _initPackageInfo() async {
-    final PackageInfo info = await PackageInfo.fromPlatform();
-    setState(() {
-      _packageInfo = info;
-      prefs.versionOld = _packageInfo.version;
-    });
-  }
 
 
-  void _showVersionTrue() async{    
-      //validacion
-      if (prefs.versionOld != prefs.versionNew) {
-        showAlertVersion();        
-      }    
-  }
+  // void _showVersionTrue() async{    
+  //     //validacion
+  //     if (prefs.versionOld != prefs.versionNew) {
+  //       showAlertVersion();        
+  //     }    
+  // }
 
 _launchURL() async {
   const url = 'https://play.google.com/store/apps/details?id=com.driverapp.devs';
@@ -111,8 +136,7 @@ _launchURL() async {
                         backgroundColor: Colors.green
                       ),
                       onPressed: () => {
-                            Navigator.pop(context),
-                                                                             
+                            Navigator.pop(context),                                                                             
                             _launchURL(),
                             
                       },
@@ -158,37 +182,124 @@ _launchURL() async {
           ),
           //Categories(),
           SizedBox(height: 30.0),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
-              child: GridView.builder(
-                  itemCount: plantillaDriver.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: kDefaultPadding,
-                    crossAxisSpacing: kDefaultPadding,
-                    childAspectRatio: 0.65,
+          FutureBuilder<DriverData>(builder: (context, snapshot) {
+            if (snapshot.hasData) {                
+              if (snapshot.data.departmentId != 2) {
+                return Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
+                    child: GridView.builder(
+                        itemCount: plantillaDriver.length-1,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: kDefaultPadding,
+                          crossAxisSpacing: kDefaultPadding,
+                          childAspectRatio: 0.65,
+                        ),
+                        itemBuilder: (context, index) => ItemDriverCard(
+                              plantillaDriver: plantillaDriver[index],
+                              press: () {
+                              // si.method();
+                              if (plantillaDriver[index].id == 5) {
+                                _noDisponible(context);
+                              }else{
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => DetailsDriverScreen(
+                                        plantillaDriver: plantillaDriver[index],
+                                      ),
+                                    ));
+                              }           
+                              } 
+                            )),
                   ),
-                  itemBuilder: (context, index) => ItemDriverCard(
-                        plantillaDriver: plantillaDriver[index],
-                        press: () {
-                        // si.method();                
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => DetailsDriverScreen(
-                                  plantillaDriver: plantillaDriver[index],
-                                ),
-                              ));
-                        } 
-                      )),
-            ),
-          ),
+                );
+              }
+              return Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
+                  child: GridView.builder(
+                      itemCount: plantillaDriver.length,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: kDefaultPadding,
+                        crossAxisSpacing: kDefaultPadding,
+                        childAspectRatio: 0.65,
+                      ),
+                      itemBuilder: (context, index) => ItemDriverCard(
+                            plantillaDriver: plantillaDriver[index],
+                            press: () {
+                            // si.method();
+                            if (plantillaDriver[index].id == 5) {
+                              _noDisponible(context);
+                            }else{
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => DetailsDriverScreen(
+                                      plantillaDriver: plantillaDriver[index],
+                                    ),
+                                  ));
+                            }           
+                            } 
+                          )),
+                ),
+              );
+            } else {
+              return Container(
+                height: 200,
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+          }, future: itemx),
+          
           //Positioned(child: Icon(Icons.brightness_1)),
         ],
       ),
     );
   }
+
+  _noDisponible(BuildContext context) {
+    showGeneralDialog(
+                    barrierColor: Colors.black.withOpacity(0.5),
+                    transitionBuilder: (context, a1, a2, widget) {
+                      return Transform.scale(
+                        scale: a1.value,
+                        child: Opacity(
+                          opacity: a1.value,
+                          child: AlertDialog(
+                            shape: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16.0)),
+                            title: Center(child: Text('Página disponible \n\t\t\t\tpróximamente')),                          
+                              actions: [                                
+                                Center(
+                                  child: TextButton(                                    
+                                  style: TextButton.styleFrom(
+                                    primary: Colors.white,
+                                    backgroundColor: Colors.red,
+                                  ), 
+                                    onPressed: () => {
+                                      Navigator.pop(context),
+                                    },
+                                    child: Text('Cerrar'),                                    
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                      transitionDuration: Duration(milliseconds: 200),
+                      barrierDismissible: true,
+                      barrierLabel: '',
+                      context: context,
+                      pageBuilder: (context, animation1, animation2) {
+                        return null;
+    });
+}
 
   @override
   bool get wantKeepAlive => true;

@@ -22,37 +22,13 @@ import 'agentsInTravelModel.dart';
 
 Future<DriverData>fetchRefres() async {
     http.Response response = await http.get(Uri.encodeFull('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
-    if (response.statusCode == 200) {        
+    if (response.statusCode == 200) {       
       return DriverData.fromJson(json.decode(response.body));
 
     } else {
       throw Exception('Failed to load Data');
     }
- 
 }
-
-    Future<Profile>fetchVersion() async {
-    http.Response response = await http.get(Uri.encodeFull("https://play.google.com/store/apps/details?id=" + "com.driverapp.devs&hl=en"));
-      //print(response.body);
-      if(response.statusCode == 200){
-        String data = response.body;
-
-        String pat1 = 'Current Version</div><span class="htlgb"><div class="IQ1z0d"><span class="htlgb">';
-        String pat2 = '</span>';
-
-        int p1 = data.indexOf(pat1) + pat1.length;
-        String f = data.substring(p1, data.length);
-        int p2 = f.indexOf(pat2);
-
-        String currentVersion = f.substring(0, p2);
-
-        //return currentVersion;
-        prefs.versionNew = currentVersion;
-      
-      }
-
-
-  }
 
 
 Future<List< TripsPending2>>fetchTripsPending()async{
@@ -276,10 +252,8 @@ Future<List< TripsDrivers>>fetchDriversDriver()async{
       "token" : prefs.tokenIdMobile
     };
     http.Response response = await http.post(Uri.encodeFull('$ip/apis/deleteTokenSession'), body: data);
-    if (response.statusCode == 200) {   
-         
+    if (response.statusCode == 200) {            
       return Message.fromJson(json.decode(response.body));
-
     } else {
       throw Exception('Failed to load Data');
     }

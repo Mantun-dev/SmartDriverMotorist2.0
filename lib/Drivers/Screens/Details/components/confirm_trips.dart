@@ -65,16 +65,16 @@ class _DataTableExample extends State<MyConfirmAgent> {
       if (response.statusCode == 200 && resp.ok == true) { 
         print('enviado');  
       } 
-       else if(response.statusCode == 500){
-         SweetAlert.show(context,
-             title: 'Opss...',
-             subtitle: resp.message,
-             style: SweetAlertStyle.error,
-         );
-       }
+      else if(response.statusCode == 500){
+        SweetAlert.show(context,
+            title: 'Opss...',
+            subtitle: resp.message,
+            style: SweetAlertStyle.error,
+        );
+      }
 
         
-       return Message.fromJson(json.decode(response.body));
+      return Message.fromJson(json.decode(response.body));
   }
 
   Future<Driver2>fetchRegisterTripCompleted() async {
@@ -112,9 +112,9 @@ class _DataTableExample extends State<MyConfirmAgent> {
     http.Response responses = await http.post(Uri.encodeFull('$ip/apis/getDriverComment'), body: datas);
     final si = Driver.fromJson(json.decode(responses.body));
     http.Response response = await http.post(Uri.encodeFull('$ip/apis/agentTripSetComment'), body: datas2);
-     print(responses.body);
-     print(response.body);
-     if (responses.statusCode == 200 && si.ok == true && responses.statusCode == 200) {         
+    print(responses.body);
+    print(response.body);
+    if (responses.statusCode == 200 && si.ok == true && responses.statusCode == 200) {         
         SweetAlert.show(context,
           title: 'Enviado',
           subtitle: si.message,
@@ -139,9 +139,9 @@ class _DataTableExample extends State<MyConfirmAgent> {
     http.Response responses = await http.post(Uri.encodeFull('$ip/apis/agentDidntGetOut'), body: datas);
     final si = Driver.fromJson(json.decode(responses.body));
 
-     print(responses.body);
-     if (responses.statusCode == 200 && si.ok ) {         
-       SweetAlert.show(context,
+    print(responses.body);
+    if (responses.statusCode == 200 && si.ok ) {         
+        SweetAlert.show(context,
         title: si.title,
         subtitle: si.message,
         style: SweetAlertStyle.success
@@ -211,7 +211,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
               IconButton(
                 icon: Icon(Icons.arrow_back),
                 onPressed: () {             
-                 Navigator.of(context).pop();
+                  Navigator.of(context).pop();
                 },
               ),
               SizedBox(width: kDefaultPadding / 2)

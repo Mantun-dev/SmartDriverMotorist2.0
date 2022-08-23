@@ -52,6 +52,22 @@ List<PlantillaDriver> plantillaDriver = [
       description: dummyText4,
       image: "assets/images/History.png",
       color: kCardColorDriver1),
+      PlantillaDriver(
+      id: 5,
+      title: "Viajes ejecutivos",
+      name: '234',
+      size: 20,
+      description: dummyText4,
+      image: "assets/images/executive.png",
+      color: kCardColorDriver1),
+      PlantillaDriver(
+      id: 6,
+      title: "Registrar viaje sólido",
+      name: '234',
+      size: 20,
+      description: dummyText3,
+      image: "assets/images/adduser.png",
+      color: kCardColorDriver2),  
 ];
 
 String dummyText = "Prueba uno we";
@@ -61,3 +77,5 @@ String dummyText2 = "Prueba 2 we";
 String dummyText3 = "Prueba 3 we";
 
 String dummyText4 = "prueba 4 we";
+
+String dummyText5 = "prueba 5 we";

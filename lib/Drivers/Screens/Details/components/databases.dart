@@ -10,14 +10,25 @@ class DatabaseHandler {
     String path = await getDatabasesPath();
     return openDatabase(
       join(path, 'agent.db'),
-      onCreate: (database, version) async {
+      onCreate: (database, version) async {        
         await database.execute(
           "CREATE TABLE userX(noempid TEXT PRIMARY KEY, nameuser TEXT NOT NULL,hourout TEXT NOT NULL, direction TEXT NOT NULL, idsend INTEGER NOT NULL)",
         );
+        
       },
-      version: 1,
+      onUpgrade: (db, oldVersion, newVersion)async {
+        if (oldVersion == 1) {        
+          await db.execute(
+            "CREATE TABLE agentInsert(noempid TEXT PRIMARY KEY, nameuser TEXT NOT NULL,hourout TEXT NOT NULL, direction TEXT NOT NULL, idsend INTEGER NOT NULL)",
+          );
+          
+        }
+      },
+      version: 2,
     );
   }
+
+
   
   Future<int> insertUser(List<User> users) async {
     int result = 0;
@@ -33,10 +44,30 @@ class DatabaseHandler {
     return result;
   }
 
+  Future<int> insertAgent(List<User> users) async {
+    int result = 0;
+    final Database db = await initializeDB();
+    for(var user in users){
+      try {
+      result = await db.insert('agentInsert', user.toMap());
+      } catch (e) {
+        showMyDialog();
+        print(e);
+      }
+    }
+    return result;
+  }
+
 
   Future<List<User>> retrieveUsers() async {
     final Database db = await initializeDB();
     final List<Map<String, Object>> queryResult = await db.query('userX');
+    return queryResult.map((e) => User.fromMap(e)).toList();
+  }
+
+  Future<List<User>> retrieveAgent() async {
+    final Database db = await initializeDB();
+    final List<Map<String, Object>> queryResult = await db.query('agentInsert');
     return queryResult.map((e) => User.fromMap(e)).toList();
   }
 
@@ -45,7 +76,11 @@ class DatabaseHandler {
       await db.rawQuery('delete from userX ;');       
   } 
 
-   Future<void> deleteUser(int id) async {
+  Future<void> cleanTableAgent() async {
+      final Database db = await initializeDB();
+      await db.rawQuery('delete from agentInsert ;');       
+  } 
+  Future<void> deleteUser(int id) async {
     final db = await initializeDB();
     await db.delete(
       'userX',
@@ -54,7 +89,14 @@ class DatabaseHandler {
     );
   }
 
-
+  Future<void> deleteAgent(int id) async {
+    final db = await initializeDB();
+    await db.delete(
+      'agentInsert',
+      where: "idsend = ?",
+      whereArgs: [id],
+    );
+  }
 
 }
 

@@ -76,8 +76,7 @@ class _DataTableExample extends State<MyAgent> {
       Map data = {
         'agentId' : agentId,
         'tripId'   : tripId
-      };
-    
+      };    
       print(data);
     http.Response response = await http.post(Uri.encodeFull('$ip/apis/markAgentAsNotConfirmed'), body: data);
 if (mounted) {
@@ -170,6 +169,30 @@ if (mounted) {
       return Driver.fromJson(json.decode(response.body));
   }
 
+  Future<Driver>fetchTripAgentsNotConfirm() async {
+
+      http.Response response = await http.get(Uri.encodeFull('$ip/apis/cancelAgentsTrip/${prefs.tripId}'));
+
+      final resp = Driver.fromJson(json.decode(response.body));
+
+        if (response.statusCode == 200) {   
+          print(response.body); 
+          
+          Navigator.pushReplacement(context,MaterialPageRoute(builder: (_) => MyAgent())).then((_) => MyAgent()); 
+
+        } 
+        else if(response.statusCode == 500){
+          SweetAlert.show(context,
+              title: 'ok',
+              subtitle: resp.message,
+              style: SweetAlertStyle.error,
+          );
+        }
+ 
+
+      
+      return Driver.fromJson(json.decode(response.body));
+  }
 
 
   @override
@@ -598,7 +621,7 @@ if (mounted) {
                                                 return false;
                                               });
                                               
-                                           },                                                                                        
+                                            },                                                                                        
                                             child: Text('No confirmó',
                                                 style:
                                                     TextStyle(color: Colors.white, fontSize: 17)),                                                                                        
@@ -778,6 +801,35 @@ if (mounted) {
                 // return false to keep dialog
                 return false;
               });
+            },
+          ),
+          SizedBox(width: 5),
+          ElevatedButton(
+            style: TextButton.styleFrom(
+              primary: Colors.white, // foreground
+              backgroundColor: Colors.orangeAccent,
+              shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            child: Text('Marcar agentes como "Cancelados"'),
+            onPressed: () {
+              SweetAlert.show(context,
+                subtitle: "¿Está seguro que desea marcarlos como cancelados?",
+                style: SweetAlertStyle.confirm,
+                confirmButtonText: "Confirmar",
+                cancelButtonText: "Cancelar",
+                showCancelButton: true, onPress: (bool isConfirm) {
+                if(isConfirm){                                                                                                    
+                  SweetAlert.show(context,subtitle: "Han sido marcado como cancelados", style: SweetAlertStyle.success);
+                  new Future.delayed(new Duration(seconds: 2),(){
+                    fetchTripAgentsNotConfirm();
+                  });                  
+                }else{
+                  SweetAlert.show(context,subtitle: "¡Entendido!", style: SweetAlertStyle.success);
+                }
+                // return false to keep dialog
+                return false;
+              });
+              
             },
           ),
           SizedBox(width: 5),

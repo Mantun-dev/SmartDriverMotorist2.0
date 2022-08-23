@@ -83,6 +83,14 @@ class PreferenciasUsuario {
     _prefs.setString('companyId', value.toString());
   }
 
+   get destinationId {
+    return _prefs.getString('destinationId') ?? '';
+  }
+
+  set destinationId( String value ) {
+    _prefs.setString('destinationId', value.toString());
+  }
+
     get agentEmployeeId {
     return _prefs.getString('agentEmployeeId') ?? '';
   }
@@ -149,6 +157,15 @@ class PreferenciasUsuario {
     _prefs.setString('vehiculo', value);
   }
 
+    get vehiculoSolid {
+    return _prefs.getString('vehiculoSolid') ?? '';
+  }
+
+  set vehiculoSolid( String value ) {
+    _prefs.setString('vehiculoSolid', value);
+  }
+
+
 
 
   get companyPrueba{
@@ -157,6 +174,14 @@ class PreferenciasUsuario {
 
   set companyPrueba( String value ) {
     _prefs.setString('companyPrueba', value.toString());
+  }
+
+  get destinationPrueba{
+    return _prefs.getString('destinationPrueba') ?? '';
+  }
+
+  set destinationPrueba( String value ) {
+    _prefs.setString('destinationPrueba', value.toString());
   }
 
      // GET y SET version
@@ -188,7 +213,18 @@ class PreferenciasUsuario {
     _prefs.setString('companyIdAgent', value.toString());
   }
 
+    get destinationIdAgent {
+    return _prefs.getString('destinationIdAgent') ?? '';
+  }
+
+  set destinationIdAgent( String value ) {
+    _prefs.setString('destinationIdAgent', value.toString());
+  }
+
   removeIdCompanyAndVehicle(){
+    _prefs.remove('destinationPrueba');
+    _prefs.remove('destinationIdAgent');
+    _prefs.remove('vehiculoSolid');
     _prefs.remove('companyId');
     _prefs.remove('vehiculo');
     _prefs.remove('companyPrueba');

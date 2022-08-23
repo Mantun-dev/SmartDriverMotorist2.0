@@ -38,9 +38,9 @@ class _TripsState extends State<Trips> {
 
   fetchAgentsInTravel2(String tripId)async{
       prefs.tripId = tripId;   
-     if (tripId == tripId) {  
-       Navigator.push(context,MaterialPageRoute(builder: (context) => MyAgent(),));       
-     }
+    if (tripId == tripId) {  
+      Navigator.push(context,MaterialPageRoute(builder: (context) => MyAgent(),));       
+    }
   }
 
 
@@ -60,9 +60,7 @@ class _TripsState extends State<Trips> {
                 onPressed: () {      
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => DetailsDriverScreen(
-                                  plantillaDriver: plantillaDriver[0],
-                                )),
+                    MaterialPageRoute(builder: (context) => DetailsDriverScreen(plantillaDriver: plantillaDriver[0],)),
                   );
                 },
               ),

@@ -145,7 +145,6 @@ class _ProcessTripState extends State<ProcessTrip> {
                                                     child: Image.asset('assets/images/itel.jpg'),                                          
                                                   ),
                                                 }   
-
                                               ],
                                             ),   
                                         ), 
@@ -201,9 +200,8 @@ class _ProcessTripState extends State<ProcessTrip> {
                                           
                                         ],
                                       ),
-                                    ),
-                                   
-                                   SizedBox(height: 20.0),                                                              
+                                    ),                                   
+                                  SizedBox(height: 20.0),                                                              
                                 ],
                               ),
                                                   ),

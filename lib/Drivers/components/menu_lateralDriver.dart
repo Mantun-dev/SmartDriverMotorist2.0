@@ -4,6 +4,7 @@ import 'package:flutter_auth/Drivers/Screens/Welcome/welcome_screen.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/detailsDriver_Screen.dart';
 import 'package:flutter_auth/Drivers/Screens/DriverProfile/driverProfile.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
+import 'package:flutter_auth/Drivers/models/DriverData.dart';
 import 'package:flutter_auth/Drivers/models/network.dart';
 import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 import 'package:flutter_auth/Drivers/models/profile.dart';
@@ -11,7 +12,8 @@ import 'package:sweetalert/sweetalert.dart';
 
 class DriverMenuLateral extends StatefulWidget {
   final Profile item;
-  const DriverMenuLateral({Key key, this.item}) : super(key: key);
+   final DriverData itemx;
+  const DriverMenuLateral({Key key, this.item, this.itemx}) : super(key: key);
 
   @override
   _DriverMenuLateralState createState() => _DriverMenuLateralState();
@@ -19,10 +21,12 @@ class DriverMenuLateral extends StatefulWidget {
 
 class _DriverMenuLateralState extends State<DriverMenuLateral> {
   Future<Profile> item;
+  Future<DriverData> itemx;
   final prefs = new PreferenciasUsuario();
     @override  
   void initState() {  
-    super.initState();  
+    super.initState(); 
+    itemx = fetchRefres(); 
     item = fetchRefresProfile();
   } 
 
@@ -85,6 +89,40 @@ class _DriverMenuLateralState extends State<DriverMenuLateral> {
           ),
           Divider(),
           ListTile(
+            title: Text('Viajes ejecutivos'),
+            leading: Icon(Icons.supervised_user_circle),
+            onTap: () {
+              _noDisponible(context);
+              // Navigator.pushReplacement(context,MaterialPageRoute(builder: (_) => DetailsDriverScreen(plantillaDriver: plantillaDriver[4])))
+              // .then((_) => DetailsDriverScreen(plantillaDriver: plantillaDriver[5]));   
+            },
+          ),
+          Divider(),
+          FutureBuilder<DriverData>(
+            future: itemx,            
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.hasData) {
+                if (snapshot.data.departmentId  == 2) {
+                  return Column(children: [
+                    ListTile(
+                      title: Text('Registrar viaje sólido'),
+                      leading: Icon(Icons.emoji_people_rounded),
+                      onTap: () {
+                        Navigator.pushReplacement(context,MaterialPageRoute(builder: (_) => DetailsDriverScreen(plantillaDriver: plantillaDriver[5])))
+                        .then((_) => HomeDriverScreen());  
+                      },
+                    ),
+                    Divider(),
+                  ],);
+                }  
+                return Container();              
+              } else {
+                return Center(child: CircularProgressIndicator());
+              }            
+            },
+          ),
+          
+          ListTile(
             title: Text('Cerrar sesión'),
             leading: Icon(Icons.logout),
             onTap: () {
@@ -107,20 +145,51 @@ class _DriverMenuLateralState extends State<DriverMenuLateral> {
                 }
                 // return false to keep dialog
                 return false;
-               });             
+              });             
             },
           ),
           Divider(),
-          // ListTile(
-          //     title: Text('App Agent'),
-          //     leading: Icon(Icons.logout),
-          //     onTap: () {
-          //       Navigator.push(context, MaterialPageRoute(builder: (context) {
-          //         return HomeDriverScreen();
-          //       }));
-          //     })
         ],
       ),
     );
   }
+
+  _noDisponible(BuildContext context) {
+    showGeneralDialog(
+      barrierColor: Colors.black.withOpacity(0.5),
+      transitionBuilder: (context, a1, a2, widget) {
+        return Transform.scale(
+          scale: a1.value,
+          child: Opacity(
+            opacity: a1.value,
+            child: AlertDialog(
+              shape: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16.0)),
+              title: Center(child: Text('Página disponible \n\t\t\t\tpróximamente')),                          
+                actions: [                                
+                  Center(
+                    child: TextButton(                                    
+                    style: TextButton.styleFrom(
+                      primary: Colors.white,
+                      backgroundColor: Colors.red,
+                    ), 
+                      onPressed: () => {
+                        Navigator.pop(context),
+                      },
+                      child: Text('Cerrar'),                                    
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+        transitionDuration: Duration(milliseconds: 200),
+        barrierDismissible: true,
+        barrierLabel: '',
+        context: context,
+        pageBuilder: (context, animation1, animation2) {
+          return null;
+    });
+}
 }
