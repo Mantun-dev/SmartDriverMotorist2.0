@@ -22,11 +22,11 @@ class PlantillaDriver {
 List<PlantillaDriver> plantillaDriver = [
   PlantillaDriver(
       id: 1,
-      title: "Asignar horas de viaje",
+      title: "    Asignar horas de viaje",
       name: 'Carlos',
       size: 20,
       description: dummyText,
-      image: "assets/images/checklistDriver.png",
+      image: "assets/images/checklist.png",
       color: kCardColorDriver1),
   PlantillaDriver(
       id: 2,
@@ -46,13 +46,13 @@ List<PlantillaDriver> plantillaDriver = [
       color: kCardColorDriver2),
   PlantillaDriver(
       id: 4,
-      title: "Historial de viajes",
+      title: "  Historial de viajes",
       name: '234',
       size: 20,
       description: dummyText4,
       image: "assets/images/History.png",
       color: kCardColorDriver1),
-      PlantillaDriver(
+  PlantillaDriver(
       id: 5,
       title: "Viajes ejecutivos",
       name: '234',
@@ -60,22 +60,22 @@ List<PlantillaDriver> plantillaDriver = [
       description: dummyText4,
       image: "assets/images/executive.png",
       color: kCardColorDriver1),
-      PlantillaDriver(
+  PlantillaDriver(
       id: 6,
       title: "Registrar viaje sólido",
       name: '234',
       size: 20,
       description: dummyText3,
       image: "assets/images/adduser.png",
-      color: kCardColorDriver2),  
+      color: kCardColorDriver2),
 ];
 
-String dummyText = "Prueba uno we";
+String dummyText = "Asigna la hora a tus\nViajes disponibles";
 
-String dummyText2 = "Prueba 2 we";
+String dummyText2 = "Revisa los viajes que\nestas realizando";
 
-String dummyText3 = "Prueba 3 we";
+String dummyText3 = "Registra la salida de\nun vehículo";
 
-String dummyText4 = "prueba 4 we";
+String dummyText4 = "Revisa tus viaje\nrealizados";
 
 String dummyText5 = "prueba 5 we";

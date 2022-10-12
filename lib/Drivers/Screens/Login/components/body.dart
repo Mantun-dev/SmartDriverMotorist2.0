@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 import 'package:flutter_auth/Drivers/Screens/Login/components/background.dart';
@@ -10,12 +9,11 @@ import 'package:flutter_auth/Drivers/models/dataToken.dart';
 import 'package:flutter_auth/Drivers/models/messageDriver.dart';
 
 import 'package:flutter_auth/components/rounded_button.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:gradient_borders/box_borders/gradient_box_border.dart';
+import 'package:lottie/lottie.dart';
 import 'package:sweetalert/sweetalert.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' show json;
-
-import '../../../../components/text_field_container.dart';
 import '../../../../constants.dart';
 
 class Body extends StatefulWidget {
@@ -33,163 +31,189 @@ class _BodyState extends State<Body> {
   final prefs = new PreferenciasUsuario();
   String ip = "https://driver.smtdriver.com";
   bool _passwordVisible;
-  
-     @override
+
+  @override
   void initState() {
     super.initState();
-    driverDNI = new TextEditingController( text: prefs.nombreUsuario );
+    driverDNI = new TextEditingController(text: prefs.nombreUsuario);
     driverPassword = new TextEditingController(text: prefs.passwordUser);
-    _passwordVisible = false;
+    _passwordVisible = true;
   }
 
-  Future<dynamic>fetchUserDriver(String driverDNI, String driverPassword) async {
-    Map data = {
-      'driverDNI' : driverDNI,
-      'driverPassword' : driverPassword
-    };
+  Future<dynamic> fetchUserDriver(
+      String driverDNI, String driverPassword) async {
+    Map data = {'driverDNI': driverDNI, 'driverPassword': driverPassword};
     String device = "mobile";
-    if (driverDNI == ""&& driverPassword == "") {
-        SweetAlert.show(context,
-          title: "Alerta",
-          subtitle: "Campos vacios",
-          style: SweetAlertStyle.error,
+    if (driverDNI == "" && driverPassword == "") {
+      SweetAlert.show(
+        context,
+        title: "Alerta",
+        subtitle: "Campos vacios",
+        style: SweetAlertStyle.error,
+      );
+    } else {
+      http.Response responses = await http
+          .get(Uri.parse('$ip/apis/refreshingAgentData/${data['driverDNI']}'));
+      final si = DriverData.fromJson(json.decode(responses.body));
+      Map data2 = {
+        'driverId': '${si.driverId}',
+        'device': device,
+        'deviceId': PushNotificationServices.token.toString()
+      };
+
+      http.Response response = await http.post(
+        Uri.parse('$ip/apis/login'),
+        body: data,
+      );
+      final no = Message.fromJson(json.decode(response.body));
+
+      if (response.statusCode == 200 &&
+          no.ok == true &&
+          responses.statusCode == 200) {
+        http.Response responseToken = await http.post(
+          Uri.parse('$ip/apis/registerTokenIdCellPhoneDriver'),
+          body: data2,
         );
-      }else{
-        
-        http.Response responses = await http.get(Uri.encodeFull('$ip/apis/refreshingAgentData/${data['driverDNI']}'));
-        final si = DriverData.fromJson(json.decode(responses.body));
-        Map data2 = {
-          'driverId' : '${si.driverId}',
-          'device' : device,
-          'deviceId': PushNotificationServices.token.toString()
-        };
-
-        http.Response response = await http.post(Uri.encodeFull('$ip/apis/login'), body: data,);
-        final no = Message.fromJson(json.decode(response.body));   
-
-        if (response.statusCode == 200 && no.ok == true && responses.statusCode == 200) {  
-          http.Response responseToken = await http.post(Uri.encodeFull('$ip/apis/registerTokenIdCellPhoneDriver'), body: data2,);
-          prefs.nombreUsuarioFull = si.driverFullname;
-          prefs.phone = si.driverPhone;
-          prefs.nombreUsuario = si.driverUser;
-          final claro = DataToken.fromJson(json.decode(responseToken.body));     
-          prefs.tokenIdMobile = claro.data[0].token;                        
-          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context)=>
-          HomeDriverScreen()), (Route<dynamic> route) => false);
-          SweetAlert.show(context,
+        prefs.nombreUsuarioFull = si.driverFullname;
+        prefs.phone = si.driverPhone;
+        prefs.nombreUsuario = si.driverUser;
+        final claro = DataToken.fromJson(json.decode(responseToken.body));
+        prefs.tokenIdMobile = claro.data[0].token;
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+                builder: (BuildContext context) => HomeDriverScreen()),
+            (Route<dynamic> route) => false);
+        SweetAlert.show(context,
             title: "Bienvenido(a)",
             subtitle: si.driverFullname,
-            style: SweetAlertStyle.success
-          );
-          return Message.fromJson(json.decode(response.body));
-        } else if(no.ok  == false && response.statusCode == 403){
-          SweetAlert.show(context,
-            title: "Acceso no admitido ",
-            subtitle: no.message,
-            style: SweetAlertStyle.error,
-          );
-        }else if (no.ok != true) {
-            SweetAlert.show(context,
-              title: "Alerta",
-              subtitle: no.message,
-              style: SweetAlertStyle.error,
-            );
-          }
+            style: SweetAlertStyle.success);
+        return Message.fromJson(json.decode(response.body));
+      } else if (no.ok == false && response.statusCode == 403) {
+        SweetAlert.show(
+          context,
+          title: "Acceso no admitido ",
+          subtitle: no.message,
+          style: SweetAlertStyle.error,
+        );
+      } else if (no.ok != true) {
+        SweetAlert.show(
+          context,
+          title: "Alerta",
+          subtitle: no.message,
+          style: SweetAlertStyle.error,
+        );
       }
-  } 
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return SafeArea(
-
-      child: Background(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                "INGRESA",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: size.height * 0.03),
-              SvgPicture.asset(
-                "assets/icons/login.svg",
-                height: size.height * 0.48,
-              ),
-              SizedBox(height: size.height * 0.01),
-              _crearUsuario(),
-              _crearPassword(),
-              RoundedButton(
-                text: "INGRESA ",
-                press: () {
-                  fetchUserDriver(driverDNI.text, driverPassword.text);   
-                },
-              ),
-              SizedBox(height: size.height * 0.03),
-
-            ],
-          ),
+    return Background(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            SizedBox(height: size.height * 0.04),
+            Text(
+              "INGRESA",
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, fontSize: 30, color: firstColor),
+            ),
+            Lottie.asset('assets/videos/login.json'),
+            SizedBox(height: size.height * 0.03),
+            _crearUsuario(),
+            SizedBox(height: size.height * 0.01),
+            _crearPassword(),
+            SizedBox(height: size.height * 0.03),
+            RoundedButton(
+              color: thirdColor,
+              text: "INGRESA ",
+              press: () {
+                FocusScope.of(context).unfocus();
+                fetchUserDriver(driverDNI.text, driverPassword.text);
+              },
+            ),
+            SizedBox(height: size.height * 0.03),
+          ],
         ),
       ),
     );
   }
 
-    Widget _crearUsuario(){
-    return TextFieldContainer(
+  Widget _crearUsuario() {
+    return Container(
+      margin: EdgeInsets.only(left: 35, right: 35),
+      padding: EdgeInsets.only(left: 10, top: 5, bottom: 5, right: 50),
+      decoration: BoxDecoration(
+          border: const GradientBoxBorder(
+            gradient: LinearGradient(colors: [Gradiant1, Gradiant2]),
+            width: 4,
+          ),
+          borderRadius: BorderRadius.circular(50)),
       child: TextField(
+        style: TextStyle(color: Colors.white),
         controller: driverDNI,
-        //onChanged: onChanged,
-        cursorColor: kPrimaryColor,
+        cursorColor: firstColor,
         decoration: InputDecoration(
           icon: Icon(
             Icons.person,
-            color: kPrimaryColor,
+            color: thirdColor,
+            size: 30,
           ),
-          hintText: "Número de identidad",
+          hintText: "Usuario",
+          hintStyle: TextStyle(color: Colors.white),
           border: InputBorder.none,
         ),
-        onChanged: ( value ) {
-          //prefs.nombreUsuario = value;
-        },
-    ),
+      ),
     );
   }
 
-  Widget _crearPassword(){
-    return TextFieldContainer(
-     child: TextField(
-      controller: driverPassword,
-      obscureText:  !_passwordVisible,
-      onChanged: (value){
-        //prefs.passwordUser = value;
-      },
-      cursorColor: kPrimaryColor,
-      decoration: InputDecoration(
-        hintText: "Contraseña",
-        icon: Icon(
-          Icons.lock,
-          color: kPrimaryColor,
-        ),
-        suffixIcon: IconButton(
-              icon: Icon(
-                // Based on passwordVisible state choose the icon
-                _passwordVisible
-                ? Icons.visibility
-                : Icons.visibility_off,
-                color: kPrimaryColor,
-                ),
-              onPressed: () {
-                // Update the state i.e. toogle the state of passwordVisible variable
-                setState(() {
-                    _passwordVisible = !_passwordVisible;
-                });
-              },
-              ),
+  Widget _crearPassword() {
+    return Container(
+      margin: EdgeInsets.only(left: 35, right: 35),
+      padding: EdgeInsets.only(left: 10, top: 5, bottom: 5, right: 10),
+      decoration: BoxDecoration(
+          border: const GradientBoxBorder(
+            gradient: LinearGradient(colors: [Gradiant1, Gradiant2]),
+            width: 4,
+          ),
+          borderRadius: BorderRadius.circular(50)),
+      child: TextField(
+        style: TextStyle(color: Colors.white),
+        //keyboardType: TextInputType.,
+        controller: driverPassword,
+        obscureText: _passwordVisible,
+        cursorColor: Colors.white,
+        decoration: InputDecoration(
+          hintText: "Contraseña",
+          hintStyle: TextStyle(color: Colors.white),
+          icon: Icon(
+            Icons.lock,
+            color: thirdColor,
+            size: 30,
+          ),
+          suffixIcon: IconButton(
+            padding: EdgeInsets.only(left: 10),
+            tooltip: 'Ver contraseña',
+            icon: Icon(
+              // Based on passwordVisible state choose the icon
+              _passwordVisible ?? true
+                  ? Icons.visibility_off
+                  : Icons.visibility,
+              color: thirdColor,
+              size: 30,
+            ),
+            onPressed: () {
+              // Update the state i.e. toogle the state of passwordVisible variable
+              setState(() {
+                _passwordVisible = !_passwordVisible;
+              });
+            },
+          ),
           border: InputBorder.none,
-       
+        ),
       ),
-    ),
     );
   }
 }

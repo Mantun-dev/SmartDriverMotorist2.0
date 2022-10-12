@@ -26,223 +26,236 @@ class HomeDriverScreen extends StatefulWidget {
   _HomeDriverScreenState createState() => _HomeDriverScreenState();
 }
 
-class _HomeDriverScreenState extends State<HomeDriverScreen> with AutomaticKeepAliveClientMixin<HomeDriverScreen>{
-  Future <List<CountNotifications>> item;
+class _HomeDriverScreenState extends State<HomeDriverScreen>
+    with AutomaticKeepAliveClientMixin<HomeDriverScreen> {
+  Future<List<CountNotifications>> item;
   //GlobalKey _one = GlobalKey();
   @override
-  void initState() { 
+  void initState() {
     super.initState();
     item = fetchCountNotify();
 
-      SchedulerBinding.instance.addPostFrameCallback((_){
+    SchedulerBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        
-      setState(() {        
-       this.closeSession();
-      });
+        setState(() {
+          this.closeSession();
+        });
       }
     });
-    
+
     // WidgetsBinding.instance.addPostFrameCallback((_) =>
     //     ShowCaseWidget.of(context).startShowCase( [_one]));
   }
 
-  closeSession()async{
-    http.Response response = await http.get(Uri.encodeFull('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
-    final data1 = DriverData.fromJson(json.decode(response.body));  
+  closeSession() async {
+    http.Response response = await http
+        .get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
+    final data1 = DriverData.fromJson(json.decode(response.body));
 
     if (data1.driverStatus == 0 || data1.driverStatus == false) {
-      fetchDeleteSession();  
-      prefs.remove(); 
-      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context)=>
-      WelcomeScreen()), (Route<dynamic> route) => false);
+      fetchDeleteSession();
+      prefs.remove();
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (BuildContext context) => WelcomeScreen()),
+          (Route<dynamic> route) => false);
       SweetAlert.show(context,
-        title: "Lo sentimos",
-        subtitle:"Este usuario está fuera de servicio, \nfavor comunicarse con el cordinador",
-        style: SweetAlertStyle.error
-      );
+          title: "Lo sentimos",
+          subtitle:
+              "Este usuario está fuera de servicio, \nfavor comunicarse con el cordinador",
+          style: SweetAlertStyle.error);
     }
   }
+
   Widget build(BuildContext context) {
     super.build(context);
-    return Scaffold(
-      appBar: buildAppBar(context),
-      body: Body(),
-      drawer: DriverMenuLateral(),
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: backgroundColor,
+        appBar: buildAppBar(context),
+        body: SafeArea(child: Body()),
+        drawer: DriverMenuLateral(),
+      ),
     );
   }
 
   AppBar buildAppBar(BuildContext context) {
     return AppBar(
-      backgroundColor: kColorDriverAppBar,
+      backgroundColor: backgroundColor,
+      shadowColor: Colors.black87,
       elevation: 10,
-      iconTheme: IconThemeData(color: Colors.white),
+      iconTheme: IconThemeData(color: secondColor, size: 32),
       actions: <Widget>[
         //aquí está el icono de las notificaciones
         FutureBuilder<List<CountNotifications>>(
-        future: item,
+          future: item,
           builder: (BuildContext context, abc) {
             if (abc.connectionState == ConnectionState.done) {
-              return IconButton(          
-                onPressed: ()=> _simpleDialog(context),
-                icon:  Stack(
-                  children: <Widget>[
-                    Icon(Icons.notifications),
-                    Positioned(  // draw a red marble
-                      top: 0.0,
-                      right: 0.0,
-                      child: Container(                
-                        padding: EdgeInsets.symmetric(horizontal: 3, vertical: 0),
-                        decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.red),
-                        child: Text('${abc.data[0].total}', style: TextStyle(color: Colors.white, fontSize: 13)
-                        )
-                      ),
-                    )
-                  ]
-                ),
+              return IconButton(
+                onPressed: () => _simpleDialog(context),
+                icon: Stack(children: <Widget>[
+                  Icon(Icons.notifications),
+                  Positioned(
+                    // draw a red marble
+                    top: 0.0,
+                    right: 0.0,
+                    child: Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 3, vertical: 0),
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle, color: Colors.red),
+                        child: Text('${abc.data[0].total}',
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 13))),
+                  )
+                ]),
               );
-            }else{
+            } else {
               return CircularProgressIndicator();
             }
           },
-        ),                
+        ),
         IconButton(
           icon: SvgPicture.asset(
             "assets/icons/userDriver.svg",
             width: 100,
           ),
-          onPressed: () {            
+          onPressed: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
               return DriverProfilePage();
             }));
-            
           },
-        ),        //SizedBox(width: kDefaultPadding / 2)
+        ), //SizedBox(width: kDefaultPadding / 2)
       ],
     );
   }
 
-Future<void> _simpleDialog(BuildContext context) async{  
+  Future<void> _simpleDialog(BuildContext context) async {
     await showDialog(
-      barrierDismissible: true,    
-        context: context,
-        builder: (context) =>
-        FutureBuilder<List<CountNotifications>>(
+      barrierDismissible: true,
+      context: context,
+      builder: (context) => FutureBuilder<List<CountNotifications>>(
         future: item,
-          builder: (BuildContext context, abc) {
-            if (abc.connectionState == ConnectionState.done) {
-              return Container(
+        builder: (BuildContext context, abc) {
+          if (abc.connectionState == ConnectionState.done) {
+            return Container(
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                margin: EdgeInsets.only(bottom : 420.0),
+                margin: EdgeInsets.only(bottom: 420.0),
                 height: 60,
-                child:
-                AlertDialog(
-                    title: Center(child: Text('Pendientes')),
-                    content: Column(children: [
+                child: AlertDialog(
+                  title: Center(child: Text('Pendientes')),
+                  content: Column(
+                    children: [
                       // ignore: deprecated_member_use
-                      FlatButton(
-                        onPressed: () => {                          
+                      TextButton(
+                        style: TextButton.styleFrom(
+                          backgroundColor: Colors.white,
+                        ),
+                        onPressed: () => {
                           Navigator.pop(context),
-                          Navigator.push(context, MaterialPageRoute(builder: (context) {
-                            return DetailsDriverScreen(plantillaDriver: plantillaDriver[0]);
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return DetailsDriverScreen(
+                                plantillaDriver: plantillaDriver[0]);
                           })),
                         },
-                        color: Colors.white,
-                        child: Column( // Replace with a Row for horizontal icon + text
+                        child: Column(
+                          // Replace with a Row for horizontal icon + text
                           children: <Widget>[
                             Row(
                               children: [
                                 Column(
                                   children: [
-                                    Stack(
-                                    children: <Widget>[
+                                    Stack(children: <Widget>[
                                       new Icon(Icons.car_rental),
-                                      new Positioned(  // draw a red marble
+                                      new Positioned(
+                                        // draw a red marble
                                         top: 0.0,
                                         right: 0.0,
                                         child: Container(
-                                          padding: EdgeInsets.symmetric(horizontal: 3, vertical: 0),
-                                          decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.red),
-                                          child: Text('${abc.data[0].tripsCreated}', style: TextStyle(color: Colors.white, fontSize: 13)
-                                          )
-                                        ),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 3, vertical: 0),
+                                            decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: Colors.red),
+                                            child: Text(
+                                                '${abc.data[0].tripsCreated}',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 13))),
                                       )
-                                    ]
-                                  ),
+                                    ]),
                                   ],
                                 ),
                                 SizedBox(width: 20),
                                 Column(
-                                  children: [
-                                    Text("Viajes creados")
-                                  ],
+                                  children: [Text("Viajes creados")],
                                 ),
                               ],
                             ),
-                            
                           ],
                         ),
                       ),
                       // ignore: deprecated_member_use
-                      FlatButton(
-                        onPressed: () => {                          
+                      TextButton(
+                        style: TextButton.styleFrom(
+                          backgroundColor: Colors.white,
+                        ),
+                        onPressed: () => {
                           Navigator.pop(context),
-                          Navigator.push(context, MaterialPageRoute(builder: (context) {
-                            return DetailsDriverScreen(plantillaDriver: plantillaDriver[1]);
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return DetailsDriverScreen(
+                                plantillaDriver: plantillaDriver[1]);
                           })),
                         },
-                        color: Colors.white,
-                        child: Column( // Replace with a Row for horizontal icon + text
+                        child: Column(
+                          // Replace with a Row for horizontal icon + text
                           children: <Widget>[
                             Row(
                               children: [
                                 Column(
                                   children: [
-                                    Stack(
-                                    children: <Widget>[
+                                    Stack(children: <Widget>[
                                       new Icon(Icons.check),
-                                      new Positioned(  // draw a red marble
+                                      new Positioned(
+                                        // draw a red marble
                                         top: 0.0,
                                         right: 0.0,
                                         child: Container(
-                                          padding: EdgeInsets.symmetric(horizontal: 3, vertical: 0),
-                                          decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.red),
-                                          child: Text('${abc.data[0].tripsInProgress}', style: TextStyle(color: Colors.white, fontSize: 13)
-                                          )
-                                        ),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 3, vertical: 0),
+                                            decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: Colors.red),
+                                            child: Text(
+                                                '${abc.data[0].tripsInProgress}',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 13))),
                                       )
-                                    ]
-                                  ),
+                                    ]),
                                   ],
                                 ),
                                 SizedBox(width: 20),
                                 Column(
-                                  children: [
-                                    Text("Viajes en proceso")
-                                  ],
+                                  children: [Text("Viajes en proceso")],
                                 ),
-            
                               ],
                             ),
-                            
                           ],
                         ),
                       ),
-                    ],),
-              
-                )
-            );
-  
-            }else{
-              return ColorLoader3();
-            }
-          },
-        ),
-        
-    ); 
+                    ],
+                  ),
+                ));
+          } else {
+            return ColorLoader3();
+          }
+        },
+      ),
+    );
   }
 
   @override
   bool get wantKeepAlive => true;
-
 }

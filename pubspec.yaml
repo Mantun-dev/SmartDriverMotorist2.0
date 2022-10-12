@@ -17,59 +17,50 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
+  back_button_interceptor: ^6.0.1
+  carousel_pro: ^1.0.0
+  carousel_slider: ^4.1.1
+  cupertino_icons: ^1.0.5
+  datetime_picker_formfield: ^2.0.1
+  dropdownfield: ^1.0.3
+  firebase_core: ^1.24.0
+  firebase_messaging: ^13.1.0
   flutter:
     sdk: flutter
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^0.1.3
-  flutter_launcher_icons: ^0.9.0
-  flutter_svg: ^0.20.0-nullsafety.3
-  getwidget: ^1.2.4
-  carousel_slider: ^3.0.0
-  carousel_pro: ^1.0.0
-  datetime_picker_formfield: ^1.0.0
-  qr_flutter: ^3.0.1
-  http: ^0.12.0+2
-  shared_preferences: ^0.5.2
-  sweetalert: any
-  flutter_rating_bar: ^3.2.0+1
-  rate_my_app: ^0.7.2
   flutter_barcode_scanner: ^2.0.0
+  flutter_launcher_icons: ^0.10.0
+  flutter_rating_bar: ^4.0.1
   flutter_rounded_progress_bar: ^0.2.0
-  showcaseview: ^1.0.0
-  url_launcher: ^6.0.4
-  #dropdown_search: ^0.6.1
-  dropdownfield: ^1.0.0
-  searchable_dropdown: ^1.1.3
-  firebase_messaging: ^10.0.2
-  firebase_core: ^1.3.0
+  flutter_svg: ^1.1.5
+  getwidget: ^3.0.1
+  gradient_borders: ^0.2.0
+  http: ^0.13.5
+  liquid_progress_indicator: ^0.4.0
   localstorage: ^4.0.0+1
-  back_button_interceptor: ^5.0.1
-  sqflite: ^2.0.0+3
-  path: ^1.8.0
+  lottie: ^1.4.3
   package_info: ^2.0.2
-
-
-  
-
-  
-
-  
+  path: ^1.8.2
+  qr_flutter: ^4.0.0
+  rate_my_app: ^1.1.3
+  searchable_dropdown: ^1.1.3
+  shared_preferences: ^2.0.15
+  showcaseview: ^1.1.8
+  sqflite: ^2.1.0+1
+  sweetalert: ^0.0.1
+  url_launcher: ^6.1.6
+  video_player: ^2.4.7
 
 dev_dependencies:
-  #change_app_package_name: ^0.1.2
   flutter_test:
     sdk: flutter
-    
+
 flutter_icons:
   android: "launcher_icon"
   ios: true
-  image_path: 'assets/images/iconApp.png'  
+  image_path: 'assets/images/iconApp.png'
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
-
 # The following section is specific to Flutter.
 flutter:
   # The following line ensures that the Material Icons font is
@@ -79,6 +70,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - assets/videos/
     - assets/images/
     - assets/icons/
     - assets/

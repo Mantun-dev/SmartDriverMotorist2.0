@@ -9,9 +9,9 @@ import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 import 'package:flutter_auth/Drivers/models/tripsPendin2.dart';
 
 import '../../../../constants.dart';
- 
+
 void main() => runApp(Process());
- 
+
 class Process extends StatefulWidget {
   final TripsInProgress item;
   const Process({Key key, this.item}) : super(key: key);
@@ -20,88 +20,97 @@ class Process extends StatefulWidget {
 }
 
 class _ProcessState extends State<Process> {
-  Future <List< TripsInProgress>>item;
+  Future<List<TripsInProgress>> item;
   TextEditingController tripId = new TextEditingController();
   final prefs = new PreferenciasUsuario();
 
   @override
-    void initState() { 
-      super.initState();
-      item = fetchTripsInProgress();
-      tripId = new TextEditingController( text: prefs.tripId );
-    }
-
-  fetchAgentsAsigmentChekc(String tripId)async{
-      prefs.tripId = tripId;   
-     if (tripId == tripId) {  
-       Navigator.push(context,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));       
-     }
+  void initState() {
+    super.initState();
+    item = fetchTripsInProgress();
+    tripId = new TextEditingController(text: prefs.tripId);
   }
+
+  fetchAgentsAsigmentChekc(String tripId) async {
+    prefs.tripId = tripId;
+    if (tripId == tripId) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MyConfirmAgent(),
+          ));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Material App',
-      debugShowCheckedModeBanner: false,      
-      home: Scaffold(        
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.green[700],
           title: Center(child: Text('Viajes en proceso')),
           actions: <Widget>[
-              IconButton(
-                icon: Icon(Icons.arrow_back),
-                onPressed: () {      
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => DetailsDriverScreen(
-                                  plantillaDriver: plantillaDriver[0],
-                                )),
-                  );
-                },
-              ),
-              SizedBox(width: kDefaultPadding / 2)
-            ],
+            IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => DetailsDriverScreen(
+                            plantillaDriver: plantillaDriver[0],
+                          )),
+                );
+              },
+            ),
+            SizedBox(width: kDefaultPadding / 2)
+          ],
         ),
-        drawer: DriverMenuLateral(),  
+        drawer: DriverMenuLateral(),
         body: SingleChildScrollView(
           child: Container(
-          width: 500.0,
+            width: 500.0,
             child: Column(
               children: [
-                      FutureBuilder<List< TripsInProgress>>(
-                      future: item,
-                      builder: (BuildContext context, abc) {
-                        if (abc.connectionState == ConnectionState.done) {
-                          if (abc.data.length < 1) {
-                            return Card(
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                margin: EdgeInsets.symmetric(vertical: 15),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    ListTile(
-                                      leading: Icon(Icons.bus_alert),
-                                      title: Text('Agentes', style: TextStyle(
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.normal,
-                                              fontSize: 26.0)),
-                                      subtitle: Text('No hay viajes pendientes', style: TextStyle(
-                                              color: Colors.red,
-                                              fontWeight: FontWeight.normal,
-                                              fontSize: 18.0)),
-                                    ),                      
-                                  ],
-                                ),
-                              );
-                          } else {
-                            return ListView.builder(
+                FutureBuilder<List<TripsInProgress>>(
+                  future: item,
+                  builder: (BuildContext context, abc) {
+                    if (abc.connectionState == ConnectionState.done) {
+                      if (abc.data.length < 1) {
+                        return Card(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          margin: EdgeInsets.symmetric(vertical: 15),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              ListTile(
+                                leading: Icon(Icons.bus_alert),
+                                title: Text('Agentes',
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 26.0)),
+                                subtitle: Text('No hay viajes pendientes',
+                                    style: TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 18.0)),
+                              ),
+                            ],
+                          ),
+                        );
+                      } else {
+                        return ListView.builder(
                             scrollDirection: Axis.vertical,
                             shrinkWrap: true,
                             physics: ClampingScrollPhysics(),
                             itemCount: abc.data.length,
-                            itemBuilder: (context, index){                        
-                                return Card(
-                                shape:
-                                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            itemBuilder: (context, index) {
+                              return Card(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
                                 margin: EdgeInsets.all(14),
                                 elevation: 10,
                                 child: Column(
@@ -110,7 +119,8 @@ class _ProcessState extends State<Process> {
                                     Container(
                                       margin: EdgeInsets.only(left: 15),
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
                                         children: [
                                           Column(
                                             children: [
@@ -121,7 +131,8 @@ class _ProcessState extends State<Process> {
                                               ),
                                               Text(' Viaje : ',
                                                   style: TextStyle(
-                                                      color: Colors.green[500], fontSize: 17)),
+                                                      color: Colors.green[500],
+                                                      fontSize: 17)),
                                               Text('${abc.data[index].tripId}'),
                                             ],
                                           ),
@@ -136,8 +147,11 @@ class _ProcessState extends State<Process> {
                                                 ),
                                                 Text('Fecha: ',
                                                     style: TextStyle(
-                                                        color: Colors.green[500], fontSize: 17)),
-                                                Text('${abc.data[index].fecha}'),
+                                                        color:
+                                                            Colors.green[500],
+                                                        fontSize: 17)),
+                                                Text(
+                                                    '${abc.data[index].fecha}'),
                                               ],
                                             ),
                                           ),
@@ -146,7 +160,8 @@ class _ProcessState extends State<Process> {
                                     ),
                                     SizedBox(height: 20.0),
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
                                       children: [
                                         Column(
                                           children: [
@@ -157,10 +172,12 @@ class _ProcessState extends State<Process> {
                                             ),
                                             Text(' Empresa: ',
                                                 style: TextStyle(
-                                                    color: Colors.green[500], fontSize: 17)),
+                                                    color: Colors.green[500],
+                                                    fontSize: 17)),
                                             Text(
                                               '${abc.data[index].empresa}',
-                                              style: TextStyle(color: kTextColor),
+                                              style:
+                                                  TextStyle(color: kTextColor),
                                             ),
                                           ],
                                         ),
@@ -175,7 +192,8 @@ class _ProcessState extends State<Process> {
                                               ),
                                               Text('Hora:',
                                                   style: TextStyle(
-                                                      color: Colors.green[500], fontSize: 17)),
+                                                      color: Colors.green[500],
+                                                      fontSize: 17)),
                                               Text('${abc.data[index].hora}'),
                                             ],
                                           ),
@@ -184,7 +202,8 @@ class _ProcessState extends State<Process> {
                                     ),
                                     SizedBox(height: 20.0),
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
                                       children: [
                                         Column(
                                           children: [
@@ -195,7 +214,8 @@ class _ProcessState extends State<Process> {
                                             ),
                                             Text('Agentes: ',
                                                 style: TextStyle(
-                                                    color: Colors.green[500], fontSize: 17)),
+                                                    color: Colors.green[500],
+                                                    fontSize: 17)),
                                             Text('${abc.data[index].agentes}'),
                                           ],
                                         ),
@@ -208,14 +228,16 @@ class _ProcessState extends State<Process> {
                                             ),
                                             Text('Tipo: ',
                                                 style: TextStyle(
-                                                    color: Colors.green[500], fontSize: 17)),
+                                                    color: Colors.green[500],
+                                                    fontSize: 17)),
                                             Text('${abc.data[index].tipo}'),
                                           ],
                                         ),
                                       ],
                                     ),
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
                                       children: [
                                         Flexible(
                                           child: Column(
@@ -227,48 +249,55 @@ class _ProcessState extends State<Process> {
                                               ),
                                               Text('Conductor: ',
                                                   style: TextStyle(
-                                                      color: Colors.green[500], fontSize: 17)),
-                                              Text('${abc.data[index].conductor}'),
+                                                      color: Colors.green[500],
+                                                      fontSize: 17)),
+                                              Text(
+                                                  '${abc.data[index].conductor}'),
                                             ],
                                           ),
-                                        ),                                      
+                                        ),
                                       ],
                                     ),
                                     SizedBox(height: 20.0),
-        
+
                                     // Usamos una fila para ordenar los botones del card
                                     // ignore: deprecated_member_use
-                                    FlatButton(
+                                    TextButton(
+                                      style: TextButton.styleFrom(
+                                        backgroundColor: kCardColorDriver2,
+                                        foregroundColor: kPrimaryDriverColor,
+                                        textStyle: TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                            side: BorderSide(
+                                                color: kCardColorDriver2,
+                                                width: 2,
+                                                style: BorderStyle.solid),
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                      ),
                                       onPressed: () {
-                                        fetchAgentsAsigmentChekc(abc.data[index].tripId.toString());
+                                        fetchAgentsAsigmentChekc(
+                                            abc.data[index].tripId.toString());
                                       },
-                                      splashColor: kPrimaryDriverColor,
-                                      color: kCardColorDriver2,
                                       child: Text('Ver viaje',
-                                          style: TextStyle(color: Colors.white, fontSize: 17)),
-                                      textColor: Colors.white,
-                                      shape: RoundedRectangleBorder(
-                                          side: BorderSide(
-                                              color: kCardColorDriver2,
-                                              width: 2,
-                                              style: BorderStyle.solid),
-                                          borderRadius: BorderRadius.circular(10)),
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 17)),
                                     ),
                                     SizedBox(height: 20.0),
                                   ],
                                 ),
-                            );
-        
-                          });              
-                          }
-                        } else {
-                          return ColorLoader3();
-                        }
-                        
-                      },
-                    )
-                    ],
-                  
+                              );
+                            });
+                      }
+                    } else {
+                      return ColorLoader3();
+                    }
+                  },
+                )
+              ],
             ),
           ),
         ),
