@@ -2,40 +2,35 @@ import 'package:flutter_auth/Drivers/components/descriptionDriver.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
-
 import '../../../../main.dart';
 
 class DatabaseHandler {
   Future<Database> initializeDB() async {
-    String path = await getDatabasesPath();
+    String path = join(await getDatabasesPath(), "agent.db");
     return openDatabase(
       join(path, 'agent.db'),
-      onCreate: (database, version) async {        
+      onCreate: (database, version) async {
         await database.execute(
           "CREATE TABLE userX(noempid TEXT PRIMARY KEY, nameuser TEXT NOT NULL,hourout TEXT NOT NULL, direction TEXT NOT NULL, idsend INTEGER NOT NULL)",
         );
-        
       },
-      onUpgrade: (db, oldVersion, newVersion)async {
-        if (oldVersion == 1) {        
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion == 1) {
           await db.execute(
             "CREATE TABLE agentInsert(noempid TEXT PRIMARY KEY, nameuser TEXT NOT NULL,hourout TEXT NOT NULL, direction TEXT NOT NULL, idsend INTEGER NOT NULL)",
           );
-          
         }
       },
       version: 2,
     );
   }
 
-
-  
   Future<int> insertUser(List<User> users) async {
     int result = 0;
     final Database db = await initializeDB();
-    for(var user in users){
+    for (var user in users) {
       try {
-      result = await db.insert('userX', user.toMap());
+        result = await db.insert('userX', user.toMap());
       } catch (e) {
         showMyDialog();
         print(e);
@@ -47,9 +42,9 @@ class DatabaseHandler {
   Future<int> insertAgent(List<User> users) async {
     int result = 0;
     final Database db = await initializeDB();
-    for(var user in users){
+    for (var user in users) {
       try {
-      result = await db.insert('agentInsert', user.toMap());
+        result = await db.insert('agentInsert', user.toMap());
       } catch (e) {
         showMyDialog();
         print(e);
@@ -57,7 +52,6 @@ class DatabaseHandler {
     }
     return result;
   }
-
 
   Future<List<User>> retrieveUsers() async {
     final Database db = await initializeDB();
@@ -72,14 +66,15 @@ class DatabaseHandler {
   }
 
   Future<void> cleanTable() async {
-      final Database db = await initializeDB();
-      await db.rawQuery('delete from userX ;');       
-  } 
+    final Database db = await initializeDB();
+    await db.rawQuery('delete from userX ;');
+  }
 
   Future<void> cleanTableAgent() async {
-      final Database db = await initializeDB();
-      await db.rawQuery('delete from agentInsert ;');       
-  } 
+    final Database db = await initializeDB();
+    await db.rawQuery('delete from agentInsert ;');
+  }
+
   Future<void> deleteUser(int id) async {
     final db = await initializeDB();
     await db.delete(
@@ -89,7 +84,7 @@ class DatabaseHandler {
     );
   }
 
-  Future<void> deleteAgent(int id) async {
+  Future<void> deleteAgent(dynamic id) async {
     final db = await initializeDB();
     await db.delete(
       'agentInsert',
@@ -97,6 +92,4 @@ class DatabaseHandler {
       whereArgs: [id],
     );
   }
-
 }
-

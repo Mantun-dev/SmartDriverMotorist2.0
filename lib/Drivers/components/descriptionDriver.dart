@@ -97,7 +97,7 @@ class _DriverDescriptionState extends State<DriverDescription>
     // print(prefs.companyId);
     this.handler = DatabaseHandler();
     this.handler.initializeDB().whenComplete(() async {
-      this.handler.deleteAgent(0);
+      //this.handler.deleteAgent("");
       await this.fetchSearchAgents2(agentEmployeeId.text);
       await this.fetchSearchAgentsSolid(agentEmployeeId.text);
       //await this.scanBarcodeNormal();
@@ -669,13 +669,15 @@ class _DriverDescriptionState extends State<DriverDescription>
         data1.ok == true &&
         data1.agent.msg != null) {
       print(data1.agent.msg);
-
-      SweetAlert.show(
-        context,
-        title: '¡No encontrado!',
-        subtitle: data1.agent.msg,
-        style: SweetAlertStyle.error,
-      );
+      print('Este es el agentId' + data1.agent.agentId.toString());
+      if (data1.agent.agentId != null) {
+        SweetAlert.show(
+          context,
+          title: '¡No encontrado!',
+          subtitle: data1.agent.msg,
+          style: SweetAlertStyle.error,
+        );
+      }
     } else if (responsed.statusCode == 200 && data1.ok == true) {
       showDialog(
           context: context,

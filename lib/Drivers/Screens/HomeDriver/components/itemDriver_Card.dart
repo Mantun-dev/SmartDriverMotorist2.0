@@ -31,13 +31,12 @@ class _ItemDriverCardState extends State<ItemDriverCard> {
                   Row(
                     children: [
                       Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Hero(
                             tag: "${widget.plantillaDriver.id}",
                             child: Container(
-                              padding: EdgeInsets.only(top: 15),
+                              padding:
+                                  EdgeInsets.only(top: 15, left: 15, right: 20),
                               // padding: EdgeInsets.only(right: 150),
                               height: 100,
                               child: Image.asset(
@@ -47,33 +46,27 @@ class _ItemDriverCardState extends State<ItemDriverCard> {
                           ),
                         ],
                       ),
-                      Column(
-                        children: [
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(bottom: 12, left: 10),
-                            child: Text(
+                      Container(
+                        child: Column(
+                          children: [
+                            Text(
                               widget.plantillaDriver.title,
-                              textAlign: TextAlign.center,
+                              textAlign: TextAlign.start,
                               style: TextStyle(
                                   color: GradiantV_2,
                                   fontSize: 18,
-                                  fontWeight: FontWeight.bold),
+                                  fontWeight: FontWeight.w900),
                             ),
-                          ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(bottom: 12, left: 10),
-                            child: Text(
+                            Text(
                               widget.plantillaDriver.description,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                   fontSize: 15,
                                   color: Colors.white,
-                                  fontWeight: FontWeight.bold),
+                                  fontWeight: FontWeight.w200),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       )
                     ],
                   ),
@@ -84,8 +77,8 @@ class _ItemDriverCardState extends State<ItemDriverCard> {
               decoration: BoxDecoration(
                 boxShadow: [
                   BoxShadow(
-                      color: Colors.white.withOpacity(0.7),
-                      blurRadius: 15,
+                      color: Colors.white38,
+                      blurRadius: 24,
                       spreadRadius: 1,
                       offset: Offset(0, 0)),
                   BoxShadow(
@@ -95,7 +88,7 @@ class _ItemDriverCardState extends State<ItemDriverCard> {
                       offset: Offset(5, 5)),
                 ],
                 color: widget.plantillaDriver.color,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(20),
               ),
             ),
           ),

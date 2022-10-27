@@ -9,6 +9,8 @@ import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../constants.dart';
 import 'package:package_info/package_info.dart';
+
+import '../../Details/components/detailsDriver_assignHour.dart';
 //import 'package:new_version/new_version.dart';
 
 class Body extends StatefulWidget {
@@ -163,39 +165,70 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                 if (snapshot.hasData) {
                   if (snapshot.data.departmentId != 2) {
                     return Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: kDefaultPadding),
-                        child: GridView.builder(
-                            shrinkWrap: true,
-                            itemCount: plantillaDriver.length - 1,
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 1,
-                              mainAxisExtent: 185,
-                            ),
-                            itemBuilder: (context, index) => Padding(
-                                  padding: const EdgeInsets.only(top: 30.0),
-                                  child: ItemDriverCard(
-                                      plantillaDriver: plantillaDriver[index],
-                                      press: () {
-                                        // si.method();
-                                        if (plantillaDriver[index].id == 5) {
-                                          _noDisponible(context);
-                                        } else {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DetailsDriverScreen(
-                                                  plantillaDriver:
-                                                      plantillaDriver[index],
-                                                ),
-                                              ));
-                                        }
-                                      }),
-                                )),
-                      ),
+                      child: GridView.builder(
+                          shrinkWrap: true,
+                          itemCount: plantillaDriver.length - 1,
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 1,
+                            mainAxisExtent: kDefaultPadding * 10,
+                          ),
+                          itemBuilder: (context, index) => Padding(
+                                padding: const EdgeInsets.only(
+                                    top: 20.0, bottom: 20.0),
+                                child: ItemDriverCard(
+                                    plantillaDriver: plantillaDriver[index],
+                                    press: () {
+                                      // si.method();
+                                      if (plantillaDriver[index].id == 5) {
+                                        _noDisponible(context);
+                                      } else if (plantillaDriver[index] ==
+                                          plantillaDriver[0]) {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  DetailsDriverHour(
+                                                plantillaDriver:
+                                                    plantillaDriver[index],
+                                              ),
+                                            ));
+                                      } else if (plantillaDriver[index] ==
+                                          plantillaDriver[1]) {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  DetailsDriverHour(
+                                                plantillaDriver:
+                                                    plantillaDriver[index],
+                                              ),
+                                            ));
+                                      } else if (plantillaDriver[index] ==
+                                          plantillaDriver[2]) {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  DetailsDriverHour(
+                                                plantillaDriver:
+                                                    plantillaDriver[index],
+                                              ),
+                                            ));
+                                      } else if (plantillaDriver[index] ==
+                                          plantillaDriver[3]) {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  DetailsDriverHour(
+                                                plantillaDriver:
+                                                    plantillaDriver[index],
+                                              ),
+                                            ));
+                                      }
+                                    }),
+                              )),
                     );
                   }
                   return Expanded(
@@ -206,10 +239,8 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                           itemCount: plantillaDriver.length,
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            mainAxisSpacing: kDefaultPadding,
-                            crossAxisSpacing: kDefaultPadding,
-                            childAspectRatio: 0.65,
+                            crossAxisCount: 1,
+                            mainAxisExtent: kDefaultPadding * 10,
                           ),
                           itemBuilder: (context, index) => ItemDriverCard(
                               plantillaDriver: plantillaDriver[index],
@@ -241,7 +272,6 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                 }
               },
               future: itemx),
-
           //Positioned(child: Icon(Icons.brightness_1)),
         ],
       ),
