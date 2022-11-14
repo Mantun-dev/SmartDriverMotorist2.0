@@ -47,7 +47,6 @@ class _TripsState extends State<Trips> {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -73,8 +72,6 @@ class _TripsState extends State<Trips> {
         drawer: DriverMenuLateral(),
         body: SingleChildScrollView(
           child: Container(
-            height: size.height,
-            width: size.width,
             color: backgroundColor,
             child: Column(
               children: [

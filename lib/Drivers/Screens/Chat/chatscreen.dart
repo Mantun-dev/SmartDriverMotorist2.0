@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:back_button_interceptor/back_button_interceptor.dart';
-import 'package:date_format/date_format.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_auth/Drivers/Screens/Chat/chatapis.dart';
-import 'package:flutter_auth/Drivers/models/profile.dart';
+
 import 'package:flutter_auth/constants.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +17,7 @@ import '../../../providers/chat.dart';
 import '../../models/message_chat.dart';
 import '../Details/components/agents_Trip.dart';
 import '../DriverProfile/driverProfile.dart';
-import '../HomeDriver/homeScreen_Driver.dart';
+
 import 'socketChat.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -46,7 +46,7 @@ class _ChatScreenState extends State<ChatScreen> {
   String nameAgent;
   ScrollController _scrollController = new ScrollController();
   final arrayTemp = [];
-  final StreamSocket streamSocket = StreamSocket(host: 'oeynt.localtonet.com');
+  final StreamSocket streamSocket = StreamSocket(host: '0sufv.localtonet.com');
 
   _sendMessage() {
     ChatApis().sendMessage(_messageInputController.text.trim(), sala.toString(),
@@ -257,9 +257,24 @@ class _ChatScreenState extends State<ChatScreen> {
                               if (message.mensaje != null) ...{
                                 Text(message.mensaje),
                               },
-                              Text(
-                                message.hora,
-                                style: Theme.of(context).textTheme.caption,
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    message.hora,
+                                    style: Theme.of(context).textTheme.caption,
+                                  ),
+                                  SizedBox(width: 5),
+                                  Icon(
+                                    message.leido == true
+                                        ? Icons.done_all
+                                        : Icons.done,
+                                    size: 15,
+                                    color: message.leido == true
+                                        ? Colors.blue
+                                        : Colors.grey,
+                                  ),
+                                ],
                               ),
                             ],
                           ),

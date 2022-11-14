@@ -253,12 +253,15 @@ class _DataTableExample extends State<MyAgent> {
                         fontSize: 18.0))),
             _agentoNoConfirm(),
             SizedBox(height: 40.0),
-            Center(
-                child: Text('Agentes que han cancelado',
-                    style: TextStyle(
-                        color: Colors.grey[700],
-                        fontWeight: FontWeight.bold,
-                        fontSize: 25.0))),
+            Padding(
+              padding: const EdgeInsets.only(left: 15.0),
+              child: Text('Agentes que han cancelado',
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                      color: GradiantV_2,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18.0)),
+            ),
             _agentToCancel(),
             SizedBox(height: 20.0),
             _buttonsAgents(),

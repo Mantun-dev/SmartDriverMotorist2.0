@@ -7,7 +7,7 @@ import '../../../helpers/base_client.dart';
 import '../../../helpers/res_apis.dart';
 
 class ChatApis {
-  final StreamSocket streamSocket = StreamSocket(host: 'oeynt.localtonet.com');
+  final StreamSocket streamSocket = StreamSocket(host: '0sufv.localtonet.com');
   List info = [];
   dynamic getDataUsuariosVar;
   final header = {"Content-Type": "application/json"};

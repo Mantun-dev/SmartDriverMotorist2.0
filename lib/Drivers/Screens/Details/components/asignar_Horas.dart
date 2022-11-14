@@ -45,6 +45,7 @@ class _AsignarHorasState extends State<AsignarHoras> {
   Widget build(BuildContext context) {
     return Container(
       width: 500.0,
+      color: backgroundColor,
       child: Column(
         children: [
           FutureBuilder<List<TripsCompanies>>(
@@ -52,27 +53,49 @@ class _AsignarHorasState extends State<AsignarHoras> {
             builder: (BuildContext context, abc) {
               if (abc.connectionState == ConnectionState.done) {
                 if (abc.data.length < 1) {
-                  return Card(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    margin: EdgeInsets.symmetric(vertical: 15),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        ListTile(
-                          leading: Icon(Icons.bus_alert),
-                          title: Text('Agentes',
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: 26.0)),
-                          subtitle: Text('No hay viajes pendientes',
-                              style: TextStyle(
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: 18.0)),
-                        ),
-                      ],
+                  return Container(
+                    decoration: BoxDecoration(boxShadow: [
+                      BoxShadow(
+                          blurStyle: BlurStyle.normal,
+                          color: Colors.white.withOpacity(0.2),
+                          blurRadius: 15,
+                          spreadRadius: -10,
+                          offset: Offset(-15, -6)),
+                      BoxShadow(
+                          blurStyle: BlurStyle.normal,
+                          color: Colors.black.withOpacity(0.6),
+                          blurRadius: 30,
+                          spreadRadius: -15,
+                          offset: Offset(18, 5)),
+                    ]),
+                    child: Card(
+                      color: backgroundColor,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      margin:
+                          EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          ListTile(
+                            leading: Icon(
+                              Icons.bus_alert,
+                              color: thirdColor,
+                            ),
+                            title: Text('Agentes',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 20.0)),
+                            subtitle: Text('No hay viajes pendientes',
+                                style: TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 15.0)),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 } else {

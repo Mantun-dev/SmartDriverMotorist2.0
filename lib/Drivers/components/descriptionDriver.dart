@@ -1432,24 +1432,31 @@ class _DriverDescriptionState extends State<DriverDescription>
                 return Card(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
-                  margin: EdgeInsets.symmetric(vertical: 15),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      ListTile(
-                        leading: Icon(Icons.bus_alert),
-                        title: Text('Agentes',
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.normal,
-                                fontSize: 26.0)),
-                        subtitle: Text('No hay agentes en el viaje',
-                            style: TextStyle(
-                                color: Colors.red,
-                                fontWeight: FontWeight.normal,
-                                fontSize: 18.0)),
-                      ),
-                    ],
+                  margin: EdgeInsets.symmetric(vertical: 25),
+                  child: Container(
+                    color: backgroundColor,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        ListTile(
+                          leading: Icon(
+                            Icons.bus_alert,
+                            color: thirdColor,
+                          ),
+                          title: Text('Agentes',
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 26.0)),
+                          subtitle: Text('No hay agentes en el viaje',
+                              style: TextStyle(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 18.0)),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               } else {
@@ -1946,7 +1953,10 @@ class _DriverDescriptionState extends State<DriverDescription>
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       ListTile(
-                        leading: Icon(Icons.bus_alert),
+                        leading: Icon(
+                          Icons.bus_alert,
+                          color: thirdColor,
+                        ),
                         title: Text('Agentes',
                             style: TextStyle(
                                 color: Colors.black,
