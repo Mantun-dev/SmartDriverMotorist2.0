@@ -63,7 +63,7 @@ class _ItemDriverCardState extends State<ItemDriverCard> {
                               style: TextStyle(
                                   fontSize: 15,
                                   color: Colors.white,
-                                  fontWeight: FontWeight.w200),
+                                  fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
+import 'package:flutter_svg/svg.dart';
 import '../../constants.dart';
 
 class PlantillaDriverTitleWithImage extends StatelessWidget {
@@ -17,41 +18,42 @@ class PlantillaDriverTitleWithImage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(
-            plantillaDriver.title,
-            style: Theme.of(context)
-                .textTheme
-                .headline4
-                .copyWith(color: Colors.white, fontWeight: FontWeight.bold),
-          ),          
+          SizedBox(height: 30),
           Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              RichText(
-                text: TextSpan(
+              Container(
+                child: Column(
                   children: [
-                    //aquí le mandamos el hola en la página después de tocar la imagen
-                    TextSpan(text: ""),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 50.0),
+                      child: Text(
+                        plantillaDriver.title,
+                        style: TextStyle(
+                            fontSize: 20,
+                            color: backgroundColor,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
                   ],
                 ),
               ),
-       
-              Container(                                 
-                width: 150,
-                height: 150,
-                child: Hero(
-                    //aquí esta el otro id
-                    tag: "${plantillaDriver.id}",
-                    child: Image.asset(
-                      plantillaDriver.image,
-                      fit: BoxFit.contain,
+              Container(
+                child: Column(
+                  children: [
+                    Hero(
+                      tag: "${plantillaDriver.id}",
+                      child: SvgPicture.asset(
+                        plantillaDriver.imageMain,
+                        fit: BoxFit.contain,
+                        height: 140,
+                      ),
                     ),
-                  ),
-               ),
-              
+                  ],
+                ),
+              ),
             ],
-          ),
-          //validationButtonsScanner(context),
+          )
         ],
       ),
     );

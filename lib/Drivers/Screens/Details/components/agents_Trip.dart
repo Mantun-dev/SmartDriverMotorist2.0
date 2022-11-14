@@ -1,5 +1,6 @@
 //import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_auth/Drivers/Screens/Chat/chatscreen.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/travel_In_Trips.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
@@ -204,11 +205,11 @@ class _DataTableExample extends State<MyAgent> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+          backgroundColor: backgroundColor,
           drawer: DriverMenuLateral(),
           appBar: AppBar(
-            title: Text('Asignación de Horas'),
-            backgroundColor: kColorDriverAppBar,
-            elevation: 0,
+            backgroundColor: backgroundColor,
+            elevation: 15,
             actions: <Widget>[
               IconButton(
                 icon: Icon(Icons.arrow_back),
@@ -223,21 +224,33 @@ class _DataTableExample extends State<MyAgent> {
             ],
           ),
           body: ListView(children: <Widget>[
-            SizedBox(height: 40.0),
+            SizedBox(height: 25.0),
             Center(
-                child: Text('Agentes confirmados',
+                child: Text('Asignación de Horas',
                     style: TextStyle(
-                        color: Colors.grey[700],
+                        color: firstColor,
                         fontWeight: FontWeight.bold,
                         fontSize: 25.0))),
+            SizedBox(height: 10.0),
+            Padding(
+              padding: const EdgeInsets.only(left: 15.0),
+              child: Text('Agentes confirmados',
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                      color: GradiantV_2,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18.0)),
+            ),
             _agentToConfirm(),
-            SizedBox(height: 40.0),
-            Center(
+            SizedBox(height: 20.0),
+            Padding(
+                padding: const EdgeInsets.only(left: 15.0),
                 child: Text('Agentes no confirmados',
+                    textAlign: TextAlign.left,
                     style: TextStyle(
-                        color: Colors.grey[700],
+                        color: GradiantV_2,
                         fontWeight: FontWeight.bold,
-                        fontSize: 25.0))),
+                        fontSize: 18.0))),
             _agentoNoConfirm(),
             SizedBox(height: 40.0),
             Center(
@@ -261,27 +274,47 @@ class _DataTableExample extends State<MyAgent> {
       builder: (BuildContext context, abc) {
         if (abc.connectionState == ConnectionState.done) {
           if (abc.data.trips[0].agentes.length == 0) {
-            return Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              margin: EdgeInsets.symmetric(vertical: 15),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  ListTile(
-                    leading: Icon(Icons.bus_alert),
-                    title: Text('Agentes',
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.normal,
-                            fontSize: 20.0)),
-                    subtitle: Text('No hay agentes confirmados para este viaje',
-                        style: TextStyle(
-                            color: Colors.red,
-                            fontWeight: FontWeight.normal,
-                            fontSize: 15.0)),
-                  ),
-                ],
+            return Container(
+              decoration: BoxDecoration(boxShadow: [
+                BoxShadow(
+                    blurStyle: BlurStyle.normal,
+                    color: Colors.white.withOpacity(0.2),
+                    blurRadius: 15,
+                    spreadRadius: -10,
+                    offset: Offset(-15, -6)),
+                BoxShadow(
+                    blurStyle: BlurStyle.normal,
+                    color: Colors.black.withOpacity(0.6),
+                    blurRadius: 30,
+                    spreadRadius: -15,
+                    offset: Offset(18, 5)),
+              ]),
+              margin: EdgeInsets.only(right: 15.0, left: 15),
+              child: Card(
+                color: backgroundColor,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                margin: EdgeInsets.symmetric(vertical: 15),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    ListTile(
+                      leading: Icon(Icons.supervised_user_circle,
+                          color: thirdColor, size: 40),
+                      title: Text('Agentes',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.normal,
+                              fontSize: 20.0)),
+                      subtitle: Text(
+                          'No hay agentes confirmados para este viaje',
+                          style: TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.normal,
+                              fontSize: 15.0)),
+                    ),
+                  ],
+                ),
               ),
             );
           } else {
@@ -546,28 +579,46 @@ class _DataTableExample extends State<MyAgent> {
       builder: (BuildContext context, abc) {
         if (abc.connectionState == ConnectionState.done) {
           if (abc.data.trips[1].noConfirmados.length == 0) {
-            return Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              margin: EdgeInsets.symmetric(vertical: 15),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  ListTile(
-                    leading: Icon(Icons.bus_alert),
-                    title: Text('Agentes',
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.normal,
-                            fontSize: 20.0)),
-                    subtitle: Text(
-                        'No hay agentes no confirmados para este viaje',
-                        style: TextStyle(
-                            color: Colors.red,
-                            fontWeight: FontWeight.normal,
-                            fontSize: 15.0)),
-                  ),
-                ],
+            return Container(
+              decoration: BoxDecoration(boxShadow: [
+                BoxShadow(
+                    blurStyle: BlurStyle.normal,
+                    color: Colors.white.withOpacity(0.2),
+                    blurRadius: 15,
+                    spreadRadius: -10,
+                    offset: Offset(-15, -6)),
+                BoxShadow(
+                    blurStyle: BlurStyle.normal,
+                    color: Colors.black.withOpacity(0.6),
+                    blurRadius: 30,
+                    spreadRadius: -15,
+                    offset: Offset(18, 5)),
+              ]),
+              child: Card(
+                elevation: 10,
+                color: backgroundColor,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                margin: EdgeInsets.symmetric(vertical: 15),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    ListTile(
+                      leading: Icon(Icons.bus_alert),
+                      title: Text('Agentes',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.normal,
+                              fontSize: 20.0)),
+                      subtitle: Text(
+                          'No hay agentes no confirmados para este viaje',
+                          style: TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.normal,
+                              fontSize: 15.0)),
+                    ),
+                  ],
+                ),
               ),
             );
           } else {
@@ -582,235 +633,379 @@ class _DataTableExample extends State<MyAgent> {
                     itemBuilder: (context, index) {
                       Size size = MediaQuery.of(context).size;
                       return Container(
+                        margin:
+                            EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                        decoration: BoxDecoration(boxShadow: [
+                          BoxShadow(
+                              blurStyle: BlurStyle.normal,
+                              color: Colors.white.withOpacity(0.2),
+                              blurRadius: 15,
+                              spreadRadius: -10,
+                              offset: Offset(-15, -6)),
+                          BoxShadow(
+                              blurStyle: BlurStyle.normal,
+                              color: Colors.black.withOpacity(0.6),
+                              blurRadius: 30,
+                              spreadRadius: -15,
+                              offset: Offset(18, 5)),
+                        ]),
                         width: size.width,
                         child: Column(
                           children: [
-                            Card(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10)),
-                              margin: EdgeInsets.all(5.0),
-                              elevation: 2,
-                              child: Column(
-                                children: <Widget>[
-                                  Padding(
-                                    padding: const EdgeInsets.all(1.0),
-                                    child: ExpansionTile(
-                                      backgroundColor: Colors.white,
-                                      title: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
-                                        children: <Widget>[
+                            Container(
+                              child: Card(
+                                color: backgroundColor,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                                margin: EdgeInsets.all(5.0),
+                                elevation: 10,
+                                child: Column(
+                                  children: <Widget>[
+                                    Padding(
+                                      padding: const EdgeInsets.all(1.0),
+                                      child: ExpansionTile(
+                                        backgroundColor: backgroundColor,
+                                        title: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
+                                          children: <Widget>[
+                                            ListTile(
+                                              contentPadding:
+                                                  EdgeInsets.fromLTRB(
+                                                      5, 5, 10, 0),
+                                              title: Text('Nombre:',
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 18.0)),
+                                              subtitle: Text(
+                                                  '${abc.data.trips[1].noConfirmados[index].agentFullname}',
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.normal,
+                                                      fontSize: 15.0)),
+                                              leading: Icon(Icons.person,
+                                                  color: thirdColor,
+                                                  size: 40.0),
+                                            ),
+                                          ],
+                                        ),
+                                        trailing: SizedBox(),
+                                        children: [
                                           ListTile(
-                                            contentPadding: EdgeInsets.fromLTRB(
-                                                5, 5, 10, 0),
-                                            title: Text('Nombre: '),
+                                            contentPadding:
+                                                EdgeInsets.symmetric(
+                                                    vertical: 0,
+                                                    horizontal: 25),
+                                            title: Text('Empresa: ',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 18.0)),
                                             subtitle: Text(
-                                                '${abc.data.trips[1].noConfirmados[index].agentFullname}'),
-                                            leading: Icon(
-                                                Icons
-                                                    .supervised_user_circle_rounded,
-                                                color: Colors.green[500]),
+                                                '${abc.data.trips[1].noConfirmados[index].companyName}',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                    fontSize: 15.0)),
+                                            leading: Icon(Icons.location_city,
+                                                color: thirdColor, size: 40.0),
                                           ),
-                                        ],
-                                      ),
-                                      trailing: SizedBox(),
-                                      children: [
-                                        ListTile(
-                                          contentPadding:
-                                              EdgeInsets.fromLTRB(5, 5, 10, 0),
-                                          title: Text('Empresa: '),
-                                          subtitle: Text(
-                                              '${abc.data.trips[1].noConfirmados[index].companyName}'),
-                                          leading: Icon(Icons.kitchen,
-                                              color: Colors.green[500]),
-                                        ),
-                                        ListTile(
-                                          contentPadding:
-                                              EdgeInsets.fromLTRB(5, 5, 10, 0),
-                                          title: Text('Teléfono: '),
-                                          subtitle: TextButton(
-                                              onPressed: () => launchUrl(Uri.parse(
-                                                  'tel://${abc.data.trips[1].noConfirmados[index].agentPhone}')),
-                                              child: Container(
-                                                  margin: EdgeInsets.only(
-                                                      right: 180),
-                                                  child: Text(
-                                                      '${abc.data.trips[1].noConfirmados[index].agentPhone}',
-                                                      style: TextStyle(
-                                                          color:
-                                                              Colors.blue[500],
-                                                          fontSize: 14)))),
-                                          leading: Icon(Icons.phone,
-                                              color: Colors.green[500]),
-                                        ),
-                                        ListTile(
-                                          contentPadding:
-                                              EdgeInsets.fromLTRB(5, 5, 10, 0),
-                                          title: Text('Entrada: '),
-                                          subtitle: Text(
-                                              '${abc.data.trips[1].noConfirmados[index].hourIn}'),
-                                          leading: Icon(Icons.timer,
-                                              color: Colors.green[500]),
-                                        ),
-                                        ListTile(
-                                          contentPadding:
-                                              EdgeInsets.fromLTRB(5, 5, 10, 0),
-                                          title: Text('Dirección: '),
-                                          subtitle: Text(
-                                              '${abc.data.trips[1].noConfirmados[index].agentReferencePoint} \n ${abc.data.trips[1].noConfirmados[index].neighborhoodName} ${abc.data.trips[1].noConfirmados[index].districtName}'),
-                                          leading: Icon(Icons.location_pin,
-                                              color: Colors.green[500]),
-                                        ),
-                                        //aqui lo demás
-                                        SizedBox(height: 30.0),
-                                        Text('Hora de encuentro: '),
-                                        SizedBox(height: 10.0),
-                                        Container(
-                                          decoration: BoxDecoration(
+                                          ListTile(
+                                            contentPadding:
+                                                EdgeInsets.symmetric(
+                                                    vertical: 0,
+                                                    horizontal: 25),
+                                            title: Text('Teléfono: ',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 18.0)),
+                                            subtitle: TextButton(
+                                                onPressed: () =>
+                                                    launchUrl(Uri.parse(
+                                                      'tel://${abc.data.trips[1].noConfirmados[index].agentPhone}',
+                                                    )),
+                                                child: Container(
+                                                    padding: EdgeInsets.only(
+                                                        right: 185),
+                                                    child: Text(
+                                                        '${abc.data.trips[1].noConfirmados[index].agentPhone}',
+                                                        textAlign:
+                                                            TextAlign.left,
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 15)))),
+                                            leading: Icon(Icons.phone,
+                                                color: thirdColor, size: 40.0),
+                                          ),
+                                          ListTile(
+                                            contentPadding:
+                                                EdgeInsets.symmetric(
+                                                    vertical: 0,
+                                                    horizontal: 25),
+                                            title: Text('Entrada: ',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 18.0)),
+                                            subtitle: Text(
+                                                '${abc.data.trips[1].noConfirmados[index].hourIn}',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                    fontSize: 15.0)),
+                                            leading: Icon(Icons.access_time,
+                                                color: thirdColor, size: 40.0),
+                                          ),
+                                          ListTile(
+                                            contentPadding:
+                                                EdgeInsets.symmetric(
+                                                    vertical: 0,
+                                                    horizontal: 25),
+                                            title: Text('Dirección: ',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 18.0)),
+                                            subtitle: Text(
+                                                '${abc.data.trips[1].noConfirmados[index].agentReferencePoint} \n ${abc.data.trips[1].noConfirmados[index].neighborhoodName} ${abc.data.trips[1].noConfirmados[index].districtName}',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                    fontSize: 15.0)),
+                                            leading: Icon(Icons.location_on,
+                                                color: thirdColor, size: 40.0),
+                                          ),
+                                          //aqui lo demás
+                                          SizedBox(height: 30.0),
+                                          Text('Hora de encuentro: ',
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 18.0)),
+                                          SizedBox(height: 10.0),
+                                          Container(
+                                            decoration: BoxDecoration(
                                               border: Border.all(
-                                                  width: 1, color: Colors.grey),
+                                                  color: Colors.white,
+                                                  width: 1.0),
                                               borderRadius: BorderRadius.all(
-                                                  Radius.circular(4)),
+                                                  Radius.circular(15)),
                                               boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black
+                                                      .withOpacity(0.2),
+                                                  spreadRadius: 5,
+                                                  blurRadius: 7,
+                                                  offset: Offset(0,
+                                                      0), // changes position of shadow
+                                                ),
                                                 BoxShadow(
                                                   color: Colors.grey
                                                       .withOpacity(0.2),
                                                   spreadRadius: 5,
                                                   blurRadius: 7,
                                                   offset: Offset(0,
-                                                      3), // changes position of shadow
+                                                      0), // changes position of shadow
                                                 )
-                                              ]),
-                                          margin: EdgeInsets.symmetric(
-                                              horizontal: 40.0),
-                                          child: Column(
+                                              ],
+                                            ),
+                                            margin: EdgeInsets.symmetric(
+                                                horizontal: 40.0),
+                                            child: Column(
+                                              children: [
+                                                DateTimeField(
+                                                  format: format,
+                                                  onShowPicker: (context,
+                                                      currentValue) async {
+                                                    final time =
+                                                        await showTimePicker(
+                                                      context: context,
+                                                      initialTime:
+                                                          TimeOfDay.now(),
+                                                    );
+                                                    if (time != null) {
+                                                      setState(() {
+                                                        String _eventTime = now
+                                                            .toString()
+                                                            .substring(10, 15);
+                                                        _eventTime = time
+                                                            .toString()
+                                                            .substring(10, 15);
+                                                        print(_eventTime);
+                                                        fetchHours(
+                                                            abc
+                                                                .data
+                                                                .trips[1]
+                                                                .noConfirmados[
+                                                                    index]
+                                                                .agentId
+                                                                .toString(),
+                                                            _eventTime,
+                                                            abc
+                                                                .data
+                                                                .trips[1]
+                                                                .noConfirmados[
+                                                                    index]
+                                                                .tripId
+                                                                .toString());
+                                                        Navigator.pushAndRemoveUntil(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        MyAgent()),
+                                                            (Route<dynamic>
+                                                                    route) =>
+                                                                false);
+                                                      });
+                                                    }
+                                                    return DateTimeField
+                                                        .convert(time);
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(height: 20.0),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
                                             children: [
-                                              DateTimeField(
-                                                format: format,
-                                                onShowPicker: (context,
-                                                    currentValue) async {
-                                                  final time =
-                                                      await showTimePicker(
-                                                    context: context,
-                                                    initialTime:
-                                                        TimeOfDay.now(),
-                                                  );
-                                                  if (time != null) {
-                                                    setState(() {
-                                                      String _eventTime = now
-                                                          .toString()
-                                                          .substring(10, 15);
-                                                      _eventTime = time
-                                                          .toString()
-                                                          .substring(10, 15);
-                                                      print(_eventTime);
-                                                      fetchHours(
-                                                          abc
-                                                              .data
-                                                              .trips[1]
-                                                              .noConfirmados[
-                                                                  index]
-                                                              .agentId
-                                                              .toString(),
-                                                          _eventTime,
-                                                          abc
-                                                              .data
-                                                              .trips[1]
-                                                              .noConfirmados[
-                                                                  index]
-                                                              .tripId
-                                                              .toString());
-                                                      Navigator.pushAndRemoveUntil(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                              builder:
-                                                                  (context) =>
-                                                                      MyAgent()),
-                                                          (Route<dynamic>
-                                                                  route) =>
-                                                              false);
-                                                    });
-                                                  }
-                                                  return DateTimeField.convert(
-                                                      time);
+                                              TextButton(
+                                                style: TextButton.styleFrom(
+                                                  textStyle: TextStyle(
+                                                    color: Colors
+                                                        .white, // foreground
+                                                  ),
+                                                  backgroundColor: Colors.red,
+                                                  shape: RoundedRectangleBorder(
+                                                      side: BorderSide(
+                                                          color: Colors.red,
+                                                          width: 2,
+                                                          style: BorderStyle
+                                                              .solid),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10)),
+                                                ),
+                                                onPressed: () {
+                                                  SweetAlert.show(context,
+                                                      subtitle:
+                                                          "¿Está seguro que desea marcar como no \nconfirmado al agente?",
+                                                      style: SweetAlertStyle
+                                                          .confirm,
+                                                      confirmButtonText:
+                                                          "Confirmar",
+                                                      cancelButtonText:
+                                                          "Cancelar",
+                                                      showCancelButton: true,
+                                                      onPress:
+                                                          (bool isConfirm) {
+                                                    if (isConfirm) {
+                                                      SweetAlert.show(context,
+                                                          subtitle:
+                                                              "Agente marcado como no confirmó",
+                                                          style: SweetAlertStyle
+                                                              .success);
+                                                      new Future.delayed(
+                                                          new Duration(
+                                                              seconds: 2), () {
+                                                        fetchNoConfirm(
+                                                            abc
+                                                                .data
+                                                                .trips[1]
+                                                                .noConfirmados[
+                                                                    index]
+                                                                .agentId
+                                                                .toString(),
+                                                            abc
+                                                                .data
+                                                                .trips[1]
+                                                                .noConfirmados[
+                                                                    index]
+                                                                .tripId
+                                                                .toString());
+                                                        Navigator.pushReplacement(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder: (_) =>
+                                                                    MyAgent())).then(
+                                                            (_) => MyAgent());
+                                                      });
+                                                    } else {
+                                                      SweetAlert.show(context,
+                                                          subtitle:
+                                                              "¡Cancelado!",
+                                                          style: SweetAlertStyle
+                                                              .success);
+                                                    }
+                                                    // return false to keep dialog
+                                                    return false;
+                                                  });
                                                 },
+                                                child: Text('No confirmó',
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 17)),
                                               ),
+                                              TextButton(
+                                                  child: Text('Chat',
+                                                      style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 17)),
+                                                  style: TextButton.styleFrom(
+                                                    textStyle: TextStyle(
+                                                      color: Colors
+                                                          .white, // foreground
+                                                    ),
+                                                    backgroundColor: firstColor,
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                            side: BorderSide(
+                                                                color:
+                                                                    firstColor,
+                                                                width: 2,
+                                                                style:
+                                                                    BorderStyle
+                                                                        .solid),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        10)),
+                                                  ),
+                                                  onPressed: () {
+                                                    Navigator
+                                                        .pushAndRemoveUntil(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        ChatScreen(
+                                                                          rol:
+                                                                              "MOTORISTA",
+                                                                          id: "0",
+                                                                          nombre:
+                                                                              "DEREK",
+                                                                        )),
+                                                            (Route<dynamic>
+                                                                    route) =>
+                                                                false);
+                                                  }),
                                             ],
                                           ),
-                                        ),
-                                        SizedBox(height: 20.0),
-                                        // Usamos una fila para ordenar los botones del card
-                                        TextButton(
-                                          style: TextButton.styleFrom(
-                                            textStyle: TextStyle(
-                                              color: Colors.white, // foreground
-                                            ),
-                                            backgroundColor: Colors.red,
-                                            shape: RoundedRectangleBorder(
-                                                side: BorderSide(
-                                                    color: Colors.red,
-                                                    width: 2,
-                                                    style: BorderStyle.solid),
-                                                borderRadius:
-                                                    BorderRadius.circular(10)),
-                                          ),
-                                          onPressed: () {
-                                            SweetAlert.show(context,
-                                                subtitle:
-                                                    "¿Está seguro que desea marcar como no \nconfirmado al agente?",
-                                                style: SweetAlertStyle.confirm,
-                                                confirmButtonText: "Confirmar",
-                                                cancelButtonText: "Cancelar",
-                                                showCancelButton: true,
-                                                onPress: (bool isConfirm) {
-                                              if (isConfirm) {
-                                                SweetAlert.show(context,
-                                                    subtitle:
-                                                        "Agente marcado como no confirmó",
-                                                    style: SweetAlertStyle
-                                                        .success);
-                                                new Future.delayed(
-                                                    new Duration(seconds: 2),
-                                                    () {
-                                                  fetchNoConfirm(
-                                                      abc
-                                                          .data
-                                                          .trips[1]
-                                                          .noConfirmados[index]
-                                                          .agentId
-                                                          .toString(),
-                                                      abc
-                                                          .data
-                                                          .trips[1]
-                                                          .noConfirmados[index]
-                                                          .tripId
-                                                          .toString());
-                                                  Navigator.pushReplacement(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                              builder: (_) =>
-                                                                  MyAgent()))
-                                                      .then((_) => MyAgent());
-                                                });
-                                              } else {
-                                                SweetAlert.show(context,
-                                                    subtitle: "¡Cancelado!",
-                                                    style: SweetAlertStyle
-                                                        .success);
-                                              }
-                                              // return false to keep dialog
-                                              return false;
-                                            });
-                                          },
-                                          child: Text('No confirmó',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 17)),
-                                        ),
-                                      ],
+                                          // Usamos una fila para ordenar los botones del card
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           ],
@@ -834,28 +1029,49 @@ class _DataTableExample extends State<MyAgent> {
       builder: (BuildContext context, abc) {
         if (abc.connectionState == ConnectionState.done) {
           if (abc.data.trips[2].cancelados.length == 0) {
-            return Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              margin: EdgeInsets.symmetric(vertical: 15),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  ListTile(
-                    leading: Icon(Icons.bus_alert),
-                    title: Text('Agentes',
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.normal,
-                            fontSize: 20.0)),
-                    subtitle: Text(
-                        'No hay agentes que hayan cancelado este viaje',
-                        style: TextStyle(
-                            color: Colors.red,
-                            fontWeight: FontWeight.normal,
-                            fontSize: 15.0)),
-                  ),
-                ],
+            return Container(
+              margin: EdgeInsets.symmetric(
+                horizontal: 20,
+              ),
+              decoration: BoxDecoration(boxShadow: [
+                BoxShadow(
+                    blurStyle: BlurStyle.normal,
+                    color: Colors.white.withOpacity(0.2),
+                    blurRadius: 15,
+                    spreadRadius: -10,
+                    offset: Offset(-15, -6)),
+                BoxShadow(
+                    blurStyle: BlurStyle.normal,
+                    color: Colors.black.withOpacity(0.6),
+                    blurRadius: 30,
+                    spreadRadius: -15,
+                    offset: Offset(18, 5)),
+              ]),
+              child: Card(
+                color: backgroundColor,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                margin: EdgeInsets.symmetric(vertical: 15),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    ListTile(
+                      leading: Icon(Icons.bus_alert),
+                      title: Text('Agentes',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20.0,
+                          )),
+                      subtitle: Text(
+                          'No hay agentes que hayan cancelado este viaje',
+                          style: TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.normal,
+                              fontSize: 15.0)),
+                    ),
+                  ],
+                ),
               ),
             );
           } else if (abc.data.trips[2].cancelados.length > 0) {
@@ -921,16 +1137,15 @@ class _DataTableExample extends State<MyAgent> {
                                               onPressed: () => launchUrl(Uri.parse(
                                                   'tel://${abc.data.trips[2].cancelados[index].agentPhone}')),
                                               child: Container(
-                                                  margin: EdgeInsets.only(
-                                                      right: 180),
                                                   child: Text(
                                                       '${abc.data.trips[2].cancelados[index].agentPhone}',
+                                                      textAlign: TextAlign.left,
                                                       style: TextStyle(
                                                           color:
                                                               Colors.blue[500],
-                                                          fontSize: 14)))),
+                                                          fontSize: 15)))),
                                           leading: Icon(Icons.phone,
-                                              color: Colors.green[500]),
+                                              color: thirdColor, size: 30.0),
                                         ),
                                         ListTile(
                                           contentPadding:

@@ -7,6 +7,8 @@ import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/services.dart';
 import 'package:flutter_auth/components/splashView.dart';
 import 'package:flutter_auth/constants.dart';
+import 'package:flutter_auth/providers/chat.dart';
+import 'package:provider/provider.dart';
 import 'package:sweetalert/sweetalert.dart';
 import 'Drivers/SharePreferences/preferencias_usuario.dart';
 
@@ -53,22 +55,27 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: navigatorKey,
-      debugShowCheckedModeBanner: false,
-      title: 'Smart Driver',
-      theme: ThemeData(
-        primaryColor: kPrimaryColor,
-        scaffoldBackgroundColor: Colors.white,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: ChatProvider()),
+      ],
+      child: MaterialApp(
+        navigatorKey: navigatorKey,
+        debugShowCheckedModeBanner: false,
+        title: 'Smart Driver',
+        theme: ThemeData(
+          primaryColor: kPrimaryColor,
+          scaffoldBackgroundColor: Colors.white,
+        ),
+        //home: WelcomeScreen(),
+        initialRoute: prefs.nombreUsuario == null || prefs.nombreUsuario == ""
+            ? 'login'
+            : 'home',
+        routes: {
+          'login': (BuildContext context) => SplashView(),
+          'home': (BuildContext context) => HomeDriverScreen()
+        },
       ),
-      //home: WelcomeScreen(),
-      initialRoute: prefs.nombreUsuario == null || prefs.nombreUsuario == ""
-          ? 'login'
-          : 'home',
-      routes: {
-        'login': (BuildContext context) => SplashView(),
-        'home': (BuildContext context) => HomeDriverScreen()
-      },
     );
   }
 }

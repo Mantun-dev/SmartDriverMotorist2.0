@@ -3,11 +3,12 @@ import 'package:flutter_auth/constants.dart';
 
 //aquí está la clase para después traer la api
 class PlantillaDriver {
-  final String image, title, name;
+  final String image, title, name, imageMain;
   final int size, id;
   final Color color;
   final description;
   PlantillaDriver({
+    this.imageMain,
     this.id,
     this.image,
     this.title,
@@ -27,6 +28,7 @@ List<PlantillaDriver> plantillaDriver = [
       size: 20,
       description: dummyText,
       image: "assets/images/Asignar.png",
+      imageMain: "assets/images/clipboard.svg",
       color: backgroundColor),
   PlantillaDriver(
       id: 2,
@@ -35,6 +37,7 @@ List<PlantillaDriver> plantillaDriver = [
       size: 20,
       description: dummyText2,
       image: "assets/images/mapa.png",
+      imageMain: "assets/images/TripProcess.svg",
       color: backgroundColor),
   PlantillaDriver(
       id: 3,
@@ -43,6 +46,7 @@ List<PlantillaDriver> plantillaDriver = [
       size: 20,
       description: dummyText3,
       image: "assets/images/QrCode.png",
+      imageMain: "assets/images/RegisterOut.svg",
       color: backgroundColor),
   PlantillaDriver(
       id: 4,
@@ -51,6 +55,7 @@ List<PlantillaDriver> plantillaDriver = [
       size: 20,
       description: dummyText4,
       image: "assets/images/historial.png",
+      imageMain: "assets/images/clipboard.svg",
       color: backgroundColor),
   PlantillaDriver(
       id: 5,
@@ -59,6 +64,7 @@ List<PlantillaDriver> plantillaDriver = [
       size: 20,
       description: dummyText4,
       image: "assets/images/ejecutivo.png",
+      imageMain: "assets/images/clipboard.svg",
       color: backgroundColor),
   PlantillaDriver(
       id: 6,
@@ -67,6 +73,7 @@ List<PlantillaDriver> plantillaDriver = [
       size: 20,
       description: dummyText3,
       image: "assets/images/adduser.png",
+      imageMain: "assets/images/clipBoard.svg",
       color: backgroundColor),
 ];
 
