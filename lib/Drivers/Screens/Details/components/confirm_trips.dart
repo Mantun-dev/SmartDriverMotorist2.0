@@ -18,6 +18,9 @@ import 'dart:convert' show json;
 import 'package:flutter_auth/constants.dart';
 import 'package:sweetalert/sweetalert.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:roundcheckbox/roundcheckbox.dart';
+
+import 'details_TripProgress.dart';
 
 //import 'package:shop_app/screens/details/details_screen.dart';
 
@@ -177,11 +180,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
           MaterialPageRoute(
               builder: (BuildContext context) => HomeDriverScreen()),
           (Route<dynamic> route) => false);
-      // SweetAlert.show(context,
-      // title: 'ok',
-      // subtitle: resp.message,
-      // style: SweetAlertStyle.success
-      // );
     } else if (response.statusCode == 500) {
       SweetAlert.show(
         context,
@@ -206,29 +204,47 @@ class _DataTableExample extends State<MyConfirmAgent> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+          backgroundColor: backgroundColor,
           drawer: DriverMenuLateral(),
           appBar: AppBar(
-            title: Text('Información de viaje'),
-            backgroundColor: kColorDriverAppBar,
-            elevation: 0,
+            backgroundColor: backgroundColor,
+            elevation: 10,
             actions: <Widget>[
               IconButton(
-                icon: Icon(Icons.arrow_back),
+                icon: Icon(Icons.arrow_circle_left),
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return DetailsDriverTripInProgress(
+                            plantillaDriver: plantillaDriver[1]);
+                      },
+                    ),
+                  );
+                  SizedBox(width: kDefaultPadding / 2);
                 },
               ),
-              SizedBox(width: kDefaultPadding / 2)
             ],
           ),
           body: ListView(children: <Widget>[
-            SizedBox(height: 40.0),
+            SizedBox(height: 20.0),
             Center(
-                child: Text('Viaje en proceso',
+                child: Text('Información de viaje',
                     style: TextStyle(
-                        color: Colors.grey[700],
+                        color: firstColor,
                         fontWeight: FontWeight.bold,
-                        fontSize: 25.0))),
+                        fontSize: 35.0))),
+            SizedBox(height: 10.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Text(' Viaje en proceso ',
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                      color: GradiantV_2,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20.0)),
+            ),
             SizedBox(height: 10.0),
             Container(
               decoration: BoxDecoration(
@@ -237,14 +253,15 @@ class _DataTableExample extends State<MyConfirmAgent> {
               ),
               margin: EdgeInsets.symmetric(horizontal: 15.0),
               width: 300,
-              height: 60,
+              height: 90,
               child: Column(
                 children: [
+                  SizedBox(height: 10.0),
                   Center(
                       child: Text(
                           'Nota: Debe marcar el abordaje al momento en que el agente ingrese a la unidad, en caso de no abordar, solo debe llenar la observación.',
                           style: TextStyle(
-                              color: Colors.grey[700],
+                              color: Colors.white70,
                               fontWeight: FontWeight.normal,
                               fontSize: 15.0))),
                 ],
@@ -265,6 +282,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
         if (abc.connectionState == ConnectionState.done) {
           if (abc.data.trips[0].tripAgent.length == 0) {
             return Card(
+              color: backgroundColor,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
               margin: EdgeInsets.symmetric(vertical: 15),
@@ -275,7 +293,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                     leading: Icon(Icons.bus_alert),
                     title: Text('Agentes',
                         style: TextStyle(
-                            color: Colors.black,
+                            color: Colors.white,
                             fontWeight: FontWeight.normal,
                             fontSize: 20.0)),
                     subtitle: Text('No hay agentes confirmados para este viaje',
@@ -296,27 +314,72 @@ class _DataTableExample extends State<MyConfirmAgent> {
                 itemBuilder: (context, index) {
                   check.add(new TextEditingController());
                   return Container(
+                    decoration: BoxDecoration(boxShadow: [
+                      BoxShadow(
+                          blurStyle: BlurStyle.normal,
+                          color: Colors.white.withOpacity(0.2),
+                          blurRadius: 15,
+                          spreadRadius: -18,
+                          offset: Offset(-15, -6)),
+                      BoxShadow(
+                          blurStyle: BlurStyle.normal,
+                          color: Colors.black.withOpacity(0.6),
+                          blurRadius: 30,
+                          spreadRadius: -15,
+                          offset: Offset(18, 5)),
+                    ]),
                     width: 500.0,
                     child: Column(
                       children: [
                         Card(
+                          color: backgroundColor,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)),
                           margin: EdgeInsets.all(15.0),
-                          elevation: 2,
+                          elevation: 10,
                           child: Column(
                             children: <Widget>[
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: ExpansionTile(
-                                  backgroundColor: Colors.white,
+                                  backgroundColor: backgroundColor,
                                   title: Column(
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: <Widget>[
                                       Row(
                                         children: [
-                                          Checkbox(
-                                              value: (abc
+                                          RoundCheckBox(
+                                              border: Border.all(
+                                                  style: BorderStyle.none),
+                                              animationDuration:
+                                                  Duration(seconds: 1),
+                                              uncheckedColor: Colors.red,
+                                              uncheckedWidget: Icon(
+                                                Icons.close,
+                                                color: backgroundColor,
+                                                size: 40,
+                                              ),
+                                              checkedColor: firstColor,
+                                              checkedWidget: Icon(
+                                                Icons.check,
+                                                color: backgroundColor,
+                                                size: 40,
+                                              ),
+                                              // border: Border.all(
+                                              //     style: BorderStyle.none),
+                                              // animationDuration:
+                                              //     Duration(seconds: 1),
+                                              // uncheckedColor: Colors.red,
+                                              // uncheckedWidget: Icon(
+                                              //     Icons.person_add_alt_1,
+                                              //     color: backgroundColor),
+                                              // checkedColor: firstColor,
+                                              // checkedWidget: Icon(
+                                              //   Icons.person_remove_alt_1,
+                                              //   color: backgroundColor,
+                                              // ),
+                                              size: 45,
+                                              isChecked: (abc
                                                           .data
                                                           .trips[0]
                                                           .tripAgent[index]
@@ -330,12 +393,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                               .traveled ==
                                                           1)
                                                       ? true
-                                                      : (abc
-                                                                  .data
-                                                                  .trips[0]
-                                                                  .tripAgent[
-                                                                      index]
-                                                                  .traveled ==
+                                                      : (abc.data.trips[0].tripAgent[index].traveled ==
                                                               null)
                                                           ? abc
                                                                   .data
@@ -354,21 +412,20 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                               ? abc
                                                                       .data
                                                                       .trips[0]
-                                                                      .tripAgent[
-                                                                          index]
+                                                                      .tripAgent[index]
                                                                       .traveled ??
                                                                   false
                                                               : false,
-                                              onChanged: (value) {
+                                              onTap: (isChecked) {
                                                 setState(() {
-                                                  traveled = value;
+                                                  traveled = isChecked;
                                                 });
                                                 abc
                                                     .data
                                                     .trips[0]
                                                     .tripAgent[index]
                                                     .traveled = traveled;
-                                                if (value == true) {
+                                                if (isChecked == true) {
                                                   print('subio');
                                                   fetchCheckAgentTrip(abc
                                                       .data
@@ -378,7 +435,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                       .toString());
 
                                                   print('////////');
-                                                } else if (value == false) {
+                                                } else if (isChecked == false) {
                                                   print('bajo');
                                                   fetchCheckAgentTrip(abc
                                                       .data
@@ -389,89 +446,140 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                   print('////////');
                                                 }
                                               }),
-                                          Text('Abordó '),
+                                          SizedBox(width: 20.0),
+                                          Text('Abordó ',
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.normal,
+                                                  fontSize: 20.0)),
                                         ],
                                       ),
                                       ListTile(
                                         contentPadding:
-                                            EdgeInsets.fromLTRB(5, 5, 10, 0),
-                                        title: Text('Nombre: '),
+                                            EdgeInsets.fromLTRB(0, 5, 10, 0),
+                                        title: Text('Nombre: ',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 20.0)),
                                         subtitle: Text(
-                                            '${abc.data.trips[0].tripAgent[index].agentFullname}'),
+                                            '${abc.data.trips[0].tripAgent[index].agentFullname}',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.normal,
+                                                fontSize: 15.0)),
                                         leading: Icon(
                                             Icons
                                                 .supervised_user_circle_rounded,
-                                            color: Colors.green[500]),
+                                            color: thirdColor,
+                                            size: 50.0),
                                       ),
                                     ],
                                   ),
                                   trailing: SizedBox(),
                                   children: [
                                     Container(
-                                      margin: EdgeInsets.only(left: 15),
+                                      margin: EdgeInsets.only(left: 18),
                                       child: Column(
                                         children: [
                                           ListTile(
                                             contentPadding: EdgeInsets.fromLTRB(
-                                                5, 5, 10, 0),
-                                            title: Text('Empresa: '),
+                                                0, 5, 10, 0),
+                                            title: Text('Empresa: ',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 20.0)),
                                             subtitle: Text(
-                                                '${abc.data.trips[0].tripAgent[index].companyName}'),
-                                            leading: Icon(Icons.kitchen,
-                                                color: Colors.green[500]),
+                                                '${abc.data.trips[0].tripAgent[index].companyName}',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                    fontSize: 15.0)),
+                                            leading: Icon(Icons.location_city,
+                                                color: thirdColor, size: 50.0),
                                           ),
                                           ListTile(
                                             contentPadding: EdgeInsets.fromLTRB(
-                                                5, 5, 10, 0),
-                                            title: Text('Teléfono: '),
+                                                0, 5, 10, 0),
+                                            title: Text('Teléfono: ',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 20.0)),
                                             subtitle: TextButton(
                                                 onPressed: () => launchUrl(
                                                     Uri.parse(
                                                         'tel://${abc.data.trips[0].tripAgent[index].agentPhone}')),
                                                 child: Container(
-                                                    margin: EdgeInsets.only(
-                                                        right: 180),
+                                                    padding: EdgeInsets.only(
+                                                        right: 160),
                                                     child: Text(
                                                         '${abc.data.trips[0].tripAgent[index].agentPhone}',
                                                         style: TextStyle(
-                                                            color: Colors
-                                                                .blue[500],
-                                                            fontSize: 14)))),
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .normal,
+                                                            fontSize: 15.0)))),
                                             leading: Icon(Icons.phone,
-                                                color: Colors.green[500]),
+                                                color: thirdColor, size: 50.0),
                                           ),
                                           ListTile(
                                             contentPadding: EdgeInsets.fromLTRB(
-                                                5, 5, 10, 0),
-                                            title: Text('Entrada: '),
+                                                0, 5, 10, 0),
+                                            title: Text('Entrada: ',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 20.0)),
                                             subtitle: Text(
-                                                '${abc.data.trips[0].tripAgent[index].hourIn}'),
-                                            leading: Icon(Icons.timer,
-                                                color: Colors.green[500]),
+                                                '${abc.data.trips[0].tripAgent[index].hourIn}',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                    fontSize: 15.0)),
+                                            leading: Icon(Icons.access_time,
+                                                color: thirdColor, size: 50.0),
                                           ),
                                           ListTile(
                                             contentPadding: EdgeInsets.fromLTRB(
-                                                5, 5, 10, 0),
-                                            title: Text('Dirección: '),
+                                                0, 5, 10, 0),
+                                            title: Text('Dirección: ',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 20.0)),
                                             subtitle: Text(
-                                                '${abc.data.trips[0].tripAgent[index].agentReferencePoint} \n ${abc.data.trips[0].tripAgent[index].neighborhoodName} ${abc.data.trips[0].tripAgent[index].districtName}'),
+                                                '${abc.data.trips[0].tripAgent[index].agentReferencePoint}\n${abc.data.trips[0].tripAgent[index].neighborhoodName} ${abc.data.trips[0].tripAgent[index].districtName}',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                    fontSize: 15.0)),
                                             leading: Icon(Icons.location_pin,
-                                                color: Colors.green[500]),
+                                                color: thirdColor, size: 50.0),
                                           ),
                                           ListTile(
                                             contentPadding: EdgeInsets.fromLTRB(
-                                                5, 5, 10, 0),
-                                            title: Text('Hora de encuentro: '),
+                                                0, 5, 10, 0),
+                                            title: Text('Hora de encuentro: ',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 20.0)),
                                             subtitle: Text(
                                                 '${abc.data.trips[0].tripAgent[index].hourForTrip}',
                                                 style: TextStyle(
-                                                    color: Colors.green,
-                                                    fontWeight:
-                                                        FontWeight.normal,
+                                                    color: firstColor,
+                                                    fontWeight: FontWeight.bold,
                                                     fontSize: 25)),
-                                            leading: Icon(Icons.timer,
-                                                color: Colors.green[500]),
+                                            leading: Icon(Icons.access_time,
+                                                color: thirdColor, size: 50.0),
                                           ),
+                                          SizedBox(height: 10.0),
                                         ],
                                       ),
                                     ),
@@ -482,8 +590,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                         if (abc.data.trips[0].tripAgent[index]
                                                 .didntGetOut ==
                                             1) ...{
-                                          Text(
-                                              'Se pasó por el(ella) pero no salió.',
+                                          Text('Se pasó pero no salió.',
                                               style: TextStyle(
                                                   color: Colors.orangeAccent,
                                                   fontWeight: FontWeight.normal,
@@ -491,162 +598,327 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                         } else ...{
                                           Column(
                                             children: [
-                                              TextButton(
-                                                style: TextButton.styleFrom(
-                                                  textStyle: TextStyle(
-                                                      color: Colors.white),
-                                                  backgroundColor: Colors.red,
-                                                  shape: RoundedRectangleBorder(
-                                                      side: BorderSide(
-                                                          color:
-                                                              Color(0xFFFF7043),
-                                                          width: 2,
-                                                          style: BorderStyle
-                                                              .solid),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10)),
+                                              Container(
+                                                width: 150,
+                                                height: 40,
+                                                decoration:
+                                                    BoxDecoration(boxShadow: [
+                                                  BoxShadow(
+                                                      blurStyle:
+                                                          BlurStyle.normal,
+                                                      color: Colors.white
+                                                          .withOpacity(0.2),
+                                                      blurRadius: 15,
+                                                      spreadRadius: -10,
+                                                      offset: Offset(-15, -6)),
+                                                  BoxShadow(
+                                                      blurStyle:
+                                                          BlurStyle.normal,
+                                                      color: Colors.black
+                                                          .withOpacity(0.6),
+                                                      blurRadius: 30,
+                                                      spreadRadius: -15,
+                                                      offset: Offset(18, 5)),
+                                                ]),
+                                                child: TextButton(
+                                                  style: TextButton.styleFrom(
+                                                    textStyle: TextStyle(
+                                                        color: Colors.white),
+                                                    backgroundColor: Colors.red,
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                            side: BorderSide(
+                                                                style:
+                                                                    BorderStyle
+                                                                        .none),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        20)),
+                                                  ),
+                                                  onPressed: () {
+                                                    fetchRegisterAgentDidntGetOut(
+                                                        abc
+                                                            .data
+                                                            .trips[0]
+                                                            .tripAgent[index]
+                                                            .agentId
+                                                            .toString(),
+                                                        prefs.tripId);
+                                                  },
+                                                  child:
+                                                      Text('Se pasó y no salió',
+                                                          style: TextStyle(
+                                                            fontSize: 15,
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          )),
                                                 ),
-                                                onPressed: () {
-                                                  fetchRegisterAgentDidntGetOut(
-                                                      abc
-                                                          .data
-                                                          .trips[0]
-                                                          .tripAgent[index]
-                                                          .agentId
-                                                          .toString(),
-                                                      prefs.tripId);
-                                                },
-                                                child: Text(
-                                                    'Se pasó por él y no salió',
-                                                    style: TextStyle(
-                                                        color: Colors.white)),
                                               ),
                                             ],
                                           ),
                                         },
                                         Column(
                                           children: [
-                                            TextButton(
-                                              style: TextButton.styleFrom(
-                                                textStyle: TextStyle(
-                                                    color: Colors.white),
-                                                // foreground
-                                                backgroundColor:
-                                                    kCardColorDriver2,
-                                                shape: RoundedRectangleBorder(
-                                                    side: BorderSide(
-                                                        color:
-                                                            kCardColorDriver1,
-                                                        width: 2,
-                                                        style:
-                                                            BorderStyle.solid),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10)),
-                                              ),
-                                              onPressed: () async {
-                                                http.Response response =
-                                                    await http.get(Uri.parse(
-                                                        '$ip/apis/getDriverComment/${abc.data.trips[0].tripAgent[index].agentId}/${abc.data.trips[0].tripAgent[index].tripId}'));
-                                                final send = Comment.fromJson(
-                                                    json.decode(response.body));
-                                                check[index].text =
-                                                    send.comment.commentDriver;
-                                                showGeneralDialog(
-                                                    barrierColor: Colors.black
-                                                        .withOpacity(0.5),
-                                                    transitionBuilder: (context,
-                                                        a1, a2, widget) {
-                                                      return Transform.scale(
-                                                        scale: a1.value,
-                                                        child: Opacity(
-                                                          opacity: a1.value,
-                                                          child: AlertDialog(
-                                                            shape: OutlineInputBorder(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            16.0)),
-                                                            title: Center(
+                                            Container(
+                                              width: 150,
+                                              height: 40,
+                                              decoration:
+                                                  BoxDecoration(boxShadow: [
+                                                BoxShadow(
+                                                    blurStyle: BlurStyle.normal,
+                                                    color: Colors.white
+                                                        .withOpacity(0.2),
+                                                    blurRadius: 15,
+                                                    spreadRadius: -10,
+                                                    offset: Offset(-15, -6)),
+                                                BoxShadow(
+                                                    blurStyle: BlurStyle.normal,
+                                                    color: Colors.black
+                                                        .withOpacity(0.6),
+                                                    blurRadius: 30,
+                                                    spreadRadius: -15,
+                                                    offset: Offset(18, 5)),
+                                              ]),
+                                              child: TextButton(
+                                                style: TextButton.styleFrom(
+                                                  textStyle: TextStyle(
+                                                      color: backgroundColor),
+                                                  // foreground
+                                                  backgroundColor: firstColor,
+                                                  shape: RoundedRectangleBorder(
+                                                      side: BorderSide(
+                                                          style:
+                                                              BorderStyle.none),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20)),
+                                                ),
+                                                onPressed: () async {
+                                                  http.Response response =
+                                                      await http.get(Uri.parse(
+                                                          '$ip/apis/getDriverComment/${abc.data.trips[0].tripAgent[index].agentId}/${abc.data.trips[0].tripAgent[index].tripId}'));
+                                                  final send = Comment.fromJson(
+                                                      json.decode(
+                                                          response.body));
+                                                  check[index].text = send
+                                                      .comment.commentDriver;
+                                                  showGeneralDialog(
+                                                      barrierColor: Colors.black
+                                                          .withOpacity(0.5),
+                                                      transitionBuilder:
+                                                          (context, a1, a2,
+                                                              widget) {
+                                                        return Transform.scale(
+                                                          scale: a1.value,
+                                                          child: Opacity(
+                                                            opacity: a1.value,
+                                                            child: AlertDialog(
+                                                              backgroundColor:
+                                                                  backgroundColor,
+                                                              shape: OutlineInputBorder(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              16.0)),
+                                                              title: Padding(
+                                                                padding: const EdgeInsets
+                                                                        .symmetric(
+                                                                    horizontal:
+                                                                        25.0),
                                                                 child: Text(
-                                                                    '¿Razón por la cual no ingresó a la unidad?')),
-                                                            content: TextField(
-                                                              controller:
-                                                                  check[index],
-                                                            ),
-                                                            actions: [
-                                                              Text(
-                                                                  'Observación...',
-                                                                  textAlign:
-                                                                      TextAlign
-                                                                          .center),
-                                                              Row(
-                                                                children: [
-                                                                  SizedBox(
-                                                                      width:
-                                                                          60.0),
-                                                                  TextButton(
-                                                                    style: TextButton
-                                                                        .styleFrom(
-                                                                            textStyle:
-                                                                                TextStyle(color: Colors.white), // foreground
-                                                                            backgroundColor: Colors.green),
-                                                                    onPressed:
-                                                                        () => {
-                                                                      fetchRegisterCommentAgent(
-                                                                          abc
-                                                                              .data
-                                                                              .trips[0]
-                                                                              .tripAgent[index]
-                                                                              .agentId
-                                                                              .toString(),
-                                                                          prefs.tripId,
-                                                                          check[index].text),
-                                                                      Navigator.pop(
-                                                                          context),
-                                                                    },
-                                                                    child: Text(
-                                                                        'Guardar'),
-                                                                  ),
-                                                                  SizedBox(
-                                                                      width:
-                                                                          10.0),
-                                                                  TextButton(
-                                                                    style: TextButton.styleFrom(
-                                                                        textStyle: TextStyle(color: Colors.white), // foreground
-                                                                        // foreground
-                                                                        backgroundColor: Colors.red),
-                                                                    onPressed:
-                                                                        () => {
-                                                                      Navigator.pop(
-                                                                          context),
-                                                                    },
-                                                                    child: Text(
-                                                                        'Cerrar'),
-                                                                  ),
-                                                                ],
+                                                                    '¿Razón por la cual no ingresó a la unidad?',
+                                                                    style: TextStyle(
+                                                                        color:
+                                                                            GradiantV_2,
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .bold,
+                                                                        fontSize:
+                                                                            20)),
                                                               ),
-                                                            ],
+                                                              content:
+                                                                  Container(
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  borderRadius:
+                                                                      BorderRadius.all(
+                                                                          Radius.circular(
+                                                                              15)),
+                                                                  boxShadow: [
+                                                                    BoxShadow(
+                                                                      color: Colors
+                                                                          .black
+                                                                          .withOpacity(
+                                                                              0.2),
+                                                                      spreadRadius:
+                                                                          0,
+                                                                      blurStyle:
+                                                                          BlurStyle
+                                                                              .solid,
+                                                                      blurRadius:
+                                                                          10,
+                                                                      offset: Offset(
+                                                                          0,
+                                                                          0), // changes position of shadow
+                                                                    ),
+                                                                    BoxShadow(
+                                                                      color: Colors
+                                                                          .white
+                                                                          .withOpacity(
+                                                                              0.1),
+                                                                      spreadRadius:
+                                                                          0,
+                                                                      blurRadius:
+                                                                          5,
+                                                                      blurStyle:
+                                                                          BlurStyle
+                                                                              .inner,
+                                                                      offset: Offset(
+                                                                          0,
+                                                                          0), // changes position of shadow
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                                child: Padding(
+                                                                  padding: const EdgeInsets
+                                                                          .symmetric(
+                                                                      horizontal:
+                                                                          15.0),
+                                                                  child:
+                                                                      TextField(
+                                                                    cursorColor:
+                                                                        firstColor,
+                                                                    style: TextStyle(
+                                                                        color: Colors
+                                                                            .white),
+                                                                    decoration: InputDecoration(
+                                                                        border: InputBorder
+                                                                            .none,
+                                                                        hintText:
+                                                                            'Escriba aquí',
+                                                                        hintStyle:
+                                                                            TextStyle(color: Colors.white70)),
+                                                                    controller:
+                                                                        check[
+                                                                            index],
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              actions: [
+                                                                // Text(
+                                                                //     'Observación...',
+                                                                //     textAlign:
+                                                                //         TextAlign
+                                                                //             .center,
+                                                                //     style: TextStyle(
+                                                                //         color: Colors
+                                                                //             .black,
+                                                                //         fontWeight:
+                                                                //             FontWeight
+                                                                //                 .bold,
+                                                                //         fontSize:
+                                                                //             15)),
+                                                                Row(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .center,
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceEvenly,
+                                                                  children: [
+                                                                    Container(
+                                                                      decoration:
+                                                                          BoxDecoration(
+                                                                              borderRadius: BorderRadius.circular(15)),
+                                                                      width: 95,
+                                                                      height:
+                                                                          40,
+                                                                      child:
+                                                                          ElevatedButton(
+                                                                        style: ElevatedButton.styleFrom(
+                                                                            shape: RoundedRectangleBorder(
+                                                                              borderRadius: BorderRadius.circular(30), // <-- Radius
+                                                                            ),
+                                                                            elevation: 10,
+                                                                            textStyle: TextStyle(color: Colors.white), // foreground
+                                                                            backgroundColor: Gradiant2),
+                                                                        onPressed:
+                                                                            () =>
+                                                                                {
+                                                                          fetchRegisterCommentAgent(
+                                                                              abc.data.trips[0].tripAgent[index].agentId.toString(),
+                                                                              prefs.tripId,
+                                                                              check[index].text),
+                                                                          Navigator.pop(
+                                                                              context),
+                                                                        },
+                                                                        child: Text(
+                                                                            'Guardar',
+                                                                            style: TextStyle(
+                                                                                color: backgroundColor,
+                                                                                fontWeight: FontWeight.bold,
+                                                                                fontSize: 15)),
+                                                                      ),
+                                                                    ),
+                                                                    Container(
+                                                                      width: 95,
+                                                                      height:
+                                                                          40,
+                                                                      child:
+                                                                          ElevatedButton(
+                                                                        style: ElevatedButton.styleFrom(
+                                                                            shape: RoundedRectangleBorder(
+                                                                              borderRadius: BorderRadius.circular(30), // <-- Radius
+                                                                            ),
+                                                                            textStyle: TextStyle(color: Colors.white), // foreground
+                                                                            // foreground
+                                                                            backgroundColor: Colors.red),
+                                                                        onPressed:
+                                                                            () =>
+                                                                                {
+                                                                          Navigator.pop(
+                                                                              context),
+                                                                        },
+                                                                        child: Text(
+                                                                            'Cerrar',
+                                                                            style: TextStyle(
+                                                                                color: Colors.white,
+                                                                                fontWeight: FontWeight.bold,
+                                                                                fontSize: 15)),
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                                SizedBox(
+                                                                    height:
+                                                                        10.0),
+                                                              ],
+                                                            ),
                                                           ),
-                                                        ),
-                                                      );
-                                                    },
-                                                    transitionDuration:
-                                                        Duration(
-                                                            milliseconds: 200),
-                                                    barrierDismissible: true,
-                                                    barrierLabel: '',
-                                                    context: context,
-                                                    pageBuilder: (context,
-                                                        animation1,
-                                                        animation2) {
-                                                      return null;
-                                                    });
-                                              },
-                                              child: Text('Observaciones',
-                                                  style: TextStyle(
-                                                      color: Colors.white)),
+                                                        );
+                                                      },
+                                                      transitionDuration:
+                                                          Duration(
+                                                              milliseconds:
+                                                                  200),
+                                                      barrierDismissible: true,
+                                                      barrierLabel: '',
+                                                      context: context,
+                                                      pageBuilder: (context,
+                                                          animation1,
+                                                          animation2) {
+                                                        return null;
+                                                      });
+                                                },
+                                                child: Text('Observaciones',
+                                                    style: TextStyle(
+                                                      color: backgroundColor,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    )),
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -676,72 +948,90 @@ class _DataTableExample extends State<MyConfirmAgent> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          ElevatedButton(
-            style: TextButton.styleFrom(
-                textStyle: TextStyle(color: Colors.white),
-                backgroundColor: Colors.green,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15.0),
-                )),
-            child: Text("Completar Viaje"),
-            onPressed: () {
-              SweetAlert.show(context,
-                  subtitle: "¿Está seguro que desea completar el viaje?",
-                  style: SweetAlertStyle.confirm,
-                  confirmButtonText: "Confirmar",
-                  cancelButtonText: "Cancelar",
-                  showCancelButton: true, onPress: (bool isConfirm) {
-                if (isConfirm) {
-                  SweetAlert.show(context,
-                      title: 'Completado',
-                      subtitle: 'su viaje ha sido completado',
-                      style: SweetAlertStyle.success);
-                  new Future.delayed(new Duration(seconds: 2), () {
-                    fetchRegisterTripCompleted();
-                  });
-                } else {
-                  SweetAlert.show(context,
-                      subtitle: "¡Cancelado!", style: SweetAlertStyle.success);
-                }
-                // return false to keep dialog
-                return false;
-              });
-            },
+          Container(
+            width: 200,
+            height: 40,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  elevation: 10,
+                  textStyle: TextStyle(color: backgroundColor),
+                  backgroundColor: firstColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  )),
+              child: Text("Completar Viaje",
+                  style: TextStyle(
+                      color: backgroundColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15)),
+              onPressed: () {
+                SweetAlert.show(context,
+                    subtitle: "¿Está seguro que desea completar el viaje?",
+                    style: SweetAlertStyle.confirm,
+                    confirmButtonText: "Confirmar",
+                    cancelButtonText: "Cancelar",
+                    showCancelButton: true, onPress: (bool isConfirm) {
+                  if (isConfirm) {
+                    SweetAlert.show(context,
+                        title: 'Completado',
+                        subtitle: 'su viaje ha sido completado',
+                        style: SweetAlertStyle.success);
+                    new Future.delayed(new Duration(seconds: 2), () {
+                      fetchRegisterTripCompleted();
+                    });
+                  } else {
+                    SweetAlert.show(context,
+                        subtitle: "¡Cancelado!",
+                        style: SweetAlertStyle.success);
+                  }
+                  // return false to keep dialog
+                  return false;
+                });
+              },
+            ),
           ),
-          SizedBox(width: 5),
-          ElevatedButton(
-            style: TextButton.styleFrom(
-                textStyle: TextStyle(color: Colors.white),
-                backgroundColor: Colors.red,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15.0),
-                )),
-            child: Text("Marcar como cancelado"),
-            onPressed: () {
-              SweetAlert.show(context,
-                  subtitle:
-                      "¿Está seguro que desea cancelar el viaje en proceso?",
-                  style: SweetAlertStyle.confirm,
-                  confirmButtonText: "Confirmar",
-                  cancelButtonText: "Cancelar",
-                  showCancelButton: true, onPress: (bool isConfirm) {
-                if (isConfirm) {
-                  SweetAlert.show(context,
-                      title: 'Cancelado',
-                      subtitle: 'Su viaje ha sido cancelado',
-                      style: SweetAlertStyle.success);
-                  new Future.delayed(new Duration(seconds: 2), () {
-                    fetchTripCancel();
-                  });
-                } else {
-                  SweetAlert.show(context,
-                      subtitle: "¡No ha sido cancelado el viaje!",
-                      style: SweetAlertStyle.success);
-                }
-                // return false to keep dialog
-                return false;
-              });
-            },
+          SizedBox(height: 10),
+          Container(
+            width: 200,
+            height: 40,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  textStyle: TextStyle(color: Colors.white),
+                  backgroundColor: Colors.red,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  )),
+              child: Text("Marcar como cancelado",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15)),
+              onPressed: () {
+                SweetAlert.show(context,
+                    subtitle:
+                        "¿Está seguro que desea cancelar el viaje en proceso?",
+                    style: SweetAlertStyle.confirm,
+                    confirmButtonText: "Confirmar",
+                    cancelButtonText: "Cancelar",
+                    showCancelButton: true, onPress: (bool isConfirm) {
+                  if (isConfirm) {
+                    SweetAlert.show(context,
+                        title: 'Cancelado',
+                        subtitle: 'Su viaje ha sido cancelado',
+                        style: SweetAlertStyle.success);
+                    new Future.delayed(new Duration(seconds: 2), () {
+                      fetchTripCancel();
+                    });
+                  } else {
+                    SweetAlert.show(context,
+                        subtitle: "¡No ha sido cancelado el viaje!",
+                        style: SweetAlertStyle.success);
+                  }
+                  // return false to keep dialog
+                  return false;
+                });
+              },
+            ),
           ),
         ],
       ),

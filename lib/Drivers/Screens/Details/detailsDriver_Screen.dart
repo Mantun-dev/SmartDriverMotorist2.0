@@ -19,23 +19,20 @@ class DetailsDriverScreen extends StatefulWidget {
 }
 
 class _DetailsDriverScreenState extends State<DetailsDriverScreen> {
-
   final prefs = new PreferenciasUsuario();
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       // each product have a color
       backgroundColor: widget.plantillaDriver.color,
       drawer: DriverMenuLateral(),
       appBar: buildAppBar(context),
-      body:  GestureDetector(
-        onTap: () {   
-          FocusScope.of(context).requestFocus(new FocusNode());
-        },
-        child: Body(
-          plantillaDriver: widget.plantillaDriver)),
+      body: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).requestFocus(new FocusNode());
+          },
+          child: Body(plantillaDriver: widget.plantillaDriver)),
 
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
     );
@@ -47,10 +44,12 @@ class _DetailsDriverScreenState extends State<DetailsDriverScreen> {
       elevation: 0,
       actions: <Widget>[
         IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_circle_left),
           onPressed: () {
-            Navigator.pushAndRemoveUntil(context,MaterialPageRoute(builder: (context) =>
-            HomeDriverScreen()),(Route<dynamic> route) =>false);
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => HomeDriverScreen()),
+                (Route<dynamic> route) => false);
           },
         ),
         SizedBox(width: kDefaultPadding / 2)

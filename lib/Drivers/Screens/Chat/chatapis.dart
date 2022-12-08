@@ -7,7 +7,7 @@ import '../../../helpers/base_client.dart';
 import '../../../helpers/res_apis.dart';
 
 class ChatApis {
-  final StreamSocket streamSocket = StreamSocket(host: '0sufv.localtonet.com');
+  final StreamSocket streamSocket = StreamSocket(host: 'wschat.smtdriver.com');
   List info = [];
   dynamic getDataUsuariosVar;
   final header = {"Content-Type": "application/json"};
@@ -17,7 +17,7 @@ class ChatApis {
     var dataS = await BaseClient().get(
         RestApis.rooms + '/Tripid/12', {"Content-Type": "application/json"});
     var dataM = await BaseClient()
-        .get(RestApis.messages, {"Content-Type": "application/json"});
+        .get(RestApis.messages + "/12", {"Content-Type": "application/json"});
     if (dataS == null || dataM == null) return null;
     final sendDataS = jsonDecode(dataS);
     final sendDataM = jsonDecode(dataM);
@@ -51,7 +51,8 @@ class ChatApis {
       'hora': formattedHour,
       'dia': dia,
       'mes': mes,
-      'año': anio
+      'año': anio,
+      "leido": false
     });
     Map sendMessage = {
       "id_emisor": "0",
@@ -65,32 +66,16 @@ class ChatApis {
       "Mes": mes,
       "Año": anio,
       "Hora": formattedHour,
+      "leido": false
     };
     print(sendMessage);
     // Map str = json.decode(sendMessage);
-    var ok = await BaseClient().post(
+    await BaseClient().post(
         RestApis.messages, sendMessage, {"Content-Type": "application/json"});
-    print(ok);
   }
 
   void getDataUsuarios(dynamic getData) {
     getDataUsuariosVar = getData;
-    //print(getDataUsuariosVar);
-  }
-
-  void setTarget() async {
-    var response = await BaseClient()
-        .get(RestApis.usuerWithId + '/8', {"Content-Type": "application/json"});
-    //print(response);
-    final sendData = jsonDecode(response);
-    streamSocket.socket.emit('setTarget', sendData);
-  }
-
-  void loadMessage(String idE, String idR, String sala) async {
-    var response = await BaseClient().get(
-        RestApis.messages + "/$sala" + "/$idE" + "/$idR",
-        {"Content-Type": "application/json"});
-    print(response);
   }
 
   void readMessage(dynamic data) async {
@@ -112,6 +97,43 @@ class ChatApis {
     Map dat = {'mens': response};
     String str2 = json.encode(dat);
     streamSocket.socket.emit('updateM', str2);
-    print(response);
+  }
+
+  void sendReadOnline(String dataSala, String dataid) async {
+    Map info = {"Leido": true};
+    String str = json.encode(info);
+    await http.put(
+        Uri.parse(
+          RestApis.messages + "/$dataSala" + "/$dataid",
+        ),
+        headers: {"Content-Type": "application/json"},
+        body: str);
+    var responseM = await BaseClient().get(
+        RestApis.messages + "/$dataSala" + "/$dataid" + "/0",
+        {"Content-Type": "application/json"});
+
+    Map dat = {'mens': responseM};
+    String str2 = json.encode(dat);
+    streamSocket.socket.emit('updateM', str2);
+  }
+
+  Future<List<dynamic>> notificationCounter(String tripId) async {
+    try {
+      var notification = await BaseClient().get(
+          RestApis.messages + "/$tripId", {"Content-Type": "application/json"});
+
+      var itemsData = jsonDecode(notification != null ? notification : "[]");
+      if (notification != null) {
+        List<dynamic> counter = [];
+        itemsData['Agentes'].forEach((item) {
+          counter.add(item);
+        });
+        return counter;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      return [];
+    }
   }
 }

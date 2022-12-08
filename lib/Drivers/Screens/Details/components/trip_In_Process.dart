@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/confirm_trips.dart';
-import 'package:flutter_auth/Drivers/Screens/Details/detailsDriver_Screen.dart';
+import 'package:flutter_auth/Drivers/Screens/Details/components/details_TripProgress.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
 import 'package:flutter_auth/Drivers/components/loader.dart';
 import 'package:flutter_auth/Drivers/components/menu_lateralDriver.dart';
 import 'package:flutter_auth/Drivers/models/network.dart';
-import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 import 'package:flutter_auth/Drivers/models/tripsPendin2.dart';
 
 import '../../../../constants.dart';
+import '../../../models/plantillaDriver.dart';
 
 void main() => runApp(Process());
 
@@ -44,23 +44,26 @@ class _ProcessState extends State<Process> {
 
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
     return MaterialApp(
       title: 'Material App',
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.green[700],
-          title: Center(child: Text('Viajes en proceso')),
+          backgroundColor: backgroundColor,
+          elevation: 10,
           actions: <Widget>[
             IconButton(
-              icon: Icon(Icons.arrow_back),
+              icon: Icon(Icons.arrow_circle_left),
               onPressed: () {
-                Navigator.push(
+                Navigator.pop(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => DetailsDriverScreen(
-                            plantillaDriver: plantillaDriver[0],
-                          )),
+                    builder: (context) {
+                      return DetailsDriverTripInProgress(
+                          plantillaDriver: plantillaDriver[1]);
+                    },
+                  ),
                 );
               },
             ),
@@ -68,9 +71,11 @@ class _ProcessState extends State<Process> {
           ],
         ),
         drawer: DriverMenuLateral(),
-        body: SingleChildScrollView(
-          child: Container(
-            width: 500.0,
+        body: Container(
+          color: backgroundColor,
+          width: size.width,
+          height: size.height,
+          child: SingleChildScrollView(
             child: Column(
               children: [
                 FutureBuilder<List<TripsInProgress>>(
@@ -89,8 +94,8 @@ class _ProcessState extends State<Process> {
                                 leading: Icon(Icons.bus_alert),
                                 title: Text('Agentes',
                                     style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.normal,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
                                         fontSize: 26.0)),
                                 subtitle: Text('No hay viajes pendientes',
                                     style: TextStyle(
@@ -108,186 +113,292 @@ class _ProcessState extends State<Process> {
                             physics: ClampingScrollPhysics(),
                             itemCount: abc.data.length,
                             itemBuilder: (context, index) {
-                              return Card(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10)),
-                                margin: EdgeInsets.all(14),
-                                elevation: 10,
-                                child: Column(
-                                  children: <Widget>[
-                                    SizedBox(height: 20.0),
-                                    Container(
-                                      margin: EdgeInsets.only(left: 15),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          Column(
-                                            children: [
-                                              Icon(
-                                                Icons.tag,
-                                                color: Colors.green[500],
-                                                size: 35,
-                                              ),
-                                              Text(' Viaje : ',
+                              return Container(
+                                decoration: BoxDecoration(boxShadow: [
+                                  BoxShadow(
+                                      blurStyle: BlurStyle.normal,
+                                      color: Colors.white.withOpacity(0.2),
+                                      blurRadius: 15,
+                                      spreadRadius: -10,
+                                      offset: Offset(-15, -6)),
+                                  BoxShadow(
+                                      blurStyle: BlurStyle.normal,
+                                      color: Colors.black.withOpacity(0.6),
+                                      blurRadius: 30,
+                                      spreadRadius: -15,
+                                      offset: Offset(18, 5)),
+                                ]),
+                                child: Card(
+                                  color: Color(0xFF303440),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10)),
+                                  margin: EdgeInsets.all(14),
+                                  elevation: 10,
+                                  child: Column(
+                                    children: <Widget>[
+                                      SizedBox(height: 20.0),
+                                      Container(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Column(
+                                              children: [
+                                                Icon(
+                                                  Icons.directions_car,
+                                                  color: thirdColor,
+                                                  size: 40,
+                                                ),
+                                                Text('No. de viaje : ',
+                                                    textAlign: TextAlign.center,
+                                                    style: TextStyle(
+                                                        color: Gradiant2,
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                                Text(
+                                                  '${abc.data[index].tripId}',
+                                                  textAlign: TextAlign.center,
                                                   style: TextStyle(
-                                                      color: Colors.green[500],
-                                                      fontSize: 17)),
-                                              Text('${abc.data[index].tripId}'),
-                                            ],
-                                          ),
-                                          Container(
-                                            margin: EdgeInsets.only(left: 5),
-                                            child: Column(
+                                                      color: Colors.white,
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ],
+                                            ),
+                                            Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
                                               children: [
                                                 Icon(
                                                   Icons.date_range,
-                                                  color: Colors.green[500],
-                                                  size: 35,
+                                                  color: thirdColor,
+                                                  size: 40,
                                                 ),
                                                 Text('Fecha: ',
+                                                    textAlign: TextAlign.center,
                                                     style: TextStyle(
-                                                        color:
-                                                            Colors.green[500],
-                                                        fontSize: 17)),
+                                                        color: Gradiant2,
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                                Text('${abc.data[index].fecha}',
+                                                    textAlign: TextAlign.center,
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(height: 20.0),
+                                      Container(
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment
+                                              .spaceEvenly, //Center Row contents horizontally,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Column(
+                                              children: [
+                                                Icon(Icons.location_city,
+                                                    color: thirdColor,
+                                                    size: 40),
+                                                Text(' Empresa: ',
+                                                    textAlign: TextAlign.center,
+                                                    style: TextStyle(
+                                                        color: Gradiant2,
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.bold)),
                                                 Text(
-                                                    '${abc.data[index].fecha}'),
+                                                  '${abc.data[index].empresa}',
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ],
+                                            ),
+                                            Column(
+                                              mainAxisAlignment: MainAxisAlignment
+                                                  .spaceEvenly, //Center Row contents horizontally,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                Icon(Icons.access_time,
+                                                    color: thirdColor,
+                                                    size: 40),
+                                                Text('Hora:',
+                                                    style: TextStyle(
+                                                        color: Gradiant2,
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                                Text('${abc.data[index].hora}',
+                                                    textAlign: TextAlign.center,
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(height: 20.0),
+                                      Container(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Column(
+                                              children: [
+                                                Icon(
+                                                    Icons
+                                                        .supervised_user_circle,
+                                                    color: thirdColor,
+                                                    size: 40),
+                                                Text('Agentes: ',
+                                                    style: TextStyle(
+                                                        color: Gradiant2,
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                                Text(
+                                                    '${abc.data[index].agentes}',
+                                                    textAlign: TextAlign.center,
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                              ],
+                                            ),
+                                            Column(
+                                              mainAxisAlignment: MainAxisAlignment
+                                                  .spaceEvenly, //Center Row contents horizontally,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                    Icons
+                                                        .arrow_circle_down_rounded,
+                                                    color: thirdColor,
+                                                    size: 40),
+                                                Text('Tipo: ',
+                                                    style: TextStyle(
+                                                        color: Gradiant2,
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                                Text('${abc.data[index].tipo}',
+                                                    textAlign: TextAlign.center,
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          Flexible(
+                                            child: Column(
+                                              children: [
+                                                Icon(
+                                                  Icons.person,
+                                                  color: thirdColor,
+                                                  size: 40,
+                                                ),
+                                                Text('Conductor: ',
+                                                    style: TextStyle(
+                                                        color: Gradiant2,
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                                Text(
+                                                    '${abc.data[index].conductor}',
+                                                    textAlign: TextAlign.center,
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.bold)),
                                               ],
                                             ),
                                           ),
                                         ],
                                       ),
-                                    ),
-                                    SizedBox(height: 20.0),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        Column(
-                                          children: [
-                                            Icon(
-                                              Icons.kitchen,
-                                              color: Colors.green[500],
-                                              size: 35,
-                                            ),
-                                            Text(' Empresa: ',
-                                                style: TextStyle(
-                                                    color: Colors.green[500],
-                                                    fontSize: 17)),
-                                            Text(
-                                              '${abc.data[index].empresa}',
-                                              style:
-                                                  TextStyle(color: kTextColor),
-                                            ),
-                                          ],
-                                        ),
-                                        Container(
-                                          margin: EdgeInsets.only(right: 5),
-                                          child: Column(
-                                            children: [
-                                              Icon(
-                                                Icons.timer,
-                                                color: Colors.green[500],
-                                                size: 35,
-                                              ),
-                                              Text('Hora:',
-                                                  style: TextStyle(
-                                                      color: Colors.green[500],
-                                                      fontSize: 17)),
-                                              Text('${abc.data[index].hora}'),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 20.0),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        Column(
-                                          children: [
-                                            Icon(
-                                              Icons.supervised_user_circle,
-                                              color: Colors.green[500],
-                                              size: 35,
-                                            ),
-                                            Text('Agentes: ',
-                                                style: TextStyle(
-                                                    color: Colors.green[500],
-                                                    fontSize: 17)),
-                                            Text('${abc.data[index].agentes}'),
-                                          ],
-                                        ),
-                                        Column(
-                                          children: [
-                                            Icon(
-                                              Icons.arrow_circle_down_rounded,
-                                              color: Colors.green[500],
-                                              size: 35,
-                                            ),
-                                            Text('Tipo: ',
-                                                style: TextStyle(
-                                                    color: Colors.green[500],
-                                                    fontSize: 17)),
-                                            Text('${abc.data[index].tipo}'),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        Flexible(
-                                          child: Column(
-                                            children: [
-                                              Icon(
-                                                Icons.drive_eta_sharp,
-                                                color: Colors.green[500],
-                                                size: 35,
-                                              ),
-                                              Text('Conductor: ',
-                                                  style: TextStyle(
-                                                      color: Colors.green[500],
-                                                      fontSize: 17)),
-                                              Text(
-                                                  '${abc.data[index].conductor}'),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 20.0),
+                                      SizedBox(height: 20.0),
 
-                                    // Usamos una fila para ordenar los botones del card
-                                    // ignore: deprecated_member_use
-                                    TextButton(
-                                      style: TextButton.styleFrom(
-                                        backgroundColor: kCardColorDriver2,
-                                        foregroundColor: kPrimaryDriverColor,
-                                        textStyle: TextStyle(
-                                          color: Colors.white,
-                                        ),
-                                        shape: RoundedRectangleBorder(
-                                            side: BorderSide(
-                                                color: kCardColorDriver2,
-                                                width: 2,
-                                                style: BorderStyle.solid),
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                      ),
-                                      onPressed: () {
-                                        fetchAgentsAsigmentChekc(
-                                            abc.data[index].tripId.toString());
-                                      },
-                                      child: Text('Ver viaje',
-                                          style: TextStyle(
+                                      // Usamos una fila para ordenar los botones del card
+                                      // ignore: deprecated_member_use
+                                      Container(
+                                        decoration: BoxDecoration(boxShadow: [
+                                          BoxShadow(
+                                              blurStyle: BlurStyle.normal,
+                                              color:
+                                                  Colors.white.withOpacity(0.2),
+                                              blurRadius: 30,
+                                              spreadRadius: -8,
+                                              offset: Offset(-15, -6)),
+                                          BoxShadow(
+                                              blurStyle: BlurStyle.normal,
+                                              color:
+                                                  Colors.black.withOpacity(0.6),
+                                              blurRadius: 30,
+                                              spreadRadius: -15,
+                                              offset: Offset(18, 5)),
+                                        ]),
+                                        child: TextButton(
+                                          style: TextButton.styleFrom(
+                                            fixedSize: Size(200, 50),
+                                            elevation: 10,
+                                            backgroundColor: backgroundColor,
+                                            textStyle: TextStyle(
                                               color: Colors.white,
-                                              fontSize: 17)),
-                                    ),
-                                    SizedBox(height: 20.0),
-                                  ],
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                                // side: BorderSide(
+                                                //     color: kCardColorDriver2,
+                                                //     width: 2,
+                                                //     style: BorderStyle.solid),
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                          ),
+                                          onPressed: () {
+                                            fetchAgentsAsigmentChekc(abc
+                                                .data[index].tripId
+                                                .toString());
+                                          },
+                                          child: Text('Ver viaje',
+                                              style: TextStyle(
+                                                  color: firstColor,
+                                                  fontSize: 20)),
+                                        ),
+                                      ),
+                                      SizedBox(height: 20.0),
+                                    ],
+                                  ),
                                 ),
                               );
                             });

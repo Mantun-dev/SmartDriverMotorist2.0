@@ -20,6 +20,7 @@ const kColorDriverAppBar = Color(0xFF2E7D32);
 
 //////////////////////////////New SmartDriver Colors/////////////////////////////////////
 const backgroundColor = Color(0xFF303440);
+const backgroundColor2 = Color(0xFF454158);
 const firstColor = Color(0xFF8AFF80);
 const secondColor = Color(0xFFFFC97F);
 const thirdColor = Color(0xFF9580FF);
@@ -30,3 +31,4 @@ const GradiantV1 = Color(0xFF9580FF);
 const GradiantV2 = Color(0xFFFF80BF);
 const GradiantV_1 = Color(0xFFFF9580);
 const GradiantV_2 = Color(0xFFFFFF80);
+const chatBubbleColor = Color(0xFF23212C);

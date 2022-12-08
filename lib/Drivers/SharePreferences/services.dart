@@ -34,7 +34,7 @@ class PushNotificationServices{
     _messageStreamController.add(message.data['type']??'no data');  
   }
 
-  static Future initializeApp()async{
+    static Future initializeApp()async{
     //push notifications
     //final prefs = new PreferenciasUsuario();
     await Firebase.initializeApp();

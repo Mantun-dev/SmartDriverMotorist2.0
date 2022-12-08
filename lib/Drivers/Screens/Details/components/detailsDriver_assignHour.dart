@@ -25,14 +25,14 @@ class _DetailsDriverHourState extends State<DetailsDriverHour> {
   Widget build(BuildContext context) {
     return Scaffold(
       // each product have a color
-      backgroundColor: widget.plantillaDriver.color,
+
       drawer: DriverMenuLateral(),
       appBar: buildAppBar(context),
       body: Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(
           begin: Alignment.topRight,
-          end: Alignment.bottomLeft,
+          end: Alignment.topLeft,
           colors: [Gradiant2, GradiantV1],
         )),
         child: GestureDetector(
@@ -48,11 +48,11 @@ class _DetailsDriverHourState extends State<DetailsDriverHour> {
 
   AppBar buildAppBar(BuildContext context) {
     return AppBar(
-      backgroundColor: widget.plantillaDriver.color,
-      elevation: 0,
+      backgroundColor: backgroundColor,
+      elevation: 10,
       actions: <Widget>[
         IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_circle_left),
           onPressed: () {
             Navigator.pushAndRemoveUntil(
                 context,

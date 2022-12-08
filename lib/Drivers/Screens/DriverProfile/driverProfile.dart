@@ -49,7 +49,7 @@ class _DataTableExample extends State<DriverProfilePage> {
           iconTheme: IconThemeData(color: Colors.white),
           actions: <Widget>[
             IconButton(
-              icon: Icon(Icons.arrow_back),
+              icon: Icon(Icons.arrow_circle_left),
               onPressed: () {
                 Navigator.pushAndRemoveUntil(
                     context,

@@ -9,19 +9,16 @@ import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 import 'package:flutter_auth/constants.dart';
 //import 'package:flutter/scheduler.dart';
 
-class DetailsDriverTripInProgress extends StatefulWidget {
+class DetailsDriverHistory extends StatefulWidget {
   final PlantillaDriver plantillaDriver;
 
-  const DetailsDriverTripInProgress({Key key, this.plantillaDriver})
-      : super(key: key);
+  const DetailsDriverHistory({Key key, this.plantillaDriver}) : super(key: key);
 
   @override
-  _DetailsDriverTripInProgressState createState() =>
-      _DetailsDriverTripInProgressState();
+  _DetailsDriverHistoryState createState() => _DetailsDriverHistoryState();
 }
 
-class _DetailsDriverTripInProgressState
-    extends State<DetailsDriverTripInProgress> {
+class _DetailsDriverHistoryState extends State<DetailsDriverHistory> {
   final prefs = new PreferenciasUsuario();
 
   @override
@@ -34,9 +31,9 @@ class _DetailsDriverTripInProgressState
       body: Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.topRight,
-          colors: [GradiantV_1, GradiantV_2],
+          begin: Alignment.topRight,
+          end: Alignment.topLeft,
+          colors: [GradiantV2, GradiantV1],
         )),
         child: GestureDetector(
             onTap: () {

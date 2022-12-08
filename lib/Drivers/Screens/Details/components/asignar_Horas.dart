@@ -212,33 +212,6 @@ class _AsignarHorasState extends State<AsignarHoras> {
                                             ],
                                           ),
                                         ),
-                                        // Column(
-                                        //   children: [
-                                        //     Icon(
-                                        //       Icons.account_balance,
-                                        //       color: Colors.green[500],
-                                        //       size: 35,
-                                        //     ),
-                                        //     Text('Compañia: ',
-                                        //         style: TextStyle(
-                                        //             color: Colors.green[500], fontSize: 17)),
-                                        //     if (abc.data[index].companyId == 1)... {
-                                        //       Text('Compañia de prueba'),
-                                        //     },
-                                        //     if (abc.data[index].companyId == 2)... {
-                                        //       Text('Startek SPS'),
-                                        //     },
-                                        //     if (abc.data[index].companyId == 3)... {
-                                        //       Text('Startek TGU'),
-                                        //     },
-                                        //     if (abc.data[index].companyId == 6)... {
-                                        //       Text('Alorica SPS'),
-                                        //     },
-                                        //     if (abc.data[index].companyId == 7)... {
-                                        //       Text('Zero variance SPS'),
-                                        //     },
-                                        //   ],
-                                        // ),
                                         Container(
                                             padding: EdgeInsets.symmetric(
                                                 horizontal: 10, vertical: 5),
@@ -252,21 +225,6 @@ class _AsignarHorasState extends State<AsignarHoras> {
                                                   color: Colors.white,
                                                   fontSize: 13),
                                             )),
-                                        // Flexible(
-                                        //   child: Column(
-                                        //     children: [
-                                        //       Icon(
-                                        //         Icons.tag,
-                                        //         color: Colors.green[500],
-                                        //         size: 35,
-                                        //       ),
-                                        //       Text('Viajes: ',
-                                        //           style: TextStyle(
-                                        //               color: Colors.green[500], fontSize: 17)),
-                                        //       Text('${abc.data[index].trips}'),
-                                        //     ],
-                                        //   ),
-                                        // ),
                                       ],
                                     ),
                                   ),

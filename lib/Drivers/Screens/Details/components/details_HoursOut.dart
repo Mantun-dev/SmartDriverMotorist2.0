@@ -33,7 +33,7 @@ class _DetailsDriverHoursOutState extends State<DetailsDriverHoursOut> {
         decoration: BoxDecoration(
             gradient: LinearGradient(
           begin: Alignment.topRight,
-          end: Alignment.bottomLeft,
+          end: Alignment.topLeft,
           colors: [Gradiant2, Gradiant1],
         )),
         child: GestureDetector(
@@ -53,7 +53,7 @@ class _DetailsDriverHoursOutState extends State<DetailsDriverHoursOut> {
       elevation: 0,
       actions: <Widget>[
         IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_circle_left),
           onPressed: () {
             Navigator.pushAndRemoveUntil(
                 context,

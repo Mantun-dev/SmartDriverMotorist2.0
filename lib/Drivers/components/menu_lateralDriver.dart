@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_auth/Drivers/Screens/Details/components/details_HoursOut.dart';
+import 'package:flutter_auth/Drivers/Screens/Details/components/details_TripProgress.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 import 'package:flutter_auth/Drivers/Screens/Welcome/welcome_screen.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/detailsDriver_Screen.dart';
@@ -10,6 +12,8 @@ import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 import 'package:flutter_auth/Drivers/models/profile.dart';
 import 'package:flutter_auth/constants.dart';
 import 'package:sweetalert/sweetalert.dart';
+
+import '../Screens/Details/components/detailsDriver_assignHour.dart';
 
 class DriverMenuLateral extends StatefulWidget {
   final Profile item;
@@ -80,9 +84,9 @@ class _DriverMenuLateralState extends State<DriverMenuLateral> {
               Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                      builder: (_) => DetailsDriverScreen(
+                      builder: (_) => DetailsDriverHour(
                           plantillaDriver: plantillaDriver[0]))).then((_) =>
-                  DetailsDriverScreen(plantillaDriver: plantillaDriver[1]));
+                  DetailsDriverHour(plantillaDriver: plantillaDriver[1]));
             },
           ),
           Divider(
@@ -99,7 +103,7 @@ class _DriverMenuLateralState extends State<DriverMenuLateral> {
               Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                      builder: (_) => DetailsDriverScreen(
+                      builder: (_) => DetailsDriverTripInProgress(
                           plantillaDriver: plantillaDriver[1]))).then((_) =>
                   DetailsDriverScreen(plantillaDriver: plantillaDriver[3]));
             },
@@ -118,9 +122,9 @@ class _DriverMenuLateralState extends State<DriverMenuLateral> {
               Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                      builder: (_) => DetailsDriverScreen(
+                      builder: (_) => DetailsDriverHour(
                           plantillaDriver: plantillaDriver[3]))).then((_) =>
-                  DetailsDriverScreen(plantillaDriver: plantillaDriver[2]));
+                  DetailsDriverHoursOut(plantillaDriver: plantillaDriver[2]));
             },
           ),
           Divider(

@@ -11,7 +11,7 @@ class StreamSocket {
 
   StreamSocket({this.host}) {
     socket = IO.io(
-        'http://$host',
+        'https://$host',
         IO.OptionBuilder().setTransports(['websocket'])
             //.enableForceNewConnection() // for Flutter or Dart VM
             .setExtraHeaders({'foo': 'bar'}) // optional

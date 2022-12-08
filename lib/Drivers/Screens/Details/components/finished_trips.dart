@@ -45,7 +45,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
             elevation: 0,
             actions: <Widget>[
               IconButton(
-                icon: Icon(Icons.arrow_back),
+                icon: Icon(Icons.arrow_circle_left),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -209,7 +209,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                 title: Text('Entrada: '),
                                                 subtitle: Text(
                                                     '${abc.data.trips[0].inTrip[index].hourIn}'),
-                                                leading: Icon(Icons.timer,
+                                                leading: Icon(Icons.access_time,
                                                     color: Colors.green[500]),
                                               ),
                                               ListTile(
@@ -236,7 +236,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                         fontWeight:
                                                             FontWeight.normal,
                                                         fontSize: 25.0)),
-                                                leading: Icon(Icons.timer,
+                                                leading: Icon(Icons.access_time,
                                                     color: Colors.green[500]),
                                               ),
                                             ],
@@ -501,7 +501,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                 title: Text('Entrada: '),
                                                 subtitle: Text(
                                                     '${abc.data.trips[2].cancelados[index].hourIn}'),
-                                                leading: Icon(Icons.timer,
+                                                leading: Icon(Icons.access_time,
                                                     color: Colors.green[500]),
                                               ),
                                               ListTile(

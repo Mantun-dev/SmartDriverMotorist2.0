@@ -13,6 +13,7 @@ import 'package:package_info/package_info.dart';
 import '../../Details/components/detailsDriver_assignHour.dart';
 import '../../Details/components/details_HoursOut.dart';
 import '../../Details/components/details_TripProgress.dart';
+import '../../Details/components/details_history.dart';
 //import 'package:new_version/new_version.dart';
 
 class Body extends StatefulWidget {
@@ -223,7 +224,7 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) =>
-                                                  DetailsDriverHour(
+                                                  DetailsDriverHistory(
                                                 plantillaDriver:
                                                     plantillaDriver[index],
                                               ),

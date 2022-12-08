@@ -55,7 +55,7 @@ List<PlantillaDriver> plantillaDriver = [
       size: 20,
       description: dummyText4,
       image: "assets/images/historial.png",
-      imageMain: "assets/images/clipboard.svg",
+      imageMain: "assets/images/history.svg",
       color: backgroundColor),
   PlantillaDriver(
       id: 5,

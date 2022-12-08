@@ -1,15 +1,16 @@
 //import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/agents_Trip.dart';
-import 'package:flutter_auth/Drivers/Screens/Details/detailsDriver_Screen.dart';
+
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
 import 'package:flutter_auth/Drivers/components/loader.dart';
 import 'package:flutter_auth/Drivers/components/menu_lateralDriver.dart';
 import 'package:flutter_auth/Drivers/models/network.dart';
-import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 import 'package:flutter_auth/Drivers/models/tripsPendin2.dart';
 
 import '../../../../constants.dart';
+import '../../../models/plantillaDriver.dart';
+import 'detailsDriver_assignHour.dart';
 
 void main() => runApp(Trips());
 
@@ -47,6 +48,7 @@ class _TripsState extends State<Trips> {
 
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -55,14 +57,16 @@ class _TripsState extends State<Trips> {
           backgroundColor: backgroundColor,
           actions: <Widget>[
             IconButton(
-              icon: Icon(Icons.arrow_back),
+              icon: Icon(Icons.arrow_circle_left),
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => DetailsDriverScreen(
-                            plantillaDriver: plantillaDriver[0],
-                          )),
+                    builder: (context) {
+                      return DetailsDriverHour(
+                          plantillaDriver: plantillaDriver[0]);
+                    },
+                  ),
                 );
               },
             ),
@@ -70,9 +74,11 @@ class _TripsState extends State<Trips> {
           ],
         ),
         drawer: DriverMenuLateral(),
-        body: SingleChildScrollView(
-          child: Container(
-            color: backgroundColor,
+        body: Container(
+          width: size.width,
+          height: size.height,
+          color: backgroundColor,
+          child: SingleChildScrollView(
             child: Column(
               children: [
                 FutureBuilder<List<TripsPending2>>(
@@ -81,6 +87,7 @@ class _TripsState extends State<Trips> {
                     if (abc.connectionState == ConnectionState.done) {
                       if (abc.data.length < 1) {
                         return Card(
+                          color: backgroundColor,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)),
                           margin: EdgeInsets.symmetric(vertical: 15),
@@ -319,7 +326,9 @@ class _TripsState extends State<Trips> {
                                                   Text('Conductor: ',
                                                       style: TextStyle(
                                                           color: Gradiant2,
-                                                          fontSize: 18)),
+                                                          fontSize: 18,
+                                                          fontWeight:
+                                                              FontWeight.bold)),
                                                   Text(
                                                     '${abc.data[index].conductor}',
                                                     textAlign: TextAlign.center,
@@ -343,14 +352,14 @@ class _TripsState extends State<Trips> {
                                                 blurStyle: BlurStyle.normal,
                                                 color: Colors.white
                                                     .withOpacity(0.2),
-                                                blurRadius: 30,
+                                                blurRadius: 10,
                                                 spreadRadius: -8,
                                                 offset: Offset(-15, -6)),
                                             BoxShadow(
                                                 blurStyle: BlurStyle.normal,
                                                 color: Colors.black
                                                     .withOpacity(0.6),
-                                                blurRadius: 30,
+                                                blurRadius: 10,
                                                 spreadRadius: -15,
                                                 offset: Offset(18, 5)),
                                           ]),
@@ -378,7 +387,7 @@ class _TripsState extends State<Trips> {
                                             },
                                           ),
                                         ),
-                                        SizedBox(height: 30.0),
+                                        SizedBox(height: 20.0),
                                       ],
                                     ),
                                   ),
