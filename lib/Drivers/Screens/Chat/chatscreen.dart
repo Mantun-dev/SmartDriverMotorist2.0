@@ -24,7 +24,11 @@ class ChatScreen extends StatefulWidget {
   final String nombre;
   final String id;
   final String rol;
-  const ChatScreen({Key key, this.nombre, this.id, this.rol}) : super(key: key);
+  final String nombreAgent;
+  final String idAgent;
+  const ChatScreen(
+      {Key key, this.nombre, this.id, this.rol, this.nombreAgent, this.idAgent})
+      : super(key: key);
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -51,8 +55,16 @@ class _ChatScreenState extends State<ChatScreen> {
   final StreamSocket streamSocket = StreamSocket(host: 'wschat.smtdriver.com');
 
   _sendMessage() {
-    ChatApis().sendMessage(_messageInputController.text.trim(), sala.toString(),
-        widget.nombre, id.toString(), nameAgent, idDb, idE, idR);
+    ChatApis().sendMessage(
+        _messageInputController.text.trim(),
+        sala.toString(),
+        widget.nombre,
+        id.toString(),
+        nameAgent,
+        idDb,
+        idE,
+        idR,
+        widget.idAgent);
     DateTime now = DateTime.now();
     String formattedHour = DateFormat('hh:mm a').format(now);
     var formatter = new DateFormat('dd');
@@ -129,7 +141,8 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void datas() {
-    ChatApis().dataLogin(widget.id, widget.rol, widget.nombre);
+    ChatApis().dataLogin(widget.id, widget.rol, widget.nombre, prefs.tripId,
+        widget.nombreAgent, widget.idAgent);
     streamSocket.socket.on('detectarE', (data) => print(data));
     streamSocket.socket.on('entrarChat_flutter', (data) {
       setState(() {

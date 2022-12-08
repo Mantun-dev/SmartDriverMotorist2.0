@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter_auth/Drivers/Screens/Chat/socketChat.dart';
 import 'package:http/http.dart' as http;
 
@@ -12,28 +14,42 @@ class ChatApis {
   dynamic getDataUsuariosVar;
   final header = {"Content-Type": "application/json"};
 
-  Future dataLogin(String id, String rol, String nombre) async {
+  Future dataLogin(String id, String rol, String nombre, String sala,
+      String nombreAgent, String idAgent) async {
     streamSocket.socket.connect();
     var dataS = await BaseClient().get(
-        RestApis.rooms + '/Tripid/12', {"Content-Type": "application/json"});
-    var dataM = await BaseClient()
-        .get(RestApis.messages + "/12", {"Content-Type": "application/json"});
+        RestApis.rooms + '/Tripid/$sala', {"Content-Type": "application/json"});
+    var dataM = await BaseClient().get(
+        RestApis.messages + "/$sala", {"Content-Type": "application/json"});
     if (dataS == null || dataM == null) return null;
     final sendDataS = jsonDecode(dataS);
     final sendDataM = jsonDecode(dataM);
     Map data = {
-      'send1': {'nombre': "DEREK", 'rol': "MOTORISTA", 'id': "0", 'sala': "12"},
+      'send1': {'nombre': nombre, 'rol': "MOTORISTA", 'id': id, 'sala': sala},
       'send2': sendDataS['salas'],
       'send3': sendDataM['mensajes'],
-      'send4': {'nombre': "FRANKLIN", 'rol': "AGENTE", '_id': "8", 'sala': "12"}
+      'send4': {
+        'nombre': nombreAgent,
+        'rol': "AGENTE",
+        '_id': idAgent,
+        'sala': sala
+      }
     };
     String str = json.encode(data);
     streamSocket.socket.emit('driver', str);
     print(streamSocket.socket.connected);
   }
 
-  void sendMessage(String message, String sala, String nombre, String id,
-      String nameDriver, String idDb, String idE, String idR) async {
+  void sendMessage(
+      String message,
+      String sala,
+      String nombre,
+      String id,
+      String nameDriver,
+      String idDb,
+      String idE,
+      String idR,
+      String idAgent) async {
     DateTime now = DateTime.now();
     String formattedHour = DateFormat('hh:mm a').format(now);
     var formatter = new DateFormat('dd');
@@ -55,12 +71,12 @@ class ChatApis {
       "leido": false
     });
     Map sendMessage = {
-      "id_emisor": "0",
-      "id_receptor": "8",
-      "Nombre_emisor": nombre,
+      "id_emisor": id,
+      "id_receptor": idAgent,
+      "Nombre_emisor": nameDriver,
       "Mensaje": message,
       "Sala": sala,
-      "Nombre_receptor": "FRANKLIN",
+      "Nombre_receptor": nombre,
       "Tipo": "MENSAJE",
       "Dia": dia,
       "Mes": mes,
@@ -78,14 +94,14 @@ class ChatApis {
     getDataUsuariosVar = getData;
   }
 
-  void readMessage(dynamic data) async {
+  void readMessage(dynamic data, String sala) async {
     data["listM"].forEach((asm) async {
       if (asm["leido"] == false && asm["tipo"] == "MENSAJE" && asm["id"] == 8) {
         Map mensaje = {"Leido": true};
         String str = json.encode(mensaje);
         await http.put(
             Uri.parse(
-              RestApis.messages + "/12" + "/8",
+              RestApis.messages + "/$sala" + "/8",
             ),
             headers: {"Content-Type": "application/json"},
             body: str);

@@ -1,9 +1,7 @@
 //import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Chat/chatViews.dart';
-import 'package:flutter_auth/Drivers/Screens/Chat/chatapis.dart';
-import 'package:flutter_auth/Drivers/Screens/Chat/chatscreen.dart';
-import 'package:flutter_auth/Drivers/Screens/Chat/listchat_agents.dart';
+
 import 'package:flutter_auth/Drivers/Screens/Details/components/travel_In_Trips.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
