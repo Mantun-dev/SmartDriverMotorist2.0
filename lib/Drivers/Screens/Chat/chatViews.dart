@@ -1,6 +1,9 @@
+import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Chat/chatapis.dart';
 import 'package:flutter_auth/Drivers/Screens/Chat/listchat_agents.dart';
+import 'package:flutter_auth/Drivers/Screens/Details/components/agents_Trip.dart';
+import 'package:provider/provider.dart';
 
 import '../../../constants.dart';
 
@@ -19,6 +22,14 @@ class _ChatPageState extends State<ChatPage> {
   void initState() {
     super.initState();
     getCounterNotification(widget.tripId);
+    BackButtonInterceptor.add(myInterceptor);
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    BackButtonInterceptor.remove(myInterceptor);
   }
 
   void getCounterNotification(String tripId) async {
@@ -33,6 +44,16 @@ class _ChatPageState extends State<ChatPage> {
     print(chatUsers);
   }
 
+  bool myInterceptor(bool stopDefaultButtonEvent, RouteInfo info) {
+    print("BACK BUTTON!"); // Do some stuff.
+
+    //Navigator.of(context).pop();
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => MyAgent()));
+
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,6 +65,23 @@ class _ChatPageState extends State<ChatPage> {
               fontSize: 32, fontWeight: FontWeight.bold, color: secondColor),
         ),
         backgroundColor: backgroundColor,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => MyAgent()),
+                (route) => false);
+          },
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.refresh),
+            onPressed: () {
+              getCounterNotification(widget.tripId);
+            },
+          )
+        ],
       ),
       backgroundColor: backgroundColor,
       body: SingleChildScrollView(
@@ -95,7 +133,7 @@ class _ChatPageState extends State<ChatPage> {
               padding: EdgeInsets.only(top: 16, left: 16, right: 16),
               child: TextField(
                 decoration: InputDecoration(
-                  hintText: "Search...",
+                  hintText: "Buscar...",
                   hintStyle: TextStyle(color: Colors.grey.shade600),
                   prefixIcon: Icon(
                     Icons.search,
@@ -124,7 +162,7 @@ class _ChatPageState extends State<ChatPage> {
                         chatUsers[index]['sinLeer_Agente'].toString(),
                     estado: chatUsers[index]['Estado'],
                     sinleer_Motorista:
-                        chatUsers[index]['sinLeer_Motorista'].toString());
+                        chatUsers[index]['sinleer_Motorista'].toString());
               },
             ),
           ],

@@ -16,8 +16,10 @@ class ConversationList extends StatefulWidget {
   ConversationList({
     Key key,
     @required this.nombre,
+    // ignore: non_constant_identifier_names
     @required this.sinLeer_Agente,
     @required this.estado,
+    // ignore: non_constant_identifier_names
     @required this.sinleer_Motorista,
     @required this.idAgent,
   }) : super(key: key);
@@ -68,24 +70,43 @@ class _ConversationListState extends State<ConversationList> {
                           Text(
                             widget.nombre,
                             style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: firstColor),
                           ),
                           SizedBox(
                             height: 6,
                           ),
-                          Text(
-                            widget.sinLeer_Agente == "1"
-                                ? "Nuevo Mensaje"
-                                : "Sin Mensajes",
-                            style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.grey.shade600,
-                                fontWeight: widget.sinLeer_Agente == "1"
-                                    ? FontWeight.bold
-                                    : FontWeight.normal),
+                          Row(
+                            children: [
+                              Text(
+                                widget.sinleer_Motorista != "0"
+                                    ? "Nuevo mensaje"
+                                    : "Sin Mensajes",
+                                style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.grey.shade200,
+                                    fontWeight: widget.sinleer_Motorista != "0"
+                                        ? FontWeight.bold
+                                        : FontWeight.normal),
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text(
+                                widget.sinleer_Motorista != "0"
+                                    ? "${widget.sinleer_Motorista}"
+                                    : "0",
+                                style: TextStyle(
+                                    fontSize: 13,
+                                    color: thirdColor,
+                                    fontWeight: FontWeight.bold),
+                              )
+                            ],
                           ),
+                          Divider(
+                            color: Colors.grey,
+                          )
                         ],
                       ),
                     ),
@@ -96,10 +117,7 @@ class _ConversationListState extends State<ConversationList> {
             Text(
               widget.estado,
               style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: widget.sinLeer_Agente == "1"
-                      ? FontWeight.bold
-                      : FontWeight.normal),
+                  fontSize: 12, fontWeight: FontWeight.bold, color: Gradiant2),
             ),
           ],
         ),

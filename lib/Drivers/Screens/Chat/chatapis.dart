@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter_auth/Drivers/Screens/Chat/socketChat.dart';
 import 'package:http/http.dart' as http;
 
@@ -41,15 +39,14 @@ class ChatApis {
   }
 
   void sendMessage(
-      String message,
-      String sala,
-      String nombre,
-      String id,
-      String nameDriver,
-      String idDb,
-      String idE,
-      String idR,
-      String idAgent) async {
+    String message,
+    String sala,
+    String nombre,
+    String idDriver,
+    String nameDriver,
+    String idDb,
+    String idR,
+  ) async {
     DateTime now = DateTime.now();
     String formattedHour = DateFormat('hh:mm a').format(now);
     var formatter = new DateFormat('dd');
@@ -59,11 +56,25 @@ class ChatApis {
     var formatter3 = new DateFormat('yy');
     String anio = formatter3.format(now);
 
+    Map sendNotification = {
+      "receiverId": idR,
+      "receiverRole": "agente",
+      "textMessage": message,
+      "hourMessage": formattedHour,
+      "nameSender": nameDriver
+    };
+    print(idR);
+    var se = await BaseClient().post(
+        'https://admin.smtdriver.com/sendMessageNotification',
+        sendNotification,
+        {"Content-Type": "application/json"});
+    print(se);
+
     streamSocket.socket.emit('enviar-mensaje', {
       'mensaje': message,
       'sala': sala,
-      'user': nombre,
-      'id': id,
+      'user': nameDriver,
+      'id': idDriver,
       'hora': formattedHour,
       'dia': dia,
       'mes': mes,
@@ -71,8 +82,8 @@ class ChatApis {
       "leido": false
     });
     Map sendMessage = {
-      "id_emisor": id,
-      "id_receptor": idAgent,
+      "id_emisor": idDriver,
+      "id_receptor": idR,
       "Nombre_emisor": nameDriver,
       "Mensaje": message,
       "Sala": sala,
@@ -84,7 +95,7 @@ class ChatApis {
       "Hora": formattedHour,
       "leido": false
     };
-    print(sendMessage);
+
     // Map str = json.decode(sendMessage);
     await BaseClient().post(
         RestApis.messages, sendMessage, {"Content-Type": "application/json"});
@@ -94,28 +105,31 @@ class ChatApis {
     getDataUsuariosVar = getData;
   }
 
-  void readMessage(dynamic data, String sala) async {
+  void readMessage(
+      dynamic data, String sala, String idAgent, String driverId) async {
     data["listM"].forEach((asm) async {
-      if (asm["leido"] == false && asm["tipo"] == "MENSAJE" && asm["id"] == 8) {
+      if (asm["leido"] == false &&
+          asm["tipo"] == "MENSAJE" &&
+          asm["id"].toString() == idAgent) {
         Map mensaje = {"Leido": true};
         String str = json.encode(mensaje);
         await http.put(
             Uri.parse(
-              RestApis.messages + "/$sala" + "/8",
+              RestApis.messages + "/$sala" + "/$idAgent",
             ),
             headers: {"Content-Type": "application/json"},
             body: str);
       }
     });
     var response = await BaseClient().get(
-        RestApis.messages + "/12" + "/8" + "/0",
+        RestApis.messages + "/$sala" + "/$idAgent" + "/$driverId",
         {"Content-Type": "application/json"});
     Map dat = {'mens': response};
     String str2 = json.encode(dat);
     streamSocket.socket.emit('updateM', str2);
   }
 
-  void sendReadOnline(String dataSala, String dataid) async {
+  void sendReadOnline(String dataSala, String dataid, String driverId) async {
     Map info = {"Leido": true};
     String str = json.encode(info);
     await http.put(
@@ -125,7 +139,7 @@ class ChatApis {
         headers: {"Content-Type": "application/json"},
         body: str);
     var responseM = await BaseClient().get(
-        RestApis.messages + "/$dataSala" + "/$dataid" + "/0",
+        RestApis.messages + "/$dataSala" + "/$dataid" + "/$driverId",
         {"Content-Type": "application/json"});
 
     Map dat = {'mens': responseM};

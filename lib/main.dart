@@ -45,11 +45,11 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     PushNotificationServices.messageStream.listen((event) {
       prefs.tripId = event.toString();
-      // if (event == prefs.tripId) {
-      // }
-      navigatorKey.currentState
-          ?.push(MaterialPageRoute(builder: (_) => MyAgent()));
-      //print(event);
+      if (event != "MESSAGE_NOTIFICATION") {
+        //print(event);
+        navigatorKey.currentState
+            ?.push(MaterialPageRoute(builder: (_) => MyAgent()));
+      }
     });
   }
 

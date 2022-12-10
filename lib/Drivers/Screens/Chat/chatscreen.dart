@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:back_button_interceptor/back_button_interceptor.dart';
+import 'package:flutter_auth/Drivers/Screens/Chat/chatViews.dart';
 
 import 'package:flutter_auth/Drivers/Screens/Chat/chatapis.dart';
 
@@ -45,7 +46,7 @@ class _ChatScreenState extends State<ChatScreen> {
   var idE;
   var idR;
   String sala;
-  String id;
+  String idDriver;
   String idDb;
   String nameDriver;
   String nameAgent;
@@ -55,16 +56,8 @@ class _ChatScreenState extends State<ChatScreen> {
   final StreamSocket streamSocket = StreamSocket(host: 'wschat.smtdriver.com');
 
   _sendMessage() {
-    ChatApis().sendMessage(
-        _messageInputController.text.trim(),
-        sala.toString(),
-        widget.nombre,
-        id.toString(),
-        nameAgent,
-        idDb,
-        idE,
-        idR,
-        widget.idAgent);
+    ChatApis().sendMessage(_messageInputController.text.trim(), sala.toString(),
+        nameAgent, widget.id, nameDriver, idDb, widget.idAgent);
     DateTime now = DateTime.now();
     String formattedHour = DateFormat('hh:mm a').format(now);
     var formatter = new DateFormat('dd');
@@ -78,7 +71,7 @@ class _ChatScreenState extends State<ChatScreen> {
         'mensaje': _messageInputController.text.trim(),
         'sala': sala.toString(),
         'user': widget.nombre,
-        'id': id.toString(),
+        'id': widget.id,
         "hora": formattedHour,
         "dia": dia,
         "mes": mes,
@@ -93,19 +86,19 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-
     datas();
     streamSocket.socket.on("act_target", (data) {
-      print("**********************************************actTarget");
+      //print("**********************************************actTarget");
       getUpdateT(data);
     });
+    getMessages(widget.id, widget.idAgent, prefs.tripId);
     //inicializador del botón de android para manejarlo manual
     BackButtonInterceptor.add(myInterceptor);
     ChatApis().notificationCounter(prefs.tripId);
   }
 
   void getUpdateT(dynamic data) {
-    print("**********************************************actTarget");
+    //print("**********************************************actTarget");
     streamSocket.socket.emit("updateT", data);
   }
 
@@ -114,16 +107,15 @@ class _ChatScreenState extends State<ChatScreen> {
         RestApis.messages + "/$sala" + "/$idE" + "/$idR",
         {"Content-Type": "application/json"});
 
-    if (response == null) return null;
     final data = jsonDecode(response);
     Provider.of<ChatProvider>(context, listen: false).mensaje2.clear();
-
     data["listM"].forEach((element) {
+      print(data["nombre_emisor"]);
       arrayStructure.add({
         "mensaje": element["Mensaje"],
         "sala": element["Sala"],
-        "user": element["Nombre_emisor"],
-        "id": element["id_emisor"],
+        "user": data["nombre_emisor"],
+        "id": element["id_receptor"],
         "hora": element["Hora"],
         "dia": element["Dia"],
         "mes": element["Mes"],
@@ -138,6 +130,7 @@ class _ChatScreenState extends State<ChatScreen> {
             .addNewMessage(MessageDriver.fromJson(result));
       }
     });
+    if (response == null) return null;
   }
 
   void datas() {
@@ -147,29 +140,32 @@ class _ChatScreenState extends State<ChatScreen> {
     streamSocket.socket.on('entrarChat_flutter', (data) {
       setState(() {
         sala = data["Usuarios"]["target"]['sala'].toString();
-        id = data["Usuarios"]["target"]['id'].toString();
+        idDriver = data["Usuarios"]["target"]['id'].toString();
         idDb = data["Usuarios"]["target"]['_id'].toString();
-        //nameDriver = data["Usuarios"]["target"]['nombre'];
+        nameDriver = widget.nombre;
         nameAgent = data["Usuarios"]["target"]['nombre'];
       });
+
       Provider.of<ChatProvider>(context, listen: false).mensaje2.clear();
       data['listM'].forEach((value) {
+        // print("********************************************listM");
+        //print(value);
         if (mounted) {
           Provider.of<ChatProvider>(context, listen: false)
               .addNewMessage(MessageDriver.fromJson(value));
         }
       });
       controllerLoading(true);
-      ChatApis().readMessage(data);
+      ChatApis().readMessage(data, prefs.tripId, widget.idAgent, widget.id);
     });
 
     streamSocket.socket.on(
       'cargarM',
       ((data) {
         if (mounted) {
-          print("********************************************cargarM");
-          print(data);
-          //Provider.of<ChatProvider>(context, listen: false).mensaje2.clear();
+          //print("********************************************cargarM");
+          // print(data);
+          Provider.of<ChatProvider>(context, listen: false).mensaje2.clear();
           data['mens'].forEach((value) {
             if (mounted) {
               Provider.of<ChatProvider>(context, listen: false)
@@ -183,13 +179,13 @@ class _ChatScreenState extends State<ChatScreen> {
     streamSocket.socket.on(
       'enviar-mensaje',
       ((data) {
-        print("********************************************enviar-mensaje");
-        print(data);
+        //print("********************************************enviar-mensaje");
+        //print(data);
         if (mounted) {
           Provider.of<ChatProvider>(context, listen: false)
               .addNewMessage(MessageDriver.fromJson(data[0]));
           ChatApis().sendReadOnline(
-              data[0]["sala"].toString(), data[0]["_id"].toString());
+              data[0]["sala"].toString(), data[0]["_id"].toString(), widget.id);
         }
       }),
     );
@@ -221,7 +217,11 @@ class _ChatScreenState extends State<ChatScreen> {
 
     //Navigator.of(context).pop();
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => MyAgent()));
+        context,
+        MaterialPageRoute(
+            builder: (context) => ChatPage(
+                  tripId: prefs.tripId,
+                )));
 
     return true;
   }
@@ -249,7 +249,11 @@ class _ChatScreenState extends State<ChatScreen> {
             streamSocket.socket.close();
             streamSocket.socket.dispose();
             Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => MyAgent()));
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ChatPage(
+                          tripId: prefs.tripId,
+                        )));
           },
         ),
         elevation: 10,
@@ -296,14 +300,18 @@ class _ChatScreenState extends State<ChatScreen> {
                         padding: const EdgeInsets.all(16),
                         itemBuilder: (context, index) {
                           final message = provider.mensaje[index];
-                          print(provider.mensaje2.length);
+
+                          print(widget.nombre);
+                          print(message.user);
                           return Wrap(
-                            alignment: message.user == widget.nombre
+                            alignment: message.user.toUpperCase() ==
+                                    widget.nombre.toUpperCase()
                                 ? WrapAlignment.end
                                 : WrapAlignment.start,
                             children: [
                               Card(
-                                color: message.user == widget.nombre
+                                color: message.user.toUpperCase() ==
+                                        widget.nombre.toUpperCase()
                                     ? thirdColor
                                     : chatBubbleColor,
                                 child: Padding(
@@ -311,7 +319,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     crossAxisAlignment:
-                                        message.user == widget.nombre
+                                        message.user.toUpperCase() ==
+                                                widget.nombre.toUpperCase()
                                             ? CrossAxisAlignment.end
                                             : CrossAxisAlignment.start,
                                     children: [
@@ -326,7 +335,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                       Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          if (message.user == widget.nombre)
+                                          if (message.user.toUpperCase() ==
+                                              widget.nombre.toUpperCase())
                                             Icon(
                                               message.leido == true
                                                   ? Icons.done_all
@@ -336,14 +346,16 @@ class _ChatScreenState extends State<ChatScreen> {
                                                   ? firstColor
                                                   : backgroundColor,
                                             ),
-                                          if (message.user == widget.nombre)
+                                          if (message.user.toUpperCase() ==
+                                              widget.nombre.toUpperCase())
                                             Text(
                                               message.hora,
                                               style: TextStyle(
                                                   color: Colors.white60,
                                                   fontSize: 12),
                                             ),
-                                          if (message.user != widget.nombre)
+                                          if (message.user.toUpperCase() !=
+                                              widget.nombre.toUpperCase())
                                             Text(
                                               message.hora,
                                               style: TextStyle(
