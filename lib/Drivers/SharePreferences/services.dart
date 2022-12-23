@@ -11,7 +11,7 @@ class PushNotificationServices{
 
 
   static FirebaseMessaging messaging = FirebaseMessaging.instance;
-  static String token;
+  static String? token;
   static StreamController<String> _messageStreamController = new StreamController.broadcast();
   static Stream<String> get messageStream => _messageStreamController.stream;
   //final prefs = new PreferenciasUsuario();

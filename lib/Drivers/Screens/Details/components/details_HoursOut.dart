@@ -10,9 +10,9 @@ import 'package:flutter_auth/constants.dart';
 //import 'package:flutter/scheduler.dart';
 
 class DetailsDriverHoursOut extends StatefulWidget {
-  final PlantillaDriver plantillaDriver;
+  final PlantillaDriver? plantillaDriver;
 
-  const DetailsDriverHoursOut({Key key, this.plantillaDriver})
+  const DetailsDriverHoursOut({Key? key, this.plantillaDriver})
       : super(key: key);
 
   @override
@@ -26,7 +26,7 @@ class _DetailsDriverHoursOutState extends State<DetailsDriverHoursOut> {
   Widget build(BuildContext context) {
     return Scaffold(
       // each product have a color
-      backgroundColor: widget.plantillaDriver.color,
+      backgroundColor: widget.plantillaDriver!.color,
       drawer: DriverMenuLateral(),
       appBar: buildAppBar(context),
       body: Container(
@@ -49,7 +49,7 @@ class _DetailsDriverHoursOutState extends State<DetailsDriverHoursOut> {
 
   AppBar buildAppBar(BuildContext context) {
     return AppBar(
-      backgroundColor: widget.plantillaDriver.color,
+      backgroundColor: widget.plantillaDriver!.color,
       elevation: 0,
       actions: <Widget>[
         IconButton(

@@ -5,9 +5,9 @@ import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 import 'package:flutter_auth/constants.dart';
 
 class Body extends StatefulWidget {
-  final PlantillaDriver plantillaDriver;
+  final PlantillaDriver? plantillaDriver;
 
-  const Body({Key key, this.plantillaDriver}) : super(key: key);
+  const Body({Key? key, this.plantillaDriver}) : super(key: key);
 
   @override
   _BodyState createState() => _BodyState();
@@ -43,14 +43,14 @@ class _BodyState extends State<Body> {
                   child: Column(
                     children: <Widget>[
                       DriverDescription(
-                        plantillaDriver: widget.plantillaDriver,
+                        plantillaDriver: widget.plantillaDriver!,
                       ),
                     ],
                   ),
                 ),
               ),
               PlantillaDriverTitleWithImage(
-                  plantillaDriver: widget.plantillaDriver)
+                  plantillaDriver: widget.plantillaDriver!)
             ],
           ),
         )

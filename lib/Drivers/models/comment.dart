@@ -15,9 +15,9 @@ class Comment {
         this.comment,
     });
 
-    bool ok;
-    String message;
-    CommentClass comment;
+    bool? ok;
+    String? message;
+    CommentClass? comment;
 
     factory Comment.fromJson(Map<String, dynamic> json) => Comment(
         ok: json["ok"],
@@ -28,7 +28,7 @@ class Comment {
     Map<String, dynamic> toJson() => {
         "ok": ok,
         "message": message,
-        "comment": comment.toJson(),
+        "comment": comment!.toJson(),
     };
 }
 

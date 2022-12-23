@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+//import 'package:flutter/cupertino.dart';
 
 class ChatUsers {
   String name;
@@ -6,9 +6,9 @@ class ChatUsers {
   String imageURL;
   String time;
   ChatUsers({
-    @required this.name,
-    @required this.messageText,
-    @required this.imageURL,
-    @required this.time,
+    required this.name,
+    required this.messageText,
+    required this.imageURL,
+    required this.time,
   });
 }

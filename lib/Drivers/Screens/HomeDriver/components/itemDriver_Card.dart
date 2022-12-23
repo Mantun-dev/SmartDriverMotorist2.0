@@ -4,10 +4,10 @@ import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 import '../../../../constants.dart';
 
 class ItemDriverCard extends StatefulWidget {
-  final PlantillaDriver plantillaDriver;
-  final Function press;
+  final PlantillaDriver? plantillaDriver;
+  final VoidCallback? press;
   const ItemDriverCard({
-    Key key,
+    Key? key,
     this.plantillaDriver,
     this.press,
   }) : super(key: key);
@@ -33,14 +33,14 @@ class _ItemDriverCardState extends State<ItemDriverCard> {
                       Column(
                         children: [
                           Hero(
-                            tag: "${widget.plantillaDriver.id}",
+                            tag: "${widget.plantillaDriver!.id}",
                             child: Container(
                               padding:
                                   EdgeInsets.only(top: 15, left: 15, right: 20),
                               // padding: EdgeInsets.only(right: 150),
                               height: 100,
                               child: Image.asset(
-                                widget.plantillaDriver.image,
+                                widget.plantillaDriver!.image!,
                               ),
                             ),
                           ),
@@ -50,7 +50,7 @@ class _ItemDriverCardState extends State<ItemDriverCard> {
                         child: Column(
                           children: [
                             Text(
-                              widget.plantillaDriver.title,
+                              widget.plantillaDriver!.title!,
                               textAlign: TextAlign.start,
                               style: TextStyle(
                                   color: GradiantV_2,
@@ -58,7 +58,7 @@ class _ItemDriverCardState extends State<ItemDriverCard> {
                                   fontWeight: FontWeight.w900),
                             ),
                             Text(
-                              widget.plantillaDriver.description,
+                              widget.plantillaDriver!.description,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                   fontSize: 15,
@@ -87,7 +87,7 @@ class _ItemDriverCardState extends State<ItemDriverCard> {
                       spreadRadius: 2,
                       offset: Offset(5, 5)),
                 ],
-                color: widget.plantillaDriver.color,
+                color: widget.plantillaDriver!.color,
                 borderRadius: BorderRadius.circular(20),
               ),
             ),

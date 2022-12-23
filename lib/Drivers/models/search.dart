@@ -14,8 +14,8 @@ class Search {
         this.agent,
     });
 
-    bool ok;
-    Agent agent;
+    bool? ok;
+    Agent? agent;
 
     factory Search.fromJson(Map<String, dynamic> json) => Search(
         ok: json["ok"],
@@ -24,7 +24,7 @@ class Search {
 
     Map<String, dynamic> toJson() => {
         "ok": ok,
-        "agent": agent.toJson(),
+        "agent": agent!.toJson(),
     };
 }
 
@@ -47,21 +47,21 @@ class Agent {
         this.companyId
     });
 
-    int agentId;
-    String agentEmployeeId;
-    String agentUser;
-    String agentFullname;
-    String agentPhone;
-    String agentEmail;
-    String agentReferencePoint;
-    String neighborhoodName;
-    int neighborhoodSector;
-    String districtName;
-    String townName;
-    String departmentName;
-    String hourOut;
-    String msg;
-    int companyId;
+    int? agentId;
+    String? agentEmployeeId;
+    String? agentUser;
+    String? agentFullname;
+    String? agentPhone;
+    String? agentEmail;
+    String? agentReferencePoint;
+    String? neighborhoodName;
+    int? neighborhoodSector;
+    String? districtName;
+    String? townName;
+    String? departmentName;
+    String? hourOut;
+    String? msg;
+    int? companyId;
 
     factory Agent.fromJson(Map<String, dynamic> json) => Agent(
         agentId: json["agentId"],

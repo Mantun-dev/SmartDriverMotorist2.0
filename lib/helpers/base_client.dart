@@ -34,8 +34,7 @@ class BaseClient {
           .post(uri, body: payload, headers: header)
           .timeout(const Duration(seconds: timeOutDuration));
       internet = true;
-      print(response.body);
-      print(payload);
+
       return _processResponse(response);
     } catch (e) {
       // ignore: avoid_print

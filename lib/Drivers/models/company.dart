@@ -4,8 +4,17 @@ class Company2{
         this.companyId,
         this.companyName,
     );
-    int companyId;
-    String companyName;
+    int? companyId;
+    String? companyName;
+}
+
+class Company3{
+      Company3(
+        this.companyId,
+        this.companyName,
+    );
+    int? companyId;
+    String? companyName;
 }
 
 class Destinationations{

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
+//import 'package:flutter/scheduler.dart';
 
 import 'package:flutter_auth/Drivers/Screens/Details/detailsDriver_Screen.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/components/itemDriver_Card.dart';
@@ -17,29 +17,29 @@ import '../../Details/components/details_history.dart';
 //import 'package:new_version/new_version.dart';
 
 class Body extends StatefulWidget {
-  final DriverData itemx;
+  final DriverData? itemx;
 
-  const Body({Key key, this.itemx}) : super(key: key);
+  const Body({Key? key, this.itemx}) : super(key: key);
   @override
   _BodyState createState() => _BodyState();
 }
 
 class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
-  Future<DriverData> itemx;
+  Future<DriverData>? itemx;
 
   @override
   void initState() {
     super.initState();
     //_initPackageInfo();
     itemx = fetchRefres();
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        setState(() {
-          fetchVersion();
-          //_showVersionTrue();
-        });
-      }
-    });
+    // SchedulerBinding.instance.addPostFrameCallback((_) {
+    //   if (mounted) {
+    //     setState(() {
+    //       fetchVersion();
+    //       //_showVersionTrue();
+    //     });
+    //   }
+    // });
   }
 
   fetchVersion() async {
@@ -143,7 +143,7 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
         barrierLabel: '',
         context: context,
         pageBuilder: (context, animation1, animation2) {
-          return null;
+          return Text('');
         });
   }
 
@@ -160,13 +160,13 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
           //texto inicial
           Text(
             "Smart Driver",
-            style: Theme.of(context).textTheme.headline5.copyWith(
+            style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                 fontWeight: FontWeight.bold, fontSize: 28, color: firstColor),
           ),
           FutureBuilder<DriverData>(
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  if (snapshot.data.departmentId != 2) {
+                  if (snapshot.data!.departmentId != 2) {
                     return Expanded(
                       child: GridView.builder(
                           shrinkWrap: true,
@@ -319,7 +319,7 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
         barrierLabel: '',
         context: context,
         pageBuilder: (context, animation1, animation2) {
-          return null;
+          return Text('');
         });
   }
 

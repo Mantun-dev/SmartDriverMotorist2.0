@@ -5,8 +5,8 @@ import 'package:flutter_auth/constants.dart';
 
 class AddToCart extends StatelessWidget {
   const AddToCart({
-    Key key,
-    @required this.plantilla,
+    Key? key,
+    required this.plantilla,
   }) : super(key: key);
 
   final PlantillaDriver plantilla;

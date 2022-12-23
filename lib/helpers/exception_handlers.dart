@@ -37,34 +37,34 @@ class ExceptionHandlers {
 }
 
 class AppException {
-  final String message;
-  final String prefix;
-  final String url;
+  final String? message;
+  final String? prefix;
+  final String? url;
 
   AppException([this.message, this.prefix, this.url]);
 }
 
 class BadRequestException extends AppException {
-  BadRequestException([String message, String url])
+  BadRequestException([String? message, String? url])
       : super(message, 'Mala solicitud', url);
 }
 
 class FetchDataException extends AppException {
-  FetchDataException([String message, String url])
+  FetchDataException([String? message, String? url])
       : super(message, 'No se puede procesar la solicitud', url);
 }
 
 class ApiNotRespondingException extends AppException {
-  ApiNotRespondingException([String message, String url])
+  ApiNotRespondingException([String? message, String? url])
       : super(message, 'La API no responde', url);
 }
 
 class UnAuthorizedException extends AppException {
-  UnAuthorizedException([String message, String url])
+  UnAuthorizedException([String? message, String? url])
       : super(message, 'Solicitud no autorizada', url);
 }
 
 class NotFoundException extends AppException {
-  NotFoundException([String message, String url])
+  NotFoundException([String? message, String? url])
       : super(message, 'Página no encontrada', url);
 }

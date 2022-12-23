@@ -10,15 +10,15 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' show json;
 
 class HistoryTripDriver extends StatefulWidget {
-  final TripsHistory item;
-  const HistoryTripDriver({Key key, this.item}) : super(key: key);
+  final TripsHistory? item;
+  const HistoryTripDriver({Key? key, this.item}) : super(key: key);
 
   @override
   _HistoryTripDriverState createState() => _HistoryTripDriverState();
 }
 
 class _HistoryTripDriverState extends State<HistoryTripDriver> {
-  Future<List<TripsHistory>> item;
+  Future<List<TripsHistory>>? item;
   final prefs = new PreferenciasUsuario();
   TextEditingController tripId = new TextEditingController();
   String ip = "https://driver.smtdriver.com";
@@ -60,7 +60,7 @@ class _HistoryTripDriverState extends State<HistoryTripDriver> {
             future: item,
             builder: (BuildContext context, abc) {
               if (abc.connectionState == ConnectionState.done) {
-                if (abc.data.length < 1) {
+                if (abc.data!.length < 1) {
                   return Container(
                     decoration: BoxDecoration(boxShadow: [
                       BoxShadow(
@@ -106,7 +106,7 @@ class _HistoryTripDriverState extends State<HistoryTripDriver> {
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
                       physics: ClampingScrollPhysics(),
-                      itemCount: abc.data.length,
+                      itemCount: abc.data!.length,
                       itemBuilder: (context, index) {
                         return Container(
                           padding: EdgeInsets.symmetric(
@@ -147,7 +147,7 @@ class _HistoryTripDriverState extends State<HistoryTripDriver> {
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.bold)),
                                         subtitle: Text(
-                                            '${abc.data[index].tripId}',
+                                            '${abc.data![index].tripId}',
                                             style: TextStyle(
                                                 fontSize: 18,
                                                 color: Colors.white60,
@@ -167,7 +167,7 @@ class _HistoryTripDriverState extends State<HistoryTripDriver> {
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.bold)),
                                         subtitle: Text(
-                                            '${abc.data[index].fecha}',
+                                            '${abc.data![index].fecha}',
                                             style: TextStyle(
                                                 fontSize: 18,
                                                 color: Colors.white60,
@@ -184,7 +184,7 @@ class _HistoryTripDriverState extends State<HistoryTripDriver> {
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.bold)),
                                         subtitle: Text(
-                                            '${abc.data[index].conductor}',
+                                            '${abc.data![index].conductor}',
                                             style: TextStyle(
                                                 fontSize: 18,
                                                 color: Colors.white60,
@@ -201,7 +201,7 @@ class _HistoryTripDriverState extends State<HistoryTripDriver> {
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.bold)),
                                         subtitle: Text(
-                                            '${abc.data[index].empresa}',
+                                            '${abc.data![index].empresa}',
                                             style: TextStyle(
                                                 fontSize: 18,
                                                 color: Colors.white60,
@@ -220,7 +220,7 @@ class _HistoryTripDriverState extends State<HistoryTripDriver> {
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.bold)),
                                         subtitle: Text(
-                                            '${abc.data[index].hora}',
+                                            '${abc.data![index].hora}',
                                             style: TextStyle(
                                                 fontSize: 18,
                                                 color: Colors.white60,
@@ -237,7 +237,7 @@ class _HistoryTripDriverState extends State<HistoryTripDriver> {
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.bold)),
                                         subtitle: Text(
-                                            '${abc.data[index].agentes}',
+                                            '${abc.data![index].agentes}',
                                             style: TextStyle(
                                                 fontSize: 18,
                                                 color: Colors.white60,
@@ -256,7 +256,7 @@ class _HistoryTripDriverState extends State<HistoryTripDriver> {
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.bold)),
                                         subtitle: Text(
-                                            '${abc.data[index].tipo}',
+                                            '${abc.data![index].tipo}',
                                             style: TextStyle(
                                                 fontSize: 18,
                                                 color: Colors.white60,
@@ -289,7 +289,7 @@ class _HistoryTripDriverState extends State<HistoryTripDriver> {
                                             fontSize: 17)),
                                     onPressed: () {
                                       fetchAgentsCompleted(
-                                          abc.data[index].tripId.toString());
+                                          abc.data![index].tripId.toString());
                                     },
                                   ),
                                 ),

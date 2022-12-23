@@ -73,9 +73,30 @@ class TripsCompanies{
 
 
 class TripsDrivers {
-    TripsDrivers(
+    TripsDrivers({
         this.driverId,
-        this.driverDni,
+        this.driverDNI,
+        this.driverPhone,
+        this.driverFullname,
+        this.driverType,
+        this.driverStatus,
+        this.driverPassword,
+    });
+
+    int? driverId;
+    String? driverDNI;
+    String? driverPhone;
+    String? driverFullname;
+    String? driverType;
+    bool? driverStatus;
+    String? driverPassword;
+
+}
+
+class TripsDrivers2 {
+    TripsDrivers2(
+        this.driverId,
+        this.driverDNI,
         this.driverPhone,
         this.driverFullname,
         this.driverType,
@@ -84,7 +105,7 @@ class TripsDrivers {
     );
 
     int driverId;
-    String driverDni;
+    String driverDNI;
     String driverPhone;
     String driverFullname;
     String driverType;

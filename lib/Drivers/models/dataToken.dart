@@ -14,8 +14,8 @@ class DataToken {
         this.data,
     });
 
-    bool ok;
-    List<Datum> data;
+    bool? ok;
+    List<Datum>? data;
 
     factory DataToken.fromJson(Map<String, dynamic> json) => DataToken(
         ok: json["ok"],
@@ -24,7 +24,7 @@ class DataToken {
 
     Map<String, dynamic> toJson() => {
         "ok": ok,
-        "data": List<dynamic>.from(data.map((x) => x.toJson())),
+        "data": List<dynamic>.from(data!.map((x) => x.toJson())),
     };
 }
 
@@ -37,11 +37,11 @@ class Datum {
         this.deviceId,
     });
 
-    String token;
-    int agentId;
-    String device;
-    DateTime created;
-    String deviceId;
+    String? token;
+    int? agentId;
+    String? device;
+    DateTime? created;
+    String? deviceId;
 
     factory Datum.fromJson(Map<String, dynamic> json) => Datum(
         token: json["token"],
@@ -55,7 +55,7 @@ class Datum {
         "token": token,
         "agentId": agentId,
         "device": device,
-        "created": created.toIso8601String(),
+        "created": created!.toIso8601String(),
         "deviceId": deviceId,
     };
 }

@@ -12,10 +12,10 @@ class Driver2 {
     this.message,
   });
 
-  bool ok;
-  String type;
-  String title;
-  String message;
+  bool? ok;
+  String? type;
+  String? title;
+  String? message;
 
   factory Driver2.fromJson(Map<String, dynamic> json) => Driver2(
         ok: json["ok"],

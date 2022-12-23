@@ -6,7 +6,8 @@ import '../../../../main.dart';
 
 class DatabaseHandler {
   Future<Database> initializeDB() async {
-    String path = join(await getDatabasesPath(), "agent.db");
+    String path = await getDatabasesPath();
+    
     return openDatabase(
       join(path, 'agent.db'),
       onCreate: (database, version) async {
@@ -53,15 +54,15 @@ class DatabaseHandler {
     return result;
   }
 
-  Future<List<User>> retrieveUsers() async {
+  Future<List<User?>> retrieveUsers() async {
     final Database db = await initializeDB();
-    final List<Map<String, Object>> queryResult = await db.query('userX');
+    final List<Map<String, Object?>> queryResult = await db.query('userX');
     return queryResult.map((e) => User.fromMap(e)).toList();
   }
 
-  Future<List<User>> retrieveAgent() async {
+  Future<List<User?>> retrieveAgent() async {
     final Database db = await initializeDB();
-    final List<Map<String, Object>> queryResult = await db.query('agentInsert');
+    final List<Map<String, Object?>> queryResult = await db.query('agentInsert');
     return queryResult.map((e) => User.fromMap(e)).toList();
   }
 

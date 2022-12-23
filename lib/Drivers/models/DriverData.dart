@@ -22,15 +22,15 @@ class DriverData {
         this.driverCoord
     });
 
-    int driverId;
-    String driverDni;
-    String driverPhone;
-    String driverFullname;
-    String driverType;
+    int? driverId;
+    String? driverDni;
+    String? driverPhone;
+    String? driverFullname;
+    String? driverType;
     dynamic driverStatus;
-    int departmentId;
-    String driverUser;
-    String driverPassword;
+    int? departmentId;
+    String? driverUser;
+    String? driverPassword;
     dynamic driverCoord;
 
     factory DriverData.fromJson(Map<String, dynamic> json) => DriverData(

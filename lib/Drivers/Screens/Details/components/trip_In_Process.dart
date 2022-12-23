@@ -13,14 +13,14 @@ import '../../../models/plantillaDriver.dart';
 void main() => runApp(Process());
 
 class Process extends StatefulWidget {
-  final TripsInProgress item;
-  const Process({Key key, this.item}) : super(key: key);
+  final TripsInProgress? item;
+  const Process({Key? key, this.item}) : super(key: key);
   @override
   _ProcessState createState() => _ProcessState();
 }
 
 class _ProcessState extends State<Process> {
-  Future<List<TripsInProgress>> item;
+  Future<List<TripsInProgress>>? item;
   TextEditingController tripId = new TextEditingController();
   final prefs = new PreferenciasUsuario();
 
@@ -82,7 +82,7 @@ class _ProcessState extends State<Process> {
                   future: item,
                   builder: (BuildContext context, abc) {
                     if (abc.connectionState == ConnectionState.done) {
-                      if (abc.data.length < 1) {
+                      if (abc.data!.length < 1) {
                         return Card(
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)),
@@ -111,7 +111,7 @@ class _ProcessState extends State<Process> {
                             scrollDirection: Axis.vertical,
                             shrinkWrap: true,
                             physics: ClampingScrollPhysics(),
-                            itemCount: abc.data.length,
+                            itemCount: abc.data!.length,
                             itemBuilder: (context, index) {
                               return Container(
                                 decoration: BoxDecoration(boxShadow: [
@@ -159,7 +159,7 @@ class _ProcessState extends State<Process> {
                                                         fontWeight:
                                                             FontWeight.bold)),
                                                 Text(
-                                                  '${abc.data[index].tripId}',
+                                                  '${abc.data![index].tripId}',
                                                   textAlign: TextAlign.center,
                                                   style: TextStyle(
                                                       color: Colors.white,
@@ -187,7 +187,7 @@ class _ProcessState extends State<Process> {
                                                         fontSize: 18,
                                                         fontWeight:
                                                             FontWeight.bold)),
-                                                Text('${abc.data[index].fecha}',
+                                                Text('${abc.data![index].fecha}',
                                                     textAlign: TextAlign.center,
                                                     style: TextStyle(
                                                         color: Colors.white,
@@ -220,7 +220,7 @@ class _ProcessState extends State<Process> {
                                                         fontWeight:
                                                             FontWeight.bold)),
                                                 Text(
-                                                  '${abc.data[index].empresa}',
+                                                  '${abc.data![index].empresa}',
                                                   textAlign: TextAlign.center,
                                                   style: TextStyle(
                                                       color: Colors.white,
@@ -245,7 +245,7 @@ class _ProcessState extends State<Process> {
                                                         fontSize: 18,
                                                         fontWeight:
                                                             FontWeight.bold)),
-                                                Text('${abc.data[index].hora}',
+                                                Text('${abc.data![index].hora}',
                                                     textAlign: TextAlign.center,
                                                     style: TextStyle(
                                                         color: Colors.white,
@@ -279,7 +279,7 @@ class _ProcessState extends State<Process> {
                                                         fontWeight:
                                                             FontWeight.bold)),
                                                 Text(
-                                                    '${abc.data[index].agentes}',
+                                                    '${abc.data![index].agentes}',
                                                     textAlign: TextAlign.center,
                                                     style: TextStyle(
                                                         color: Colors.white,
@@ -305,7 +305,7 @@ class _ProcessState extends State<Process> {
                                                         fontSize: 18,
                                                         fontWeight:
                                                             FontWeight.bold)),
-                                                Text('${abc.data[index].tipo}',
+                                                Text('${abc.data![index].tipo}',
                                                     textAlign: TextAlign.center,
                                                     style: TextStyle(
                                                         color: Colors.white,
@@ -336,7 +336,7 @@ class _ProcessState extends State<Process> {
                                                         fontWeight:
                                                             FontWeight.bold)),
                                                 Text(
-                                                    '${abc.data[index].conductor}',
+                                                    '${abc.data![index].conductor}',
                                                     textAlign: TextAlign.center,
                                                     style: TextStyle(
                                                         color: Colors.white,
@@ -387,7 +387,7 @@ class _ProcessState extends State<Process> {
                                           ),
                                           onPressed: () {
                                             fetchAgentsAsigmentChekc(abc
-                                                .data[index].tripId
+                                                .data![index].tripId
                                                 .toString());
                                           },
                                           child: Text('Ver viaje',

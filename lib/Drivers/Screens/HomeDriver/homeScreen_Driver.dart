@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_auth/Drivers/Screens/Details/detailsDriver_Screen.dart';
+import 'package:flutter_auth/Drivers/Screens/Details/components/detailsDriver_assignHour.dart';
+import 'package:flutter_auth/Drivers/Screens/Details/components/details_TripProgress.dart';
+//import 'package:flutter_auth/Drivers/Screens/Details/detailsDriver_Screen.dart';
 import 'package:flutter_auth/Drivers/Screens/DriverProfile/driverProfile.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/components/bodyDriver.dart';
 import 'package:flutter_auth/Drivers/Screens/Welcome/welcome_screen.dart';
@@ -11,7 +13,7 @@ import 'package:flutter_auth/Drivers/models/countNotify.dart';
 import 'package:flutter_auth/Drivers/models/network.dart';
 import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:sweetalert/sweetalert.dart';
+import 'package:quickalert/quickalert.dart';
 import '../../../constants.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' show json;
@@ -19,16 +21,16 @@ import 'dart:async';
 //import 'package:showcaseview/showcaseview.dart';
 
 class HomeDriverScreen extends StatefulWidget {
-  final CountNotifications item;
+  final CountNotifications? item;
 
-  const HomeDriverScreen({Key key, this.item}) : super(key: key);
+  const HomeDriverScreen({Key? key, this.item}) : super(key: key);
   @override
   _HomeDriverScreenState createState() => _HomeDriverScreenState();
 }
 
 class _HomeDriverScreenState extends State<HomeDriverScreen>
     with AutomaticKeepAliveClientMixin<HomeDriverScreen> {
-  Future<List<CountNotifications>> item;
+  Future<List<CountNotifications>>? item;
   //GlobalKey _one = GlobalKey();
   @override
   void initState() {
@@ -58,11 +60,12 @@ class _HomeDriverScreenState extends State<HomeDriverScreen>
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (BuildContext context) => WelcomeScreen()),
           (Route<dynamic> route) => false);
-      SweetAlert.show(context,
+          QuickAlert.show(
+          context: context,
+          type: QuickAlertType.error,
           title: "Lo sentimos",
-          subtitle:
-              "Este usuario está fuera de servicio, \nfavor comunicarse con el cordinador",
-          style: SweetAlertStyle.error);
+          text: "Este usuario está fuera de servicio, \nfavor comunicarse con el cordinador",
+          );
     }
   }
 
@@ -72,7 +75,7 @@ class _HomeDriverScreenState extends State<HomeDriverScreen>
       child: Scaffold(
         backgroundColor: backgroundColor,
         appBar: buildAppBar(context),
-        body: SafeArea(child: Body()),
+        body: Body(),
         drawer: DriverMenuLateral(),
       ),
     );
@@ -103,7 +106,7 @@ class _HomeDriverScreenState extends State<HomeDriverScreen>
                             EdgeInsets.symmetric(horizontal: 3, vertical: 0),
                         decoration: BoxDecoration(
                             shape: BoxShape.circle, color: Colors.red),
-                        child: Text('${abc.data[0].total}',
+                        child: Text('${abc.data![0].total}',
                             style:
                                 TextStyle(color: Colors.white, fontSize: 13))),
                   )
@@ -154,7 +157,7 @@ class _HomeDriverScreenState extends State<HomeDriverScreen>
                           Navigator.pop(context),
                           Navigator.push(context,
                               MaterialPageRoute(builder: (context) {
-                            return DetailsDriverScreen(
+                            return DetailsDriverHour(
                                 plantillaDriver: plantillaDriver[0]);
                           })),
                         },
@@ -178,7 +181,7 @@ class _HomeDriverScreenState extends State<HomeDriverScreen>
                                                 shape: BoxShape.circle,
                                                 color: Colors.red),
                                             child: Text(
-                                                '${abc.data[0].tripsCreated}',
+                                                '${abc.data![0].tripsCreated}',
                                                 style: TextStyle(
                                                     color: Colors.white,
                                                     fontSize: 13))),
@@ -204,7 +207,7 @@ class _HomeDriverScreenState extends State<HomeDriverScreen>
                           Navigator.pop(context),
                           Navigator.push(context,
                               MaterialPageRoute(builder: (context) {
-                            return DetailsDriverScreen(
+                            return DetailsDriverTripInProgress(
                                 plantillaDriver: plantillaDriver[1]);
                           })),
                         },
@@ -228,7 +231,7 @@ class _HomeDriverScreenState extends State<HomeDriverScreen>
                                                 shape: BoxShape.circle,
                                                 color: Colors.red),
                                             child: Text(
-                                                '${abc.data[0].tripsInProgress}',
+                                                '${abc.data![0].tripsInProgress}',
                                                 style: TextStyle(
                                                     color: Colors.white,
                                                     fontSize: 13))),

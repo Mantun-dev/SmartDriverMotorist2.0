@@ -14,8 +14,8 @@ class Driver {
     this.driver,
   });
 
-  bool ok;
-  DriverClass driver;
+  bool? ok;
+  DriverClass? driver;
 
   factory Driver.fromJson(Map<String, dynamic> json) => Driver(
         ok: json["ok"],
@@ -24,7 +24,7 @@ class Driver {
 
   Map<String, dynamic> toJson() => {
         "ok": ok,
-        "driver": driver.toJson(),
+        "driver": driver!.toJson(),
       };
 }
 
@@ -41,15 +41,15 @@ class DriverClass {
     this.driverPassword,
   });
 
-  int driverId;
-  String driverDni;
-  String driverPhone;
-  String driverFullname;
-  String driverType;
-  bool driverStatus;
-  int departmentId;
-  String driverUser;
-  String driverPassword;
+  int? driverId;
+  String? driverDni;
+  String? driverPhone;
+  String? driverFullname;
+  String? driverType;
+  bool? driverStatus;
+  int? departmentId;
+  String? driverUser;
+  String? driverPassword;
 
   factory DriverClass.fromJson(Map<String, dynamic> json) => DriverClass(
         driverId: json["driverId"],

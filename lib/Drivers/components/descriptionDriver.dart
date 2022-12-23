@@ -1,6 +1,7 @@
 //import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 //import 'dart:developer';
 
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/asignar_Horas.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/confirm_trips.dart';
@@ -20,24 +21,22 @@ import 'package:flutter_auth/Drivers/models/tripToSolid.dart';
 import 'package:flutter_auth/Drivers/models/tripsPendin2.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 //import 'package:localstorage/localstorage.dart';
-import 'package:searchable_dropdown/searchable_dropdown.dart';
+//import 'package:searchable_dropdown/searchable_dropdown.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:sweetalert/sweetalert.dart';
+import 'package:quickalert/quickalert.dart';
 import '../../constants.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' show json;
 
 class DriverDescription extends StatefulWidget {
-  final Company2 item;
-  final DriverData itemx;
-  final TripsDrivers driverx;
+final Company2? item;
+  final DriverData? itemx;
+  final TripsDrivers? driverx;
   DriverDescription(
-      {Key key,
-      @required this.plantillaDriver,
-      this.item,
-      this.itemx,
-      this.driverx})
+      {Key? key,
+      required this.plantillaDriver,  this.item,  this.itemx, this.driverx,
+})
       : super(key: key);
   final PlantillaDriver plantillaDriver;
 
@@ -47,17 +46,17 @@ class DriverDescription extends StatefulWidget {
 
 class _DriverDescriptionState extends State<DriverDescription>
     with AutomaticKeepAliveClientMixin<DriverDescription> {
-  Future<List<Company2>> item;
-  Future<DriverData> itemx;
-  Future<List<TripsDrivers>> driverx;
-  DatabaseHandler handler;
+  Future<List<Company2>>? item;
+  Future<DriverData>? itemx;
+  Future<List<TripsDrivers>>? driverx;
+  DatabaseHandler? handler;
   String handleerrror = "";
   String ip = "https://driver.smtdriver.com";
   String barcodeScan = "";
-  String companyId;
-  String destinationId;
-  String destinationPrueba;
-  int driver;
+  String? companyId;
+  String? destinationId;
+  String? destinationPrueba;
+  dynamic driver;
   List data = [];
   List data2 = [];
   final prefs = new PreferenciasUsuario();
@@ -69,7 +68,7 @@ class _DriverDescriptionState extends State<DriverDescription>
   final dri = [];
 
   Map<String, String> selectedValueMap = Map();
-  List driverId = [];
+  List<TripsDrivers> driverId = [];
 
   //asingment agent an one array
   final List<String> names = <String>[];
@@ -91,15 +90,16 @@ class _DriverDescriptionState extends State<DriverDescription>
     this.fetchCompanys();
     this.fetchDestinations();
     itemx = fetchRefres();
-    driverx = fetchDriversDriver();
+    itemx!.then((value) => print(value.driverCoord) );
+    fetchDriversDriver();
     vehicule = new TextEditingController(text: prefs.vehiculo);
     //print(prefs.vehiculo);
     // print(prefs.companyId);
     this.handler = DatabaseHandler();
-    this.handler.initializeDB().whenComplete(() async {
+    this.handler!.initializeDB().whenComplete(() async {
       //this.handler.deleteAgent("");
-      await this.fetchSearchAgents2(agentEmployeeId.text);
-      await this.fetchSearchAgentsSolid(agentEmployeeId.text);
+      // await this.fetchSearchAgents2(agentEmployeeId.text);
+      // await this.fetchSearchAgentsSolid(agentEmployeeId.text);
       //await this.scanBarcodeNormal();
       setState(() {});
     });
@@ -133,51 +133,42 @@ class _DriverDescriptionState extends State<DriverDescription>
   }
 
 //prueba
-  Future<List<TripsDrivers>> fetchDriversDriver() async {
+  void fetchDriversDriver() async {
     http.Response response = await http
         .get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
     final data = DriverData.fromJson(json.decode(response.body));
     http.Response responses = await http
         .get(Uri.parse('$ip/apis/asigmentDriverToCoord/${data.driverId}'));
 
-    var jsonData = json.decode(responses.body);
-
-    List<TripsDrivers> trips = [];
-
+    var jsonData = json.decode(responses.body);    
     for (var u in jsonData) {
-      TripsDrivers trip = TripsDrivers(
-          u["driverId"],
-          u["driverDni"],
-          u["driverPhone"],
-          u["driverFullname"],
-          u["driverType"],
-          u["driverStatus"],
-          u["driverPassword"]);
-      trips.add(trip);
-    }
-    setState(() {
-      driverId = jsonData;
-    });
-    print(trips.length);
-    return trips;
+      driverId.add(TripsDrivers(
+          driverId:u["driverId"],
+          driverDNI:u["driverDNI"],
+          driverPhone:u["driverPhone"],
+          driverFullname:u["driverFullname"],
+          driverType:u["driverType"],
+          driverStatus:u["driverStatus"],
+          driverPassword:u["driverPassword"],
+      ));      
+    }           
   }
 
 // ignore: missing_return
-  Future<Salida> fetchAgentsLeftPastToProgres(
-      String hourOut, String nameController) async {
+  Future<Salida?> fetchAgentsLeftPastToProgres( String hourOut, String nameController) async {
     http.Response responses = await http
         .get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
     final si = DriverData.fromJson(json.decode(responses.body));
-    final Database db = await handler.initializeDB();
+    final Database db = await handler!.initializeDB();
     final tables = await db.rawQuery('SELECT * FROM userX ;');
     if (tables.length == 0) {
-      Navigator.pop(context);
-      SweetAlert.show(
-        context,
-        title: "Alerta",
-        subtitle: "No hay agentes agregados",
-        style: SweetAlertStyle.error,
-      );
+      Navigator.pop(context);      
+      QuickAlert.show(
+            context: context,
+            title: "Alerta",
+            text: "No hay agentes agregados",
+            type: QuickAlertType.error,
+          ); 
     } else {
       if (si.driverCoord == true) {
         Map datas = {
@@ -191,12 +182,12 @@ class _DriverDescriptionState extends State<DriverDescription>
         http.Response response1 = await http
             .post(Uri.parse('$ip/apis/registerDeparture2'), body: datas);
         final send = Salida.fromJson(json.decode(response1.body));
-        prefs.tripId = send.tripId.tripId.toString();
+        prefs.tripId = send.tripId!.tripId.toString();
         for (var i = 0; i < tables.length; i++) {
           Map datas2 = {
             "agentId": tables[i]['idsend'].toString(),
-            "tripId": send.tripId.tripId.toString(),
-            "tripHour": send.tripId.tripHour
+            "tripId": send.tripId!.tripId.toString(),
+            "tripHour": send.tripId!.tripHour
           };
 
           await http.post(Uri.parse('$ip/apis/registerAgentForOutTrip'),
@@ -212,13 +203,13 @@ class _DriverDescriptionState extends State<DriverDescription>
                 builder: (context) => MyConfirmAgent(),
               ));
           prefs.removeIdCompanyAndVehicle();
-          SweetAlert.show(
-            context,
+          QuickAlert.show(
+            context: context,
             title: send.title,
-            subtitle: send.message,
-            style: SweetAlertStyle.success,
-          );
-          this.handler.cleanTable();
+            text: send.message,
+            type: QuickAlertType.success,
+          ); 
+          this.handler!.cleanTable();
         } else {
           throw Exception('Failed to load Data');
         }
@@ -231,13 +222,13 @@ class _DriverDescriptionState extends State<DriverDescription>
         http.Response response1 = await http
             .post(Uri.parse('$ip/apis/registerDeparture2'), body: datas);
         final send = Salida.fromJson(json.decode(response1.body));
-        prefs.tripId = send.tripId.tripId.toString();
+        prefs.tripId = send.tripId!.tripId.toString();
 
         for (var i = 0; i < tables.length; i++) {
           Map datas2 = {
             "agentId": tables[i]['idsend'].toString(),
-            "tripId": send.tripId.tripId.toString(),
-            "tripHour": send.tripId.tripHour
+            "tripId": send.tripId!.tripId.toString(),
+            "tripHour": send.tripId!.tripHour
           };
 
           await http.post(Uri.parse('$ip/apis/registerAgentForOutTrip'),
@@ -254,13 +245,14 @@ class _DriverDescriptionState extends State<DriverDescription>
                 builder: (context) => MyConfirmAgent(),
               ));
           prefs.removeIdCompanyAndVehicle();
-          SweetAlert.show(
-            context,
+          QuickAlert.show(
+            context: context,
             title: send.title,
-            subtitle: send.message,
-            style: SweetAlertStyle.success,
-          );
-          this.handler.cleanTable();
+            text: send.message,
+            type: QuickAlertType.success,
+          ); 
+
+          this.handler!.cleanTable();
         } else {
           throw Exception('Failed to load Data');
         }
@@ -279,28 +271,29 @@ class _DriverDescriptionState extends State<DriverDescription>
     http.Response responsed =
         await http.post(Uri.parse('$ip/apis/searchAgent'), body: data);
     final data1 = Search.fromJson(json.decode(responsed.body));
-    final Database db = await handler.initializeDB();
+    final Database db = await handler!.initializeDB();
     final tables = await db.rawQuery('SELECT * FROM userX ;');
     final tables2 = await db.rawQuery(
         "SELECT noempid FROM userX WHERE noempid = '${prefs.nameSalida}'");
     if (responsed.statusCode == 200 &&
         data1.ok == true &&
-        data1.agent.msg != null) {
+        data1.agent!.msg != null) {
       if (barcodeScan == '${-1}') {
         print('');
       } else {
-        SweetAlert.show(
-          context,
+        QuickAlert.show(
+          context: context,
           title: '¡No encontrado!',
-          subtitle: data1.agent.msg,
-          style: SweetAlertStyle.error,
-        );
+          text: data1.agent!.msg,
+          type: QuickAlertType.error,
+        ); 
       }
-      print(data1.agent.msg);
+      print(data1.agent!.msg);
     } else if (responsed.statusCode == 200 && data1.ok == true) {
       showDialog(
           context: context,
           builder: (context) => AlertDialog(
+                backgroundColor: backgroundColor,
                 content: Container(
                   width: 450,
                   height: 490,
@@ -308,37 +301,81 @@ class _DriverDescriptionState extends State<DriverDescription>
                     child: Column(
                       children: <Widget>[
                         SizedBox(height: 15),
-                        Text(
-                          '¿Agregar agente al viaje?',
-                          style: TextStyle(
-                              fontSize: 24, fontWeight: FontWeight.bold),
+                        Center(
+                          child: Text(
+                            '¿Agregar agente al viaje?',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: GradiantV_2),
+                          ),
                         ),
                         SizedBox(height: 15),
                         ListTile(
                           contentPadding: EdgeInsets.fromLTRB(5, 5, 5, 0),
-                          title: Text('No empleado: '),
-                          subtitle: Text('${data1.agent.agentEmployeeId}'),
-                          leading: Icon(Icons.card_travel, color: kColorAppBar),
+                          title: Text('No empleado: ',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white)),
+                          subtitle: Text('${data1.agent!.agentEmployeeId}',
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.normal,
+                                  color: Colors.white)),
+                          leading: Icon(Icons.card_travel,
+                            color: thirdColor,
+                            size: 35,),
                         ),
                         ListTile(
                           contentPadding: EdgeInsets.fromLTRB(5, 5, 5, 0),
-                          title: Text('Nombre: '),
-                          subtitle: Text('${data1.agent.agentFullname}'),
+                          title: Text('Nombre: ',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white)),
+                          subtitle: Text('${data1.agent!.agentFullname}',
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.normal,
+                                  color: Colors.white)),
                           leading: Icon(Icons.contact_page_outlined,
-                              color: kColorAppBar),
+                            color: thirdColor,
+                            size: 35,),
                         ),
                         ListTile(
                           contentPadding: EdgeInsets.fromLTRB(5, 5, 5, 0),
-                          title: Text('Hora salida: '),
-                          subtitle: Text('${data1.agent.hourOut}'),
-                          leading: Icon(Icons.access_time, color: kColorAppBar),
+                          title: Text('Hora salida: ',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white)),
+                          subtitle: Text('${data1.agent!.hourOut}',
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.normal,
+                                  color: Colors.white)),
+                          leading: Icon(Icons.access_time,
+                            color: thirdColor,
+                            size: 35,),
                         ),
                         ListTile(
                           contentPadding: EdgeInsets.fromLTRB(5, 5, 5, 0),
-                          title: Text('Dirección: '),
+                          title: Text('Dirección: ',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white)),
                           subtitle: Text(
-                              '${data1.agent.departmentName} ${data1.agent.neighborhoodName}\n${data1.agent.agentReferencePoint} '),
-                          leading: Icon(Icons.directions, color: kColorAppBar),
+                              '${data1.agent!.departmentName} ${data1.agent!.neighborhoodName}\n${data1.agent!.agentReferencePoint} ',
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.normal,
+                                  color: Colors.white)),
+                          leading: Icon(Icons.directions,
+                            color: thirdColor,
+                            size: 35,),
                         ),
                         SizedBox(height: 40),
                         Row(
@@ -355,50 +392,52 @@ class _DriverDescriptionState extends State<DriverDescription>
                                   if (tables.length <= 13) {
                                     if (prefs.nameSalida != tables2) {
                                       noemp.insert(
-                                          0, '${data1.agent.agentEmployeeId}');
+                                          0, '${data1.agent!.agentEmployeeId}');
                                       names.insert(
-                                          0, '${data1.agent.agentFullname}');
+                                          0, '${data1.agent!.agentFullname}');
                                       hourout.insert(
-                                          0, '${data1.agent.hourOut}');
+                                          0, '${data1.agent!.hourOut}');
                                       direction.insert(0,
-                                          '${data1.agent.departmentName} ${data1.agent.neighborhoodName}\n${data1.agent.agentReferencePoint}');
-                                      tempArr.add(data1.agent.agentId);
+                                          '${data1.agent!.departmentName} ${data1.agent!.neighborhoodName}\n${data1.agent!.agentReferencePoint}');
+                                      tempArr.add(data1.agent!.agentId);
                                       prefs.companyIdAgent =
-                                          data1.agent.companyId.toString();
+                                          data1.agent!.companyId.toString();
                                       prefs.nameSalida = data1
-                                          .agent.agentEmployeeId
+                                          .agent!.agentEmployeeId
                                           .toString();
                                       User firstUser = User(
                                           noempid:
-                                              '${data1.agent.agentEmployeeId}',
+                                              '${data1.agent!.agentEmployeeId}',
                                           nameuser:
-                                              '${data1.agent.agentFullname}',
-                                          hourout: '${data1.agent.hourOut}',
+                                              '${data1.agent!.agentFullname}',
+                                          hourout: '${data1.agent!.hourOut}',
                                           direction:
-                                              '${data1.agent.departmentName} ${data1.agent.neighborhoodName}\n${data1.agent.agentReferencePoint}',
-                                          idsend: data1.agent.agentId);
+                                              '${data1.agent!.departmentName} ${data1.agent!.neighborhoodName}\n${data1.agent!.agentReferencePoint}',
+                                          idsend: data1.agent!.agentId);
                                       List<User> listOfUsers = [firstUser];
-                                      this.handler.insertUser(listOfUsers);
+                                      this.handler!.insertUser(listOfUsers);
 
                                       //guardar();
 
                                     } else {
                                       print('yasta we');
                                       Navigator.pop(context);
-                                      return SweetAlert.show(context,
-                                          title: "¡Advertencia!",
-                                          subtitle:
-                                              " El agente con número de empleado \n '${data1.agent.agentEmployeeId}' ya está agregado al viaje",
-                                          style: SweetAlertStyle.error);
+                                      QuickAlert.show(
+                                        context: context,
+                                        title: "¡Advertencia!",
+                                        text: " El agente con número de empleado \n '${data1.agent!.agentEmployeeId}' ya está agregado al viaje",
+                                        type: QuickAlertType.error,
+                                      );                                    
                                     }
                                   } else if (tables.length > 13) {
                                     print('yasta we');
                                     Navigator.pop(context);
-                                    return SweetAlert.show(context,
+                                    QuickAlert.show(
+                                        context: context,
                                         title: "¡Advertencia!",
-                                        subtitle:
-                                            " El limite de agentes son 14, favor \n comunicarse con su cordinador",
-                                        style: SweetAlertStyle.error);
+                                        text: " El limite de agentes son 14, favor \n comunicarse con su cordinador",
+                                        type: QuickAlertType.error,
+                                      );
                                   }
                                   Navigator.pop(context);
                                 }),
@@ -446,7 +485,7 @@ class _DriverDescriptionState extends State<DriverDescription>
       "agentEmployeeId": barcodeScan,
       "destinationId": prefs.destinationId,
     };
-    final Database db = await handler.initializeDB();
+    final Database db = await handler!.initializeDB();
 
     final tables = await db.rawQuery('SELECT * FROM agentInsert ;');
     final tables2 = await db.rawQuery(
@@ -460,12 +499,11 @@ class _DriverDescriptionState extends State<DriverDescription>
         print('');
       }
       if (data1.type == "error") {
-        SweetAlert.show(
-          context,
+        QuickAlert.show(
+          context: context,
           title: '¡No encontrado!',
-          subtitle:
-              'No se encontró el agente con número de empleado \n $agentEmployeeId',
-          style: SweetAlertStyle.error,
+          text: 'No se encontró el agente con número de empleado \n $agentEmployeeId',
+          type: QuickAlertType.error,
         );
       } else if (data1.type == "success") {
         print(data1.type);
@@ -490,21 +528,21 @@ class _DriverDescriptionState extends State<DriverDescription>
                           ListTile(
                             contentPadding: EdgeInsets.fromLTRB(5, 5, 5, 0),
                             title: Text('No empleado: '),
-                            subtitle: Text('${data1.agent.agentEmployeeId}'),
+                            subtitle: Text('${data1.agent!.agentEmployeeId}'),
                             leading:
                                 Icon(Icons.card_travel, color: kColorAppBar),
                           ),
                           ListTile(
                             contentPadding: EdgeInsets.fromLTRB(5, 5, 5, 0),
                             title: Text('Nombre: '),
-                            subtitle: Text('${data1.agent.agentFullname}'),
+                            subtitle: Text('${data1.agent!.agentFullname}'),
                             leading: Icon(Icons.contact_page_outlined,
                                 color: kColorAppBar),
                           ),
                           ListTile(
                             contentPadding: EdgeInsets.fromLTRB(5, 5, 5, 0),
                             title: Text('Hora: '),
-                            subtitle: Text('${data1.agent.hourAgent}'),
+                            subtitle: Text('${data1.agent!.hourAgent}'),
                             leading:
                                 Icon(Icons.access_time, color: kColorAppBar),
                           ),
@@ -512,7 +550,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                             contentPadding: EdgeInsets.fromLTRB(5, 5, 5, 0),
                             title: Text('Dirección: '),
                             subtitle: Text(
-                                '${data1.agent.neighborhoodName} ${data1.agent.agentReferencePoint}\n${data1.agent.departmentName} '),
+                                '${data1.agent!.neighborhoodName} ${data1.agent!.agentReferencePoint}\n${data1.agent!.departmentName} '),
                             leading:
                                 Icon(Icons.directions, color: kColorAppBar),
                           ),
@@ -532,51 +570,53 @@ class _DriverDescriptionState extends State<DriverDescription>
                                     if (tables.length <= 13) {
                                       if (prefs.nameSalida != tables2) {
                                         noemp.insert(0,
-                                            '${data1.agent.agentEmployeeId}');
+                                            '${data1.agent!.agentEmployeeId}');
                                         names.insert(
-                                            0, '${data1.agent.agentFullname}');
+                                            0, '${data1.agent!.agentFullname}');
                                         hourout.insert(
-                                            0, '${data1.agent.hourAgent}');
+                                            0, '${data1.agent!.hourAgent}');
                                         direction.insert(0,
-                                            '${data1.agent.agentReferencePoint} ${data1.agent.neighborhoodName}\n${data1.agent.departmentName}');
-                                        tempArr.add(data1.agent.agentId);
+                                            '${data1.agent!.agentReferencePoint} ${data1.agent!.neighborhoodName}\n${data1.agent!.departmentName}');
+                                        tempArr.add(data1.agent!.agentId);
                                         prefs.destinationIdAgent =
-                                            data1.agent.companyId.toString();
+                                            data1.agent!.companyId.toString();
                                         prefs.nameSalida = data1
-                                            .agent.agentEmployeeId
+                                            .agent!.agentEmployeeId
                                             .toString();
                                         User firstUser = User(
                                             noempid:
-                                                '${data1.agent.agentEmployeeId}',
+                                                '${data1.agent!.agentEmployeeId}',
                                             nameuser:
-                                                '${data1.agent.agentFullname}',
-                                            hourout: '${data1.agent.hourAgent}',
+                                                '${data1.agent!.agentFullname}',
+                                            hourout: '${data1.agent!.hourAgent}',
                                             direction:
-                                                '${data1.agent.departmentName} ${data1.agent.neighborhoodName}\n${data1.agent.agentReferencePoint}',
-                                            idsend: data1.agent.agentId);
+                                                '${data1.agent!.departmentName} ${data1.agent!.neighborhoodName}\n${data1.agent!.agentReferencePoint}',
+                                            idsend: data1.agent!.agentId);
                                         print(firstUser);
                                         List<User> listOfUsers = [firstUser];
-                                        this.handler.insertAgent(listOfUsers);
+                                        this.handler!.insertAgent(listOfUsers);
                                         clearText();
                                         //guardar();
 
                                       } else {
                                         print('yasta we');
                                         Navigator.pop(context);
-                                        return SweetAlert.show(context,
-                                            title: "¡Advertencia!",
-                                            subtitle:
-                                                " El agente con número de empleado \n '${data1.agent.agentEmployeeId}' ya está agregado al viaje",
-                                            style: SweetAlertStyle.error);
+                                        QuickAlert.show(
+                                          context: context,
+                                          title: "¡Advertencia!",
+                                          text: " El agente con número de empleado \n '${data1.agent!.agentEmployeeId}' ya está agregado al viaje",
+                                          type: QuickAlertType.error,
+                                        );
                                       }
                                     } else if (tables.length > 13) {
                                       print('yasta we');
                                       Navigator.pop(context);
-                                      return SweetAlert.show(context,
-                                          title: "¡Advertencia!",
-                                          subtitle:
-                                              " El limite de agentes son 14, favor \n comunicarse con su cordinador",
-                                          style: SweetAlertStyle.error);
+                                      QuickAlert.show(
+                                        context: context,
+                                        title: "¡Advertencia!",
+                                        text: " El limite de agentes son 14, favor \n comunicarse con su cordinador",
+                                        type: QuickAlertType.error,
+                                      );
                                     }
 
                                     Navigator.pop(context);
@@ -661,7 +701,7 @@ class _DriverDescriptionState extends State<DriverDescription>
       "companyId": prefs.companyId,
       "agentEmployeeId": agentEmployeeId
     };
-    final Database db = await handler.initializeDB();
+    final Database db = await handler!.initializeDB();
     final tables = await db.rawQuery('SELECT * FROM userX ;');
     final tables2 = await db.rawQuery(
         "SELECT noempid FROM userX WHERE noempid = '${prefs.nameSalida}'");
@@ -670,15 +710,15 @@ class _DriverDescriptionState extends State<DriverDescription>
     final data1 = Search.fromJson(json.decode(responsed.body));
     if (responsed.statusCode == 200 &&
         data1.ok == true &&
-        data1.agent.msg != null) {
-      print(data1.agent.msg);
-      print('Este es el agentId' + data1.agent.agentId.toString());
-      if (data1.agent.agentId != null) {
-        SweetAlert.show(
-          context,
+        data1.agent!.msg != null) {
+      print(data1.agent!.msg);
+      print('Este es el agentId' + data1.agent!.agentId.toString());
+      if (data1.agent!.agentId != null) {
+        QuickAlert.show(
+          context: context,
           title: '¡No encontrado!',
-          subtitle: data1.agent.msg,
-          style: SweetAlertStyle.error,
+          text: data1.agent!.msg,
+          type: QuickAlertType.error,
         );
       }
     } else if (responsed.statusCode == 200 && data1.ok == true) {
@@ -711,7 +751,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white)),
-                          subtitle: Text('${data1.agent.agentEmployeeId}',
+                          subtitle: Text('${data1.agent!.agentEmployeeId}',
                               style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.normal,
@@ -729,7 +769,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white)),
-                          subtitle: Text('${data1.agent.agentFullname}',
+                          subtitle: Text('${data1.agent!.agentFullname}',
                               style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.normal,
@@ -744,7 +784,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white)),
-                          subtitle: Text('${data1.agent.hourOut}',
+                          subtitle: Text('${data1.agent!.hourOut}',
                               style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.normal,
@@ -760,7 +800,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white)),
                           subtitle: Text(
-                              '${data1.agent.neighborhoodName} ${data1.agent.agentReferencePoint}\n${data1.agent.departmentName}',
+                              '${data1.agent!.neighborhoodName} ${data1.agent!.agentReferencePoint}\n${data1.agent!.departmentName}',
                               style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.normal,
@@ -770,11 +810,11 @@ class _DriverDescriptionState extends State<DriverDescription>
                         ),
                         SizedBox(height: 40),
                         Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                         // crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             Container(
-                              width: 120,
+                              width: 100,
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                   shape: RoundedRectangleBorder(
@@ -789,50 +829,52 @@ class _DriverDescriptionState extends State<DriverDescription>
                                     if (tables.length <= 13) {
                                       if (prefs.nameSalida != tables2) {
                                         noemp.insert(0,
-                                            '${data1.agent.agentEmployeeId}');
+                                            '${data1.agent!.agentEmployeeId}');
                                         names.insert(
-                                            0, '${data1.agent.agentFullname}');
+                                            0, '${data1.agent!.agentFullname}');
                                         hourout.insert(
-                                            0, '${data1.agent.hourOut}');
+                                            0, '${data1.agent!.hourOut}');
                                         direction.insert(0,
-                                            '${data1.agent.departmentName} ${data1.agent.neighborhoodName}\n${data1.agent.agentReferencePoint}');
-                                        tempArr.add(data1.agent.agentId);
+                                            '${data1.agent!.departmentName} ${data1.agent!.neighborhoodName}\n${data1.agent!.agentReferencePoint}');
+                                        tempArr.add(data1.agent!.agentId);
                                         prefs.companyIdAgent =
-                                            data1.agent.companyId.toString();
+                                            data1.agent!.companyId.toString();
                                         prefs.nameSalida = data1
-                                            .agent.agentEmployeeId
+                                            .agent!.agentEmployeeId
                                             .toString();
                                         User firstUser = User(
                                             noempid:
-                                                '${data1.agent.agentEmployeeId}',
+                                                '${data1.agent!.agentEmployeeId}',
                                             nameuser:
-                                                '${data1.agent.agentFullname}',
-                                            hourout: '${data1.agent.hourOut}',
+                                                '${data1.agent!.agentFullname}',
+                                            hourout: '${data1.agent!.hourOut}',
                                             direction:
-                                                '${data1.agent.departmentName} ${data1.agent.neighborhoodName}\n${data1.agent.agentReferencePoint}',
-                                            idsend: data1.agent.agentId);
+                                                '${data1.agent!.departmentName} ${data1.agent!.neighborhoodName}\n${data1.agent!.agentReferencePoint}',
+                                            idsend: data1.agent!.agentId);
                                         List<User> listOfUsers = [firstUser];
-                                        this.handler.insertUser(listOfUsers);
+                                        this.handler!.insertUser(listOfUsers);
                                         clearText();
                                         //guardar();
 
                                       } else {
                                         print('yasta we');
                                         Navigator.pop(context);
-                                        return SweetAlert.show(context,
-                                            title: "¡Advertencia!",
-                                            subtitle:
-                                                " El agente con número de empleado \n '${data1.agent.agentEmployeeId}' ya está agregado al viaje",
-                                            style: SweetAlertStyle.error);
+                                        QuickAlert.show(
+                                          context: context,
+                                          title: "¡Advertencia!",
+                                          text: " El agente con número de empleado \n '${data1.agent!.agentEmployeeId}' ya está agregado al viaje",
+                                          type: QuickAlertType.error,
+                                        );
                                       }
                                     } else if (tables.length > 13) {
                                       print('yasta we');
                                       Navigator.pop(context);
-                                      return SweetAlert.show(context,
-                                          title: "¡Advertencia!",
-                                          subtitle:
-                                              " El limite de agentes son 14, favor \n comunicarse con su cordinador",
-                                          style: SweetAlertStyle.error);
+                                      QuickAlert.show(
+                                        context: context,
+                                        title: "¡Advertencia!",
+                                        text: " El limite de agentes son 14, favor \n comunicarse con su cordinador",
+                                        type: QuickAlertType.error,
+                                      );
                                     }
 
                                     Navigator.pop(context);
@@ -845,10 +887,9 @@ class _DriverDescriptionState extends State<DriverDescription>
                                         fontWeight: FontWeight.normal,
                                         color: backgroundColor)),
                               ),
-                            ),
-                            SizedBox(width: 10),
+                            ),                            
                             Container(
-                              width: 120,
+                              width: 100,
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                   shape: RoundedRectangleBorder(
@@ -882,14 +923,14 @@ class _DriverDescriptionState extends State<DriverDescription>
   }
 
   // ignore: missing_return
-  Future<FindAgentSolid> fetchSearchAgentsSolid(String agentEmployeeId) async {
+  Future<FindAgentSolid?> fetchSearchAgentsSolid(String agentEmployeeId) async {
     Map data = {
       "companyId": prefs.companyId,
       "agentEmployeeId": agentEmployeeId,
       "destinationId": prefs.destinationId,
     };
     if (agentEmployeeId != "" && prefs.destinationId != null) {
-      final Database db = await handler.initializeDB();
+      final Database db = await handler!.initializeDB();
 
       final tables = await db.rawQuery('SELECT * FROM agentInsert ;');
       final tables2 = await db.rawQuery(
@@ -900,13 +941,12 @@ class _DriverDescriptionState extends State<DriverDescription>
       final data1 = FindAgentSolid.fromJson(json.decode(responsed.body));
       if (responsed.statusCode == 200) {
         if (data1.type == "error") {
-          SweetAlert.show(
-            context,
+          QuickAlert.show(
+            context: context,
             title: '¡No encontrado!',
-            subtitle:
-                'No se encontró el agente con número de empleado \n $agentEmployeeId',
-            style: SweetAlertStyle.error,
-          );
+            text: 'No se encontró el agente con número de empleado \n $agentEmployeeId',
+            type: QuickAlertType.error,
+          );    
         } else if (data1.type == "success") {
           print(data1);
           showDialog(
@@ -928,21 +968,21 @@ class _DriverDescriptionState extends State<DriverDescription>
                             ListTile(
                               contentPadding: EdgeInsets.fromLTRB(5, 5, 5, 0),
                               title: Text('No empleado: '),
-                              subtitle: Text('${data1.agent.agentEmployeeId}'),
+                              subtitle: Text('${data1.agent!.agentEmployeeId}'),
                               leading:
                                   Icon(Icons.card_travel, color: kColorAppBar),
                             ),
                             ListTile(
                               contentPadding: EdgeInsets.fromLTRB(5, 5, 5, 0),
                               title: Text('Nombre: '),
-                              subtitle: Text('${data1.agent.agentFullname}'),
+                              subtitle: Text('${data1.agent!.agentFullname}'),
                               leading: Icon(Icons.contact_page_outlined,
                                   color: kColorAppBar),
                             ),
                             ListTile(
                               contentPadding: EdgeInsets.fromLTRB(5, 5, 5, 0),
                               title: Text('Hora: '),
-                              subtitle: Text('${data1.agent.hourAgent}'),
+                              subtitle: Text('${data1.agent!.hourAgent}'),
                               leading:
                                   Icon(Icons.access_time, color: kColorAppBar),
                             ),
@@ -950,7 +990,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                               contentPadding: EdgeInsets.fromLTRB(5, 5, 5, 0),
                               title: Text('Dirección: '),
                               subtitle: Text(
-                                  '${data1.agent.neighborhoodName} ${data1.agent.agentReferencePoint}\n${data1.agent.departmentName} '),
+                                  '${data1.agent!.neighborhoodName} ${data1.agent!.agentReferencePoint}\n${data1.agent!.departmentName} '),
                               leading:
                                   Icon(Icons.directions, color: kColorAppBar),
                             ),
@@ -970,52 +1010,54 @@ class _DriverDescriptionState extends State<DriverDescription>
                                       if (tables.length <= 13) {
                                         if (prefs.nameSalida != tables2) {
                                           noemp.insert(0,
-                                              '${data1.agent.agentEmployeeId}');
+                                              '${data1.agent!.agentEmployeeId}');
                                           names.insert(0,
-                                              '${data1.agent.agentFullname}');
+                                              '${data1.agent!.agentFullname}');
                                           hourout.insert(
-                                              0, '${data1.agent.hourAgent}');
+                                              0, '${data1.agent!.hourAgent}');
                                           direction.insert(0,
-                                              '${data1.agent.agentReferencePoint} ${data1.agent.neighborhoodName}\n${data1.agent.departmentName}');
-                                          tempArr.add(data1.agent.agentId);
+                                              '${data1.agent!.agentReferencePoint} ${data1.agent!.neighborhoodName}\n${data1.agent!.departmentName}');
+                                          tempArr.add(data1.agent!.agentId);
                                           prefs.destinationIdAgent =
-                                              data1.agent.companyId.toString();
+                                              data1.agent!.companyId.toString();
                                           prefs.nameSalida = data1
-                                              .agent.agentEmployeeId
+                                              .agent!.agentEmployeeId
                                               .toString();
                                           User firstUser = User(
                                               noempid:
-                                                  '${data1.agent.agentEmployeeId}',
+                                                  '${data1.agent!.agentEmployeeId}',
                                               nameuser:
-                                                  '${data1.agent.agentFullname}',
+                                                  '${data1.agent!.agentFullname}',
                                               hourout:
-                                                  '${data1.agent.hourAgent}',
+                                                  '${data1.agent!.hourAgent}',
                                               direction:
-                                                  '${data1.agent.departmentName} ${data1.agent.neighborhoodName}\n${data1.agent.agentReferencePoint}',
-                                              idsend: data1.agent.agentId);
+                                                  '${data1.agent!.departmentName} ${data1.agent!.neighborhoodName}\n${data1.agent!.agentReferencePoint}',
+                                              idsend: data1.agent!.agentId);
                                           print(firstUser);
                                           List<User> listOfUsers = [firstUser];
-                                          this.handler.insertAgent(listOfUsers);
+                                          this.handler!.insertAgent(listOfUsers);
                                           clearText();
                                           //guardar();
 
                                         } else {
                                           print('yasta we');
                                           Navigator.pop(context);
-                                          return SweetAlert.show(context,
-                                              title: "¡Advertencia!",
-                                              subtitle:
-                                                  " El agente con número de empleado \n '${data1.agent.agentEmployeeId}' ya está agregado al viaje",
-                                              style: SweetAlertStyle.error);
+                                          QuickAlert.show(
+                                            context: context,
+                                            title: "¡Advertencia!",
+                                            text: " El agente con número de empleado \n '${data1.agent!.agentEmployeeId}' ya está agregado al viaje",
+                                            type: QuickAlertType.error,
+                                          ); 
                                         }
                                       } else if (tables.length > 13) {
                                         print('yasta we');
                                         Navigator.pop(context);
-                                        return SweetAlert.show(context,
-                                            title: "¡Advertencia!",
-                                            subtitle:
-                                                " El limite de agentes son 14, favor \n comunicarse con su cordinador",
-                                            style: SweetAlertStyle.error);
+                                        QuickAlert.show(
+                                          context: context,
+                                          title: "¡Advertencia!",
+                                          text: " El limite de agentes son 14, favor \n comunicarse con su cordinador",
+                                          type: QuickAlertType.error,
+                                        ); 
                                       }
 
                                       Navigator.pop(context);
@@ -1054,20 +1096,20 @@ class _DriverDescriptionState extends State<DriverDescription>
   }
 
   // ignore: missing_return
-  Future<TripsToSolid> fetchAgentsLeftPastToProgresToSolid() async {
+  Future<TripsToSolid?> fetchAgentsLeftPastToProgresToSolid() async {
     http.Response responses = await http
         .get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
     final si = DriverData.fromJson(json.decode(responses.body));
-    final Database db = await handler.initializeDB();
+    final Database db = await handler!.initializeDB();
     final tables = await db.rawQuery('SELECT * FROM agentInsert ;');
     if (tables.length == 0) {
       Navigator.pop(context);
-      SweetAlert.show(
-        context,
+      QuickAlert.show(
+        context: context,
         title: "Alerta",
-        subtitle: "No hay agentes agregados",
-        style: SweetAlertStyle.error,
-      );
+        text: "No hay agentes agregados",
+        type: QuickAlertType.error,
+      ); 
     } else {
       if (si.driverCoord == true) {
         Map datas = {
@@ -1081,12 +1123,12 @@ class _DriverDescriptionState extends State<DriverDescription>
         http.Response response1 = await http
             .post(Uri.parse('$ip/apis/registerTripEntryByDriver'), body: datas);
         final send = TripsToSolid.fromJson(json.decode(response1.body));
-        prefs.tripId = send.trip.tripId.toString();
+        prefs.tripId = send.trip!.tripId.toString();
         for (var i = 0; i < tables.length; i++) {
           Map datas2 = {
             "agentId": tables[i]['idsend'].toString(),
-            "tripId": send.trip.tripId.toString(),
-            "tripHour": send.trip.tripHour
+            "tripId": send.trip!.tripId.toString(),
+            "tripHour": send.trip!.tripHour
           };
 
           if (response1.statusCode == 200) {
@@ -1101,13 +1143,13 @@ class _DriverDescriptionState extends State<DriverDescription>
                   builder: (context) => MyConfirmAgent(),
                 ));
             prefs.removeIdCompanyAndVehicle();
-            SweetAlert.show(
-              context,
+            QuickAlert.show(
+              context: context,
               title: '¡Éxito!',
-              subtitle: 'El viaje se ha registrado correctamente',
-              style: SweetAlertStyle.success,
-            );
-            this.handler.cleanTableAgent();
+              text: 'El viaje se ha registrado correctamente',
+              type: QuickAlertType.success,
+            );  
+            this.handler!.cleanTableAgent();
           } else {
             throw Exception('Failed to load Data');
           }
@@ -1124,13 +1166,13 @@ class _DriverDescriptionState extends State<DriverDescription>
             .post(Uri.parse('$ip/apis/registerTripEntryByDriver'), body: datas);
         print(response1.body);
         final send = TripsToSolid.fromJson(json.decode(response1.body));
-        prefs.tripId = send.trip.tripId.toString();
+        prefs.tripId = send.trip!.tripId.toString();
         if (response1.statusCode == 200) {
           for (var i = 0; i < tables.length; i++) {
             Map datas2 = {
               "agentId": tables[i]['idsend'].toString(),
-              "tripId": send.trip.tripId.toString(),
-              "tripHour": send.trip.tripHour.toString()
+              "tripId": send.trip!.tripId.toString(),
+              "tripHour": send.trip!.tripHour.toString()
             };
 
             await http.post(
@@ -1143,13 +1185,13 @@ class _DriverDescriptionState extends State<DriverDescription>
                   builder: (context) => MyConfirmAgent(),
                 ));
             prefs.removeIdCompanyAndVehicle();
-            SweetAlert.show(
-              context,
+            QuickAlert.show(
+              context: context,
               title: '¡Éxito!',
-              subtitle: 'El viaje se ha registrado correctamente',
-              style: SweetAlertStyle.success,
-            );
-            this.handler.cleanTableAgent();
+              text: 'El viaje se ha registrado correctamente',
+              type: QuickAlertType.success,
+            ); 
+            this.handler!.cleanTableAgent();
           }
         } else {
           throw Exception('Failed to load Data');
@@ -1210,21 +1252,939 @@ class _DriverDescriptionState extends State<DriverDescription>
   }
 
   Widget _mostrarTerceraVentana(BuildContext context) {
-    return SingleChildScrollView(
-      child: Container(
-        child: Column(
+    return Column(
+      //crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text('Compañía',
+            style: TextStyle(
+                color: GradiantV_2,
+                fontWeight: FontWeight.normal,
+                fontSize: 35.0)),
+        SizedBox(height: 20.0),
+        _crearDropdown(context),
+        SizedBox(height: 20.0),
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(15)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                spreadRadius: 0,
+                blurStyle: BlurStyle.solid,
+                blurRadius: 10,
+                offset: Offset(0, 0), // changes position of shadow
+              ),
+              BoxShadow(
+                color: Colors.white.withOpacity(0.1),
+                spreadRadius: 0,
+                blurRadius: 5,
+                blurStyle: BlurStyle.inner,
+                offset: Offset(0, 0), // changes position of shadow
+              ),
+            ],
+          ),
+          width: 320,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: TextField(
+                cursorColor: firstColor,
+                style: TextStyle(color: Colors.white),
+                onChanged: (value) {
+                  prefs.vehiculo = value;
+                },
+                controller: nameController,
+                decoration: InputDecoration(
+                  icon: Icon(Icons.directions_bus,
+                      color: thirdColor, size: 30.0),
+                  border: InputBorder.none,
+                  hintText:
+                      prefs.vehiculo == "" ? "Vehículo" : prefs.vehiculo,
+                  hintStyle: TextStyle(
+                      color: Colors.white.withOpacity(0.5), fontSize: 15.0),
+                )),
+          ),
+        ),
+        FutureBuilder<DriverData?>(
+            future: itemx!,
+            builder: (BuildContext context, abc) {
+              switch (abc.connectionState) {
+                case ConnectionState.waiting:
+                  return Text('Cargando....');
+                default:
+                  if (abc.hasError) {
+                    return Text('Error: ${abc.error}');
+                  } else {
+                    return Column(
+                      children: [
+                        if (abc.data?.driverCoord == true) showAndHide()
+                      ],
+                    );
+                  }
+              }
+            }),
+        SizedBox(height: 20.0),
+        Row(
           crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Compañía',
+            Container(
+              width: 75,
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: GradiantV_2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                  ),
+                  child: Icon(Icons.delete,
+                      color: backgroundColor, size: 25.0),
+                  onPressed: () {
+                    setState(() {
+                      this.handler!.cleanTable();
+                    });
+                  }),
+            ),
+            SizedBox(width: 8.0),
+            Container(
+              width: 75,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: GradiantV2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
+                child:
+                    Icon(Icons.search, color: backgroundColor, size: 25.0),
+                onPressed: () {
+                  showGeneralDialog(
+                      barrierColor: Colors.black.withOpacity(0.5),
+                      transitionBuilder: (context, a1, a2, widget) {
+                        return Transform.scale(
+                          scale: a1.value,
+                          child: Opacity(
+                            opacity: a1.value,
+                            child: AlertDialog(
+                              backgroundColor: backgroundColor,
+                              shape: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.circular(16.0)),
+                              title: Center(
+                                  child: Text(
+                                'Buscar Agente',
+                                style: TextStyle(
+                                    color: GradiantV_2, fontSize: 20.0),
+                              )),
+                              content: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(15)),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.2),
+                                      spreadRadius: 0,
+                                      blurStyle: BlurStyle.solid,
+                                      blurRadius: 10,
+                                      offset: Offset(0,
+                                          0), // changes position of shadow
+                                    ),
+                                    BoxShadow(
+                                      color: Colors.white.withOpacity(0.1),
+                                      spreadRadius: 0,
+                                      blurRadius: 5,
+                                      blurStyle: BlurStyle.inner,
+                                      offset: Offset(0,
+                                          0), // changes position of shadow
+                                    ),
+                                  ],
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0),
+                                  child: TextField(
+                                    style: TextStyle(color: Colors.white),
+                                    controller: agentEmployeeId,
+                                    decoration: InputDecoration(
+                                        border: InputBorder.none,
+                                        labelText: 'Escriba aqui',
+                                        labelStyle: TextStyle(
+                                            color: Colors.white
+                                                .withOpacity(0.5),
+                                            fontSize: 15.0)),
+                                  ),
+                                ),
+                              ),
+                              actions: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      width: 100,
+                                      child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20.0),
+                                          ),
+                                          textStyle: TextStyle(
+                                            color: backgroundColor,
+                                          ),
+                                          backgroundColor: Gradiant2,
+                                        ),
+                                        onPressed: () => {
+                                          fetchSearchAgents2(
+                                              agentEmployeeId.text),
+                                          Navigator.pop(context)
+                                        },
+                                        child: Text('Buscar',
+                                            style: TextStyle(
+                                                color: backgroundColor,
+                                                fontSize: 15.0)),
+                                      ),
+                                    ),
+                                    SizedBox(width: 10.0),
+                                    Container(
+                                      width: 100,
+                                      child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20.0),
+                                          ),
+                                          textStyle: TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                        onPressed: () => {
+                                          Navigator.pop(context),
+                                        },
+                                        child: Text('Cerrar',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 15.0)),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                      transitionDuration: Duration(milliseconds: 200),
+                      barrierDismissible: true,
+                      barrierLabel: '',
+                      context: context,
+                      pageBuilder: (context, animation1, animation2) {
+                        return Text('');
+                      });
+                },
+              ),
+            ),
+            SizedBox(width: 8.0),
+            Container(
+              width: 75,
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0)),
+                      backgroundColor: firstColor),
+                  child: Icon(Icons.qr_code,
+                      color: backgroundColor, size: 25.0),
+                  onPressed: scanBarcodeNormal),
+            )
+          ],
+        ),
+        SizedBox(height: 6.0),
+        FutureBuilder(
+          future: this.handler!.retrieveUsers(),
+          builder:
+              (BuildContext context, AsyncSnapshot<List<User?>> snapshot) {
+            if (snapshot.hasData) {
+              noemp.add("${snapshot.data?.length}");
+              return Text("Total de agentes: ${snapshot.data?.length}",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15.0,
+                      fontWeight: FontWeight.bold));
+            } else {
+              return CircularProgressIndicator();
+            }
+          },
+        ),
+        SizedBox(height: 6.0),
+        FutureBuilder(
+            future: this.handler!.retrieveUsers(),
+            builder:
+                (BuildContext context, AsyncSnapshot<List<User?>> snapshot) {
+              if (snapshot.hasData) {
+                return Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Container(
+                    child: Column(
+                      children: [
+                        for (var i = 0; i < snapshot.data!.length; i++) ...{
+                          Container(
+                            decoration: BoxDecoration(boxShadow: [
+                              BoxShadow(
+                                  blurStyle: BlurStyle.normal,
+                                  color: Colors.white.withOpacity(0.2),
+                                  blurRadius: 15,
+                                  spreadRadius: -30,
+                                  offset: Offset(-25, -25)),
+                              BoxShadow(
+                                  blurStyle: BlurStyle.normal,
+                                  color: Colors.black.withOpacity(0.6),
+                                  blurRadius: 30,
+                                  spreadRadius: -45,
+                                  offset: Offset(20, -15)),
+                            ]),
+                            child: Card(
+                              elevation: 20,
+                              color: backgroundColor,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                              margin: EdgeInsets.all(4.0),
+                              child: Column(
+                                children: <Widget>[
+                                  Container(
+                                    margin: EdgeInsets.only(left: 15),
+                                    child: Column(
+                                      children: [
+                                        ListTile(
+                                          contentPadding:
+                                              EdgeInsets.fromLTRB(
+                                                  5, 5, 10, 0),
+                                          title: Text('# No empleado: ',
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight:
+                                                      FontWeight.bold,
+                                                  color: Colors.white)),
+                                          subtitle: Text(
+                                              '${snapshot.data![i]!.noempid}',
+                                              style: TextStyle(
+                                                  fontSize: 15,
+                                                  color: Colors.white)),
+                                          leading: Icon(
+                                              Icons.confirmation_number,
+                                              color: thirdColor,
+                                              size: 40.0),
+                                        ),
+                                        ListTile(
+                                          contentPadding:
+                                              EdgeInsets.fromLTRB(
+                                                  5, 5, 10, 0),
+                                          title: Text('Nombre:',
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight:
+                                                      FontWeight.bold,
+                                                  color: Colors.white)),
+                                          subtitle: Text(
+                                              '${snapshot.data![i]!.nameuser}',
+                                              style: TextStyle(
+                                                  fontSize: 15,
+                                                  color: Colors.white)),
+                                          leading: Icon(
+                                              Icons.account_box_sharp,
+                                              color: thirdColor,
+                                              size: 40.0),
+                                        ),
+                                        ListTile(
+                                          contentPadding:
+                                              EdgeInsets.fromLTRB(
+                                                  5, 5, 10, 0),
+                                          title: Text('Hora salida: ',
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight:
+                                                      FontWeight.bold,
+                                                  color: Colors.white)),
+                                          subtitle: Text(
+                                              '${snapshot.data![i]!.hourout}',
+                                              style: TextStyle(
+                                                  fontSize: 15,
+                                                  color: Colors.white)),
+                                          leading: Icon(Icons.access_alarms,
+                                              color: thirdColor,
+                                              size: 40.0),
+                                        ),
+                                        ListTile(
+                                          contentPadding:
+                                              EdgeInsets.fromLTRB(
+                                                  5, 5, 10, 0),
+                                          title: Text('Dirección: ',
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight:
+                                                      FontWeight.bold,
+                                                  color: Colors.white)),
+                                          subtitle: Text(
+                                              '${snapshot.data![i]!.direction}',
+                                              style: TextStyle(
+                                                  fontSize: 15,
+                                                  color: Colors.white)),
+                                          leading: Icon(Icons.location_pin,
+                                              color: thirdColor,
+                                              size: 40.0),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    decoration: BoxDecoration(boxShadow: [
+                                      BoxShadow(
+                                          blurStyle: BlurStyle.normal,
+                                          color:
+                                              Colors.white.withOpacity(0.2),
+                                          blurRadius: 10,
+                                          spreadRadius: -8,
+                                          offset: Offset(-10, -6)),
+                                      BoxShadow(
+                                          blurStyle: BlurStyle.normal,
+                                          color:
+                                              Colors.black.withOpacity(0.6),
+                                          blurRadius: 10,
+                                          spreadRadius: -15,
+                                          offset: Offset(18, 5)),
+                                    ]),
+                                    width: 150,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        textStyle: TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                        backgroundColor: backgroundColor,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(
+                                                    20.0)),
+                                      ),
+                                      onPressed: () async {
+                                        final Database db =
+                                            await handler!.initializeDB();
+                                        await this.handler!.deleteUser(
+                                            snapshot.data![i]!.idsend!);
+                                        await db.rawQuery(
+                                            "DELETE FROM userX WHERE nameuser = '${snapshot.data![i]!.nameuser}'");
+                                        QuickAlert.show(
+                                          context: context,
+                                          title: "¿Desea eliminar el Agente?",
+                                          confirmBtnText: "Si",
+                                          cancelBtnText: "Cancelar",
+                                          showCancelBtn: true,  
+                                          confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
+                                          cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
+                                          onConfirmBtnTap: () {
+                                            Navigator.pop(context);
+                                            QuickAlert.show(
+                                              context: context,
+                                              title: "Eliminado",
+                                              type: QuickAlertType.success,
+                                            );
+                                            setState(() {
+                                              snapshot.data
+                                                  !.remove(snapshot.data![i]);
+                                            });
+                                          },
+                                          onCancelBtnTap: () {
+                                            Navigator.pop(context);
+                                            QuickAlert.show(
+                                              context: context,
+                                              title: "Cancelado",
+                                              type: QuickAlertType.error,                                                  
+                                            );                                                
+                                          },                                              
+                                          type: QuickAlertType.success,
+                                        ); 
+                                      },
+                                      child: Text('Quitar',
+                                          style: TextStyle(
+                                              color: Colors.red,
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold)),
+                                    ),
+                                  ),
+                                  SizedBox(height: 10.0),
+                                ],
+                              ),
+                            ),
+                          )
+                        },
+                        Center(
+                          child: Column(
+                            children: [
+                              SizedBox(height: 20.0),
+                              Container(
+                                decoration: BoxDecoration(boxShadow: [
+                                  BoxShadow(
+                                      blurStyle: BlurStyle.normal,
+                                      color: Colors.white.withOpacity(0.2),
+                                      blurRadius: 15,
+                                      spreadRadius: -30,
+                                      offset: Offset(-25, -25)),
+                                  BoxShadow(
+                                      blurStyle: BlurStyle.normal,
+                                      color: Colors.black.withOpacity(0.6),
+                                      blurRadius: 30,
+                                      spreadRadius: -45,
+                                      offset: Offset(20, -15)),
+                                ]),
+                                child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(
+                                                    10.0)),
+                                        backgroundColor: thirdColor,
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 5, horizontal: 22)),
+                                    child: Icon(Icons.save,
+                                        color: backgroundColor, size: 25.0),
+                                    onPressed: () async {
+                                      showGeneralDialog(
+                                          context: context,
+                                          transitionBuilder:
+                                              (context, a1, a2, widget) {
+                                            return Center(
+                                                child: ColorLoader3());
+                                          },
+                                          transitionDuration:
+                                              Duration(milliseconds: 200),
+                                          barrierDismissible: false,
+                                          barrierLabel: '',
+                                          pageBuilder: (context, animation1,
+                                              animation2) {
+                                            return Text('');
+                                          });
+
+                                      await fetchAgentsLeftPastToProgres(
+                                          hourOut.text, vehicule.text);
+
+                                      setState(() {
+                                        this.handler!.cleanTable();
+                                      });
+                                    }),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 50,)
+                      ],
+                    ),
+                  ),
+                );
+              } else if (names.length == 0) {
+                return Card(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  margin: EdgeInsets.symmetric(vertical: 25),
+                  child: Container(
+                    color: backgroundColor,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        ListTile(
+                          leading: Icon(
+                            Icons.bus_alert,
+                            color: thirdColor,
+                          ),
+                          title: Text('Agentes',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 26.0)),
+                          subtitle: Text('No hay agentes en el viaje',
+                              style: TextStyle(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 18.0)),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              } else {
+                return Center(child: CircularProgressIndicator());
+              }
+            })
+      ],
+    );
+  }
+
+  Widget showAndHide() {
+    return Container(
+      child: Column(
+        children: [
+          SizedBox(height: 30.0),
+          Container(
+            decoration: BoxDecoration(boxShadow: [
+              BoxShadow(
+                  blurStyle: BlurStyle.normal,
+                  color: Colors.white.withOpacity(0.2),
+                  blurRadius: 30,
+                  spreadRadius: -8,
+                  offset: Offset(-15, -6)),
+              BoxShadow(
+                  blurStyle: BlurStyle.normal,
+                  color: Colors.black.withOpacity(0.6),
+                  blurRadius: 30,
+                  spreadRadius: -15,
+                  offset: Offset(18, 5)),
+            ]),
+            child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    backgroundColor: Gradiant2,
+                    padding:
+                        EdgeInsets.symmetric(vertical: 10, horizontal: 40)),
+                child: Text(
+                    radioShowAndHide == false
+                        ? 'Presione aquí para asignar conductor'
+                        : 'Presione aquí si usted realizará el viaje',
+                    style: TextStyle(color: backgroundColor)),
+                onPressed: () {
+                  if (radioShowAndHide) {
+                    setState(() {
+                      radioShowAndHide = false;
+                    });
+                  } else {
+                    setState(() {
+                      radioShowAndHide = true;
+                    });
+                  }
+                }),
+          ),
+          Visibility(
+              maintainSize: true,
+              maintainAnimation: true,
+              maintainState: true,
+              visible: radioShowAndHide,
+              child: getSearchableDropdown(context)),
+        ],
+      ),
+    );
+  }
+
+  Widget getSearchableDropdown(BuildContext context) {
+    return Container(
+      width: 300,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(15)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            spreadRadius: 0,
+            blurStyle: BlurStyle.solid,
+            blurRadius: 10,
+            offset: Offset(0, 0), // changes position of shadow
+          ),
+          BoxShadow(
+            color: Colors.white.withOpacity(0.1),
+            spreadRadius: 0,
+            blurRadius: 5,
+            blurStyle: BlurStyle.inner,
+            offset: Offset(0, 0), // changes position of shadow
+          ),
+        ],
+      ),
+      child: DropdownSearch<TripsDrivers>(
+                  mode: Mode.DIALOG,
+                  showClearButton :false,
+                  items: driverId ,
+                  itemAsString: (TripsDrivers? u) => u!.driverFullname!,                  
+                  onChanged: (value){                                        
+                    setState(() {
+                      driver = value!.driverId.toString();
+                      prefs.driverIdx = driver.toString();
+                      print(prefs.driverIdx);
+                    });
+                  },
+                  showSearchBox: true,
+                  filterFn: (instance, filter){
+                    if(instance!.driverFullname!.contains(filter!)){
+                      print(filter);
+                      return true;
+                    }else if(instance.driverFullname!.toLowerCase().contains(filter)){
+                      print(filter);
+                      return true;
+                    }
+                    else{
+                      return false;
+                    }
+                  },
+                  popupItemBuilder: (context,TripsDrivers item,bool isSelected){
+                    return Container(
+                      margin: EdgeInsets.symmetric(horizontal: 8),
+                      decoration: !isSelected
+                          ? null
+                          : BoxDecoration(
+                        border: Border.all(color: Theme.of(context).primaryColor),
+                        borderRadius: BorderRadius.circular(5),
+                        color: Colors.white,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(item.driverFullname!),
+                      ),
+                    );
+                  },
+                 ),
+      // SearchableDropdown(
+      //   closeButton: (selectedItem) {
+      //     return (selectedItem == null || selectedItem.length == 0)
+      //         ? "Cancelar"
+      //         : "Aceptar";
+      //   },
+      //   menuBackgroundColor: backgroundColor,
+      //   icon: Icon(Icons.person,
+      //       color: thirdColor, size: 30.0, semanticLabel: 'Conductor'),
+      //   items: driverId.map((item) {
+      //     return new DropdownMenuItem(
+      //         child: Text(item['driverFullname'],
+      //             style: TextStyle(
+      //                 color: Colors.white,
+      //                 fontWeight: FontWeight.normal,
+      //                 fontSize: 18.0)),
+      //         value: item['driverId'].toString());
+      //   }).toList(),
+      //   isExpanded: true,
+      //   value: driver,
+      //   searchFn: (String keyword, items) {
+      //     List<int> ret = [];
+      //     if (items != null && keyword.isNotEmpty) {
+      //       keyword.split(" ").forEach((k) {
+      //         int i = 0;
+      //         driverId.forEach((item) {
+      //           if (k.isNotEmpty &&
+      //               (item['driverFullname']
+      //                   .toString()
+      //                   .toLowerCase()
+      //                   .contains(k.toLowerCase()))) {
+      //             ret.add(i);
+      //           }
+      //           i++;
+      //         });
+      //       });
+      //     }
+      //     if (keyword.isEmpty) {
+      //       ret = Iterable<int>.generate(items.length).toList();
+      //     }
+      //     return (ret);
+      //   },
+      //   isCaseSensitiveSearch: true,
+      //   searchHint: new Text(
+      //     'Seleccione ',
+      //     style: new TextStyle(
+      //         fontSize: 20, color: thirdColor, fontWeight: FontWeight.bold),
+      //   ),
+      //   onChanged: (value) {
+      //     setState(() {
+      //       driver = value;
+      //       prefs.driverIdx = driver.toString();
+      //       print(prefs.driverIdx);
+      //     });
+      //   },
+      // ),
+    );
+  }
+
+  Widget _crearDropdown(BuildContext context) {
+    final String comp = "Company";
+    final String comp2 = "Company 2";
+    final String ibexTgu = "IBEX TGU";
+    final String resultTgu = "RESULT TGU";
+    final String partner = "PARTNER HERO TGU";
+    final String startekSPS = "Startek SPS";
+    final String starteTGU = "Startek TGU";
+    final String aloricaSPS = "Alorica SPS";
+    final String zerovarianceSPS = "Zero Variance SPS";
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(15)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            spreadRadius: 0,
+            blurStyle: BlurStyle.solid,
+            blurRadius: 10,
+            offset: Offset(0, 0), // changes position of shadow
+          ),
+          BoxShadow(
+            color: Colors.white.withOpacity(0.1),
+            spreadRadius: 0,
+            blurRadius: 5,
+            blurStyle: BlurStyle.inner,
+            offset: Offset(0, 0), // changes position of shadow
+          ),
+        ],
+      ),
+      margin: EdgeInsets.symmetric(horizontal: 40.0),
+      child: Row(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Icon(
+              Icons.location_city,
+              color: thirdColor,
+              size: 30.0,
+            ),
+          ),
+          
+          Expanded(
+              child: new DropdownButton(
+            underline: SizedBox(),
+            style: TextStyle(color: Colors.white60),
+            dropdownColor: backgroundColor2,
+            elevation: 20,
+            hint: Text(prefs.companyPrueba,
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.normal,
+                    fontSize: 15.0)),
+            items: data.map((e) {
+              return new DropdownMenuItem(
+                alignment: Alignment.centerLeft,
+                child: Text(e['companyName'] == null || e['companyName'] == ""
+                    ? prefs.companyPrueba
+                    : e['companyName']),
+                value: e['companyId'].toString(),
+              );
+            }).toList(),
+            onChanged: (val) {
+              setState(() {
+                companyId = val;
+                prefs.companyId = companyId!;
+                if (prefs.companyId == "1") {
+                  prefs.companyPrueba = comp;
+                } else if (prefs.companyId == "2") {
+                  prefs.companyPrueba = startekSPS;
+                } else if (prefs.companyId == "3") {
+                  prefs.companyPrueba = starteTGU;
+                } else if (prefs.companyId == "6") {
+                  prefs.companyPrueba = aloricaSPS;
+                } else if (prefs.companyId == "7") {
+                  prefs.companyPrueba = zerovarianceSPS;
+                } else if (prefs.companyId == "5") {
+                  prefs.companyPrueba = comp2;
+                } else if (prefs.companyId == "9") {
+                  prefs.companyPrueba = ibexTgu;
+                } else if (prefs.companyId == "11") {
+                  prefs.companyPrueba = resultTgu;
+                } else if (prefs.companyId == "12") {
+                  prefs.companyPrueba = partner;
+                }
+                if (prefs.companyId != prefs.companyIdAgent) {
+                  if (handleerrror == 'khe') {
+                    this.handler!.cleanTable();
+                    this.handler!.cleanTableAgent();
+                  }
+                }
+              });
+              print(val);
+            },
+            value: companyId,
+          )),
+        
+        
+        ],
+      ),
+    );
+  }
+
+  Widget _crearDropdownToDestination(BuildContext context) {
+    final String destination1 = "Gasolinera";
+    final String destination2 = "Emisoras";
+
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 40.0),
+      child: Row(
+        children: [
+          Icon(Icons.location_city),
+          SizedBox(width: 20.0),
+          Expanded(
+              child: new DropdownButton(
+            hint: Text(prefs.destinationPrueba),
+            items: data2.map((e) {
+              return new DropdownMenuItem(
+                child: Text(
+                    e['destinationName'] == null || e['destinationName'] == ""
+                        ? prefs.destinationPrueba
+                        : e['destinationName']),
+                value: e['destinationId'].toString(),
+              );
+            }).toList(),
+            onChanged: (val) {
+              setState(() {
+                destinationId = val;
+                prefs.destinationId = destinationId!;
+                if (prefs.destinationId == "9") {
+                  prefs.destinationPrueba = destination1;
+                } else if (prefs.destinationId == "10") {
+                  prefs.destinationPrueba = destination2;
+                }
+                if (prefs.destinationId != prefs.destinationIdAgent) {
+                  this.handler!.cleanTableAgent();
+                }
+              });
+            },
+            value: destinationId,
+          )),
+        
+        ],
+      ),
+    );
+  }
+
+  Widget _mostrarCuartaVentana() {
+    return HistoryTripDriver();
+  }
+
+  Widget _mostrarQuintaVentana(BuildContext context) {
+    return Column(
+      children: [
+        Text('Compañía',
                 style: TextStyle(
                     color: GradiantV_2,
                     fontWeight: FontWeight.normal,
                     fontSize: 35.0)),
             SizedBox(height: 20.0),
-            _crearDropdown(context),
-            SizedBox(height: 20.0),
-            Container(
-              decoration: BoxDecoration(
+        _crearDropdown(context),
+        SizedBox(height: 10.0),
+        Text('Destino',
+                style: TextStyle(
+                    color: GradiantV_2,
+                    fontWeight: FontWeight.normal,
+                    fontSize: 35.0)),
+        SizedBox(height: 5.0),
+        _crearDropdownToDestination(context),
+        FutureBuilder<DriverData>(
+            future: itemx,
+            builder: (BuildContext context, abc) {
+              switch (abc.connectionState) {
+                case ConnectionState.waiting:
+                  return Text('Cargando....');
+                default:
+                  if (abc.hasError) {
+                    return Text('Error: ${abc.error}');
+                  } else {
+                    return Column(
+                      children: [
+                        if (abc.data?.driverCoord == true) showAndHide()
+                      ],
+                    );
+                  }
+              }
+            }),
+        Container(
+          width: 320,
+          decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(15)),
                 boxShadow: [
                   BoxShadow(
@@ -1243,51 +2203,33 @@ class _DriverDescriptionState extends State<DriverDescription>
                   ),
                 ],
               ),
-              width: 320,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: TextField(
-                    cursorColor: firstColor,
-                    style: TextStyle(color: Colors.white),
-                    onChanged: (value) {
-                      prefs.vehiculo = value;
-                    },
-                    controller: nameController,
-                    decoration: InputDecoration(
-                      icon: Icon(Icons.directions_bus,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: TextField(
+              cursorColor: firstColor,
+              style: TextStyle(color: Colors.white),
+                onChanged: (value) {
+                  prefs.vehiculo = value;
+                },
+                controller: nameController,
+                decoration: InputDecoration(
+                  icon: Icon(Icons.directions_bus,
                           color: thirdColor, size: 30.0),
-                      border: InputBorder.none,
-                      hintText:
-                          prefs.vehiculo == "" ? "Vehículo" : prefs.vehiculo,
-                      hintStyle: TextStyle(
-                          color: Colors.white.withOpacity(0.5), fontSize: 15.0),
-                    )),
-              ),
-            ),
-            FutureBuilder<DriverData>(
-                future: itemx,
-                builder: (BuildContext context, abc) {
-                  switch (abc.connectionState) {
-                    case ConnectionState.waiting:
-                      return Text('Cargando....');
-                    default:
-                      if (abc.hasError) {
-                        return Text('Error: ${abc.error}');
-                      } else {
-                        return Column(
-                          children: [
-                            if (abc.data?.driverCoord == true) showAndHide()
-                          ],
-                        );
-                      }
-                  }
-                }),
-            SizedBox(height: 20.0),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
+                      border: InputBorder.none,                  
+                  hintText: prefs.vehiculoSolid == ""
+                      ? "Vehículo"
+                      : prefs.vehiculoSolid,
+                  hintStyle: TextStyle(
+                          color: Colors.white.withOpacity(0.5), fontSize: 15.0)
+                )),
+          ),
+        ),
+        SizedBox(height: 20.0),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
                   width: 75,
                   child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -1300,12 +2242,12 @@ class _DriverDescriptionState extends State<DriverDescription>
                           color: backgroundColor, size: 25.0),
                       onPressed: () {
                         setState(() {
-                          this.handler.cleanTable();
+                          this.handler!.cleanTableAgent();
                         });
                       }),
                 ),
-                SizedBox(width: 8.0),
-                Container(
+            SizedBox(width: 5.0),
+            Container(
                   width: 75,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
@@ -1393,8 +2335,8 @@ class _DriverDescriptionState extends State<DriverDescription>
                                               backgroundColor: Gradiant2,
                                             ),
                                             onPressed: () => {
-                                              fetchSearchAgents2(
-                                                  agentEmployeeId.text),
+                                              fetchSearchAgentsSolid(
+                                          agentEmployeeId.text),
                                               Navigator.pop(context)
                                             },
                                             child: Text('Buscar',
@@ -1438,13 +2380,13 @@ class _DriverDescriptionState extends State<DriverDescription>
                           barrierLabel: '',
                           context: context,
                           pageBuilder: (context, animation1, animation2) {
-                            return null;
+                            return Text('');
                           });
                     },
                   ),
                 ),
-                SizedBox(width: 8.0),
-                Container(
+            SizedBox(width: 8.0),
+            Container(
                   width: 75,
                   child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -1453,43 +2395,40 @@ class _DriverDescriptionState extends State<DriverDescription>
                           backgroundColor: firstColor),
                       child: Icon(Icons.qr_code,
                           color: backgroundColor, size: 25.0),
-                      onPressed: scanBarcodeNormal),
-                )
-              ],
-            ),
-            SizedBox(height: 6.0),
-            FutureBuilder(
-              future: this.handler.retrieveUsers(),
-              builder:
-                  (BuildContext context, AsyncSnapshot<List<User>> snapshot) {
-                if (snapshot.hasData) {
-                  noemp.add("${snapshot.data?.length}");
-                  return Text("Total de agentes: ${snapshot.data?.length}",
+                      onPressed: scanBarcodeNormalSolid),
+                ) 
+          ],
+        ),
+        SizedBox(height: 6.0),
+        FutureBuilder(
+          future: this.handler!.retrieveAgent(),
+          builder: (BuildContext context, AsyncSnapshot<List<User?>> snapshot) {
+            if (snapshot.hasData) {
+              noemp.add("${snapshot.data?.length}");
+              return Text("Total de agentes: ${snapshot.data?.length}",
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 15.0,
                           fontWeight: FontWeight.bold));
-                } else {
-                  return CircularProgressIndicator();
-                }
-              },
-            ),
-            SizedBox(height: 6.0),
-            FutureBuilder(
-                future: this.handler.retrieveUsers() == null
-                    ? noemp.length
-                    : this.handler.retrieveUsers(),
-                builder:
-                    (BuildContext context, AsyncSnapshot<List<User>> snapshot) {
-                  if (snapshot.hasData) {
-                    return Padding(
-                      padding: const EdgeInsets.all(15.0),
-                      child: Container(
-                        child: Column(
-                          children: [
-                            for (var i = 0; i < snapshot.data?.length; i++) ...{
-                              Container(
-                                decoration: BoxDecoration(boxShadow: [
+            } else {
+              return CircularProgressIndicator();
+            }
+          },
+        ),
+        SizedBox(height: 6.0),
+        FutureBuilder(
+            future: this.handler!.retrieveAgent(),
+            builder:
+                (BuildContext context, AsyncSnapshot<List<User?>> snapshot) {
+              if (snapshot.hasData) {
+                return Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Container(
+                    child: Column(
+                      children: [
+                        for (var i = 0; i < snapshot.data!.length; i++) ...{
+                          Container(
+                            decoration: BoxDecoration(boxShadow: [
                                   BoxShadow(
                                       blurStyle: BlurStyle.normal,
                                       color: Colors.white.withOpacity(0.2),
@@ -1502,102 +2441,96 @@ class _DriverDescriptionState extends State<DriverDescription>
                                       blurRadius: 30,
                                       spreadRadius: -45,
                                       offset: Offset(20, -15)),
-                                ]),
-                                child: Card(
-                                  elevation: 20,
+                                ]),                            
+                            child: Card(
+                              elevation: 20,
                                   color: backgroundColor,
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10)),
                                   margin: EdgeInsets.all(4.0),
-                                  child: Column(
-                                    children: <Widget>[
-                                      Container(
-                                        margin: EdgeInsets.only(left: 15),
-                                        child: Column(
-                                          children: [
-                                            ListTile(
-                                              contentPadding:
-                                                  EdgeInsets.fromLTRB(
-                                                      5, 5, 10, 0),
-                                              title: Text('# No empleado: ',
+                              child: Column(
+                                children: <Widget>[
+                                  Container(
+                                    margin: EdgeInsets.only(left: 15),
+                                    child: Column(
+                                      children: [
+                                        ListTile(
+                                          contentPadding:
+                                              EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                          title: Text('# No empleado: ',
                                                   style: TextStyle(
                                                       fontSize: 18,
                                                       fontWeight:
                                                           FontWeight.bold,
                                                       color: Colors.white)),
-                                              subtitle: Text(
-                                                  '${snapshot.data[i].noempid}',
+                                          subtitle:
+                                            Text('${snapshot.data![i]!.noempid}',
                                                   style: TextStyle(
                                                       fontSize: 15,
                                                       color: Colors.white)),
-                                              leading: Icon(
-                                                  Icons.confirmation_number,
-                                                  color: thirdColor,
+                                        leading: Icon(Icons.confirmation_number,
+                                            color: thirdColor,
                                                   size: 40.0),
-                                            ),
-                                            ListTile(
-                                              contentPadding:
-                                                  EdgeInsets.fromLTRB(
-                                                      5, 5, 10, 0),
-                                              title: Text('Nombre:',
-                                                  style: TextStyle(
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Colors.white)),
-                                              subtitle: Text(
-                                                  '${snapshot.data[i].nameuser}',
-                                                  style: TextStyle(
-                                                      fontSize: 15,
-                                                      color: Colors.white)),
-                                              leading: Icon(
-                                                  Icons.account_box_sharp,
-                                                  color: thirdColor,
-                                                  size: 40.0),
-                                            ),
-                                            ListTile(
-                                              contentPadding:
-                                                  EdgeInsets.fromLTRB(
-                                                      5, 5, 10, 0),
-                                              title: Text('Hora salida: ',
-                                                  style: TextStyle(
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Colors.white)),
-                                              subtitle: Text(
-                                                  '${snapshot.data[i].hourout}',
-                                                  style: TextStyle(
-                                                      fontSize: 15,
-                                                      color: Colors.white)),
-                                              leading: Icon(Icons.access_alarms,
-                                                  color: thirdColor,
-                                                  size: 40.0),
-                                            ),
-                                            ListTile(
-                                              contentPadding:
-                                                  EdgeInsets.fromLTRB(
-                                                      5, 5, 10, 0),
-                                              title: Text('Dirección: ',
-                                                  style: TextStyle(
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Colors.white)),
-                                              subtitle: Text(
-                                                  '${snapshot.data[i].direction}',
-                                                  style: TextStyle(
-                                                      fontSize: 15,
-                                                      color: Colors.white)),
-                                              leading: Icon(Icons.location_pin,
-                                                  color: thirdColor,
-                                                  size: 40.0),
-                                            ),
-                                          ],
-                                        ),
                                       ),
-                                      Container(
-                                        decoration: BoxDecoration(boxShadow: [
+                                      ListTile(
+                                        contentPadding:
+                                            EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                        title: Text('Nombre:',
+                                            style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.white)),
+                                        subtitle:
+                                            Text('${snapshot.data![i]!.nameuser}',
+                                                  style: TextStyle(
+                                                      fontSize: 15,
+                                                      color: Colors.white)),
+                                        leading: Icon(Icons.account_box_sharp,
+                                             color: thirdColor,
+                                                  size: 40.0),
+                                      ),
+                                      ListTile(
+                                        contentPadding:
+                                          EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                      title: Text('Hora: ',
+                                            style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.white)),
+                                      subtitle:
+                                          Text('${snapshot.data![i]!.hourout}',
+                                                  style: TextStyle(
+                                                      fontSize: 15,
+                                                      color: Colors.white)),
+                                      leading: Icon(Icons.access_alarms,
+                                          color: thirdColor,
+                                                  size: 40.0),
+                                    ),
+                                    ListTile(
+                                      contentPadding:
+                                          EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                      title: Text('Dirección: ',
+                                          style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.white)),
+                                      subtitle:
+                                          Text('${snapshot.data![i]!.direction}',
+                                                  style: TextStyle(
+                                                      fontSize: 15,
+                                                      color: Colors.white)),
+                                      leading: Icon(Icons.location_pin,
+                                                color: thirdColor,
+                                                  size: 40.0),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                      decoration: BoxDecoration(boxShadow: [
                                           BoxShadow(
                                               blurStyle: BlurStyle.normal,
                                               color:
@@ -1614,72 +2547,44 @@ class _DriverDescriptionState extends State<DriverDescription>
                                               offset: Offset(18, 5)),
                                         ]),
                                         width: 150,
-                                        child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            textStyle: TextStyle(
-                                              color: Colors.white,
+                                      child: ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              textStyle: TextStyle(
+                                                color: Colors.white,
+                                              ),
+                                              backgroundColor: backgroundColor,
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          20.0)),
                                             ),
-                                            backgroundColor: backgroundColor,
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        20.0)),
-                                          ),
-                                          onPressed: () async {
+                                            onPressed: () async {
                                             final Database db =
-                                                await handler.initializeDB();
-                                            await this.handler.deleteUser(
-                                                snapshot.data[i].idsend);
+                                                await handler!.initializeDB();
+                                            await this
+                                                .handler
+                                                !.deleteAgent(snapshot.data![i]!.idsend);
                                             await db.rawQuery(
-                                                "DELETE FROM userX WHERE nameuser = '${snapshot.data[i].nameuser}'");
-                                            SweetAlert.show(context,
-                                                title:
-                                                    "¿Desea eliminar el Agente?",
-                                                style: SweetAlertStyle.confirm,
-                                                showCancelButton: true,
-                                                confirmButtonText: "Si",
-                                                cancelButtonText: "Cancelar",
-                                                confirmButtonColor: thirdColor,
-                                                cancelButtonColor:
-                                                    Colors.red[800],
-                                                onPress: (bool isConfirm) {
-                                              if (isConfirm) {
-                                                SweetAlert.show(context,
-                                                    title: "Eliminado",
-                                                    style: SweetAlertStyle
-                                                        .success);
-                                                setState(() {
-                                                  snapshot.data
-                                                      .remove(snapshot.data[i]);
-                                                });
-                                              } else {
-                                                SweetAlert.show(context,
-                                                    title: "Cancelado",
-                                                    style:
-                                                        SweetAlertStyle.error);
-                                              }
-                                              return false;
+                                                "DELETE FROM agentInsert WHERE nameuser = '${snapshot.data![i]!.nameuser}'");
+                                            setState(() {
+                                              snapshot.data!.remove(snapshot.data![i]);
                                             });
                                           },
                                           child: Text('Quitar',
-                                              style: TextStyle(
-                                                  color: Colors.red,
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.bold)),
-                                        ),
-                                      ),
-                                      SizedBox(height: 10.0),
-                                    ],
-                                  ),
-                                ),
-                              )
-                            },
-                            Center(
-                              child: Column(
-                                children: [
-                                  SizedBox(height: 20.0),
-                                  Container(
-                                    decoration: BoxDecoration(boxShadow: [
+                                              style: TextStyle(color: Colors.white)),
+                                                            ),
+                                    ),
+                                                          SizedBox(height: 10.0),
+                                                        ],
+                                                      ),
+                                                    ),
+                          ),
+                        },
+                        Center(
+                          child: Column(
+                            children: [                             
+                              Container(
+                                decoration: BoxDecoration(boxShadow: [
                                       BoxShadow(
                                           blurStyle: BlurStyle.normal,
                                           color: Colors.white.withOpacity(0.2),
@@ -1693,8 +2598,8 @@ class _DriverDescriptionState extends State<DriverDescription>
                                           spreadRadius: -45,
                                           offset: Offset(20, -15)),
                                     ]),
-                                    child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
+                                child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
                                             shape: RoundedRectangleBorder(
                                                 borderRadius:
                                                     BorderRadius.circular(
@@ -1702,685 +2607,66 @@ class _DriverDescriptionState extends State<DriverDescription>
                                             backgroundColor: thirdColor,
                                             padding: EdgeInsets.symmetric(
                                                 vertical: 5, horizontal: 22)),
-                                        child: Icon(Icons.save,
-                                            color: backgroundColor, size: 25.0),
-                                        onPressed: () async {
-                                          showGeneralDialog(
-                                              context: context,
-                                              transitionBuilder:
-                                                  (context, a1, a2, widget) {
-                                                return Center(
-                                                    child: ColorLoader3());
-                                              },
-                                              transitionDuration:
-                                                  Duration(milliseconds: 200),
-                                              barrierDismissible: false,
-                                              barrierLabel: '',
-                                              pageBuilder: (context, animation1,
-                                                  animation2) {
-                                                return null;
-                                              });
-
-                                          await fetchAgentsLeftPastToProgres(
-                                              hourOut.text, vehicule.text);
-
-                                          setState(() {
-                                            this.handler.cleanTable();
+                                    child: Icon(Icons.save),
+                                    onPressed: () async {
+                                      showGeneralDialog(
+                                          context: context,
+                                          transitionBuilder:
+                                              (context, a1, a2, widget) {
+                                            return Center(child: ColorLoader3());
+                                          },
+                                          transitionDuration:
+                                              Duration(milliseconds: 200),
+                                          barrierDismissible: false,
+                                          barrierLabel: '',
+                                          pageBuilder:
+                                              (context, animation1, animation2) {
+                                            return Text('');
                                           });
-                                        }),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  } else if (names.length == 0) {
-                    return Card(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                      margin: EdgeInsets.symmetric(vertical: 25),
-                      child: Container(
-                        color: backgroundColor,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            ListTile(
-                              leading: Icon(
-                                Icons.bus_alert,
-                                color: thirdColor,
-                              ),
-                              title: Text('Agentes',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.normal,
-                                      fontSize: 26.0)),
-                              subtitle: Text('No hay agentes en el viaje',
-                                  style: TextStyle(
-                                      color: Colors.red,
-                                      fontWeight: FontWeight.normal,
-                                      fontSize: 18.0)),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  } else {
-                    return Center(child: CircularProgressIndicator());
-                  }
-                })
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget showAndHide() {
-    return Container(
-      child: Column(
-        children: [
-          SizedBox(height: 30.0),
-          Container(
-            decoration: BoxDecoration(boxShadow: [
-              BoxShadow(
-                  blurStyle: BlurStyle.normal,
-                  color: Colors.white.withOpacity(0.2),
-                  blurRadius: 30,
-                  spreadRadius: -8,
-                  offset: Offset(-15, -6)),
-              BoxShadow(
-                  blurStyle: BlurStyle.normal,
-                  color: Colors.black.withOpacity(0.6),
-                  blurRadius: 30,
-                  spreadRadius: -15,
-                  offset: Offset(18, 5)),
-            ]),
-            child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                    backgroundColor: Gradiant2,
-                    padding:
-                        EdgeInsets.symmetric(vertical: 10, horizontal: 40)),
-                child: Text(
-                    radioShowAndHide == false
-                        ? 'Presione aquí para asignar conductor'
-                        : 'Presione aquí si usted realizará el viaje',
-                    style: TextStyle(color: backgroundColor)),
-                onPressed: () {
-                  if (radioShowAndHide) {
-                    setState(() {
-                      radioShowAndHide = false;
-                    });
-                  } else {
-                    setState(() {
-                      radioShowAndHide = true;
-                    });
-                  }
-                }),
-          ),
-          Visibility(
-              maintainSize: true,
-              maintainAnimation: true,
-              maintainState: true,
-              visible: radioShowAndHide,
-              child: getSearchableDropdown(context)),
-        ],
-      ),
-    );
-  }
-
-  Widget getSearchableDropdown(BuildContext context) {
-    return Container(
-      width: 300,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(15)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            spreadRadius: 0,
-            blurStyle: BlurStyle.solid,
-            blurRadius: 10,
-            offset: Offset(0, 0), // changes position of shadow
-          ),
-          BoxShadow(
-            color: Colors.white.withOpacity(0.1),
-            spreadRadius: 0,
-            blurRadius: 5,
-            blurStyle: BlurStyle.inner,
-            offset: Offset(0, 0), // changes position of shadow
-          ),
-        ],
-      ),
-      child: SearchableDropdown(
-        closeButton: (selectedItem) {
-          return (selectedItem == null || selectedItem.length == 0)
-              ? "Cancelar"
-              : "Aceptar";
-        },
-        menuBackgroundColor: backgroundColor,
-        icon: Icon(Icons.person,
-            color: thirdColor, size: 30.0, semanticLabel: 'Conductor'),
-        items: driverId.map((item) {
-          return new DropdownMenuItem(
-              child: Text(item['driverFullname'],
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.normal,
-                      fontSize: 18.0)),
-              value: item['driverId'].toString());
-        }).toList(),
-        isExpanded: true,
-        value: driver,
-        searchFn: (String keyword, items) {
-          List<int> ret = [];
-          if (items != null && keyword.isNotEmpty) {
-            keyword.split(" ").forEach((k) {
-              int i = 0;
-              driverId.forEach((item) {
-                if (k.isNotEmpty &&
-                    (item['driverFullname']
-                        .toString()
-                        .toLowerCase()
-                        .contains(k.toLowerCase()))) {
-                  ret.add(i);
-                }
-                i++;
-              });
-            });
-          }
-          if (keyword.isEmpty) {
-            ret = Iterable<int>.generate(items.length).toList();
-          }
-          return (ret);
-        },
-        isCaseSensitiveSearch: true,
-        searchHint: new Text(
-          'Seleccione ',
-          style: new TextStyle(
-              fontSize: 20, color: thirdColor, fontWeight: FontWeight.bold),
-        ),
-        onChanged: (value) {
-          setState(() {
-            driver = value;
-            prefs.driverIdx = driver.toString();
-            print(prefs.driverIdx);
-          });
-        },
-      ),
-    );
-  }
-
-  Widget _crearDropdown(BuildContext context) {
-    final String comp = "Company";
-    final String comp2 = "Company 2";
-    final String ibexTgu = "IBEX TGU";
-    final String resultTgu = "RESULT TGU";
-    final String partner = "PARTNER HERO TGU";
-    final String startekSPS = "Startek SPS";
-    final String starteTGU = "Startek TGU";
-    final String aloricaSPS = "Alorica SPS";
-    final String zerovarianceSPS = "Zero Variance SPS";
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(15)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            spreadRadius: 0,
-            blurStyle: BlurStyle.solid,
-            blurRadius: 10,
-            offset: Offset(0, 0), // changes position of shadow
-          ),
-          BoxShadow(
-            color: Colors.white.withOpacity(0.1),
-            spreadRadius: 0,
-            blurRadius: 5,
-            blurStyle: BlurStyle.inner,
-            offset: Offset(0, 0), // changes position of shadow
-          ),
-        ],
-      ),
-      margin: EdgeInsets.symmetric(horizontal: 40.0),
-      child: Row(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Icon(
-              Icons.location_city,
-              color: thirdColor,
-              size: 30.0,
-            ),
-          ),
-          Expanded(
-              child: new DropdownButton(
-            underline: SizedBox(),
-            style: TextStyle(color: Colors.white60),
-            dropdownColor: backgroundColor2,
-            elevation: 20,
-            hint: Text(prefs.companyPrueba,
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.normal,
-                    fontSize: 15.0)),
-            items: data.map((e) {
-              return new DropdownMenuItem(
-                alignment: Alignment.centerLeft,
-                child: Text(e['companyName'] == null || e['companyName'] == ""
-                    ? prefs.companyPrueba
-                    : e['companyName']),
-                value: e['companyId'].toString(),
-              );
-            }).toList(),
-            onChanged: (val) {
-              setState(() {
-                companyId = val;
-                prefs.companyId = companyId;
-                if (prefs.companyId == "1") {
-                  prefs.companyPrueba = comp;
-                } else if (prefs.companyId == "2") {
-                  prefs.companyPrueba = startekSPS;
-                } else if (prefs.companyId == "3") {
-                  prefs.companyPrueba = starteTGU;
-                } else if (prefs.companyId == "6") {
-                  prefs.companyPrueba = aloricaSPS;
-                } else if (prefs.companyId == "7") {
-                  prefs.companyPrueba = zerovarianceSPS;
-                } else if (prefs.companyId == "5") {
-                  prefs.companyPrueba = comp2;
-                } else if (prefs.companyId == "9") {
-                  prefs.companyPrueba = ibexTgu;
-                } else if (prefs.companyId == "11") {
-                  prefs.companyPrueba = resultTgu;
-                } else if (prefs.companyId == "12") {
-                  prefs.companyPrueba = partner;
-                }
-                if (prefs.companyId != prefs.companyIdAgent) {
-                  if (handleerrror == 'khe') {
-                    this.handler.cleanTable();
-                    this.handler.cleanTableAgent();
-                  }
-                }
-              });
-              print(val);
-            },
-            value: companyId,
-          )),
-        ],
-      ),
-    );
-  }
-
-  Widget _crearDropdownToDestination(BuildContext context) {
-    final String destination1 = "Gasolinera";
-    final String destination2 = "Emisoras";
-
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 40.0),
-      child: Row(
-        children: [
-          Icon(Icons.location_city),
-          SizedBox(width: 20.0),
-          Expanded(
-              child: new DropdownButton(
-            hint: Text(prefs.destinationPrueba),
-            items: data2.map((e) {
-              return new DropdownMenuItem(
-                child: Text(
-                    e['destinationName'] == null || e['destinationName'] == ""
-                        ? prefs.destinationPrueba
-                        : e['destinationName']),
-                value: e['destinationId'].toString(),
-              );
-            }).toList(),
-            onChanged: (val) {
-              setState(() {
-                destinationId = val;
-                prefs.destinationId = destinationId;
-                if (prefs.destinationId == "9") {
-                  prefs.destinationPrueba = destination1;
-                } else if (prefs.destinationId == "10") {
-                  prefs.destinationPrueba = destination2;
-                }
-                if (prefs.destinationId != prefs.destinationIdAgent) {
-                  this.handler.cleanTableAgent();
-                }
-              });
-            },
-            value: destinationId,
-          )),
-        ],
-      ),
-    );
-  }
-
-  Widget _mostrarCuartaVentana() {
-    return HistoryTripDriver();
-  }
-
-  Widget _mostrarQuintaVentana(BuildContext context) {
-    return Column(
-      children: [
-        Text('Compañia',
-            style: TextStyle(
-                color: Colors.grey[700],
-                fontWeight: FontWeight.normal,
-                fontSize: 17.0)),
-        SizedBox(height: 20.0),
-        _crearDropdown(context),
-        SizedBox(height: 10.0),
-        Text('Destino',
-            style: TextStyle(
-                color: Colors.grey[700],
-                fontWeight: FontWeight.normal,
-                fontSize: 17.0)),
-        SizedBox(height: 5.0),
-        _crearDropdownToDestination(context),
-        FutureBuilder<DriverData>(
-            future: itemx,
-            builder: (BuildContext context, abc) {
-              switch (abc.connectionState) {
-                case ConnectionState.waiting:
-                  return Text('Cargando....');
-                default:
-                  if (abc.hasError) {
-                    return Text('Error: ${abc.error}');
-                  } else {
-                    return Column(
-                      children: [
-                        if (abc.data?.driverCoord == true) showAndHide()
-                      ],
-                    );
-                  }
-              }
-            }),
-        Container(
-          width: 300,
-          child: TextField(
-              onChanged: (value) {
-                prefs.vehiculo = value;
-              },
-              controller: nameController,
-              decoration: InputDecoration(
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.grey,
-                  ),
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                hintText: prefs.vehiculoSolid == ""
-                    ? "Vehículo"
-                    : prefs.vehiculoSolid,
-              )),
-        ),
-        SizedBox(height: 20.0),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey[400],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                ),
-                child: Icon(Icons.restore_from_trash),
-                onPressed: () {
-                  setState(() {
-                    this.handler.cleanTableAgent();
-                  });
-                }),
-            SizedBox(width: 5.0),
-            ElevatedButton(
-              style: TextButton.styleFrom(backgroundColor: Colors.blue[400]),
-              child: Icon(Icons.search),
-              onPressed: () {
-                showGeneralDialog(
-                    barrierColor: Colors.black.withOpacity(0.5),
-                    transitionBuilder: (context, a1, a2, widget) {
-                      return Transform.scale(
-                        scale: a1.value,
-                        child: Opacity(
-                          opacity: a1.value,
-                          child: AlertDialog(
-                            shape: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16.0)),
-                            title: Center(child: Text('Buscar Agente')),
-                            content: TextField(
-                              controller: agentEmployeeId,
-                              decoration:
-                                  InputDecoration(labelText: 'Escriba aqui'),
-                            ),
-                            actions: [
-                              Row(
-                                children: [
-                                  SizedBox(width: 60.0),
-                                  TextButton(
-                                    style: TextButton.styleFrom(
-                                      textStyle: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                      backgroundColor: Colors.blueAccent,
-                                    ),
-                                    onPressed: () => {
-                                      fetchSearchAgentsSolid(
-                                          agentEmployeeId.text),
-                                      Navigator.pop(context)
-                                    },
-                                    child: Text('Buscar'),
-                                  ),
-                                  SizedBox(width: 10.0),
-                                  TextButton(
-                                    style: TextButton.styleFrom(
-                                      textStyle: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                      backgroundColor: Colors.red,
-                                    ),
-                                    onPressed: () => {
-                                      Navigator.pop(context),
-                                    },
-                                    child: Text('Cerrar'),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                    transitionDuration: Duration(milliseconds: 200),
-                    barrierDismissible: true,
-                    barrierLabel: '',
-                    context: context,
-                    pageBuilder: (context, animation1, animation2) {
-                      return null;
-                    });
-              },
-            ),
-            SizedBox(width: 5.0),
-            ElevatedButton(
-                style: TextButton.styleFrom(backgroundColor: Colors.green[400]),
-                child: Icon(Icons.camera_alt_rounded),
-                onPressed: scanBarcodeNormalSolid)
-          ],
-        ),
-        SizedBox(height: 6.0),
-        FutureBuilder(
-          future: this.handler.retrieveAgent(),
-          builder: (BuildContext context, AsyncSnapshot<List<User>> snapshot) {
-            if (snapshot.hasData) {
-              noemp.add("${snapshot.data?.length}");
-              return Text("Total de agentes: ${snapshot.data?.length}");
-            } else {
-              return CircularProgressIndicator();
-            }
-          },
-        ),
-        SizedBox(height: 6.0),
-        FutureBuilder(
-            future: this.handler.retrieveAgent() == null
-                ? noemp.length
-                : this.handler.retrieveAgent(),
-            builder:
-                (BuildContext context, AsyncSnapshot<List<User>> snapshot) {
-              if (snapshot.hasData) {
-                return Container(
-                  child: Column(
-                    children: [
-                      for (var i = 0; i < snapshot.data?.length; i++) ...{
-                        Card(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          margin: EdgeInsets.all(4.0),
-                          elevation: 2,
-                          child: Column(
-                            children: <Widget>[
-                              Container(
-                                margin: EdgeInsets.only(left: 15),
-                                child: Column(
-                                  children: [
-                                    ListTile(
-                                      contentPadding:
-                                          EdgeInsets.fromLTRB(5, 5, 10, 0),
-                                      title: Text('# No empleado: ',
-                                          style: TextStyle(fontSize: 17)),
-                                      subtitle:
-                                          Text('${snapshot.data[i].noempid}'),
-                                      leading: Icon(Icons.confirmation_number,
-                                          color: Colors.green[500]),
-                                    ),
-                                    ListTile(
-                                      contentPadding:
-                                          EdgeInsets.fromLTRB(5, 5, 10, 0),
-                                      title: Text('Nombre:',
-                                          style: TextStyle(fontSize: 17)),
-                                      subtitle:
-                                          Text('${snapshot.data[i].nameuser}'),
-                                      leading: Icon(Icons.account_box_sharp,
-                                          color: Colors.green[500]),
-                                    ),
-                                    ListTile(
-                                      contentPadding:
-                                          EdgeInsets.fromLTRB(5, 5, 10, 0),
-                                      title: Text('Hora: ',
-                                          style: TextStyle(fontSize: 17)),
-                                      subtitle:
-                                          Text('${snapshot.data[i].hourout}'),
-                                      leading: Icon(Icons.access_alarms,
-                                          color: Colors.green[500]),
-                                    ),
-                                    ListTile(
-                                      contentPadding:
-                                          EdgeInsets.fromLTRB(5, 5, 10, 0),
-                                      title: Text('Dirección: ',
-                                          style: TextStyle(fontSize: 17)),
-                                      subtitle:
-                                          Text('${snapshot.data[i].direction}'),
-                                      leading: Icon(Icons.location_pin,
-                                          color: Colors.green[500]),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              TextButton(
-                                style: TextButton.styleFrom(
-                                  textStyle: TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                  backgroundColor: Colors.red,
-                                  shape: RoundedRectangleBorder(
-                                      side: BorderSide(
-                                          color: Colors.red,
-                                          width: 2,
-                                          style: BorderStyle.solid),
-                                      borderRadius: BorderRadius.circular(10)),
-                                ),
-                                onPressed: () async {
-                                  final Database db =
-                                      await handler.initializeDB();
-                                  await this
-                                      .handler
-                                      .deleteAgent(snapshot.data[i].idsend);
-                                  await db.rawQuery(
-                                      "DELETE FROM agentInsert WHERE nameuser = '${snapshot.data[i].nameuser}'");
-                                  setState(() {
-                                    snapshot.data.remove(snapshot.data[i]);
-                                  });
-                                },
-                                child: Text('Quitar',
-                                    style: TextStyle(color: Colors.white)),
-                              ),
-                              SizedBox(height: 10.0),
-                            ],
-                          ),
-                        ),
-                      },
-                      Center(
-                        child: Column(
-                          children: [
-                            ElevatedButton(
-                                style: TextButton.styleFrom(
-                                    backgroundColor: Colors.green[400],
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: 10, horizontal: 40)),
-                                child: Icon(Icons.save),
-                                onPressed: () async {
-                                  showGeneralDialog(
-                                      context: context,
-                                      transitionBuilder:
-                                          (context, a1, a2, widget) {
-                                        return Center(child: ColorLoader3());
-                                      },
-                                      transitionDuration:
-                                          Duration(milliseconds: 200),
-                                      barrierDismissible: false,
-                                      barrierLabel: '',
-                                      pageBuilder:
-                                          (context, animation1, animation2) {
-                                        return null;
+                                      // await fetchAgentsLeftPastToProgres( hourOut.text, vehicule.text);
+                                              
+                                      await fetchAgentsLeftPastToProgresToSolid();
+                                      setState(() {
+                                        this.handler!.cleanTableAgent();
                                       });
-                                  // await fetchAgentsLeftPastToProgres( hourOut.text, vehicule.text);
-
-                                  await fetchAgentsLeftPastToProgresToSolid();
-                                  setState(() {
-                                    this.handler.cleanTableAgent();
-                                  });
-                                }),
-                          ],
-                        ),
-                      ),
-                    ],
+                                    }),
+                              ),                              
+                            ],
+                          ),
+                        ),                        
+                      ],
+                    ),
                   ),
                 );
               } else if (names.length == 0) {
                 return Card(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                  margin: EdgeInsets.symmetric(vertical: 15),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      ListTile(
-                        leading: Icon(
-                          Icons.bus_alert,
-                          color: thirdColor,
+                   shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      margin: EdgeInsets.symmetric(vertical: 25),
+                  child: Container(
+                    color: backgroundColor,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        ListTile(
+                          leading: Icon(
+                            Icons.bus_alert,
+                            color: thirdColor,
+                          ),
+                          title: Text('Agentes',
+                              style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 26.0)),
+                          subtitle: Text('No hay agentes en el viaje',
+                              style: TextStyle(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 18.0)),
                         ),
-                        title: Text('Agentes',
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.normal,
-                                fontSize: 26.0)),
-                        subtitle: Text('No hay agentes en el viaje',
-                            style: TextStyle(
-                                color: Colors.red,
-                                fontWeight: FontWeight.normal,
-                                fontSize: 18.0)),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 );
               } else {
@@ -2394,11 +2680,11 @@ class _DriverDescriptionState extends State<DriverDescription>
 
 class User {
   //final int id;
-  final String noempid;
-  final String nameuser;
-  final String hourout;
-  final String direction;
-  final int idsend;
+  final String? noempid;
+  final String? nameuser;
+  final String? hourout;
+  final String? direction;
+  final int? idsend;
   // final String vehicle;
 
   User({
@@ -2425,8 +2711,8 @@ class User {
   Map<String, Object> toMap() {
     return {
       //"id" :id ,
-      'noempid': noempid, 'nameuser': nameuser, 'hourout': hourout,
-      'direction': direction, 'idsend': idsend,
+      'noempid': noempid!, 'nameuser': nameuser!, 'hourout': hourout!,
+      'direction': direction!, 'idsend': idsend!,
       //vehicle: 'vehicle'
     };
   }

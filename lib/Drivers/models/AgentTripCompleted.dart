@@ -15,9 +15,9 @@ class AgentInTripsCompleted {
         this.tripActual,
     });
 
-    List<CancelAgent> inTrip;
-    List<CancelAgent> cancelAgent;
-    TripActual tripActual;
+    List<CancelAgent>? inTrip;
+    List<CancelAgent>? cancelAgent;
+    TripActual? tripActual;
 
     factory AgentInTripsCompleted.fromJson(Map<String, dynamic> json) => AgentInTripsCompleted(
         inTrip: json["inTrip"] == null ? null : List<CancelAgent>.from(json["inTrip"].map((x) => CancelAgent.fromJson(x))),
@@ -26,9 +26,9 @@ class AgentInTripsCompleted {
     );
 
     Map<String, dynamic> toJson() => {
-        "inTrip": inTrip == null ? null : List<dynamic>.from(inTrip.map((x) => x.toJson())),
-        "CancelAgent": cancelAgent == null ? null : List<dynamic>.from(cancelAgent.map((x) => x.toJson())),
-        "tripActual": tripActual == null ? null : tripActual.toJson(),
+        "inTrip": inTrip == null ? null : List<dynamic>.from(inTrip!.map((x) => x.toJson())),
+        "CancelAgent": cancelAgent == null ? null : List<dynamic>.from(cancelAgent!.map((x) => x.toJson())),
+        "tripActual": tripActual == null ? null : tripActual!.toJson(),
     };
 }
 
@@ -56,25 +56,25 @@ class CancelAgent {
         this.didntGetOut,
     });
 
-    int tripId;
-    String commentDriver;
-    int agentId;
-    String agentEmployeeId;
-    String agentUser;
-    String agentFullname;
-    String agentPhone;
-    String agentEmail;
-    String agentReferencePoint;
-    String neighborhoodName;
-    String districtName;
-    String townName;
-    String departmentName;
-    String companyName;
-    int traveled;
+    int? tripId;
+    String? commentDriver;
+    int? agentId;
+    String? agentEmployeeId;
+    String? agentUser;
+    String? agentFullname;
+    String? agentPhone;
+    String? agentEmail;
+    String? agentReferencePoint;
+    String? neighborhoodName;
+    String? districtName;
+    String? townName;
+    String? departmentName;
+    String? companyName;
+    int? traveled;
     dynamic notTraveled;
-    String timeName;
-    String hourIn;
-    String hourForTrip;
+    String? timeName;
+    String? hourIn;
+    String? hourForTrip;
     dynamic didntGetOut;
 
     factory CancelAgent.fromJson(Map<String, dynamic> json) => CancelAgent(
@@ -143,21 +143,21 @@ class TripActual {
         this.totalAgents,
     });
 
-    int tripId;
-    String tripDate;
-    String tripHour;
-    String tripStatus;
-    String driverFullname;
-    String tripVehicle;
-    String tripTypeVehicle;
-    String tripType;
+    int? tripId;
+    String? tripDate;
+    String? tripHour;
+    String? tripStatus;
+    String? driverFullname;
+    String? tripVehicle;
+    String? tripTypeVehicle;
+    String? tripType;
     dynamic tripDescription;
-    int companyId;
-    String companyName;
-    String townName;
-    int traveled;
-    int notTraveled;
-    int totalAgents;
+    int? companyId;
+    String? companyName;
+    String? townName;
+    int? traveled;
+    int? notTraveled;
+    int? totalAgents;
 
     factory TripActual.fromJson(Map<String, dynamic> json) => TripActual(
         tripId: json["tripId"],
@@ -197,7 +197,7 @@ class TripActual {
 }
 
 class TripsList3 {
-  final List<AgentInTripsCompleted> trips;
+  final List<AgentInTripsCompleted>? trips;
 
   TripsList3({
     this.trips,

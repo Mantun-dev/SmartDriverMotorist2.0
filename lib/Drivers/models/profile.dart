@@ -17,11 +17,11 @@ class Profile {
         this.percentageBars3,
     });
 
-    Driver driver;
-    Map<String, double> rating;
-    PercentageBars percentageBars1;
-    PercentageBars percentageBars2;
-    PercentageBars percentageBars3;
+    Driver? driver;
+    Map<String, double>? rating;
+    PercentageBars? percentageBars1;
+    PercentageBars? percentageBars2;
+    PercentageBars? percentageBars3;
 
     factory Profile.fromJson(Map<String, dynamic> json) => Profile(
         driver: Driver.fromJson(json["driver"]),
@@ -32,11 +32,11 @@ class Profile {
     );
 
     Map<String, dynamic> toJson() => {
-        "driver": driver.toJson(),
-        "rating": Map.from(rating).map((k, v) => MapEntry<String, dynamic>(k, v)),
-        "percentageBars1": percentageBars1.toJson(),
-        "percentageBars2": percentageBars2.toJson(),
-        "percentageBars3": percentageBars3.toJson(),
+        "driver": driver!.toJson(),
+        "rating": Map.from(rating!).map((k, v) => MapEntry<String, dynamic>(k, v)),
+        "percentageBars1": percentageBars1?.toJson(),
+        "percentageBars2": percentageBars2?.toJson(),
+        "percentageBars3": percentageBars3?.toJson(),
     };
 }
 
@@ -60,14 +60,14 @@ class Driver {
         this.sunday,
     });
 
-    int driverId;
-    String driverDni;
-    String driverPhone;
-    String driverFullname;
-    String driverType;
-    bool driverStatus;
-    int departmentId;
-    String departmentName;
+    int? driverId;
+    String? driverDni;
+    String? driverPhone;
+    String? driverFullname;
+    String? driverType;
+    bool? driverStatus;
+    int? departmentId;
+    String? departmentName;
     dynamic driverCoord;
     dynamic monday;
     dynamic tuesday;

@@ -5,8 +5,8 @@ import '../constants.dart';
 
 class PlantillaTitleWithImage extends StatelessWidget {
   const PlantillaTitleWithImage({
-    Key key,
-    @required this.plantilla,
+    Key? key,
+    required this.plantilla,
   }) : super(key: key);
 
   final PlantillaDriver plantilla;
@@ -19,10 +19,10 @@ class PlantillaTitleWithImage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            plantilla.title,
+            plantilla.title!,
             style: Theme.of(context)
                 .textTheme
-                .headline4
+                .headlineMedium!
                 .copyWith(color: Colors.white, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 0),
@@ -36,7 +36,7 @@ class PlantillaTitleWithImage extends StatelessWidget {
                     TextSpan(
                       //y el nombre
                       text: "${plantilla.name}",
-                      style: Theme.of(context).textTheme.headline4.copyWith(
+                      style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                           color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                   ],
@@ -48,7 +48,7 @@ class PlantillaTitleWithImage extends StatelessWidget {
                   //aquí esta el otro id
                   tag: "${plantilla.id}",
                   child: Image.asset(
-                    plantilla.image,
+                    plantilla.image!,
                     fit: BoxFit.cover,
                   ),
                 ),

@@ -16,10 +16,10 @@ class TmpArray {
         this.direccion,
     });
 
-    String noempleado;
-    String nombre;
-    String horaSalida;
-    String direccion;
+    String? noempleado;
+    String? nombre;
+    String? horaSalida;
+    String? direccion;
 
     factory TmpArray.fromJson(Map<String, dynamic> json) => TmpArray(
         noempleado: json["Noempleado"],

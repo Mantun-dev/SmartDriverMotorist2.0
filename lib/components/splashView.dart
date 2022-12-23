@@ -5,13 +5,13 @@ import 'package:video_player/video_player.dart';
 import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
 
 class SplashView extends StatefulWidget {
-  const SplashView({Key key}) : super(key: key);
+  const SplashView({Key? key}) : super(key: key);
   @override
   State<SplashView> createState() => _SplashViewState();
 }
 
 class _SplashViewState extends State<SplashView> {
-  VideoPlayerController _controller;
+  VideoPlayerController? _controller;
 
   @override
   void initState() {
@@ -20,7 +20,7 @@ class _SplashViewState extends State<SplashView> {
       ..initialize().then((_) {
         setState(() {});
       });
-    _controller.play();
+    _controller!.play();
   }
 
   Future<void> initializeSettings() async {
@@ -46,7 +46,7 @@ class _SplashViewState extends State<SplashView> {
     );
   }
 
-  Scaffold errorView(AsyncSnapshot<Object> snapshot) {
+  Scaffold errorView(AsyncSnapshot<dynamic> snapshot) {
     return Scaffold(body: Center(child: Text('Error: ${snapshot.error}')));
   }
 
@@ -56,7 +56,7 @@ class _SplashViewState extends State<SplashView> {
         body: Container(
             color: primary,
             child: Center(
-                child: _controller.value.isInitialized
+                child: _controller!.value.isInitialized
                     ? SizedBox.expand(
                         child: FittedBox(
                           fit: BoxFit.cover,
@@ -66,12 +66,12 @@ class _SplashViewState extends State<SplashView> {
                               child: Column(
                                 children: [
                                   SizedBox(
-                                      width: _controller.value.size.width,
-                                      height: _controller.value.size.height,
+                                      width: _controller!.value.size.width,
+                                      height: _controller!.value.size.height,
                                       child: AspectRatio(
                                           aspectRatio:
-                                              _controller.value.aspectRatio,
-                                          child: VideoPlayer(_controller))),
+                                              _controller!.value.aspectRatio,
+                                          child: VideoPlayer(_controller!))),
                                 ],
                               )),
                         ),
@@ -103,7 +103,7 @@ class _SplashViewState extends State<SplashView> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller!.dispose();
     super.dispose();
   }
 }

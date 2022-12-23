@@ -17,11 +17,11 @@ class Salida {
         this.tripId,
     });
 
-    bool ok;
-    String type;
-    String title;
-    String message;
-    TripId tripId;
+    bool? ok;
+    String? type;
+    String? title;
+    String? message;
+    TripId? tripId;
 
     factory Salida.fromJson(Map<String, dynamic> json) => Salida(
         ok: json["ok"],
@@ -36,7 +36,7 @@ class Salida {
         "type": type,
         "title": title,
         "message": message,
-        "tripId": tripId.toJson(),
+        "tripId": tripId!.toJson(),
     };
 }
 
@@ -46,8 +46,8 @@ class TripId {
         this.tripHour,
     });
 
-    int tripId;
-    String tripHour;
+    int? tripId;
+    String? tripHour;
 
     factory TripId.fromJson(Map<String, dynamic> json) => TripId(
         tripId: json["tripId"],

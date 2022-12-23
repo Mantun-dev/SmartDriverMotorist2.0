@@ -14,18 +14,18 @@ class ChatApis {
 
   Future dataLogin(String id, String rol, String nombre, String sala,
       String nombreAgent, String idAgent) async {
-    streamSocket.socket.connect();
+    streamSocket.socket!.connect();
     var dataS = await BaseClient().get(
         RestApis.rooms + '/Tripid/$sala', {"Content-Type": "application/json"});
     var dataM = await BaseClient().get(
-        RestApis.messages + "/$sala", {"Content-Type": "application/json"});
+        RestApis.messages + "/$sala"+ "/$id"+"/$idAgent", {"Content-Type": "application/json"});
     if (dataS == null || dataM == null) return null;
     final sendDataS = jsonDecode(dataS);
     final sendDataM = jsonDecode(dataM);
     Map data = {
       'send1': {'nombre': nombre, 'rol': "MOTORISTA", 'id': id, 'sala': sala},
       'send2': sendDataS['salas'],
-      'send3': sendDataM['mensajes'],
+      'send3': sendDataM['listM'],
       'send4': {
         'nombre': nombreAgent,
         'rol': "AGENTE",
@@ -34,8 +34,8 @@ class ChatApis {
       }
     };
     String str = json.encode(data);
-    streamSocket.socket.emit('driver', str);
-    print(streamSocket.socket.connected);
+    streamSocket.socket!.emit('driver2', str);
+    print(streamSocket.socket!.connected);
   }
 
   void sendMessage(
@@ -55,22 +55,24 @@ class ChatApis {
     String mes = formatter2.format(now);
     var formatter3 = new DateFormat('yy');
     String anio = formatter3.format(now);
+    Map sendMessage = {
+          "id_emisor": idDriver,
+          "id_receptor": idR,
+          "Nombre_emisor": nameDriver,
+          "Mensaje": message,
+          "Sala": sala,
+          "Nombre_receptor": nombre,
+          "Tipo": "MENSAJE",
+          "Dia": dia,
+          "Mes": mes,
+          "Año": anio,
+          "Hora": formattedHour
+        };
 
-    Map sendNotification = {
-      "receiverId": idR,
-      "receiverRole": "agente",
-      "textMessage": message,
-      "hourMessage": formattedHour,
-      "nameSender": nameDriver
-    };
-    print(idR);
-    var se = await BaseClient().post(
-        'https://admin.smtdriver.com/sendMessageNotification',
-        sendNotification,
-        {"Content-Type": "application/json"});
-    print(se);
-
-    streamSocket.socket.emit('enviar-mensaje', {
+    // Map str = json.decode(sendMessage);
+    await BaseClient().post(
+        RestApis.messages, sendMessage, {"Content-Type": "application/json"});
+    streamSocket.socket!.emit('enviar-mensaje2', {
       'mensaje': message,
       'sala': sala,
       'user': nameDriver,
@@ -81,24 +83,21 @@ class ChatApis {
       'año': anio,
       "leido": false
     });
-    Map sendMessage = {
-      "id_emisor": idDriver,
-      "id_receptor": idR,
-      "Nombre_emisor": nameDriver,
-      "Mensaje": message,
-      "Sala": sala,
-      "Nombre_receptor": nombre,
-      "Tipo": "MENSAJE",
-      "Dia": dia,
-      "Mes": mes,
-      "Año": anio,
-      "Hora": formattedHour,
-      "leido": false
+    Map sendNotification = {
+      "receiverId": idR,
+      "receiverRole": "agente",
+      "textMessage": message,
+      "hourMessage": formattedHour,
+      "nameSender": nameDriver
     };
 
-    // Map str = json.decode(sendMessage);
     await BaseClient().post(
-        RestApis.messages, sendMessage, {"Content-Type": "application/json"});
+        'https://admin.smtdriver.com/sendMessageNotification',
+        sendNotification,
+        {"Content-Type": "application/json"});
+
+
+    
   }
 
   void getDataUsuarios(dynamic getData) {
@@ -106,45 +105,35 @@ class ChatApis {
   }
 
   void readMessage(
-      dynamic data, String sala, String idAgent, String driverId) async {
-    data["listM"].forEach((asm) async {
-      if (asm["leido"] == false &&
-          asm["tipo"] == "MENSAJE" &&
-          asm["id"].toString() == idAgent) {
+       String sala, String idAgent, String driverId) async {
+    
         Map mensaje = {"Leido": true};
         String str = json.encode(mensaje);
         await http.put(
             Uri.parse(
-              RestApis.messages + "/$sala" + "/$idAgent",
+              RestApis.messages + "/$sala" + "/$idAgent" + "/$driverId",
             ),
             headers: {"Content-Type": "application/json"},
-            body: str);
-      }
-    });
-    var response = await BaseClient().get(
-        RestApis.messages + "/$sala" + "/$idAgent" + "/$driverId",
-        {"Content-Type": "application/json"});
-    Map dat = {'mens': response};
-    String str2 = json.encode(dat);
-    streamSocket.socket.emit('updateM', str2);
+            body: str); 
   }
 
   void sendReadOnline(String dataSala, String dataid, String driverId) async {
     Map info = {"Leido": true};
+
     String str = json.encode(info);
     await http.put(
         Uri.parse(
-          RestApis.messages + "/$dataSala" + "/$dataid",
+          RestApis.messages + "/$dataSala" + "/$dataid"+"/$driverId", 
         ),
         headers: {"Content-Type": "application/json"},
         body: str);
     var responseM = await BaseClient().get(
         RestApis.messages + "/$dataSala" + "/$dataid" + "/$driverId",
         {"Content-Type": "application/json"});
-
+    
     Map dat = {'mens': responseM};
-    String str2 = json.encode(dat);
-    streamSocket.socket.emit('updateM', str2);
+    String str2 = json.encode(dat);    
+    streamSocket.socket!.emit('updateM', str2);
   }
 
   Future<List<dynamic>> notificationCounter(String tripId) async {

@@ -16,10 +16,10 @@ class AgentInTripsPending {
         this.viajeActual,
     });
 
-    List<Agente> agentes;
-    List<Agente> noConfirmados;
-    List<Agente> cancelados;
-    ViajeActual viajeActual;
+    List<Agente>? agentes;
+    List<Agente>? noConfirmados;
+    List<Agente>? cancelados;
+    ViajeActual ?viajeActual;
 
     factory AgentInTripsPending.fromJson(Map<String, dynamic> json) => AgentInTripsPending(
         agentes: json["agentes"] == null ? null : List<Agente>.from(json["agentes"].map((x) => Agente.fromJson(x))),
@@ -29,10 +29,10 @@ class AgentInTripsPending {
     );
 
     Map<String, dynamic> toJson() => {
-        "agentes": agentes == null ? null : List<dynamic>.from(agentes.map((x) => x.toJson())),
-        "noConfirmados": noConfirmados == null ? null : List<dynamic>.from(noConfirmados.map((x) => x.toJson())),
-        "cancelados": cancelados == null ? null : List<dynamic>.from(cancelados.map((x) => x.toJson())),
-        "viajeActual": viajeActual == null ? null : viajeActual.toJson(),
+        "agentes": agentes == null ? null : List<dynamic>.from(agentes!.map((x) => x.toJson())),
+        "noConfirmados": noConfirmados == null ? null : List<dynamic>.from(noConfirmados!.map((x) => x.toJson())),
+        "cancelados": cancelados == null ? null : List<dynamic>.from(cancelados!.map((x) => x.toJson())),
+        "viajeActual": viajeActual == null ? null : viajeActual!.toJson(),
     };
 }
 
@@ -57,27 +57,29 @@ class Agente {
         this.notTraveled,
         this.hourIn,
         this.hourForTrip,
+        this.neighborhoodReferencePoint
     });
 
-    int tripId;
+    int? tripId;
     dynamic commentDriver;
-    int agentId;
-    String agentEmployeeId;
-    String agentUser;
-    String comment;
-    String agentFullname;
-    String agentPhone;
-    String agentEmail;
-    String agentReferencePoint;
-    String neighborhoodName;
-    String districtName;
-    String townName;
-    String departmentName;
-    String companyName;
+    int? agentId;
+    String? agentEmployeeId;
+    String? agentUser;
+    String? comment;
+    String? agentFullname;
+    String? agentPhone;
+    String? agentEmail;
+    String? agentReferencePoint;
+    String? neighborhoodName;
+    String? districtName;
+    String? townName;
+    String? departmentName;
+    String? companyName;
     dynamic traveled;
     dynamic notTraveled;
-    String hourIn;
+    String? hourIn;
     dynamic hourForTrip;
+    String? neighborhoodReferencePoint;  
 
     factory Agente.fromJson(Map<String, dynamic> json) => Agente(
         tripId: json["tripId"],
@@ -99,6 +101,7 @@ class Agente {
         notTraveled: json["notTraveled"],
         hourIn: json["hourIn"],
         hourForTrip: json["hourForTrip"],
+        neighborhoodReferencePoint: json["neighborhoodReferencePoint"]
     );
 
     Map<String, dynamic> toJson() => {
@@ -121,6 +124,7 @@ class Agente {
         "notTraveled": notTraveled,
         "hourIn": hourIn,
         "hourForTrip": hourForTrip,
+        "neighborhoodReferencePoint" : neighborhoodReferencePoint
     };
 }
 
@@ -141,23 +145,25 @@ class ViajeActual {
         this.traveled,
         this.notTraveled,
         this.totalAgents,
+        this.neighborhoodReferencePoint
     });
 
-    int tripId;
-    String tripDate;
-    String tripHour;
-    String tripStatus;
-    String driverFullname;
-    String tripVehicle;
+    int? tripId;
+    String? tripDate;
+    String? tripHour;
+    String? tripStatus;
+    String? driverFullname;
+    String? tripVehicle;
     dynamic tripTypeVehicle;
-    String tripType;
+    String? tripType;
     dynamic tripDescription;
-    int companyId;
-    String companyName;
+    int? companyId;
+    String? companyName;
     dynamic townName;
-    int traveled;
-    int notTraveled;
-    int totalAgents;
+    int? traveled;
+    int? notTraveled;
+    int? totalAgents;
+    String? neighborhoodReferencePoint;  
 
     factory ViajeActual.fromJson(Map<String, dynamic> json) => ViajeActual(
         tripId: json["tripId"],
@@ -175,6 +181,7 @@ class ViajeActual {
         traveled: json["traveled"],
         notTraveled: json["notTraveled"],
         totalAgents: json["totalAgents"],
+        neighborhoodReferencePoint: json["neighborhoodReferencePoint"]
     );
 
     Map<String, dynamic> toJson() => {
@@ -193,11 +200,12 @@ class ViajeActual {
         "traveled": traveled,
         "notTraveled": notTraveled,
         "totalAgents": totalAgents,
+        "neighborhoodReferencePoint" : neighborhoodReferencePoint
     };
 }
 
 class TripsList2 {
-  final List<AgentInTripsPending> trips;
+  final List<AgentInTripsPending>? trips;
 
   TripsList2({
     this.trips,

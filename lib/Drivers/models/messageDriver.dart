@@ -13,8 +13,8 @@ class Message {
         this.ok,
         this.message,
     });
-    bool ok;
-    String message;
+    bool? ok;
+    String? message;
 
     factory Message.fromJson(Map<String, dynamic> json) => Message(
         ok: json["ok"],

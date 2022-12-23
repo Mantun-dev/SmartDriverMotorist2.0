@@ -13,7 +13,7 @@ import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter_auth/Drivers/models/registerTripAsCompleted.dart';
 import 'package:intl/intl.dart';
-import 'package:sweetalert/sweetalert.dart';
+import 'package:quickalert/quickalert.dart';
 import '../../../../constants.dart';
 import '../../../models/agentsInTravelModel.dart';
 import 'package:http/http.dart' as http;
@@ -25,17 +25,17 @@ void main() {
 }
 
 class MyAgent extends StatefulWidget {
-  final TripsList2 item;
-  final PlantillaDriver plantillaDriver;
+  final TripsList2? item;
+  final PlantillaDriver? plantillaDriver;
 
-  const MyAgent({Key key, this.plantillaDriver, this.item}) : super(key: key);
+  const MyAgent({Key? key, this.plantillaDriver, this.item}) : super(key: key);
   @override
   _DataTableExample createState() => _DataTableExample();
 }
 
 class _DataTableExample extends State<MyAgent> {
-  List<int> counter;
-  Future<TripsList2> item;
+  List<int>? counter;
+  Future<TripsList2>? item;
   TextEditingController agentHours = new TextEditingController();
   final prefs = new PreferenciasUsuario();
   String ip = "https://driver.smtdriver.com";
@@ -56,16 +56,18 @@ class _DataTableExample extends State<MyAgent> {
 
     if (response.statusCode == 200 && resp.ok == true && agentTripHour != "") {
       print(response.body);
-      SweetAlert.show(context,
-          title: resp.title,
-          subtitle: resp.message,
-          style: SweetAlertStyle.success);
+      QuickAlert.show(
+      context: context,
+      type: QuickAlertType.success,
+      title: resp.title,
+      text: resp.message,
+      );
     } else if (response.statusCode == 200 && resp.ok != true) {
-      SweetAlert.show(
-        context,
-        title: resp.title,
-        subtitle: resp.message,
-        style: SweetAlertStyle.error,
+      QuickAlert.show(
+      context: context,
+      type: QuickAlertType.error,
+      title: resp.title,
+      text: resp.message,
       );
     }
 
@@ -83,16 +85,18 @@ class _DataTableExample extends State<MyAgent> {
 
         if (response.statusCode == 200 && resp.ok == true) {
           print(response.body);
-          SweetAlert.show(context,
-              title: resp.title,
-              subtitle: resp.message,
-              style: SweetAlertStyle.success);
+              QuickAlert.show(
+          context: context,
+          type: QuickAlertType.success,
+          title: resp.title,
+          text: resp.message,
+          );
         } else if (response.statusCode == 500) {
-          SweetAlert.show(
-            context,
-            title: resp.title,
-            subtitle: resp.message,
-            style: SweetAlertStyle.error,
+          QuickAlert.show(
+          context: context,
+          type: QuickAlertType.error,
+          title: resp.title,
+          text: resp.message,
           );
         }
       });
@@ -117,19 +121,19 @@ class _DataTableExample extends State<MyAgent> {
       //   style: SweetAlertStyle.success
       // );
     } else if (response.statusCode == 200 && resp.ok == false) {
-      SweetAlert.show(
-        context,
-        title: resp.title,
-        subtitle: resp.message,
-        style: SweetAlertStyle.error,
-      );
+      QuickAlert.show(
+          context: context,
+          type: QuickAlertType.error,
+          title: resp.title,
+          text: resp.message,
+          );
     } else if (response.statusCode == 500) {
-      SweetAlert.show(
-        context,
-        title: resp.title,
-        subtitle: resp.message,
-        style: SweetAlertStyle.error,
-      );
+      QuickAlert.show(
+          context: context,
+          type: QuickAlertType.error,
+          title: resp.title,
+          text: resp.message,
+          );
     }
 
     return Driver.fromJson(json.decode(response.body));
@@ -157,12 +161,12 @@ class _DataTableExample extends State<MyAgent> {
       // style: SweetAlertStyle.success
       // );
     } else if (response.statusCode == 500) {
-      SweetAlert.show(
-        context,
-        title: 'ok',
-        subtitle: resp.message,
-        style: SweetAlertStyle.error,
-      );
+      QuickAlert.show(
+          context: context,
+          type: QuickAlertType.error,
+          title: 'ok',
+          text: resp.message,
+          );
     }
 
     return Driver.fromJson(json.decode(response.body));
@@ -181,12 +185,12 @@ class _DataTableExample extends State<MyAgent> {
               context, MaterialPageRoute(builder: (_) => MyAgent()))
           .then((_) => MyAgent());
     } else if (response.statusCode == 500) {
-      SweetAlert.show(
-        context,
-        title: 'ok',
-        subtitle: resp.message,
-        style: SweetAlertStyle.error,
-      );
+      QuickAlert.show(
+          context: context,
+          type: QuickAlertType.error,
+          title: 'ok',
+          text: resp.message,
+          );
     }
 
     return Driver.fromJson(json.decode(response.body));
@@ -295,7 +299,7 @@ class _DataTableExample extends State<MyAgent> {
       future: item,
       builder: (BuildContext context, abc) {
         if (abc.connectionState == ConnectionState.done) {
-          if (abc.data.trips[0].agentes.length == 0) {
+          if (abc.data!.trips![0].agentes!.length == 0) {
             return Container(
               decoration: BoxDecoration(boxShadow: [
                 BoxShadow(
@@ -349,7 +353,7 @@ class _DataTableExample extends State<MyAgent> {
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
                       physics: ClampingScrollPhysics(),
-                      itemCount: abc.data.trips[0].agentes.length,
+                      itemCount: abc.data!.trips![0].agentes!.length,
                       itemBuilder: (context, index) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 15.0),
@@ -401,7 +405,7 @@ class _DataTableExample extends State<MyAgent> {
                                                                 FontWeight.bold,
                                                             fontSize: 18.0)),
                                                     subtitle: Text(
-                                                        '${abc.data.trips[0].agentes[index].agentFullname}',
+                                                        '${abc.data!.trips![0].agentes![index].agentFullname}',
                                                         style: TextStyle(
                                                             color: Colors.white,
                                                             fontWeight:
@@ -423,21 +427,10 @@ class _DataTableExample extends State<MyAgent> {
                                                       EdgeInsets.only(left: 18),
                                                   child: Column(
                                                     children: [
-                                                      ListTile(
-                                                        contentPadding:
-                                                            EdgeInsets.fromLTRB(
-                                                                5, 5, 10, 0),
-                                                        title: Text('Empresa: ',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontSize:
-                                                                    18.0)),
+                                                      ListTile(contentPadding:EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                                        title: Text('Empresa: ',style: TextStyle(color: Colors.white,fontWeight:FontWeight.bold,fontSize:18.0)),
                                                         subtitle: Text(
-                                                            '${abc.data.trips[0].agentes[index].companyName}',
+                                                            '${abc.data!.trips![0].agentes![index].companyName}',
                                                             style: TextStyle(
                                                                 color: Colors
                                                                     .white,
@@ -468,14 +461,14 @@ class _DataTableExample extends State<MyAgent> {
                                                         subtitle: TextButton(
                                                             onPressed: () =>
                                                                 launchUrl(Uri.parse(
-                                                                    'tel://${abc.data.trips[0].agentes[index].agentPhone}')),
+                                                                    'tel://${abc.data!.trips![0].agentes![index].agentPhone}')),
                                                             child: Container(
                                                                 margin: EdgeInsets
                                                                     .only(
                                                                         right:
                                                                             175),
                                                                 child: Text(
-                                                                    '${abc.data.trips[0].agentes[index].agentPhone}',
+                                                                    '${abc.data!.trips![0].agentes![index].agentPhone}',
                                                                     style: TextStyle(
                                                                         color: Colors
                                                                             .white,
@@ -500,7 +493,7 @@ class _DataTableExample extends State<MyAgent> {
                                                                 fontSize:
                                                                     18.0)),
                                                         subtitle: Text(
-                                                            '${abc.data.trips[0].agentes[index].hourIn}',
+                                                            '${abc.data!.trips![0].agentes![index].hourIn}',
                                                             style: TextStyle(
                                                                 color: Colors
                                                                     .white,
@@ -514,12 +507,10 @@ class _DataTableExample extends State<MyAgent> {
                                                             color: thirdColor,
                                                             size: 40),
                                                       ),
-                                                      ListTile(
-                                                        contentPadding:
-                                                            EdgeInsets.fromLTRB(
-                                                                5, 5, 10, 0),
-                                                        title: Text(
-                                                            'Dirección:',
+                                                      ListTile(contentPadding: EdgeInsets.symmetric(
+                                                    vertical: 0,
+                                                    horizontal: 25),
+                                                        title: Text('Dirección: ',
                                                             style: TextStyle(
                                                                 color: Colors
                                                                     .white,
@@ -529,10 +520,9 @@ class _DataTableExample extends State<MyAgent> {
                                                                 fontSize:
                                                                     18.0)),
                                                         subtitle: Text(
-                                                            '${abc.data.trips[0].agentes[index].agentReferencePoint} ${abc.data.trips[0].agentes[index].neighborhoodName} \n${abc.data.trips[0].agentes[index].districtName}',
-                                                            textAlign:
-                                                                TextAlign.left,
-                                                            style: TextStyle(
+                                                          abc.data!.trips![0].agentes![index].agentReferencePoint==null
+                                                        ||abc.data!.trips![0].agentes![index].agentReferencePoint==""
+                                                        ?"${abc.data!.trips![0].agentes![index].neighborhoodName}, ${abc.data!.trips![0].agentes![index].townName}":'${abc.data!.trips![0].agentes![index].agentReferencePoint}, ${abc.data!.trips![0].agentes![index].neighborhoodName}, ${abc.data!.trips![0].agentes![index].townName},',style: TextStyle(
                                                                 color: Colors
                                                                     .white,
                                                                 fontWeight:
@@ -540,11 +530,32 @@ class _DataTableExample extends State<MyAgent> {
                                                                         .normal,
                                                                 fontSize:
                                                                     15.0)),
-                                                        leading: Icon(
-                                                            Icons.location_pin,
-                                                            color: thirdColor,
-                                                            size: 40),
+                                                        leading: Icon(Icons.location_pin,color: thirdColor, size: 40,),
                                                       ),
+                                                      if (abc.data!.trips![0].agentes![index].neighborhoodReferencePoint != null)... {                                                    
+                                                        ListTile(contentPadding: EdgeInsets.symmetric(
+                                                    vertical: 0,
+                                                    horizontal: 25),
+                                                          title: Text('Acceso autorizado: ',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize:
+                                                                    18.0)),
+                                                          subtitle: Text('${abc.data!.trips![0].agentes![index].neighborhoodReferencePoint}',style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .normal,
+                                                                fontSize:
+                                                                    15.0)),
+                                                          leading: Icon(Icons.directions,color: thirdColor, size: 40,),
+                                                        ),
+                                                      },
                                                     ],
                                                   ),
                                                 ),
@@ -554,8 +565,8 @@ class _DataTableExample extends State<MyAgent> {
                                                 SizedBox(height: 30.0),
                                                 if (abc
                                                         .data
-                                                        .trips[0]
-                                                        .agentes[index]
+                                                        !.trips![0]
+                                                        .agentes![index]
                                                         .hourForTrip ==
                                                     "00:00") ...{
                                                   Text('Hora de encuentro: ',
@@ -587,7 +598,7 @@ class _DataTableExample extends State<MyAgent> {
                                                       Column(
                                                         children: [
                                                           Text(
-                                                              ' ${abc.data.trips[0].agentes[index].hourForTrip}',
+                                                              ' ${abc.data!.trips![0].agentes![index].hourForTrip}',
                                                               style: TextStyle(
                                                                   color:
                                                                       thirdColor,
@@ -673,16 +684,16 @@ class _DataTableExample extends State<MyAgent> {
                                                             fetchHours(
                                                                 abc
                                                                     .data
-                                                                    .trips[0]
-                                                                    .agentes[
+                                                                    !.trips![0]
+                                                                    .agentes![
                                                                         index]
                                                                     .agentId
                                                                     .toString(),
                                                                 _eventTime,
                                                                 abc
                                                                     .data
-                                                                    .trips[0]
-                                                                    .agentes[
+                                                                    !.trips![0]
+                                                                    .agentes![
                                                                         index]
                                                                     .tripId
                                                                     .toString());
@@ -740,7 +751,7 @@ class _DataTableExample extends State<MyAgent> {
       future: item,
       builder: (BuildContext context, abc) {
         if (abc.connectionState == ConnectionState.done) {
-          if (abc.data.trips[1].noConfirmados.length == 0) {
+          if (abc.data!.trips![1].noConfirmados!.length == 0) {
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15.0),
               child: Container(
@@ -796,7 +807,7 @@ class _DataTableExample extends State<MyAgent> {
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
                     physics: ClampingScrollPhysics(),
-                    itemCount: abc.data.trips[1].noConfirmados.length,
+                    itemCount: abc.data!.trips![1].noConfirmados!.length,
                     itemBuilder: (context, index) {
                       Size size = MediaQuery.of(context).size;
                       return Container(
@@ -847,7 +858,7 @@ class _DataTableExample extends State<MyAgent> {
                                                           FontWeight.bold,
                                                       fontSize: 18.0)),
                                               subtitle: Text(
-                                                  '${abc.data.trips[1].noConfirmados[index].agentFullname}',
+                                                  '${abc.data!.trips![1].noConfirmados![index].agentFullname}',
                                                   style: TextStyle(
                                                       color: Colors.white,
                                                       fontWeight:
@@ -872,7 +883,7 @@ class _DataTableExample extends State<MyAgent> {
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 18.0)),
                                             subtitle: Text(
-                                                '${abc.data.trips[1].noConfirmados[index].companyName}',
+                                                '${abc.data!.trips![1].noConfirmados![index].companyName}',
                                                 style: TextStyle(
                                                     color: Colors.white,
                                                     fontWeight:
@@ -894,13 +905,13 @@ class _DataTableExample extends State<MyAgent> {
                                             subtitle: TextButton(
                                                 onPressed: () =>
                                                     launchUrl(Uri.parse(
-                                                      'tel://${abc.data.trips[1].noConfirmados[index].agentPhone}',
+                                                      'tel://${abc.data!.trips![1].noConfirmados![index].agentPhone}',
                                                     )),
                                                 child: Container(
                                                     padding: EdgeInsets.only(
                                                         right: 175),
                                                     child: Text(
-                                                        '${abc.data.trips[1].noConfirmados[index].agentPhone}',
+                                                        '${abc.data!.trips![1].noConfirmados![index].agentPhone}',
                                                         textAlign:
                                                             TextAlign.left,
                                                         style: TextStyle(
@@ -920,7 +931,7 @@ class _DataTableExample extends State<MyAgent> {
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 18.0)),
                                             subtitle: Text(
-                                                '${abc.data.trips[1].noConfirmados[index].hourIn}',
+                                                '${abc.data!.trips![1].noConfirmados![index].hourIn}',
                                                 style: TextStyle(
                                                     color: Colors.white,
                                                     fontWeight:
@@ -929,26 +940,55 @@ class _DataTableExample extends State<MyAgent> {
                                             leading: Icon(Icons.access_time,
                                                 color: thirdColor, size: 40.0),
                                           ),
-                                          ListTile(
-                                            contentPadding:
-                                                EdgeInsets.symmetric(
+                                          ListTile(contentPadding: EdgeInsets.symmetric(
                                                     vertical: 0,
                                                     horizontal: 25),
-                                            title: Text('Dirección: ',
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 18.0)),
-                                            subtitle: Text(
-                                                '${abc.data.trips[1].noConfirmados[index].agentReferencePoint} \n ${abc.data.trips[1].noConfirmados[index].neighborhoodName} ${abc.data.trips[1].noConfirmados[index].districtName}',
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    fontSize: 15.0)),
-                                            leading: Icon(Icons.location_on,
-                                                color: thirdColor, size: 40.0),
-                                          ),
+                                                        title: Text('Dirección: ',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize:
+                                                                    18.0)),
+                                                        subtitle: Text(
+                                                          abc.data!.trips![1].noConfirmados![index].agentReferencePoint==null
+                                                        ||abc.data!.trips![1].noConfirmados![index].agentReferencePoint==""
+                                                        ?"${abc.data!.trips![1].noConfirmados![index].neighborhoodName}, ${abc.data!.trips![1].noConfirmados![index].townName}":'${abc.data!.trips![1].noConfirmados![index].agentReferencePoint}, ${abc.data!.trips![1].noConfirmados![index].neighborhoodName}, ${abc.data!.trips![1].noConfirmados![index].townName},',style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .normal,
+                                                                fontSize:
+                                                                    15.0)),
+                                                        leading: Icon(Icons.location_pin,color: thirdColor, size: 40,),
+                                                      ),
+                                                      if (abc.data!.trips![1].noConfirmados![index].neighborhoodReferencePoint != null)... {                                                    
+                                                        ListTile(contentPadding: EdgeInsets.symmetric(
+                                                    vertical: 0,
+                                                    horizontal: 25),
+                                                          title: Text('Acceso autorizado: ',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize:
+                                                                    18.0)),
+                                                          subtitle: Text('${abc.data!.trips![1].noConfirmados![index].neighborhoodReferencePoint}',style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .normal,
+                                                                fontSize:
+                                                                    15.0)),
+                                                          leading: Icon(Icons.directions,color: thirdColor, size: 40,),
+                                                        ),
+                                                      },
                                           //aqui lo demás
                                           SizedBox(height: 30.0),
                                           Text('Hora de encuentro: ',
@@ -1013,16 +1053,16 @@ class _DataTableExample extends State<MyAgent> {
                                                         fetchHours(
                                                             abc
                                                                 .data
-                                                                .trips[1]
-                                                                .noConfirmados[
+                                                                !.trips![1]
+                                                                .noConfirmados![
                                                                     index]
                                                                 .agentId
                                                                 .toString(),
                                                             _eventTime,
                                                             abc
                                                                 .data
-                                                                .trips[1]
-                                                                .noConfirmados[
+                                                                !.trips![1]
+                                                                .noConfirmados![
                                                                     index]
                                                                 .tripId
                                                                 .toString());
@@ -1074,25 +1114,21 @@ class _DataTableExample extends State<MyAgent> {
                                                                         10)),
                                                   ),
                                                   onPressed: () {
-                                                    SweetAlert.show(context,
-                                                        subtitle:
-                                                            "¿Está seguro que desea marcar como no \nconfirmado al agente?",
-                                                        style: SweetAlertStyle
-                                                            .confirm,
-                                                        confirmButtonText:
-                                                            "Confirmar",
-                                                        cancelButtonText:
-                                                            "Cancelar",
-                                                        showCancelButton: true,
-                                                        onPress:
-                                                            (bool isConfirm) {
-                                                      if (isConfirm) {
-                                                        SweetAlert.show(context,
-                                                            subtitle:
-                                                                "Agente marcado como no confirmó",
-                                                            style:
-                                                                SweetAlertStyle
-                                                                    .success);
+                                                    QuickAlert.show(
+                                                    context: context,
+                                                    type: QuickAlertType.confirm,          
+                                                    text: "¿Está seguro que desea marcar como no \nconfirmado al agente?",
+                                                      confirmBtnText: "Confirmar",
+                                                      cancelBtnText: "Cancelar",
+                                                      showCancelBtn: true,  
+                                                      confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
+                                                      cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
+                                                      onConfirmBtnTap: () {
+                                                        QuickAlert.show(
+                                                        context: context,
+                                                        type: QuickAlertType.success,
+                                                        text: "Agente marcado como no confirmó",
+                                                        );
                                                         new Future.delayed(
                                                             new Duration(
                                                                 seconds: 2),
@@ -1100,15 +1136,15 @@ class _DataTableExample extends State<MyAgent> {
                                                           fetchNoConfirm(
                                                               abc
                                                                   .data
-                                                                  .trips[1]
-                                                                  .noConfirmados[
+                                                                  !.trips![1]
+                                                                  .noConfirmados![
                                                                       index]
                                                                   .agentId
                                                                   .toString(),
                                                               abc
                                                                   .data
-                                                                  .trips[1]
-                                                                  .noConfirmados[
+                                                                  !.trips![1]
+                                                                  .noConfirmados![
                                                                       index]
                                                                   .tripId
                                                                   .toString());
@@ -1119,17 +1155,16 @@ class _DataTableExample extends State<MyAgent> {
                                                                       MyAgent())).then(
                                                               (_) => MyAgent());
                                                         });
-                                                      } else {
-                                                        SweetAlert.show(context,
-                                                            subtitle:
-                                                                "¡Cancelado!",
-                                                            style:
-                                                                SweetAlertStyle
-                                                                    .success);
-                                                      }
-                                                      // return false to keep dialog
-                                                      return false;
-                                                    });
+                                                      },
+                                                      onCancelBtnTap: () {
+                                                        Navigator.pop(context);
+                                                        QuickAlert.show(
+                                                        context: context,
+                                                        type: QuickAlertType.success,
+                                                        text: "¡Cancelado!",                                                        
+                                                        );
+                                                      },
+                                                    );                                                  
                                                   },
                                                   child: Text('No confirmó',
                                                       style: TextStyle(
@@ -1292,7 +1327,7 @@ class _DataTableExample extends State<MyAgent> {
       future: item,
       builder: (BuildContext context, abc) {
         if (abc.connectionState == ConnectionState.done) {
-          if (abc.data.trips[2].cancelados.length == 0) {
+          if (abc.data!.trips![2].cancelados!.length == 0) {
             return Container(
               margin: EdgeInsets.symmetric(
                 horizontal: 20,
@@ -1339,7 +1374,7 @@ class _DataTableExample extends State<MyAgent> {
                 ),
               ),
             );
-          } else if (abc.data.trips[2].cancelados.length > 0) {
+          } else if (abc.data!.trips![2].cancelados!.length > 0) {
             return FutureBuilder<TripsList2>(
               future: item,
               builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -1347,9 +1382,9 @@ class _DataTableExample extends State<MyAgent> {
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
                     physics: ClampingScrollPhysics(),
-                    itemCount: abc.data.trips[2].cancelados.length,
+                    itemCount: abc.data!.trips![2].cancelados!.length,
                     itemBuilder: (context, index) {
-                      print(abc.data.trips[2].cancelados[index].agentPhone);
+                      print(abc.data!.trips![2].cancelados![index].agentPhone);
                       Size size = MediaQuery.of(context).size;
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10.0),
@@ -1400,7 +1435,7 @@ class _DataTableExample extends State<MyAgent> {
                                                       fontSize: 20.0,
                                                     )),
                                                 subtitle: Text(
-                                                    '${abc.data.trips[2].cancelados[index].agentFullname}',
+                                                    '${abc.data!.trips![2].cancelados![index].agentFullname}',
                                                     style: TextStyle(
                                                         color: Colors.white,
                                                         fontWeight:
@@ -1428,7 +1463,7 @@ class _DataTableExample extends State<MyAgent> {
                                                     fontSize: 20.0,
                                                   )),
                                               subtitle: Text(
-                                                  '${abc.data.trips[2].cancelados[index].companyName}',
+                                                  '${abc.data!.trips![2].cancelados![index].companyName}',
                                                   style: TextStyle(
                                                       color: Colors.white,
                                                       fontWeight:
@@ -1451,13 +1486,13 @@ class _DataTableExample extends State<MyAgent> {
                                               subtitle: TextButton(
                                                   onPressed: () =>
                                                       launchUrl(Uri.parse(
-                                                        'tel://${abc.data.trips[2].cancelados[index].agentPhone}',
+                                                        'tel://${abc.data!.trips![2].cancelados![index].agentPhone}',
                                                       )),
                                                   child: Container(
                                                       padding: EdgeInsets.only(
                                                           right: 170),
                                                       child: Text(
-                                                          '${abc.data.trips[2].cancelados[index].agentPhone}',
+                                                          '${abc.data!.trips![2].cancelados![index].agentPhone}',
                                                           textAlign:
                                                               TextAlign.start,
                                                           style: TextStyle(
@@ -1483,7 +1518,7 @@ class _DataTableExample extends State<MyAgent> {
                                                     fontSize: 20.0,
                                                   )),
                                               subtitle: Text(
-                                                  '${abc.data.trips[2].cancelados[index].hourIn}',
+                                                  '${abc.data!.trips![2].cancelados![index].hourIn}',
                                                   style: TextStyle(
                                                       color: Colors.white,
                                                       fontWeight:
@@ -1504,7 +1539,7 @@ class _DataTableExample extends State<MyAgent> {
                                                     fontSize: 20.0,
                                                   )),
                                               subtitle: Text(
-                                                  '${abc.data.trips[2].cancelados[index].agentReferencePoint} \n ${abc.data.trips[2].cancelados[index].neighborhoodName} ${abc.data.trips[2].cancelados[index].districtName}',
+                                                  '${abc.data!.trips![2].cancelados![index].agentReferencePoint} \n ${abc.data!.trips![2].cancelados![index].neighborhoodName} ${abc.data!.trips![2].cancelados![index].districtName}',
                                                   style: TextStyle(
                                                       color: Colors.white,
                                                       fontWeight:
@@ -1554,27 +1589,35 @@ class _DataTableExample extends State<MyAgent> {
             ),
             child: Text(" Pasar viaje en proceso"),
             onPressed: () {
-              SweetAlert.show(context,
-                  subtitle: "¿Está seguro que desea pasar el viaje en proceso?",
-                  style: SweetAlertStyle.confirm,
-                  confirmButtonText: "Confirmar",
-                  cancelButtonText: "Cancelar",
-                  showCancelButton: true, onPress: (bool isConfirm) {
-                if (isConfirm) {
-                  SweetAlert.show(context,
-                      title: 'Confirmado',
-                      subtitle: 'Su viaje está en proceso',
-                      style: SweetAlertStyle.success);
-                  new Future.delayed(new Duration(seconds: 2), () {
+              QuickAlert.show(
+              context: context,
+              type: QuickAlertType.success,
+              text: "¿Está seguro que desea pasar el viaje en proceso?",
+              confirmBtnText: "Confirmar",
+              cancelBtnText: "Cancelar",
+              showCancelBtn: true,  
+              confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
+              cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ),         
+              onConfirmBtnTap: () {
+                QuickAlert.show(
+                context: context,
+                type: QuickAlertType.success,
+                text: 'Su viaje está en proceso',
+                title: 'Confirmado'
+                );
+                new Future.delayed(new Duration(seconds: 2), () {
                     fetchPastInProgress();
                   });
-                } else {
-                  SweetAlert.show(context,
-                      subtitle: "¡Cancelado!", style: SweetAlertStyle.success);
-                }
-                // return false to keep dialog
-                return false;
-              });
+              },
+              onCancelBtnTap: () {
+                Navigator.pop(context);
+                QuickAlert.show(
+                context: context,
+                type: QuickAlertType.success,
+                text: "¡Cancelado!",                                
+                );
+              },
+              );
             },
           ),
           SizedBox(width: 5),
@@ -1590,26 +1633,34 @@ class _DataTableExample extends State<MyAgent> {
             ),
             child: Text('Marcar agentes como "Cancelados"'),
             onPressed: () {
-              SweetAlert.show(context,
-                  subtitle: "¿Está seguro que desea marcarlos como cancelados?",
-                  style: SweetAlertStyle.confirm,
-                  confirmButtonText: "Confirmar",
-                  cancelButtonText: "Cancelar",
-                  showCancelButton: true, onPress: (bool isConfirm) {
-                if (isConfirm) {
-                  SweetAlert.show(context,
-                      subtitle: "Han sido marcado como cancelados",
-                      style: SweetAlertStyle.success);
-                  new Future.delayed(new Duration(seconds: 2), () {
+               QuickAlert.show(
+              context: context,
+              type: QuickAlertType.success,
+              text: "¿Está seguro que desea marcarlos como cancelados?",
+              confirmBtnText: "Confirmar",
+              cancelBtnText: "Cancelar",
+              showCancelBtn: true,  
+              confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
+              cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
+              onConfirmBtnTap: () {
+                QuickAlert.show(
+                context: context,
+                type: QuickAlertType.success,
+                text: "Han sido marcado como cancelados",                
+                );
+                new Future.delayed(new Duration(seconds: 2), () {
                     fetchTripAgentsNotConfirm();
                   });
-                } else {
-                  SweetAlert.show(context,
-                      subtitle: "¡Entendido!", style: SweetAlertStyle.success);
-                }
-                // return false to keep dialog
-                return false;
-              });
+              },
+              onCancelBtnTap: () {
+                Navigator.pop(context);
+                QuickAlert.show(
+                context: context,
+                type: QuickAlertType.success,
+                text: "¡Entendido!",                
+                );
+              },
+              );
             },
           ),
           SizedBox(width: 5),
@@ -1625,27 +1676,34 @@ class _DataTableExample extends State<MyAgent> {
             ),
             child: Text("Marcar como cancelado"),
             onPressed: () {
-              SweetAlert.show(context,
-                  subtitle: "¿Está seguro que desea cancelar el viaje?",
-                  style: SweetAlertStyle.confirm,
-                  confirmButtonText: "Confirmar",
-                  cancelButtonText: "Cancelar",
-                  showCancelButton: true, onPress: (bool isConfirm) {
-                if (isConfirm) {
-                  SweetAlert.show(context,
-                      subtitle: "El viaje ha sido cancelado",
-                      style: SweetAlertStyle.success);
-                  new Future.delayed(new Duration(seconds: 2), () {
+               QuickAlert.show(
+              context: context,
+              type: QuickAlertType.success,
+              text: "¿Está seguro que desea cancelar el viaje?",
+              confirmBtnText: "Confirmar",
+              cancelBtnText: "Cancelar",
+              showCancelBtn: true,  
+              confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
+              cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
+              onConfirmBtnTap: () {
+                QuickAlert.show(
+                context: context,
+                type: QuickAlertType.success,
+                text: "El viaje ha sido cancelado",                
+                );
+                new Future.delayed(new Duration(seconds: 2), () {
                     fetchTripCancel();
                   });
-                } else {
-                  SweetAlert.show(context,
-                      subtitle: "¡No ha sido cancelado el viaje!",
-                      style: SweetAlertStyle.success);
-                }
-                // return false to keep dialog
-                return false;
-              });
+              },
+              onCancelBtnTap: () {
+                Navigator.pop(context);
+                QuickAlert.show(
+                context: context,
+                type: QuickAlertType.success,
+                text: "¡No ha sido cancelado el viaje!",                
+                );
+              },
+              );
             },
           ),
         ],

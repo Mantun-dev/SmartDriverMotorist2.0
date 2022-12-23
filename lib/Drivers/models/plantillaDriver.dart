@@ -3,9 +3,9 @@ import 'package:flutter_auth/constants.dart';
 
 //aquí está la clase para después traer la api
 class PlantillaDriver {
-  final String image, title, name, imageMain;
-  final int size, id;
-  final Color color;
+  final String? image, title, name, imageMain;
+  final int? size, id;
+  final Color? color;
   final description;
   PlantillaDriver({
     this.imageMain,

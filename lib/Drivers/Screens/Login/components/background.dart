@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_auth/constants.dart';
 
 class Background extends StatelessWidget {
-  final Widget child;
+  final Widget? child;
   const Background({
-    Key key,
-    @required this.child,
+    Key? key,
+    required this.child,
   }) : super(key: key);
 
   @override
@@ -18,7 +18,7 @@ class Background extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: <Widget>[
-          child,
+          child!,
         ],
       ),
     );

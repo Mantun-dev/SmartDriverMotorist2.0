@@ -23,16 +23,16 @@ class MessageDriver {
       this.leido,
       this.id2});
 
-  String user;
+  String? user;
   dynamic sala;
   dynamic id;
-  String mensaje;
+  String? mensaje;
   dynamic hora;
   dynamic dia;
   dynamic mes;
   dynamic ao;
-  String tipo;
-  bool leido;
+  String? tipo;
+  bool? leido;
   dynamic id2;
 
   factory MessageDriver.fromJson(Map<String, dynamic> json) => MessageDriver(

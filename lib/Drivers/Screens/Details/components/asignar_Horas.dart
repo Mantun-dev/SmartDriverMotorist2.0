@@ -10,15 +10,15 @@ import 'package:flutter_auth/constants.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class AsignarHoras extends StatefulWidget {
-  final TripsCompanies itemx;
-  const AsignarHoras({Key key, this.itemx}) : super(key: key);
+  final TripsCompanies? itemx;
+  const AsignarHoras({Key? key, this.itemx}) : super(key: key);
 
   @override
   _AsignarHorasState createState() => _AsignarHorasState();
 }
 
 class _AsignarHorasState extends State<AsignarHoras> {
-  Future<List<TripsCompanies>> itemx;
+  Future<List<TripsCompanies>>? itemx;
   TextEditingController companyId = new TextEditingController();
   final prefs = new PreferenciasUsuario();
   String ip = "https://driver.smtdriver.com";
@@ -52,7 +52,7 @@ class _AsignarHorasState extends State<AsignarHoras> {
             future: itemx,
             builder: (BuildContext context, abc) {
               if (abc.connectionState == ConnectionState.done) {
-                if (abc.data.length < 1) {
+                if (abc.data!.length < 1) {
                   return Container(
                     decoration: BoxDecoration(boxShadow: [
                       BoxShadow(
@@ -103,12 +103,12 @@ class _AsignarHorasState extends State<AsignarHoras> {
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
                       physics: ClampingScrollPhysics(),
-                      itemCount: abc.data.length,
+                      itemCount: abc.data!.length,
                       itemBuilder: (context, index) {
                         return InkWell(
                           onTap: () {
                             fetchTravelInTrip(
-                                abc.data[index].companyId.toString());
+                                abc.data![index].companyId.toString());
                           },
                           child: Container(
                             decoration: BoxDecoration(boxShadow: [
@@ -144,7 +144,7 @@ class _AsignarHorasState extends State<AsignarHoras> {
                                           width: 170,
                                           child: Column(
                                             children: [
-                                              if (abc.data[index].companyId ==
+                                              if (abc.data![index].companyId ==
                                                   1) ...{
                                                 Container(
                                                   height: 80,
@@ -153,9 +153,9 @@ class _AsignarHorasState extends State<AsignarHoras> {
                                                       "assets/images/Grupo11.svg"),
                                                 ),
                                               },
-                                              if (abc.data[index].companyId ==
+                                              if (abc.data![index].companyId ==
                                                       2 ||
-                                                  abc.data[index].companyId ==
+                                                  abc.data![index].companyId ==
                                                       3) ...{
                                                 Container(
                                                   height: 80,
@@ -164,7 +164,7 @@ class _AsignarHorasState extends State<AsignarHoras> {
                                                       'assets/images/startek.webp'),
                                                 ),
                                               },
-                                              if (abc.data[index].companyId ==
+                                              if (abc.data![index].companyId ==
                                                   6) ...{
                                                 Container(
                                                   height: 80,
@@ -173,7 +173,7 @@ class _AsignarHorasState extends State<AsignarHoras> {
                                                       'assets/images/Alorica_Logo.png'),
                                                 ),
                                               },
-                                              if (abc.data[index].companyId ==
+                                              if (abc.data![index].companyId ==
                                                   7) ...{
                                                 Container(
                                                   height: 80,
@@ -182,7 +182,7 @@ class _AsignarHorasState extends State<AsignarHoras> {
                                                       'assets/images/zero.png'),
                                                 ),
                                               },
-                                              if (abc.data[index].companyId ==
+                                              if (abc.data![index].companyId ==
                                                   8) ...{
                                                 Container(
                                                   height: 80,
@@ -191,7 +191,7 @@ class _AsignarHorasState extends State<AsignarHoras> {
                                                       'assets/images/emerge-bpo-largex5-logo.png'),
                                                 ),
                                               },
-                                              if (abc.data[index].companyId ==
+                                              if (abc.data![index].companyId ==
                                                   9) ...{
                                                 Container(
                                                   height: 80,
@@ -200,7 +200,7 @@ class _AsignarHorasState extends State<AsignarHoras> {
                                                       'assets/images/ibex-logo.jpg'),
                                                 ),
                                               },
-                                              if (abc.data[index].companyId ==
+                                              if (abc.data![index].companyId ==
                                                   10) ...{
                                                 Container(
                                                   height: 80,
@@ -220,7 +220,7 @@ class _AsignarHorasState extends State<AsignarHoras> {
                                                 shape: BoxShape.circle,
                                                 color: Colors.red),
                                             child: Text(
-                                              '${abc.data[index].trips}',
+                                              '${abc.data![index].trips}',
                                               style: TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 13),

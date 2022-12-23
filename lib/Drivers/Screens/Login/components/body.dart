@@ -11,14 +11,14 @@ import 'package:flutter_auth/Drivers/models/messageDriver.dart';
 import 'package:flutter_auth/components/rounded_button.dart';
 import 'package:gradient_borders/box_borders/gradient_box_border.dart';
 import 'package:lottie/lottie.dart';
-import 'package:sweetalert/sweetalert.dart';
+import 'package:quickalert/quickalert.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' show json;
 import '../../../../constants.dart';
 
 class Body extends StatefulWidget {
   const Body({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -30,7 +30,7 @@ class _BodyState extends State<Body> {
   TextEditingController driverDNI = new TextEditingController();
   final prefs = new PreferenciasUsuario();
   String ip = "https://driver.smtdriver.com";
-  bool _passwordVisible;
+  bool? _passwordVisible;
 
   @override
   void initState() {
@@ -45,12 +45,13 @@ class _BodyState extends State<Body> {
     Map data = {'driverDNI': driverDNI, 'driverPassword': driverPassword};
     String device = "mobile";
     if (driverDNI == "" && driverPassword == "") {
-      SweetAlert.show(
-        context,
-        title: "Alerta",
-        subtitle: "Campos vacios",
-        style: SweetAlertStyle.error,
+      QuickAlert.show(
+      context: context,
+      type: QuickAlertType.error,
+      title: "Alerta",
+      text: "Campos vacios",
       );
+
     } else {
       http.Response responses = await http
           .get(Uri.parse('$ip/apis/refreshingAgentData/${data['driverDNI']}'));
@@ -74,34 +75,37 @@ class _BodyState extends State<Body> {
           Uri.parse('$ip/apis/registerTokenIdCellPhoneDriver'),
           body: data2,
         );
-        prefs.nombreUsuarioFull = si.driverFullname;
-        prefs.phone = si.driverPhone;
-        prefs.nombreUsuario = si.driverUser;
+        prefs.nombreUsuarioFull = si.driverFullname!;
+        prefs.phone = si.driverPhone!;
+        prefs.nombreUsuario = si.driverUser!;
         final claro = DataToken.fromJson(json.decode(responseToken.body));
-        prefs.tokenIdMobile = claro.data[0].token;
+        prefs.tokenIdMobile = claro.data![0].token!;
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
                 builder: (BuildContext context) => HomeDriverScreen()),
             (Route<dynamic> route) => false);
-        SweetAlert.show(context,
-            title: "Bienvenido(a)",
-            subtitle: si.driverFullname,
-            style: SweetAlertStyle.success);
+            QuickAlert.show(
+            context: context,
+            type: QuickAlertType.success,
+            title:"Bienvenido(a)",
+            text: si.driverFullname,
+            );
+
         return Message.fromJson(json.decode(response.body));
       } else if (no.ok == false && response.statusCode == 403) {
-        SweetAlert.show(
-          context,
-          title: "Acceso no admitido ",
-          subtitle: no.message,
-          style: SweetAlertStyle.error,
-        );
+         QuickAlert.show(
+            context: context,
+            type: QuickAlertType.error,
+            title:"Acceso no admitido ",
+            text: no.message,
+            );
       } else if (no.ok != true) {
-        SweetAlert.show(
-          context,
-          title: "Alerta",
-          subtitle: no.message,
-          style: SweetAlertStyle.error,
-        );
+         QuickAlert.show(
+            context: context,
+            type: QuickAlertType.error,
+            title:"Alerta",
+            text: no.message,
+            );
       }
     }
   }
@@ -183,7 +187,7 @@ class _BodyState extends State<Body> {
         style: TextStyle(color: Colors.white),
         //keyboardType: TextInputType.,
         controller: driverPassword,
-        obscureText: _passwordVisible,
+        obscureText: _passwordVisible!,
         cursorColor: Colors.white,
         decoration: InputDecoration(
           hintText: "Contraseña",
@@ -207,7 +211,7 @@ class _BodyState extends State<Body> {
             onPressed: () {
               // Update the state i.e. toogle the state of passwordVisible variable
               setState(() {
-                _passwordVisible = !_passwordVisible;
+                _passwordVisible = !_passwordVisible!;
               });
             },
           ),

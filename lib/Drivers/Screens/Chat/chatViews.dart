@@ -2,15 +2,15 @@ import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Chat/chatapis.dart';
 import 'package:flutter_auth/Drivers/Screens/Chat/listchat_agents.dart';
-import 'package:flutter_auth/Drivers/Screens/Details/components/agents_Trip.dart';
-import 'package:provider/provider.dart';
+//import 'package:flutter_auth/Drivers/Screens/Details/components/agents_Trip.dart';
+//import 'package:provider/provider.dart';
 
 import '../../../constants.dart';
 
 class ChatPage extends StatefulWidget {
-  final String tripId;
+  final String? tripId;
 
-  const ChatPage({Key key, this.tripId}) : super(key: key);
+  const ChatPage({Key? key, this.tripId}) : super(key: key);
   @override
   _ChatPageState createState() => _ChatPageState();
 }
@@ -21,19 +21,18 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
-    getCounterNotification(widget.tripId);
+    getCounterNotification(widget.tripId!);
     BackButtonInterceptor.add(myInterceptor);
   }
 
   @override
-  void dispose() {
-    // TODO: implement dispose
+  void dispose() {    
     super.dispose();
     BackButtonInterceptor.remove(myInterceptor);
   }
 
   void getCounterNotification(String tripId) async {
-    final getData = await ChatApis().notificationCounter(widget.tripId);
+    final getData = await ChatApis().notificationCounter(widget.tripId!);
     if (getData.isNotEmpty) {
       if (mounted) {
         setState(() {
@@ -47,9 +46,7 @@ class _ChatPageState extends State<ChatPage> {
   bool myInterceptor(bool stopDefaultButtonEvent, RouteInfo info) {
     print("BACK BUTTON!"); // Do some stuff.
 
-    //Navigator.of(context).pop();
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => MyAgent()));
+    Navigator.of(context).pop();
 
     return true;
   }
@@ -68,17 +65,14 @@ class _ChatPageState extends State<ChatPage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => MyAgent()),
-                (route) => false);
+            Navigator.of(context).pop();
           },
         ),
         actions: [
           IconButton(
             icon: Icon(Icons.refresh),
             onPressed: () {
-              getCounterNotification(widget.tripId);
+              getCounterNotification(widget.tripId!);
             },
           )
         ],
@@ -89,46 +83,46 @@ class _ChatPageState extends State<ChatPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            SafeArea(
-              child: Padding(
-                padding: EdgeInsets.only(left: 16, right: 16, top: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    // Padding(
-                    //   padding: const EdgeInsets.symmetric(horizontal: 40.0),
-                    //   child:
-                    // ),
-                    // Container(
-                    //   padding:
-                    //       EdgeInsets.only(left: 8, right: 8, top: 2, bottom: 2),
-                    //   height: 30,
-                    //   decoration: BoxDecoration(
-                    //     borderRadius: BorderRadius.circular(30),
-                    //     color: Colors.pink[50],
-                    //   ),
-                    //   // child: Row(
-                    //   //   children: <Widget>[
-                    //   //     Icon(
-                    //   //       Icons.add,
-                    //   //       color: Colors.pink,
-                    //   //       size: 20,
-                    //   //     ),
-                    //   //     SizedBox(
-                    //   //       width: 2,
-                    //   //     ),
-                    //   //     Text(
-                    //   //       "Add New",
-                    //   //       style: TextStyle(
-                    //   //           fontSize: 14, fontWeight: FontWeight.bold),
-                    //   //     ),
-                    //   //   ],
-                    //   // ),
-                    // )
-                  ],
-                ),
-              ),
-            ),
+            // SafeArea(
+            //   child: Padding(
+            //     padding: EdgeInsets.only(left: 16, right: 16, top: 10),
+            //     child: Row(
+            //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //       children: <Widget>[
+            //         // Padding(
+            //         //   padding: const EdgeInsets.symmetric(horizontal: 40.0),
+            //         //   child:
+            //         // ),
+            //         // Container(
+            //         //   padding:
+            //         //       EdgeInsets.only(left: 8, right: 8, top: 2, bottom: 2),
+            //         //   height: 30,
+            //         //   decoration: BoxDecoration(
+            //         //     borderRadius: BorderRadius.circular(30),
+            //         //     color: Colors.pink[50],
+            //         //   ),
+            //         //   // child: Row(
+            //         //   //   children: <Widget>[
+            //         //   //     Icon(
+            //         //   //       Icons.add,
+            //         //   //       color: Colors.pink,
+            //         //   //       size: 20,
+            //         //   //     ),
+            //         //   //     SizedBox(
+            //         //   //       width: 2,
+            //         //   //     ),
+            //         //   //     Text(
+            //         //   //       "Add New",
+            //         //   //       style: TextStyle(
+            //         //   //           fontSize: 14, fontWeight: FontWeight.bold),
+            //         //   //     ),
+            //         //   //   ],
+            //         //   // ),
+            //         // )
+            //       ],
+            //     ),
+            //   ),
+            // ),
             Padding(
               padding: EdgeInsets.only(top: 16, left: 16, right: 16),
               child: TextField(

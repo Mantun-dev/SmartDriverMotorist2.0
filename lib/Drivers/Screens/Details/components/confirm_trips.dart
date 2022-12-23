@@ -1,6 +1,7 @@
 //import 'package:back_button_interceptor/back_button_interceptor.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_auth/Drivers/Screens/Chat/chatViews.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
 import 'package:flutter_auth/Drivers/components/loader.dart';
@@ -16,7 +17,7 @@ import 'package:flutter_auth/Drivers/models/registerTripAsCompleted.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' show json;
 import 'package:flutter_auth/constants.dart';
-import 'package:sweetalert/sweetalert.dart';
+import 'package:quickalert/quickalert.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:roundcheckbox/roundcheckbox.dart';
 
@@ -31,17 +32,16 @@ void main() {
 }
 
 class MyConfirmAgent extends StatefulWidget {
-  final PlantillaDriver plantillaDriver;
-  final TripsList4 item;
+  final PlantillaDriver? plantillaDriver;
 
-  const MyConfirmAgent({Key key, this.plantillaDriver, this.item})
+  const MyConfirmAgent({Key? key, this.plantillaDriver})
       : super(key: key);
   @override
   _DataTableExample createState() => _DataTableExample();
 }
 
 class _DataTableExample extends State<MyConfirmAgent> {
-  Future<TripsList4> item;
+  Future<TripsList4>? item;
   bool traveled = false;
   final tmpArray = [];
   bool traveled1 = true;
@@ -69,11 +69,11 @@ class _DataTableExample extends State<MyConfirmAgent> {
     if (response.statusCode == 200 && resp.ok == true) {
       print('enviado');
     } else if (response.statusCode == 500) {
-      SweetAlert.show(
-        context,
-        title: 'Opss...',
-        subtitle: resp.message,
-        style: SweetAlertStyle.error,
+      QuickAlert.show(
+      context: context,
+      type: QuickAlertType.error,
+      title: 'Oops...',
+      text: resp.message,
       );
     }
 
@@ -84,33 +84,44 @@ class _DataTableExample extends State<MyConfirmAgent> {
     http.Response responses = await http
         .get(Uri.parse('$ip/apis/registerTripAsCompleted/${prefs.tripId}'));
     final si = Driver2.fromJson(json.decode(responses.body));
-
+    print('holaaaa');
     print(responses.body);
-    if (responses.statusCode == 200 && si.ok) {
-      Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(
-              builder: (BuildContext context) => HomeDriverScreen()),
-          (Route<dynamic> route) => false);
+    if (responses.statusCode == 200 && si.ok!) {
+      if (mounted) {  
+        QuickAlert.show(
+      context: context,
+      type: QuickAlertType.success,
+      title: 'Completado',
+      text: 'su viaje ha sido completado',
+      );      
+      }
+        new Future.delayed(new Duration(seconds: 2), () {                                      
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                  builder: (BuildContext context) => HomeDriverScreen()),
+              (Route<dynamic> route) => false);
+        });          
     } else if (si.ok != true) {
-      SweetAlert.show(
-        context,
-        title: si.title,
-        subtitle: si.message,
-        style: SweetAlertStyle.error,
-      );
+      QuickAlert.show(
+      context: context,
+      type: QuickAlertType.error,
+      title: si.title,
+      text: si.message,
+      );      
     }
     return Driver2.fromJson(json.decode(responses.body));
     //throw Exception('Failed to load Data');
   }
 
-  Future<Driver> fetchRegisterCommentAgent(
-      String agentId, String tripId, String comment) async {
+  Future<Driver> fetchRegisterCommentAgent(String agentId, String tripId, String comment) async {
     Map datas = {'agentId': agentId, 'tripId': tripId};
     Map datas2 = {
       'agentId': agentId,
       'tripId': tripId,
       'commentDriver': comment
     };
+
+    
     http.Response responses =
         await http.post(Uri.parse('$ip/apis/getDriverComment'), body: datas);
     final si = Driver.fromJson(json.decode(responses.body));
@@ -121,17 +132,19 @@ class _DataTableExample extends State<MyConfirmAgent> {
     if (responses.statusCode == 200 &&
         si.ok == true &&
         responses.statusCode == 200) {
-      SweetAlert.show(context,
-          title: 'Enviado',
-          subtitle: si.message,
-          style: SweetAlertStyle.success);
+          QuickAlert.show(
+      context: context,
+      type: QuickAlertType.success,
+      title: 'Enviado',
+      text: si.message,
+      );
       Navigator.pop(context);
     } else if (si.ok != true) {
-      SweetAlert.show(
-        context,
-        title: si.title,
-        subtitle: si.message,
-        style: SweetAlertStyle.error,
+      QuickAlert.show(
+      context: context,
+      type: QuickAlertType.error,
+      title: si.title,
+      text: si.message,
       );
     }
     return Driver.fromJson(json.decode(responses.body));
@@ -147,20 +160,23 @@ class _DataTableExample extends State<MyConfirmAgent> {
     final si = Driver.fromJson(json.decode(responses.body));
 
     print(responses.body);
-    if (responses.statusCode == 200 && si.ok) {
-      SweetAlert.show(context,
-          title: si.title,
-          subtitle: si.message,
-          style: SweetAlertStyle.success);
+    if (responses.statusCode == 200 && si.ok!) {
+      QuickAlert.show(
+      context: context,
+      type: QuickAlertType.success,
+      title: si.title,
+      text: si.message,
+      );
+
       Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (_) => MyConfirmAgent()))
           .then((_) => MyConfirmAgent());
     } else if (si.ok != true) {
-      SweetAlert.show(
-        context,
-        title: si.title,
-        subtitle: si.message,
-        style: SweetAlertStyle.error,
+      QuickAlert.show(
+      context: context,
+      type: QuickAlertType.error,
+      title: si.title,
+      text: si.message,
       );
     }
     return Driver.fromJson(json.decode(responses.body));
@@ -181,11 +197,11 @@ class _DataTableExample extends State<MyConfirmAgent> {
               builder: (BuildContext context) => HomeDriverScreen()),
           (Route<dynamic> route) => false);
     } else if (response.statusCode == 500) {
-      SweetAlert.show(
-        context,
-        title: 'ok',
-        subtitle: resp.message,
-        style: SweetAlertStyle.error,
+      QuickAlert.show(
+      context: context,
+      type: QuickAlertType.error,
+      title: 'Ok',
+      text: resp.message,
       );
     }
     return Driver.fromJson(json.decode(response.body));
@@ -210,6 +226,19 @@ class _DataTableExample extends State<MyConfirmAgent> {
             backgroundColor: backgroundColor,
             elevation: 10,
             actions: <Widget>[
+              IconButton(
+                icon:
+                    Icon(Icons.textsms_rounded, color: thirdColor, size: 30.0),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ChatPage(
+                              tripId: prefs.tripId,
+                            )),
+                  );
+                },
+              ),
               IconButton(
                 icon: Icon(Icons.arrow_circle_left),
                 onPressed: () {
@@ -280,7 +309,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
       future: item,
       builder: (BuildContext context, abc) {
         if (abc.connectionState == ConnectionState.done) {
-          if (abc.data.trips[0].tripAgent.length == 0) {
+          if (abc.data!.trips![0].tripAgent!.length == 0) {
             return Card(
               color: backgroundColor,
               shape: RoundedRectangleBorder(
@@ -310,17 +339,30 @@ class _DataTableExample extends State<MyConfirmAgent> {
                 scrollDirection: Axis.vertical,
                 shrinkWrap: true,
                 physics: ClampingScrollPhysics(),
-                itemCount: abc.data.trips[0].tripAgent.length,
+                itemCount: abc.data!.trips![0].tripAgent!.length,
                 itemBuilder: (context, index) {
+
                   check.add(new TextEditingController());
                   return Container(
                     decoration: BoxDecoration(boxShadow: [
-                      BoxShadow(
+                      if (abc.data!.trips![0].tripAgent![index].traveled == 1 
+                      || abc.data!.trips![0].tripAgent![index].commentDriver != null)...{
+                        BoxShadow(
                           blurStyle: BlurStyle.normal,
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.green.withOpacity(0.5),
                           blurRadius: 15,
                           spreadRadius: -18,
                           offset: Offset(-15, -6)),
+                      }else...{
+                        BoxShadow(
+                          blurStyle: BlurStyle.normal,
+                          color: Colors.red.withOpacity(0.5),
+                          blurRadius: 15,
+                          spreadRadius: -18,
+                          offset: Offset(-15, -6)),
+                      },
+                      
+                      
                       BoxShadow(
                           blurStyle: BlurStyle.normal,
                           color: Colors.black.withOpacity(0.6),
@@ -379,70 +421,28 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                               //   color: backgroundColor,
                                               // ),
                                               size: 45,
-                                              isChecked: (abc
-                                                          .data
-                                                          .trips[0]
-                                                          .tripAgent[index]
-                                                          .traveled ==
-                                                      0)
+                                              isChecked: (abc.data!.trips![0].tripAgent![index].traveled ==0)
                                                   ? false
-                                                  : (abc
-                                                              .data
-                                                              .trips[0]
-                                                              .tripAgent[index]
-                                                              .traveled ==
-                                                          1)
-                                                      ? true
-                                                      : (abc.data.trips[0].tripAgent[index].traveled ==
-                                                              null)
-                                                          ? abc
-                                                                  .data
-                                                                  .trips[0]
-                                                                  .tripAgent[
-                                                                      index]
-                                                                  .traveled ??
-                                                              false
-                                                          : (abc
-                                                                      .data
-                                                                      .trips[0]
-                                                                      .tripAgent[
-                                                                          index]
-                                                                      .traveled ==
-                                                                  true)
-                                                              ? abc
-                                                                      .data
-                                                                      .trips[0]
-                                                                      .tripAgent[index]
-                                                                      .traveled ??
-                                                                  false
-                                                              : false,
-                                              onTap: (isChecked) {
+                                                  : (abc.data!.trips![0].tripAgent![index].traveled ==1)
+                                                  ? true
+                                                  : (abc.data!.trips![0].tripAgent![index].traveled == null)
+                                                  ? abc.data!.trips![0].tripAgent![index].traveled 
+                                                  ??false
+                                                  : (abc.data!.trips![0].tripAgent![index].traveled == true)
+                                                  ? abc.data!.trips![0].tripAgent![index].traveled 
+                                                  ??false : false,
+                                              onTap: (bool? isChecked) {
                                                 setState(() {
-                                                  traveled = isChecked;
+                                                  traveled = isChecked!;
                                                 });
-                                                abc
-                                                    .data
-                                                    .trips[0]
-                                                    .tripAgent[index]
-                                                    .traveled = traveled;
+                                                abc.data!.trips![0].tripAgent![index].traveled = traveled;
                                                 if (isChecked == true) {
                                                   print('subio');
-                                                  fetchCheckAgentTrip(abc
-                                                      .data
-                                                      .trips[0]
-                                                      .tripAgent[index]
-                                                      .agentId
-                                                      .toString());
-
+                                                  fetchCheckAgentTrip(abc.data!.trips![0].tripAgent![index].agentId.toString());
                                                   print('////////');
                                                 } else if (isChecked == false) {
                                                   print('bajo');
-                                                  fetchCheckAgentTrip(abc
-                                                      .data
-                                                      .trips[0]
-                                                      .tripAgent[index]
-                                                      .agentId
-                                                      .toString());
+                                                  fetchCheckAgentTrip(abc.data!.trips![0].tripAgent![index].agentId.toString());
                                                   print('////////');
                                                 }
                                               }),
@@ -463,7 +463,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 20.0)),
                                         subtitle: Text(
-                                            '${abc.data.trips[0].tripAgent[index].agentFullname}',
+                                            '${abc.data!.trips![0].tripAgent![index].agentFullname}',
                                             style: TextStyle(
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.normal,
@@ -491,7 +491,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 20.0)),
                                             subtitle: Text(
-                                                '${abc.data.trips[0].tripAgent[index].companyName}',
+                                                '${abc.data!.trips![0].tripAgent![index].companyName}',
                                                 style: TextStyle(
                                                     color: Colors.white,
                                                     fontWeight:
@@ -511,12 +511,12 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                             subtitle: TextButton(
                                                 onPressed: () => launchUrl(
                                                     Uri.parse(
-                                                        'tel://${abc.data.trips[0].tripAgent[index].agentPhone}')),
+                                                        'tel://${abc.data!.trips![0].tripAgent![index].agentPhone}')),
                                                 child: Container(
                                                     padding: EdgeInsets.only(
                                                         right: 160),
                                                     child: Text(
-                                                        '${abc.data.trips[0].tripAgent[index].agentPhone}',
+                                                        '${abc.data!.trips![0].tripAgent![index].agentPhone}',
                                                         style: TextStyle(
                                                             color: Colors.white,
                                                             fontWeight:
@@ -535,7 +535,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 20.0)),
                                             subtitle: Text(
-                                                '${abc.data.trips[0].tripAgent[index].hourIn}',
+                                                '${abc.data!.trips![0].tripAgent![index].hourIn}',
                                                 style: TextStyle(
                                                     color: Colors.white,
                                                     fontWeight:
@@ -544,24 +544,53 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                             leading: Icon(Icons.access_time,
                                                 color: thirdColor, size: 50.0),
                                           ),
-                                          ListTile(
-                                            contentPadding: EdgeInsets.fromLTRB(
+                                           ListTile(contentPadding: EdgeInsets.fromLTRB(
                                                 0, 5, 10, 0),
-                                            title: Text('Dirección: ',
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 20.0)),
-                                            subtitle: Text(
-                                                '${abc.data.trips[0].tripAgent[index].agentReferencePoint}\n${abc.data.trips[0].tripAgent[index].neighborhoodName} ${abc.data.trips[0].tripAgent[index].districtName}',
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    fontSize: 15.0)),
-                                            leading: Icon(Icons.location_pin,
-                                                color: thirdColor, size: 50.0),
-                                          ),
+                                                        title: Text('Dirección: ',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize:
+                                                                    18.0)),
+                                                        subtitle: Text(
+                                                          abc.data!.trips![0].tripAgent![index].agentReferencePoint==null
+                                                        ||abc.data!.trips![0].tripAgent![index].agentReferencePoint==""
+                                                        ?"${abc.data!.trips![0].tripAgent![index].neighborhoodName}, ${abc.data!.trips![0].tripAgent![index].townName}":'${abc.data!.trips![0].tripAgent![index].agentReferencePoint}, ${abc.data!.trips![0].tripAgent![index].neighborhoodName}, ${abc.data!.trips![0].tripAgent![index].townName},',style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .normal,
+                                                                fontSize:
+                                                                    15.0)),
+                                                        leading: Icon(Icons.location_pin,color: thirdColor, size: 50,),
+                                                      ),
+                                                      if (abc.data!.trips![0].tripAgent![index].neighborhoodReferencePoint != null)... {                                                    
+                                                        ListTile(contentPadding: EdgeInsets.fromLTRB(
+                                                0, 5, 10, 0),
+                                                          title: Text('Acceso autorizado: ',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize:
+                                                                    18.0)),
+                                                          subtitle: Text('${abc.data!.trips![0].tripAgent![index].neighborhoodReferencePoint}',style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .normal,
+                                                                fontSize:
+                                                                    15.0)),
+                                                          leading: Icon(Icons.directions,color: thirdColor, size: 50,),
+                                                        ),
+                                                      },
                                           ListTile(
                                             contentPadding: EdgeInsets.fromLTRB(
                                                 0, 5, 10, 0),
@@ -571,7 +600,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 20.0)),
                                             subtitle: Text(
-                                                '${abc.data.trips[0].tripAgent[index].hourForTrip}',
+                                                '${abc.data!.trips![0].tripAgent![index].hourForTrip}',
                                                 style: TextStyle(
                                                     color: firstColor,
                                                     fontWeight: FontWeight.bold,
@@ -587,7 +616,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceEvenly,
                                       children: [
-                                        if (abc.data.trips[0].tripAgent[index]
+                                        if (abc.data!.trips![0].tripAgent![index]
                                                 .didntGetOut ==
                                             1) ...{
                                           Text('Se pasó pero no salió.',
@@ -640,8 +669,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                     fetchRegisterAgentDidntGetOut(
                                                         abc
                                                             .data
-                                                            .trips[0]
-                                                            .tripAgent[index]
+                                                            !.trips![0]
+                                                            .tripAgent![index]
                                                             .agentId
                                                             .toString(),
                                                         prefs.tripId);
@@ -698,12 +727,11 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                 onPressed: () async {
                                                   http.Response response =
                                                       await http.get(Uri.parse(
-                                                          '$ip/apis/getDriverComment/${abc.data.trips[0].tripAgent[index].agentId}/${abc.data.trips[0].tripAgent[index].tripId}'));
+                                                          '$ip/apis/getDriverComment/${abc.data!.trips![0].tripAgent![index].agentId}/${abc.data!.trips![0].tripAgent![index].tripId}'));
                                                   final send = Comment.fromJson(
                                                       json.decode(
                                                           response.body));
-                                                  check[index].text = send
-                                                      .comment.commentDriver;
+                                                      check[index].text = send.comment!.commentDriver;
                                                   showGeneralDialog(
                                                       barrierColor: Colors.black
                                                           .withOpacity(0.5),
@@ -807,19 +835,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                 ),
                                                               ),
                                                               actions: [
-                                                                // Text(
-                                                                //     'Observación...',
-                                                                //     textAlign:
-                                                                //         TextAlign
-                                                                //             .center,
-                                                                //     style: TextStyle(
-                                                                //         color: Colors
-                                                                //             .black,
-                                                                //         fontWeight:
-                                                                //             FontWeight
-                                                                //                 .bold,
-                                                                //         fontSize:
-                                                                //             15)),
+                          
                                                                 Row(
                                                                   crossAxisAlignment:
                                                                       CrossAxisAlignment
@@ -847,12 +863,22 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                         onPressed:
                                                                             () =>
                                                                                 {
-                                                                          fetchRegisterCommentAgent(
-                                                                              abc.data.trips[0].tripAgent[index].agentId.toString(),
-                                                                              prefs.tripId,
-                                                                              check[index].text),
-                                                                          Navigator.pop(
-                                                                              context),
+                                                                                  if(check[index].text.isEmpty){
+                                                                                    Navigator.pop(context),
+                                                                                    QuickAlert.show(
+                                                                                      context: context,
+                                                                                      type: QuickAlertType.error,
+                                                                                      title: 'Alerta',
+                                                                                      text: 'No puede ir vacío la observación',
+                                                                                    ),
+                                                                                  }else{
+                                                                                  fetchRegisterCommentAgent(
+                                                                                      abc.data!.trips![0].tripAgent![index].agentId.toString(),
+                                                                                      prefs.tripId,
+                                                                                      check[index].text),
+                                                                                  Navigator.pop(
+                                                                                      context),
+                                                                                  }
                                                                         },
                                                                         child: Text(
                                                                             'Guardar',
@@ -909,7 +935,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                       pageBuilder: (context,
                                                           animation1,
                                                           animation2) {
-                                                        return null;
+                                                        return Text('');
                                                       });
                                                 },
                                                 child: Text('Observaciones',
@@ -965,28 +991,28 @@ class _DataTableExample extends State<MyConfirmAgent> {
                       fontWeight: FontWeight.bold,
                       fontSize: 15)),
               onPressed: () {
-                SweetAlert.show(context,
-                    subtitle: "¿Está seguro que desea completar el viaje?",
-                    style: SweetAlertStyle.confirm,
-                    confirmButtonText: "Confirmar",
-                    cancelButtonText: "Cancelar",
-                    showCancelButton: true, onPress: (bool isConfirm) {
-                  if (isConfirm) {
-                    SweetAlert.show(context,
-                        title: 'Completado',
-                        subtitle: 'su viaje ha sido completado',
-                        style: SweetAlertStyle.success);
-                    new Future.delayed(new Duration(seconds: 2), () {
-                      fetchRegisterTripCompleted();
-                    });
-                  } else {
-                    SweetAlert.show(context,
-                        subtitle: "¡Cancelado!",
-                        style: SweetAlertStyle.success);
-                  }
-                  // return false to keep dialog
-                  return false;
-                });
+                QuickAlert.show(
+                context: context,
+                type: QuickAlertType.success,                
+                text: "¿Está seguro que desea completar el viaje?",
+                confirmBtnText: "Confirmar",
+                cancelBtnText: "Cancelar",
+                showCancelBtn: true,  
+                confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
+                cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
+                onConfirmBtnTap: () {
+                  Navigator.pop(context);                                 
+                  fetchRegisterTripCompleted();
+                },
+                onCancelBtnTap: () {
+                  QuickAlert.show(
+                  context: context,
+                  type: QuickAlertType.success,
+                  text: '¡Cancelado!',
+                  autoCloseDuration:Duration(seconds: 1)
+                  );
+                },
+                );
               },
             ),
           ),
@@ -1007,29 +1033,35 @@ class _DataTableExample extends State<MyConfirmAgent> {
                       fontWeight: FontWeight.bold,
                       fontSize: 15)),
               onPressed: () {
-                SweetAlert.show(context,
-                    subtitle:
-                        "¿Está seguro que desea cancelar el viaje en proceso?",
-                    style: SweetAlertStyle.confirm,
-                    confirmButtonText: "Confirmar",
-                    cancelButtonText: "Cancelar",
-                    showCancelButton: true, onPress: (bool isConfirm) {
-                  if (isConfirm) {
-                    SweetAlert.show(context,
-                        title: 'Cancelado',
-                        subtitle: 'Su viaje ha sido cancelado',
-                        style: SweetAlertStyle.success);
-                    new Future.delayed(new Duration(seconds: 2), () {
+                QuickAlert.show(
+                context: context,
+                type: QuickAlertType.error,                
+                text: "¿Está seguro que desea cancelar el viaje en proceso?",
+                confirmBtnText: "Confirmar",
+                cancelBtnText: "Cancelar",
+                showCancelBtn: true,  
+                confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
+                cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
+                onConfirmBtnTap: () {
+                  QuickAlert.show(
+                  context: context,
+                  type: QuickAlertType.success,
+                  text: 'Su viaje ha sido cancelado',
+                  title: 'Cancelado'
+                  );
+                  new Future.delayed(new Duration(seconds: 2), () {
                       fetchTripCancel();
                     });
-                  } else {
-                    SweetAlert.show(context,
-                        subtitle: "¡No ha sido cancelado el viaje!",
-                        style: SweetAlertStyle.success);
-                  }
-                  // return false to keep dialog
-                  return false;
-                });
+                },
+                onCancelBtnTap: () {
+                  Navigator.pop(context);
+                  QuickAlert.show(
+                  context: context,
+                  type: QuickAlertType.success,
+                  text: "¡No ha sido cancelado el viaje!",
+                  );
+                },
+                );
               },
             ),
           ),

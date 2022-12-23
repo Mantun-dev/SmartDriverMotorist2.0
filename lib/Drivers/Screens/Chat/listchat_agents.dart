@@ -14,14 +14,14 @@ class ConversationList extends StatefulWidget {
   String sinleer_Motorista;
   String idAgent;
   ConversationList({
-    Key key,
-    @required this.nombre,
+    Key? key,
+    required this.nombre,
     // ignore: non_constant_identifier_names
-    @required this.sinLeer_Agente,
-    @required this.estado,
+    required this.sinLeer_Agente,
+    required this.estado,
     // ignore: non_constant_identifier_names
-    @required this.sinleer_Motorista,
-    @required this.idAgent,
+    required this.sinleer_Motorista,
+    required this.idAgent,
   }) : super(key: key);
   @override
   _ConversationListState createState() => _ConversationListState();
@@ -39,8 +39,8 @@ class _ConversationListState extends State<ConversationList> {
                   builder: (context) => ChatScreen(
                         idAgent: widget.idAgent.toString(),
                         nombreAgent: widget.nombre,
-                        nombre: "${value.driver.driverFullname}",
-                        id: "${value.driver.driverId}",
+                        nombre: "${value.driver!.driverFullname}",
+                        id: "${value.driver!.driverId}",
                         rol: "MOTORISTA",
                       )));
         });

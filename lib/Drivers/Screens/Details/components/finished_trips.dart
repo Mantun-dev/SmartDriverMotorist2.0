@@ -14,9 +14,9 @@ void main() {
 }
 
 class MyFinishedTrips extends StatefulWidget {
-  final PlantillaDriver plantillaDriver;
+  final PlantillaDriver? plantillaDriver;
 
-  const MyFinishedTrips({Key key, this.plantillaDriver}) : super(key: key);
+  const MyFinishedTrips({Key? key, this.plantillaDriver}) : super(key: key);
   @override
   _DataTableExample createState() => _DataTableExample();
 }
@@ -24,8 +24,8 @@ class MyFinishedTrips extends StatefulWidget {
 class _DataTableExample extends State<MyFinishedTrips> {
   bool checkBoxValue = false;
   final format = DateFormat("HH:mm");
-  Future<TripsList3> item;
-  Future<TripsList2> itemx;
+  Future<TripsList3>? item;
+  Future<TripsList2>? itemx;
   @override
   void initState() {
     super.initState();
@@ -84,7 +84,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
       future: item,
       builder: (BuildContext context, abc) {
         if (abc.connectionState == ConnectionState.done) {
-          if (abc.data.trips[0].inTrip.length == 0) {
+          if (abc.data!.trips![0].inTrip!.length == 0) {
             return Card(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -116,7 +116,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
                     physics: ClampingScrollPhysics(),
-                    itemCount: abc.data.trips[0].inTrip.length,
+                    itemCount: abc.data!.trips![0].inTrip!.length,
                     itemBuilder: (context, index) {
                       return Container(
                         decoration: BoxDecoration(boxShadow: [
@@ -154,8 +154,8 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                         children: <Widget>[
                                           Row(
                                             children: [
-                                              if (abc.data.trips[0]
-                                                      .inTrip[index].traveled ==
+                                              if (abc.data!.trips![0]
+                                                      .inTrip![index].traveled ==
                                                   1) ...{
                                                 Text('✅',
                                                     style: TextStyle(
@@ -182,7 +182,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                     color: Colors.white,
                                                     fontSize: 18)),
                                             subtitle: Text(
-                                                '${abc.data.trips[0].inTrip[index].agentFullname}',
+                                                '${abc.data!.trips![0].inTrip![index].agentFullname}',
                                                 style: TextStyle(
                                                     color: Colors.white,
                                                     fontSize: 15)),
@@ -209,7 +209,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                         color: Colors.white,
                                                         fontSize: 18)),
                                                 subtitle: Text(
-                                                    '${abc.data.trips[0].inTrip[index].companyName}',
+                                                    '${abc.data!.trips![0].inTrip![index].companyName}',
                                                     style: TextStyle(
                                                         color: Colors.white,
                                                         fontSize: 15)),
@@ -229,12 +229,12 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                 subtitle: TextButton(
                                                     onPressed: () => launchUrl(
                                                         Uri.parse(
-                                                            'tel://${abc.data.trips[0].inTrip[index].agentPhone}')),
+                                                            'tel://${abc.data!.trips![0].inTrip![index].agentPhone}')),
                                                     child: Container(
                                                         margin: EdgeInsets.only(
                                                             right: 180),
                                                         child: Text(
-                                                            '${abc.data.trips[0].inTrip[index].agentPhone}',
+                                                            '${abc.data!.trips![0].inTrip![index].agentPhone}',
                                                             style: TextStyle(
                                                                 color: Colors
                                                                     .white,
@@ -253,7 +253,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                         color: Colors.white,
                                                         fontSize: 18)),
                                                 subtitle: Text(
-                                                    '${abc.data.trips[0].inTrip[index].hourIn}',
+                                                    '${abc.data!.trips![0].inTrip![index].hourIn}',
                                                     style: TextStyle(
                                                         color: Colors.white,
                                                         fontSize: 15)),
@@ -270,7 +270,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                         color: Colors.white,
                                                         fontSize: 18)),
                                                 subtitle: Text(
-                                                    '${abc.data.trips[0].inTrip[index].agentReferencePoint} \n ${abc.data.trips[0].inTrip[index].neighborhoodName} ${abc.data.trips[0].inTrip[index].districtName}',
+                                                    '${abc.data!.trips![0].inTrip![index].agentReferencePoint} \n ${abc.data!.trips![0].inTrip![index].neighborhoodName} ${abc.data!.trips![0].inTrip![index].districtName}',
                                                     style: TextStyle(
                                                         color: Colors.white,
                                                         fontSize: 15)),
@@ -289,7 +289,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                         color: Colors.white,
                                                         fontSize: 18)),
                                                 subtitle: Text(
-                                                    '${abc.data.trips[0].inTrip[index].hourForTrip}',
+                                                    '${abc.data!.trips![0].inTrip![index].hourForTrip}',
                                                     style: TextStyle(
                                                         color: Gradiant2,
                                                         fontWeight:
@@ -337,8 +337,8 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                                   height: 15),
                                                               if (abc
                                                                       .data
-                                                                      .trips[0]
-                                                                      .inTrip[
+                                                                      !.trips![0]
+                                                                      .inTrip![
                                                                           index]
                                                                       .commentDriver ==
                                                                   null) ...{
@@ -373,7 +373,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                                     height: 15),
                                                                 Center(
                                                                   child: Text(
-                                                                    '${abc.data.trips[0].inTrip[index].commentDriver}',
+                                                                    '${abc.data!.trips![0].inTrip![index].commentDriver}',
                                                                     style: TextStyle(
                                                                         fontSize:
                                                                             16,
@@ -452,7 +452,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
       future: itemx,
       builder: (BuildContext context, abc) {
         if (abc.connectionState == ConnectionState.done) {
-          if (abc.data.trips[2].cancelados.length == 0) {
+          if (abc.data!.trips![2].cancelados!.length == 0) {
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15.0),
               child: Container(
@@ -506,7 +506,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
                     physics: ClampingScrollPhysics(),
-                    itemCount: abc.data.trips[2].cancelados.length,
+                    itemCount: abc.data!.trips![2].cancelados!.length,
                     itemBuilder: (context, index) {
                       return Container(
                         width: 500.0,
@@ -531,8 +531,8 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                             children: [
                                               if (abc
                                                       .data
-                                                      .trips[2]
-                                                      .cancelados[index]
+                                                      !.trips![2]
+                                                      .cancelados![index]
                                                       .traveled ==
                                                   1) ...{
                                                 Text('✅ '),
@@ -551,7 +551,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                 5, 5, 10, 0),
                                             title: Text('Nombre: '),
                                             subtitle: Text(
-                                                '${abc.data.trips[2].cancelados[index].agentFullname}'),
+                                                '${abc.data!.trips![2].cancelados![index].agentFullname}'),
                                             leading: Icon(
                                                 Icons
                                                     .supervised_user_circle_rounded,
@@ -571,7 +571,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                         5, 5, 10, 0),
                                                 title: Text('Empresa: '),
                                                 subtitle: Text(
-                                                    '${abc.data.trips[2].cancelados[index].companyName}'),
+                                                    '${abc.data!.trips![2].cancelados![index].companyName}'),
                                                 leading: Icon(Icons.kitchen,
                                                     color: Colors.green[500]),
                                               ),
@@ -583,13 +583,13 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                 subtitle: TextButton(
                                                     onPressed: () => launchUrl(
                                                           Uri.parse(
-                                                              'tel:${abc.data.trips[2].cancelados[index].agentPhone}'),
+                                                              'tel:${abc.data!.trips![2].cancelados![index].agentPhone}'),
                                                         ),
                                                     child: Container(
                                                         margin: EdgeInsets.only(
                                                             right: 180),
                                                         child: Text(
-                                                            '${abc.data.trips[2].cancelados[index].agentPhone}',
+                                                            '${abc.data!.trips![2].cancelados![index].agentPhone}',
                                                             style: TextStyle(
                                                                 color: Colors
                                                                     .blue[500],
@@ -604,7 +604,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                         5, 5, 10, 0),
                                                 title: Text('Entrada: '),
                                                 subtitle: Text(
-                                                    '${abc.data.trips[2].cancelados[index].hourIn}'),
+                                                    '${abc.data!.trips![2].cancelados![index].hourIn}'),
                                                 leading: Icon(Icons.access_time,
                                                     color: Colors.green[500]),
                                               ),
@@ -614,7 +614,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                         5, 5, 10, 0),
                                                 title: Text('Dirección: '),
                                                 subtitle: Text(
-                                                    '${abc.data.trips[2].cancelados[index].agentReferencePoint} \n${abc.data.trips[2].cancelados[index].neighborhoodName} ${abc.data.trips[2].cancelados[index].districtName}'),
+                                                    '${abc.data!.trips![2].cancelados![index].agentReferencePoint} \n${abc.data!.trips![2].cancelados![index].neighborhoodName} ${abc.data!.trips![2].cancelados![index].districtName}'),
                                                 leading: Icon(
                                                     Icons.location_pin,
                                                     color: Colors.green[500]),
@@ -653,8 +653,8 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                                 height: 15),
                                                             if (abc
                                                                     .data
-                                                                    .trips[2]
-                                                                    .cancelados[
+                                                                    !.trips![2]
+                                                                    .cancelados![
                                                                         index]
                                                                     .comment ==
                                                                 null) ...{
@@ -671,7 +671,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                               SizedBox(
                                                                   height: 15),
                                                               Text(
-                                                                  '${abc.data.trips[2].cancelados[index].commentDriver}')
+                                                                  '${abc.data!.trips![2].cancelados![index].commentDriver}')
                                                             } else ...{
                                                               Center(
                                                                 child: Text(
@@ -688,7 +688,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                                   height: 15),
                                                               Center(
                                                                 child: Text(
-                                                                  '${abc.data.trips[2].cancelados[index].comment}',
+                                                                  '${abc.data!.trips![2].cancelados![index].comment}',
                                                                   style:
                                                                       TextStyle(
                                                                     fontSize:

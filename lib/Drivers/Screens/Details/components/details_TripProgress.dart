@@ -10,9 +10,9 @@ import 'package:flutter_auth/constants.dart';
 //import 'package:flutter/scheduler.dart';
 
 class DetailsDriverTripInProgress extends StatefulWidget {
-  final PlantillaDriver plantillaDriver;
+  final PlantillaDriver? plantillaDriver;
 
-  const DetailsDriverTripInProgress({Key key, this.plantillaDriver})
+  const DetailsDriverTripInProgress({Key? key, this.plantillaDriver})
       : super(key: key);
 
   @override
@@ -28,7 +28,7 @@ class _DetailsDriverTripInProgressState
   Widget build(BuildContext context) {
     return Scaffold(
       // each product have a color
-      backgroundColor: widget.plantillaDriver.color,
+      backgroundColor: widget.plantillaDriver!.color,
       drawer: DriverMenuLateral(),
       appBar: buildAppBar(context),
       body: Container(
@@ -51,7 +51,7 @@ class _DetailsDriverTripInProgressState
 
   AppBar buildAppBar(BuildContext context) {
     return AppBar(
-      backgroundColor: widget.plantillaDriver.color,
+      backgroundColor: widget.plantillaDriver!.color,
       elevation: 0,
       actions: <Widget>[
         IconButton(

@@ -9,12 +9,12 @@ import 'package:flutter_auth/components/splashView.dart';
 import 'package:flutter_auth/constants.dart';
 import 'package:flutter_auth/providers/chat.dart';
 import 'package:provider/provider.dart';
-import 'package:sweetalert/sweetalert.dart';
+import 'package:quickalert/quickalert.dart';
 import 'Drivers/SharePreferences/preferencias_usuario.dart';
 
 class MyHttpoverrides extends HttpOverrides {
   @override
-  HttpClient createHttpClient(SecurityContext context) {
+  HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
       ..badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
@@ -44,8 +44,9 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     PushNotificationServices.messageStream.listen((event) {
-      prefs.tripId = event.toString();
+
       if (event != "MESSAGE_NOTIFICATION") {
+        prefs.tripId = event.toString();
         //print(event);
         navigatorKey.currentState
             ?.push(MaterialPageRoute(builder: (_) => MyAgent()));
@@ -80,9 +81,11 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-void showMyDialog() {
-  return SweetAlert.show(navigatorKey.currentContext,
-      title: "¡Advertencia!",
-      subtitle: "El agente seleccionado ya está agregado al viaje",
-      style: SweetAlertStyle.error);
+Future<dynamic> showMyDialog() {
+  return QuickAlert.show(
+   context: navigatorKey.currentContext!,
+   type: QuickAlertType.error,
+   title: "¡Advertencia!",
+   text: "El agente seleccionado ya está agregado al viaje",
+  );
 }

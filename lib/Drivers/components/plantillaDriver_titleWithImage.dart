@@ -5,8 +5,8 @@ import '../../constants.dart';
 
 class PlantillaDriverTitleWithImage extends StatelessWidget {
   const PlantillaDriverTitleWithImage({
-    Key key,
-    @required this.plantillaDriver,
+    Key? key,
+    required this.plantillaDriver,
   }) : super(key: key);
 
   final PlantillaDriver plantillaDriver;
@@ -20,21 +20,22 @@ class PlantillaDriverTitleWithImage extends StatelessWidget {
         children: <Widget>[
           SizedBox(height: 30),
           Row(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Container(
                 child: Column(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 30.0),
-                      child: Text(
-                        plantillaDriver.title,
+                    // Padding(
+                    //   //padding: const EdgeInsets.only(right: 5.0),
+                    //   child: 
+                      Text(
+                        plantillaDriver.title!,
                         style: TextStyle(
                             fontSize: 20,
                             color: backgroundColor,
                             fontWeight: FontWeight.bold),
                       ),
-                    ),
+                    //),
                   ],
                 ),
               ),
@@ -44,7 +45,7 @@ class PlantillaDriverTitleWithImage extends StatelessWidget {
                     Hero(
                       tag: "${plantillaDriver.id}",
                       child: SvgPicture.asset(
-                        plantillaDriver.imageMain,
+                        plantillaDriver.imageMain!,
                         fit: BoxFit.contain,
                         height: 140,
                       ),

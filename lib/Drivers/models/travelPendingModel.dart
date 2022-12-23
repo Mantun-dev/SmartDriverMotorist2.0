@@ -13,11 +13,11 @@ class Driver {
     this.agentes,
   });
 
-  int tripId;
-  String fecha;
-  String hora;
-  String empresa;
-  int agentes;
+  int? tripId;
+  String? fecha;
+  String? hora;
+  String? empresa;
+  int? agentes;
 
   factory Driver.fromJson(Map<String, dynamic> json) => Driver(
         tripId: json["tripId"],

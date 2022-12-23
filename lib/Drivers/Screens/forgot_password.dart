@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import '../../constants.dart';
 
 class ForgotPassword extends StatelessWidget {
-  final bool login;
-  final Function press;
-  const ForgotPassword({Key key, this.login = true, this.press})
+  final bool? login;
+  final VoidCallback? press;
+  const ForgotPassword({Key? key, this.login = true, this.press})
       : super(key: key);
 
   @override
@@ -13,7 +13,7 @@ class ForgotPassword extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Text(
-          login
+          login!
               ? "¿Olvidaste tu contraseña? "
               : "¿Quieres reestablecer contraseña? ",
           style: TextStyle(color: kPrimaryColor),
@@ -21,7 +21,7 @@ class ForgotPassword extends StatelessWidget {
         GestureDetector(
           onTap: press,
           child: Text(
-            login ? "Ingresa aquí" : "Ingresa aquí",
+            login! ? "Ingresa aquí" : "Ingresa aquí",
             style: TextStyle(
               color: kPrimaryColor,
               fontWeight: FontWeight.bold,

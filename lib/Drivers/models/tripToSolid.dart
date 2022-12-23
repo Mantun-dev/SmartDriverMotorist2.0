@@ -16,10 +16,10 @@ class TripsToSolid {
         this.trip,
     });
 
-    String type;
-    String title;
-    String message;
-    Trip trip;
+    String? type;
+    String? title;
+    String? message;
+    Trip? trip;
 
     factory TripsToSolid.fromJson(Map<String, dynamic> json) => TripsToSolid(
         type: json["type"],
@@ -32,7 +32,7 @@ class TripsToSolid {
         "type": type,
         "title": title,
         "message": message,
-        "trip": trip.toJson(),
+        "trip": trip!.toJson(),
     };
 }
 
@@ -42,8 +42,8 @@ class Trip {
         this.tripHour,
     });
 
-    int tripId;
-    DateTime tripHour;
+    int? tripId;
+    DateTime? tripHour;
 
     factory Trip.fromJson(Map<String, dynamic> json) => Trip(
         tripId: json["tripId"],
@@ -52,6 +52,6 @@ class Trip {
 
     Map<String, dynamic> toJson() => {
         "tripId": tripId,
-        "tripHour": tripHour.toIso8601String(),
+        "tripHour": tripHour!.toIso8601String(),
     };
 }

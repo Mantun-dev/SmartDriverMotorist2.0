@@ -14,8 +14,8 @@ class AgentInTripsInProgress {
         this.actualTravel,
     });
 
-    List<TripAgent> tripAgent;
-    ActualTravel actualTravel;
+    List<TripAgent>? tripAgent;
+    ActualTravel? actualTravel;
 
     factory AgentInTripsInProgress.fromJson(Map<String, dynamic> json) => AgentInTripsInProgress(
         tripAgent: json["tripAgent"] == null ? null : List<TripAgent>.from(json["tripAgent"].map((x) => TripAgent.fromJson(x))),
@@ -23,8 +23,8 @@ class AgentInTripsInProgress {
     );
 
     Map<String, dynamic> toJson() => {
-        "tripAgent": tripAgent == null ? null : List<dynamic>.from(tripAgent.map((x) => x.toJson())),
-        "actualTravel": actualTravel == null ? null : actualTravel.toJson(),
+        "tripAgent": tripAgent == null ? null : List<dynamic>.from(tripAgent!.map((x) => x.toJson())),
+        "actualTravel": actualTravel == null ? null : actualTravel!.toJson(),
     };
 }
 
@@ -45,23 +45,25 @@ class ActualTravel {
         this.traveled,
         this.notTraveled,
         this.totalAgents,
+        this.neighborhoodReferencePoint
     });
 
-    int tripId;
-    String tripDate;
-    String tripHour;
-    String tripStatus;
-    String driverFullname;
-    String tripVehicle;
+    int? tripId;
+    String? tripDate;
+    String? tripHour;
+    String? tripStatus;
+    String? driverFullname;
+    String? tripVehicle;
     dynamic tripTypeVehicle;
-    String tripType;
+    String? tripType;
     dynamic tripDescription;
-    int companyId;
-    String companyName;
+    int? companyId;
+    String? companyName;
     dynamic townName;
     dynamic traveled;
-    int notTraveled;
-    int totalAgents;
+    int? notTraveled;
+    int? totalAgents;
+    String? neighborhoodReferencePoint;  
 
     factory ActualTravel.fromJson(Map<String, dynamic> json) => ActualTravel(
         tripId: json["tripId"],
@@ -79,6 +81,7 @@ class ActualTravel {
         traveled: json["traveled"],
         notTraveled: json["notTraveled"],
         totalAgents: json["totalAgents"],
+        neighborhoodReferencePoint: json["neighborhoodReferencePoint"]
     );
 
     Map<String, dynamic> toJson() => {
@@ -97,6 +100,7 @@ class ActualTravel {
         "traveled": traveled,
         "notTraveled": notTraveled,
         "totalAgents": totalAgents,
+        "neighborhoodReferencePoint" : neighborhoodReferencePoint
     };
 }
 
@@ -121,29 +125,31 @@ class TripAgent {
         this.timeName,
         this.hourIn,
         this.hourForTrip,
-        this.didntGetOut,
+        this.didntGetOut,        
+        this.neighborhoodReferencePoint
     });
 
-    int tripId;
+    int? tripId;
     dynamic commentDriver;
-    int agentId;
-    String agentEmployeeId;
-    String agentUser;
-    String agentFullname;
-    String agentPhone;
-    String agentEmail;
-    String agentReferencePoint;
-    String neighborhoodName;
-    String districtName;
-    String townName;
-    String departmentName;
-    String companyName;
+    int? agentId;
+    String? agentEmployeeId;
+    String? agentUser;
+    String? agentFullname;
+    String? agentPhone;
+    String? agentEmail;
+    String? agentReferencePoint;
+    String? neighborhoodName;
+    String? districtName;
+    String? townName;
+    String? departmentName;
+    String? companyName;
     dynamic traveled;
-    int notTraveled;
-    String timeName;
-    String hourIn;
-    String hourForTrip;
+    int? notTraveled;
+    String? timeName;
+    String? hourIn;
+    String? hourForTrip;
     dynamic didntGetOut;
+    String? neighborhoodReferencePoint; 
 
     factory TripAgent.fromJson(Map<String, dynamic> json) => TripAgent(
         tripId: json["tripId"],
@@ -166,6 +172,7 @@ class TripAgent {
         hourIn: json["hourIn"],
         hourForTrip: json["hourForTrip"],
         didntGetOut: json["didntGetOut"],
+        neighborhoodReferencePoint: json["neighborhoodReferencePoint"]
     );
 
     Map<String, dynamic> toJson() => {
@@ -189,11 +196,12 @@ class TripAgent {
         "hourIn": hourIn,
         "hourForTrip": hourForTrip,
         "didntGetOut": didntGetOut,
+        "neighborhoodReferencePoint" : neighborhoodReferencePoint
     };
 }
 
 class TripsList4 {
-  final List<AgentInTripsInProgress> trips;
+  final List<AgentInTripsInProgress>? trips;
 
   TripsList4({
     this.trips,

@@ -17,11 +17,11 @@ class TripsPending {
         this.agentes,
     });
 
-    int tripId;
-    String fecha;
-    String hora;
-    String empresa;
-    int agentes;
+    int? tripId;
+    String? fecha;
+    String? hora;
+    String? empresa;
+    int? agentes;
 
     factory TripsPending.fromJson(Map<String, dynamic> json) => TripsPending(
         tripId: json["tripId"],
@@ -41,7 +41,7 @@ class TripsPending {
 }
 
 class TripsList {
-  final List<TripsPending> trips;
+  final List<TripsPending>? trips;
 
   TripsList({
     this.trips,

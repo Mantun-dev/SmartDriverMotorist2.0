@@ -6,8 +6,8 @@ class StreamSocket {
   final socketResponse = StreamController<dynamic>();
   Stream<dynamic> get getResponse => socketResponse.stream;
 
-  final String host;
-  IO.Socket socket;
+  final String? host;
+  IO.Socket? socket;
 
   StreamSocket({this.host}) {
     socket = IO.io(
@@ -21,20 +21,20 @@ class StreamSocket {
   }
 
   void connectAndListen() {
-    socket.on('connect', (_) {
+    socket!.on('connect', (_) {
       // ignore: avoid_print
       print('connected to chat');
       //socket.emit('msg', 'test');
     });
 
     // ignore: avoid_print
-    socket.onConnectTimeout((data) => print('timeout'));
+    socket!.onConnectTimeout((data) => print('timeout'));
     // ignore: avoid_print
-    socket.onConnectError((error) => print(error.toString()));
+    socket!.onConnectError((error) => print(error.toString()));
     // ignore: avoid_print
-    socket.onError((error) => print(error.toString()));
+    socket!.onError((error) => print(error.toString()));
 
-    socket.on(
+    socket!.on(
         'unauthorized',
         (msg) => {
               // ignore: avoid_print
@@ -48,7 +48,7 @@ class StreamSocket {
     //   if (!_socketResponse.isClosed) _socketResponse.sink.add(data);
     // });
     // ignore: avoid_print
-    socket.onDisconnect((_) => print('disconnect to chat'));
+    socket!.onDisconnect((_) => print('disconnect to chat'));
   }
 
   // void sendTextMessage(String message) {
@@ -72,7 +72,7 @@ class StreamSocket {
   void close() {
     socketResponse.close();
     //socket.destroy();
-    socket.close();
+    socket!.close();
     //socket.disconnect().close();
   }
 }

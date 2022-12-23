@@ -2,15 +2,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class PreferenciasUsuario {
 
-  static final PreferenciasUsuario _instancia = new PreferenciasUsuario._internal();
+  static late PreferenciasUsuario _instancia = new PreferenciasUsuario._internal();
 
-  factory PreferenciasUsuario() {
+  late factory PreferenciasUsuario() {
     return _instancia;
   }
 
   PreferenciasUsuario._internal();
 
-  SharedPreferences _prefs;
+  late SharedPreferences _prefs;
 
   initPrefs() async {
     this._prefs = await SharedPreferences.getInstance();
@@ -19,7 +19,7 @@ class PreferenciasUsuario {
 
 
   // GET y SET del nombreUsuario
-  get nombreUsuario {
+  String get nombreUsuario {
     return _prefs.getString('nombreUsuario') ?? '';
   }
 
@@ -29,7 +29,7 @@ class PreferenciasUsuario {
 
 
     // GET y SET del nombreUsuario
-  get nombreUsuarioFull {
+  String get nombreUsuarioFull {
     return _prefs.getString('nombreUsuarioFull') ?? '';
   }
 
@@ -38,7 +38,7 @@ class PreferenciasUsuario {
   }
 
    // GET y SET del nombreUsuario
-  get emailUsuario {
+  String get emailUsuario {
     return _prefs.getString('emailUsuario') ?? '';
   }
 
@@ -48,7 +48,7 @@ class PreferenciasUsuario {
 
 
      // GET y SET del tripId
-  get tripId {
+  String get tripId {
     return _prefs.getString('tripId') ?? '';
   }
 
@@ -57,7 +57,7 @@ class PreferenciasUsuario {
   }
 
        // GET y SET del tripId
-  get tripId2 {
+  String get tripId2 {
     return _prefs.getString('tripId') ?? '';
   }
 
@@ -66,16 +66,16 @@ class PreferenciasUsuario {
   }
 
        // GET y SET del tripHours
-  get tripHours {
+  String get tripHours {
     return _prefs.getString('tripHours') ?? '';
   }
 
-  set tripHours( DateTime value ) {
+  set tripHours( String value ) {
     _prefs.setString('tripHours', value.toString());
   }
 
          // GET y SET del salida
-  get companyId {
+  String get companyId {
     return _prefs.getString('companyId') ?? '';
   }
 
@@ -83,7 +83,7 @@ class PreferenciasUsuario {
     _prefs.setString('companyId', value.toString());
   }
 
-   get destinationId {
+  String  get destinationId {
     return _prefs.getString('destinationId') ?? '';
   }
 
@@ -91,7 +91,7 @@ class PreferenciasUsuario {
     _prefs.setString('destinationId', value.toString());
   }
 
-    get agentEmployeeId {
+  String  get agentEmployeeId {
     return _prefs.getString('agentEmployeeId') ?? '';
   }
 
@@ -101,7 +101,7 @@ class PreferenciasUsuario {
 
 
          // GET y SET del salida
-  get passwordUser {
+  String get passwordUser {
     return _prefs.getString('passwordUser') ?? '';
   }
 
@@ -111,7 +111,7 @@ class PreferenciasUsuario {
 
 
            // GET y SET del salida
-  get driverIdx {
+  String get driverIdx {
     return _prefs.getString('driverIdx') ?? '';
   }
 
@@ -120,7 +120,7 @@ class PreferenciasUsuario {
   }
 
             // GET y SET del salida
-  get nameSalida {
+  String get nameSalida {
     return _prefs.getString('nameSalida') ?? '';
   }
 
@@ -130,7 +130,7 @@ class PreferenciasUsuario {
 
 
              // GET y SET de tokenIdMobile
-  get tokenIdMobile {
+  String get tokenIdMobile {
     return _prefs.getString('tokenIdMobile') ?? '';
   }
 
@@ -139,7 +139,7 @@ class PreferenciasUsuario {
   }
 
                // GET y SET de tokenIdMobile
-  get phone {
+  String get phone {
     return _prefs.getString('phone') ?? '';
   }
 
@@ -149,7 +149,7 @@ class PreferenciasUsuario {
 
 
                  // GET y SET de vehiculo
-  get vehiculo {
+  String get vehiculo {
     return _prefs.getString('vehiculo') ?? '';
   }
 
@@ -157,7 +157,7 @@ class PreferenciasUsuario {
     _prefs.setString('vehiculo', value);
   }
 
-    get vehiculoSolid {
+  String get vehiculoSolid {
     return _prefs.getString('vehiculoSolid') ?? '';
   }
 
@@ -168,7 +168,7 @@ class PreferenciasUsuario {
 
 
 
-  get companyPrueba{
+  String get companyPrueba{
     return _prefs.getString('companyPrueba') ?? '';
   }
 
@@ -176,7 +176,7 @@ class PreferenciasUsuario {
     _prefs.setString('companyPrueba', value.toString());
   }
 
-  get destinationPrueba{
+  String get destinationPrueba{
     return _prefs.getString('destinationPrueba') ?? '';
   }
 
@@ -185,7 +185,7 @@ class PreferenciasUsuario {
   }
 
      // GET y SET version
-  get versionNew {
+  String get versionNew {
     return _prefs.getString('versionNew') ?? '';
   }
 
@@ -194,7 +194,7 @@ class PreferenciasUsuario {
   }
 
       // GET y SET version
-  get versionOld {
+  String get versionOld {
     return _prefs.getString('versionOld') ?? '';
   }
 
@@ -205,7 +205,7 @@ class PreferenciasUsuario {
 
 
            // GET y SET del salida
-  get companyIdAgent {
+  String get companyIdAgent {
     return _prefs.getString('companyIdAgent') ?? '';
   }
 
@@ -213,7 +213,7 @@ class PreferenciasUsuario {
     _prefs.setString('companyIdAgent', value.toString());
   }
 
-    get destinationIdAgent {
+  String get destinationIdAgent {
     return _prefs.getString('destinationIdAgent') ?? '';
   }
 

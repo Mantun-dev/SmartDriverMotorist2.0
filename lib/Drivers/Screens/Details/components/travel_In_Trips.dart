@@ -15,15 +15,15 @@ import 'detailsDriver_assignHour.dart';
 void main() => runApp(Trips());
 
 class Trips extends StatefulWidget {
-  final TripsPending2 item;
+  final TripsPending2? item;
 
-  const Trips({Key key, this.item}) : super(key: key);
+  const Trips({Key? key, this.item}) : super(key: key);
   @override
   _TripsState createState() => _TripsState();
 }
 
 class _TripsState extends State<Trips> {
-  Future<List<TripsPending2>> item;
+  Future<List<TripsPending2>>? item;
   TextEditingController tripId = new TextEditingController();
   final prefs = new PreferenciasUsuario();
 
@@ -85,7 +85,7 @@ class _TripsState extends State<Trips> {
                   future: item,
                   builder: (BuildContext context, abc) {
                     if (abc.connectionState == ConnectionState.done) {
-                      if (abc.data.length < 1) {
+                      if (abc.data!.length < 1) {
                         return Card(
                           color: backgroundColor,
                           shape: RoundedRectangleBorder(
@@ -115,7 +115,7 @@ class _TripsState extends State<Trips> {
                             scrollDirection: Axis.vertical,
                             shrinkWrap: true,
                             physics: ClampingScrollPhysics(),
-                            itemCount: abc.data.length,
+                            itemCount: abc.data!.length,
                             itemBuilder: (context, index) {
                               return Container(
                                 decoration: BoxDecoration(boxShadow: [
@@ -166,7 +166,7 @@ class _TripsState extends State<Trips> {
                                                           fontWeight:
                                                               FontWeight.bold)),
                                                   Text(
-                                                    '${abc.data[index].tripId}',
+                                                    '${abc.data![index].tripId}',
                                                     textAlign: TextAlign.center,
                                                     style: TextStyle(
                                                         color: Colors.white,
@@ -196,7 +196,7 @@ class _TripsState extends State<Trips> {
                                                           fontWeight:
                                                               FontWeight.bold)),
                                                   Text(
-                                                    '${abc.data[index].fecha}',
+                                                    '${abc.data![index].fecha}',
                                                     textAlign: TextAlign.center,
                                                     style: TextStyle(
                                                         color: Colors.white,
@@ -236,7 +236,7 @@ class _TripsState extends State<Trips> {
                                                           fontWeight:
                                                               FontWeight.bold)),
                                                   Text(
-                                                      '${abc.data[index].empresa}',
+                                                      '${abc.data![index].empresa}',
                                                       textAlign:
                                                           TextAlign.center,
                                                       style: TextStyle(
@@ -263,7 +263,7 @@ class _TripsState extends State<Trips> {
                                                           fontWeight:
                                                               FontWeight.bold)),
                                                   Text(
-                                                      '${abc.data[index].hora}',
+                                                      '${abc.data![index].hora}',
                                                       textAlign:
                                                           TextAlign.center,
                                                       style: TextStyle(
@@ -304,7 +304,7 @@ class _TripsState extends State<Trips> {
                                                           fontWeight:
                                                               FontWeight.bold)),
                                                   Text(
-                                                    '${abc.data[index].agentes}',
+                                                    '${abc.data![index].agentes}',
                                                     textAlign: TextAlign.center,
                                                     style: TextStyle(
                                                         color: Colors.white,
@@ -330,7 +330,7 @@ class _TripsState extends State<Trips> {
                                                           fontWeight:
                                                               FontWeight.bold)),
                                                   Text(
-                                                    '${abc.data[index].conductor}',
+                                                    '${abc.data![index].conductor}',
                                                     textAlign: TextAlign.center,
                                                     style: TextStyle(
                                                         color: Colors.white,
@@ -382,7 +382,7 @@ class _TripsState extends State<Trips> {
                                                     fontSize: 20)),
                                             onPressed: () {
                                               fetchAgentsInTravel2(abc
-                                                  .data[index].tripId
+                                                  .data![index].tripId
                                                   .toString());
                                             },
                                           ),

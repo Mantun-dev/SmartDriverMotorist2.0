@@ -10,9 +10,9 @@ import 'package:flutter_auth/constants.dart';
 //import 'package:flutter/scheduler.dart';
 
 class DetailsDriverHour extends StatefulWidget {
-  final PlantillaDriver plantillaDriver;
+  final PlantillaDriver? plantillaDriver;
 
-  const DetailsDriverHour({Key key, this.plantillaDriver}) : super(key: key);
+  const DetailsDriverHour({Key? key, this.plantillaDriver}) : super(key: key);
 
   @override
   _DetailsDriverHourState createState() => _DetailsDriverHourState();

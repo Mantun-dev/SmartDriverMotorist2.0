@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/details_HoursOut.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/details_TripProgress.dart';
+import 'package:flutter_auth/Drivers/Screens/Details/components/details_history.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 import 'package:flutter_auth/Drivers/Screens/Welcome/welcome_screen.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/detailsDriver_Screen.dart';
@@ -11,22 +12,22 @@ import 'package:flutter_auth/Drivers/models/network.dart';
 import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 import 'package:flutter_auth/Drivers/models/profile.dart';
 import 'package:flutter_auth/constants.dart';
-import 'package:sweetalert/sweetalert.dart';
+import 'package:quickalert/quickalert.dart';
 
 import '../Screens/Details/components/detailsDriver_assignHour.dart';
 
 class DriverMenuLateral extends StatefulWidget {
-  final Profile item;
-  final DriverData itemx;
-  const DriverMenuLateral({Key key, this.item, this.itemx}) : super(key: key);
+  final Profile? item;
+  final DriverData? itemx;
+  const DriverMenuLateral({Key? key, this.item, this.itemx}) : super(key: key);
 
   @override
   _DriverMenuLateralState createState() => _DriverMenuLateralState();
 }
 
 class _DriverMenuLateralState extends State<DriverMenuLateral> {
-  Future<Profile> item;
-  Future<DriverData> itemx;
+  Future<Profile>? item;
+  Future<DriverData>? itemx;
   final prefs = new PreferenciasUsuario();
   @override
   void initState() {
@@ -122,7 +123,7 @@ class _DriverMenuLateralState extends State<DriverMenuLateral> {
               Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                      builder: (_) => DetailsDriverHour(
+                      builder: (_) => DetailsDriverHistory(
                           plantillaDriver: plantillaDriver[3]))).then((_) =>
                   DetailsDriverHoursOut(plantillaDriver: plantillaDriver[2]));
             },
@@ -141,9 +142,9 @@ class _DriverMenuLateralState extends State<DriverMenuLateral> {
               Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: (_) => DetailsDriverScreen(
+                          builder: (_) => DetailsDriverHoursOut(
                               plantillaDriver: plantillaDriver[2])))
-                  .then((_) => HomeDriverScreen());
+                  .then((_) => DetailsDriverScreen());
             },
           ),
           Divider(
@@ -186,7 +187,7 @@ class _DriverMenuLateralState extends State<DriverMenuLateral> {
                                   MaterialPageRoute(
                                       builder: (_) => DetailsDriverScreen(
                                           plantillaDriver: plantillaDriver[5])))
-                              .then((_) => HomeDriverScreen());
+                              .then((_) => DetailsDriverScreen());
                         },
                       ),
                       Divider(
@@ -209,31 +210,39 @@ class _DriverMenuLateralState extends State<DriverMenuLateral> {
                     fontWeight: FontWeight.bold)),
             leading: Icon(Icons.logout, color: Colors.white),
             onTap: () {
-              SweetAlert.show(context,
-                  subtitle: "Está seguro que desea salir?",
-                  style: SweetAlertStyle.confirm,
-                  confirmButtonText: "Confirmar",
-                  cancelButtonText: "Cancelar",
-                  showCancelButton: true, onPress: (bool isConfirm) {
-                if (isConfirm) {
-                  fetchDeleteSession();
-                  prefs.remove();
-                  SweetAlert.show(context,
-                      subtitle: "¡Gracias por usar Smart Driver!",
-                      style: SweetAlertStyle.success);
-                  new Future.delayed(new Duration(seconds: 2), () {
+               QuickAlert.show(
+                  context: context,
+                  type: QuickAlertType.confirm,
+                  text: "Está seguro que desea salir?",
+                  confirmBtnText: 'Confirmar',
+                  cancelBtnText: 'Cancelar',
+                  showCancelBtn: true,  
+                  confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
+                  cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ),
+                  onConfirmBtnTap: () {
+                    fetchDeleteSession();
+                    prefs.remove();
+                    QuickAlert.show(
+                    context: context,
+                    type: QuickAlertType.success,
+                    text: "¡Gracias por usar Smart Driver!",
+                    );
+                    new Future.delayed(new Duration(seconds: 2), () {
                     Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
                             builder: (BuildContext context) => WelcomeScreen()),
                         (Route<dynamic> route) => false);
                   });
-                } else {
-                  SweetAlert.show(context,
-                      subtitle: "¡Cancelado!", style: SweetAlertStyle.success);
-                }
-                // return false to keep dialog
-                return false;
-              });
+                  },
+                  onCancelBtnTap: () {
+                    Navigator.pop(context);
+                    QuickAlert.show(
+                    context: context,
+                    type: QuickAlertType.success,
+                    text: "¡Cancelado!",                    
+                    );
+                  },
+                );
             },
           ),
           Divider(),
@@ -280,7 +289,7 @@ class _DriverMenuLateralState extends State<DriverMenuLateral> {
         barrierLabel: '',
         context: context,
         pageBuilder: (context, animation1, animation2) {
-          return null;
+          return Text('');
         });
   }
 }

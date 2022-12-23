@@ -16,10 +16,10 @@ class FindAgentSolid {
         this.agent,
     });
 
-    String type;
-    String title;
-    String message;
-    Agent agent;
+    String? type;
+    String? title;
+    String? message;
+    Agent? agent;
 
     factory FindAgentSolid.fromJson(Map<String, dynamic> json) => FindAgentSolid(
         type: json["type"],
@@ -32,7 +32,7 @@ class FindAgentSolid {
         "type": type,
         "title": title,
         "message": message,
-        "agent": agent.toJson(),
+        "agent": agent!.toJson(),
     };
 }
 
@@ -54,20 +54,20 @@ class Agent {
         this.companyId,
     });
 
-    int agentId;
-    String agentEmployeeId;
-    String agentUser;
-    String agentFullname;
-    String agentPhone;
-    String agentEmail;
-    String agentReferencePoint;
-    String neighborhoodName;
-    int neighborhoodSector;
-    String districtName;
-    String townName;
-    String departmentName;
-    String hourAgent;
-    int companyId;
+    int? agentId;
+    String? agentEmployeeId;
+    String? agentUser;
+    String? agentFullname;
+    String? agentPhone;
+    String? agentEmail;
+    String? agentReferencePoint;
+    String? neighborhoodName;
+    int? neighborhoodSector;
+    String? districtName;
+    String? townName;
+    String? departmentName;
+    String? hourAgent;
+    int? companyId;
 
     factory Agent.fromJson(Map<String, dynamic> json) => Agent(
         agentId: json["agentId"],
