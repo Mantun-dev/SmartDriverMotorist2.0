@@ -167,10 +167,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
       title: si.title,
       text: si.message,
       );
-
-      Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (_) => MyConfirmAgent()))
-          .then((_) => MyConfirmAgent());
     } else if (si.ok != true) {
       QuickAlert.show(
       context: context,
@@ -305,6 +301,99 @@ class _DataTableExample extends State<MyConfirmAgent> {
   }
 
   Widget _agentToConfirm() {
+
+    bool traveledB(abc,index){
+      return (abc.data!.trips![0].tripAgent![index].traveled ==0)
+        ? false
+      : (abc.data!.trips![0].tripAgent![index].traveled ==1)
+        ? true
+      : (abc.data!.trips![0].tripAgent![index].traveled == null)
+        ? abc.data!.trips![0].tripAgent![index].traveled 
+      ??false
+      : (abc.data!.trips![0].tripAgent![index].traveled == true)
+        ? abc.data!.trips![0].tripAgent![index].traveled 
+      ??false : false;
+    }
+
+    alertaAbordo(abc, index, isChecked)async{
+      await QuickAlert.show(
+        context: context,
+        type: QuickAlertType.confirm,          
+        text: isChecked==false ?"¿Está seguro que desea marcar como no \nabordado al agente?":"¿Está seguro que desea marcar como \nabordado al agente?",
+        confirmBtnText: "Confirmar",
+        cancelBtnText: "Cancelar",
+        title: '¿Esta seguro?',
+        showCancelBtn: true,  
+        confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
+        cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
+        onConfirmBtnTap: () {
+
+          if(traveled==false && abc.data!.trips![0].tripAgent![index].didntGetOut==1){
+            abc.data!.trips![0].tripAgent![index].didntGetOut=0;
+          }
+
+          traveled = isChecked!;
+          abc.data!.trips![0].tripAgent![index].traveled = traveled;
+          if (isChecked == true) {
+            print('subio');
+            fetchCheckAgentTrip(abc.data!.trips![0].tripAgent![index].agentId.toString());
+            print('////////');
+          } else if (isChecked == false) {
+            print('bajo');
+            fetchCheckAgentTrip(abc.data!.trips![0].tripAgent![index].agentId.toString());
+            print('////////');
+          }
+          Navigator.pop(context);
+        },
+        onCancelBtnTap: () {
+          Navigator.pop(context);
+        },
+      ); 
+      
+      setState(() {});
+    }
+
+    // ignore: non_constant_identifier_names
+    alertaPaso_noSalio(abc, index)async{
+      await QuickAlert.show(
+        context: context,
+        type: QuickAlertType.confirm,          
+        text: "¿Está seguro que desea marcar como no salio el agente?",
+        confirmBtnText: "Confirmar",
+        cancelBtnText: "Cancelar",
+        title: '¿Esta seguro?',
+        showCancelBtn: true,  
+        confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
+        cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
+        onConfirmBtnTap: () {
+
+          fetchRegisterAgentDidntGetOut(
+            abc
+            .data
+            !.trips![0]
+            .tripAgent![index]
+            .agentId
+            .toString(),
+            prefs.tripId
+          );
+
+          abc.data!.trips![0].tripAgent![index].didntGetOut = 1;
+
+          if(abc.data!.trips![0].tripAgent![index].traveled = traveled){
+            abc.data!.trips![0].tripAgent![index].traveled = false;
+            traveled = abc.data!.trips![0].tripAgent![index].traveled;
+          }
+        
+          Navigator.pop(context);
+        },
+        onCancelBtnTap: () {
+          Navigator.pop(context);
+        },
+      ); 
+      
+      setState(() {});
+    }
+
     return FutureBuilder<TripsList4>(
       future: item,
       builder: (BuildContext context, abc) {
@@ -345,24 +434,12 @@ class _DataTableExample extends State<MyConfirmAgent> {
                   check.add(new TextEditingController());
                   return Container(
                     decoration: BoxDecoration(boxShadow: [
-                      if (abc.data!.trips![0].tripAgent![index].traveled == 1 
-                      || abc.data!.trips![0].tripAgent![index].commentDriver != null)...{
-                        BoxShadow(
+                      BoxShadow(
                           blurStyle: BlurStyle.normal,
-                          color: Colors.green.withOpacity(0.5),
+                          color:  traveledB(abc,index)==true ? Colors.green.withOpacity(0.5) : Colors.red.withOpacity(0.5),
                           blurRadius: 15,
                           spreadRadius: -18,
                           offset: Offset(-15, -6)),
-                      }else...{
-                        BoxShadow(
-                          blurStyle: BlurStyle.normal,
-                          color: Colors.red.withOpacity(0.5),
-                          blurRadius: 15,
-                          spreadRadius: -18,
-                          offset: Offset(-15, -6)),
-                      },
-                      
-                      
                       BoxShadow(
                           blurStyle: BlurStyle.normal,
                           color: Colors.black.withOpacity(0.6),
@@ -421,30 +498,9 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                               //   color: backgroundColor,
                                               // ),
                                               size: 45,
-                                              isChecked: (abc.data!.trips![0].tripAgent![index].traveled ==0)
-                                                  ? false
-                                                  : (abc.data!.trips![0].tripAgent![index].traveled ==1)
-                                                  ? true
-                                                  : (abc.data!.trips![0].tripAgent![index].traveled == null)
-                                                  ? abc.data!.trips![0].tripAgent![index].traveled 
-                                                  ??false
-                                                  : (abc.data!.trips![0].tripAgent![index].traveled == true)
-                                                  ? abc.data!.trips![0].tripAgent![index].traveled 
-                                                  ??false : false,
+                                              isChecked: traveledB(abc,index),
                                               onTap: (bool? isChecked) {
-                                                setState(() {
-                                                  traveled = isChecked!;
-                                                });
-                                                abc.data!.trips![0].tripAgent![index].traveled = traveled;
-                                                if (isChecked == true) {
-                                                  print('subio');
-                                                  fetchCheckAgentTrip(abc.data!.trips![0].tripAgent![index].agentId.toString());
-                                                  print('////////');
-                                                } else if (isChecked == false) {
-                                                  print('bajo');
-                                                  fetchCheckAgentTrip(abc.data!.trips![0].tripAgent![index].agentId.toString());
-                                                  print('////////');
-                                                }
+                                                alertaAbordo(abc, index, isChecked);
                                               }),
                                           SizedBox(width: 20.0),
                                           Text('Abordó ',
@@ -666,14 +722,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                         20)),
                                                   ),
                                                   onPressed: () {
-                                                    fetchRegisterAgentDidntGetOut(
-                                                        abc
-                                                            .data
-                                                            !.trips![0]
-                                                            .tripAgent![index]
-                                                            .agentId
-                                                            .toString(),
-                                                        prefs.tripId);
+                                                    alertaPaso_noSalio(abc, index);
                                                   },
                                                   child:
                                                       Text('Se pasó y no salió',
@@ -1060,7 +1109,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                   type: QuickAlertType.success,
                   text: "¡No ha sido cancelado el viaje!",
                   );
-                },
+                  },
                 );
               },
             ),

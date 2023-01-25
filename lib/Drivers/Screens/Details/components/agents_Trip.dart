@@ -1,7 +1,7 @@
 //import 'package:back_button_interceptor/back_button_interceptor.dart';
-import 'package:flutter/material.dart';
+//import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Chat/chatViews.dart';
-
+import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/travel_In_Trips.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
@@ -39,6 +39,7 @@ class _DataTableExample extends State<MyAgent> {
   TextEditingController agentHours = new TextEditingController();
   final prefs = new PreferenciasUsuario();
   String ip = "https://driver.smtdriver.com";
+  dynamic flagalert;
 
   Future<Driver> fetchHours(
       String agentId, String agentTripHour, String tripId) async {
@@ -48,14 +49,14 @@ class _DataTableExample extends State<MyAgent> {
       'tripId': tripId
     };
 
-    print(data);
+    //print(data);
     http.Response response = await http
         .post(Uri.parse('$ip/apis/registerAgentTripTime'), body: data);
 
     final resp = Driver.fromJson(json.decode(response.body));
 
     if (response.statusCode == 200 && resp.ok == true && agentTripHour != "") {
-      print(response.body);
+      //print(response.body);
       QuickAlert.show(
       context: context,
       type: QuickAlertType.success,
@@ -76,7 +77,7 @@ class _DataTableExample extends State<MyAgent> {
 
   Future<Driver> fetchNoConfirm(String agentId, String tripId) async {
     Map data = {'agentId': agentId, 'tripId': tripId};
-    print(data);
+    //print(data);
     http.Response response = await http
         .post(Uri.parse('$ip/apis/markAgentAsNotConfirmed'), body: data);
     if (mounted) {
@@ -84,7 +85,7 @@ class _DataTableExample extends State<MyAgent> {
         final resp = Driver.fromJson(json.decode(response.body));
 
         if (response.statusCode == 200 && resp.ok == true) {
-          print(response.body);
+          //print(response.body);
               QuickAlert.show(
           context: context,
           type: QuickAlertType.success,
@@ -108,9 +109,9 @@ class _DataTableExample extends State<MyAgent> {
     http.Response response = await http
         .get(Uri.parse('$ip/apis/passTripToProgress/${prefs.tripId}'));
     final resp = Driver.fromJson(json.decode(response.body));
-    print(response.body);
+    //print(response.body);
     if (response.statusCode == 200 && resp.ok == true) {
-      print(response.body);
+      //print(response.body);
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
               builder: (BuildContext context) => HomeDriverScreen()),
@@ -149,7 +150,7 @@ class _DataTableExample extends State<MyAgent> {
     final resp = Driver.fromJson(json.decode(response.body));
 
     if (response.statusCode == 200 && resp.ok == true) {
-      print(response.body);
+      //print(response.body);
 
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
@@ -179,7 +180,7 @@ class _DataTableExample extends State<MyAgent> {
     final resp = Driver.fromJson(json.decode(response.body));
 
     if (response.statusCode == 200) {
-      print(response.body);
+      //print(response.body);
 
       Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (_) => MyAgent()))
@@ -201,6 +202,7 @@ class _DataTableExample extends State<MyAgent> {
     super.initState();
     item = fetchAgentsInTravel2();
   }
+  
 
   static DateTime _eventdDate = DateTime.now();
   static var now =
@@ -244,52 +246,55 @@ class _DataTableExample extends State<MyAgent> {
               SizedBox(width: kDefaultPadding / 2)
             ],
           ),
-          body: ListView(children: <Widget>[
-            SizedBox(height: 25.0),
-            Center(
-                child: Text('Asignación de Horas',
-                    style: TextStyle(
-                        color: firstColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 25.0))),
-            SizedBox(height: 20.0),
-            Padding(
-              padding: const EdgeInsets.only(left: 15.0),
-              child: Text('Agentes confirmados',
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                      color: GradiantV_2,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18.0)),
-            ),
-            SizedBox(height: 10.0),
-            _agentToConfirm(),
-            SizedBox(height: 20.0),
-            Padding(
+          body: RefreshIndicator(
+            onRefresh: _refresh,
+            child: ListView(children: <Widget>[
+              SizedBox(height: 25.0),
+              Center(
+                  child: Text('Asignación de Horas',
+                      style: TextStyle(
+                          color: firstColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 25.0))),
+              SizedBox(height: 20.0),
+              Padding(
                 padding: const EdgeInsets.only(left: 15.0),
-                child: Text('Agentes no confirmados',
+                child: Text('Agentes confirmados',
                     textAlign: TextAlign.left,
                     style: TextStyle(
                         color: GradiantV_2,
                         fontWeight: FontWeight.bold,
-                        fontSize: 18.0))),
-            _agentoNoConfirm(),
-            SizedBox(height: 20.0),
-            Padding(
-              padding: const EdgeInsets.only(left: 15.0),
-              child: Text('Agentes que han cancelado',
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                      color: GradiantV_2,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18.0)),
-            ),
-            SizedBox(height: 10.0),
-            _agentToCancel(),
-            SizedBox(height: 20.0),
-            _buttonsAgents(),
-            SizedBox(height: 30.0),
-          ])),
+                        fontSize: 18.0)),
+              ),
+              SizedBox(height: 10.0),
+              _agentToConfirm(),
+              SizedBox(height: 20.0),
+              Padding(
+                  padding: const EdgeInsets.only(left: 15.0),
+                  child: Text('Agentes no confirmados',
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                          color: GradiantV_2,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18.0))),
+              _agentoNoConfirm(),
+              SizedBox(height: 20.0),
+              Padding(
+                padding: const EdgeInsets.only(left: 15.0),
+                child: Text('Agentes que han cancelado',
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                        color: GradiantV_2,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18.0)),
+              ),
+              SizedBox(height: 10.0),
+              _agentToCancel(),
+              SizedBox(height: 20.0),
+              _buttonsAgents(),
+              SizedBox(height: 30.0),
+            ]),
+          )),
     );
   }
 
@@ -647,67 +652,13 @@ class _DataTableExample extends State<MyAgent> {
                                                       horizontal: 40.0),
                                                   child: Column(
                                                     children: [
-                                                      DateTimeField(
-                                                        decoration:
-                                                            InputDecoration(
-                                                          border:
-                                                              InputBorder.none,
-                                                        ),
-                                                        keyboardType:
-                                                            TextInputType
-                                                                .datetime,
+                                                      DateTimeField(decoration:InputDecoration(border: InputBorder.none,),
+                                                        keyboardType: TextInputType.datetime,
                                                         format: format,
-                                                        onShowPicker: (context,
-                                                            currentValue) async {
-                                                          final time =
-                                                              await showTimePicker(
-                                                            context: context,
-                                                            initialTime: TimeOfDay
-                                                                .fromDateTime(
-                                                                    currentValue ??
-                                                                        DateTime
-                                                                            .now()),
-                                                          );
-                                                          if (time != null &&
-                                                              agentHours.text !=
-                                                                  null) {
-                                                            String _eventTime =
-                                                                now
-                                                                    .toString()
-                                                                    .substring(
-                                                                        10, 15);
-                                                            _eventTime = time
-                                                                .toString()
-                                                                .substring(
-                                                                    10, 15);
-                                                            print(_eventTime);
-                                                            fetchHours(
-                                                                abc
-                                                                    .data
-                                                                    !.trips![0]
-                                                                    .agentes![
-                                                                        index]
-                                                                    .agentId
-                                                                    .toString(),
-                                                                _eventTime,
-                                                                abc
-                                                                    .data
-                                                                    !.trips![0]
-                                                                    .agentes![
-                                                                        index]
-                                                                    .tripId
-                                                                    .toString());
-                                                            Navigator.pushReplacement(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                    builder: (_) =>
-                                                                        MyAgent())).then(
-                                                                (_) =>
-                                                                    MyAgent());
-                                                          }
-                                                          print(agentHours);
-                                                          return DateTimeField
-                                                              .convert(time);
+                                                        onShowPicker: (context,currentValue) async {
+                                                          var time =await showTimePicker(context: context,initialTime:TimeOfDay.now(),);                                                            
+                                                          validateHour(abc.data!.trips![0].agentes![index].agentId.toString(), abc.data!.trips![0].agentes![index].tripId.toString(), time);
+                                                          return DateTimeField.convert(flagalert);
                                                         },
                                                       ),
                                                     ],
@@ -1033,52 +984,11 @@ class _DataTableExample extends State<MyAgent> {
                                                   keyboardType:
                                                       TextInputType.datetime,
                                                   format: format,
-                                                  onShowPicker: (context,
-                                                      currentValue) async {
-                                                    final time =
-                                                        await showTimePicker(
-                                                      context: context,
-                                                      initialTime:
-                                                          TimeOfDay.now(),
-                                                    );
-                                                    if (time != null) {
-                                                      setState(() {
-                                                        String _eventTime = now
-                                                            .toString()
-                                                            .substring(10, 15);
-                                                        _eventTime = time
-                                                            .toString()
-                                                            .substring(10, 15);
-                                                        print(_eventTime);
-                                                        fetchHours(
-                                                            abc
-                                                                .data
-                                                                !.trips![1]
-                                                                .noConfirmados![
-                                                                    index]
-                                                                .agentId
-                                                                .toString(),
-                                                            _eventTime,
-                                                            abc
-                                                                .data
-                                                                !.trips![1]
-                                                                .noConfirmados![
-                                                                    index]
-                                                                .tripId
-                                                                .toString());
-                                                        Navigator.pushAndRemoveUntil(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                                builder:
-                                                                    (context) =>
-                                                                        MyAgent()),
-                                                            (Route<dynamic>
-                                                                    route) =>
-                                                                false);
-                                                      });
-                                                    }
-                                                    return DateTimeField
-                                                        .convert(time);
+                                                  onShowPicker: (context,currentValue) async {
+                                                    var time =await showTimePicker(context: context,initialTime:TimeOfDay.now(),);  
+                                                      
+                                                    validateHour(abc.data!.trips![1].noConfirmados![index].agentId.toString(),abc.data!.trips![1].noConfirmados![index].tripId.toString(), time );                                                    
+                                                    return DateTimeField.convert(flagalert);
                                                   },
                                                 ),
                                               ],
@@ -1133,27 +1043,8 @@ class _DataTableExample extends State<MyAgent> {
                                                             new Duration(
                                                                 seconds: 2),
                                                             () {
-                                                          fetchNoConfirm(
-                                                              abc
-                                                                  .data
-                                                                  !.trips![1]
-                                                                  .noConfirmados![
-                                                                      index]
-                                                                  .agentId
-                                                                  .toString(),
-                                                              abc
-                                                                  .data
-                                                                  !.trips![1]
-                                                                  .noConfirmados![
-                                                                      index]
-                                                                  .tripId
-                                                                  .toString());
-                                                          Navigator.pushReplacement(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                  builder: (_) =>
-                                                                      MyAgent())).then(
-                                                              (_) => MyAgent());
+                                                          fetchNoConfirm(abc.data!.trips![1].noConfirmados![index].agentId.toString(),abc.data!.trips![1].noConfirmados![index].tripId.toString());
+                                                          Navigator.pushReplacement(context,MaterialPageRoute(builder: (_) =>MyAgent())).then( (_) => MyAgent());
                                                         });
                                                       },
                                                       onCancelBtnTap: () {
@@ -1319,6 +1210,68 @@ class _DataTableExample extends State<MyAgent> {
         }
       },
     );
+  }
+
+
+  validateHour(String agentId, String tripId, dynamic time)async{
+    //var time =await showTimePicker(context: context,initialTime:TimeOfDay.now(),);    
+    if (time!= null) {      
+      String _eventTime = now.toString().substring(10, 15);
+      QuickAlert.show(context: context,
+          type: QuickAlertType.confirm,
+          title: "Agregando hora",          
+          text: "¿Es correcta la hora\n$_eventTime del agente?",
+          confirmBtnText: "Confirmar",
+          cancelBtnText: "Cancelar",
+          showCancelBtn: true,  
+          confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
+          cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
+          onConfirmBtnTap: () async{            
+              setState(() {                              
+                _eventTime = time.toString().substring(10, 15);
+                //print(_eventTime);
+                fetchHours(agentId,_eventTime,tripId);
+                _refresh();
+                //Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => MyAgent())).then((_) => MyAgent());
+                //Navigator.of(context).popUntil((route) =>  route.);
+                //Navigator.push(context,MaterialPageRoute(builder: (_) => MyAgent()));              
+              }); 
+              await Future.delayed(Duration(seconds: 2), () {
+                cancelHour();
+              },);                                                                                                                                                                               
+          },
+          onCancelBtnTap: () {  
+            cancelHour(); 
+            setState(() {            
+              flagalert = time;                                            
+            });
+          },);                                                         
+    }                                                                                                  
+  }
+
+  
+  Future<void> _refresh() async {
+    // Mostrar un indicador de carga mientras se actualiza el contenido
+    //Scaffold.of(context).showSnackBar(SnackBar(content: Text("Actualizando...")));
+
+    // Simulando un proceso de actualización de datos
+    await Future.delayed(Duration(seconds: 1));
+
+    // Actualizar el contenido de la página
+    setState(() {
+      // Código para actualizar el contenido
+      item = fetchAgentsInTravel2();
+    });
+
+    // Ocultar el indicador de carga
+    //Scaffold.of(context).hideCurrentSnackBar();
+}
+
+  void cancelHour(){
+    if (mounted) {   
+      Navigator.maybePop(context,MaterialPageRoute(builder: (context) {return MyAgent();},),);
+      _refresh();                                
+    }  
   }
 
 //AgentToCancel
@@ -1633,7 +1586,7 @@ class _DataTableExample extends State<MyAgent> {
             ),
             child: Text('Marcar agentes como "Cancelados"'),
             onPressed: () {
-               QuickAlert.show(
+              QuickAlert.show(
               context: context,
               type: QuickAlertType.success,
               text: "¿Está seguro que desea marcarlos como cancelados?",
@@ -1663,49 +1616,49 @@ class _DataTableExample extends State<MyAgent> {
               );
             },
           ),
-          SizedBox(width: 5),
-          ElevatedButton(
-            style: TextButton.styleFrom(
-              textStyle: TextStyle(
-                color: Colors.white, // foreground
-              ),
-              // foreground
-              backgroundColor: Colors.red,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-            ),
-            child: Text("Marcar como cancelado"),
-            onPressed: () {
-               QuickAlert.show(
-              context: context,
-              type: QuickAlertType.success,
-              text: "¿Está seguro que desea cancelar el viaje?",
-              confirmBtnText: "Confirmar",
-              cancelBtnText: "Cancelar",
-              showCancelBtn: true,  
-              confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
-              cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
-              onConfirmBtnTap: () {
-                QuickAlert.show(
-                context: context,
-                type: QuickAlertType.success,
-                text: "El viaje ha sido cancelado",                
-                );
-                new Future.delayed(new Duration(seconds: 2), () {
-                    fetchTripCancel();
-                  });
-              },
-              onCancelBtnTap: () {
-                Navigator.pop(context);
-                QuickAlert.show(
-                context: context,
-                type: QuickAlertType.success,
-                text: "¡No ha sido cancelado el viaje!",                
-                );
-              },
-              );
-            },
-          ),
+          // SizedBox(width: 5),
+          // ElevatedButton(
+          //   style: TextButton.styleFrom(
+          //     textStyle: TextStyle(
+          //       color: Colors.white, // foreground
+          //     ),
+          //     // foreground
+          //     backgroundColor: Colors.red,
+          //     shape: RoundedRectangleBorder(
+          //         borderRadius: BorderRadius.circular(10)),
+          //   ),
+          //   child: Text("Marcar como cancelado"),
+          //   onPressed: () {
+          //      QuickAlert.show(
+          //     context: context,
+          //     type: QuickAlertType.success,
+          //     text: "¿Está seguro que desea cancelar el viaje?",
+          //     confirmBtnText: "Confirmar",
+          //     cancelBtnText: "Cancelar",
+          //     showCancelBtn: true,  
+          //     confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
+          //     cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
+          //     onConfirmBtnTap: () {
+          //       QuickAlert.show(
+          //       context: context,
+          //       type: QuickAlertType.success,
+          //       text: "El viaje ha sido cancelado",                
+          //       );
+          //       new Future.delayed(new Duration(seconds: 2), () {
+          //           fetchTripCancel();
+          //         });
+          //     },
+          //     onCancelBtnTap: () {
+          //       Navigator.pop(context);
+          //       QuickAlert.show(
+          //       context: context,
+          //       type: QuickAlertType.success,
+          //       text: "¡No ha sido cancelado el viaje!",                
+          //       );
+          //     },
+          //     );
+          //   },
+          // ),       
         ],
       ),
     );

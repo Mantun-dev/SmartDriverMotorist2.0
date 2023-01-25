@@ -47,8 +47,11 @@ class Body extends StatelessWidget {
             SizedBox(
               height: 60,
             ),
-            Row(children: <Widget>[
-              SizedBox(width: 100),
+            Row(
+              mainAxisAlignment : MainAxisAlignment.center,
+              //crossAxisAlignment : CrossAxisAlignment.center,
+              children: <Widget>[
+              //SizedBox(width: 100),
               Text(
                 'Made with',
                 style: TextStyle(color: Colors.white),
