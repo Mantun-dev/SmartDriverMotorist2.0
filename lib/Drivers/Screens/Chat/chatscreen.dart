@@ -343,11 +343,9 @@ class _ChatScreenState extends State<ChatScreen> {
                                 : WrapAlignment.start,
                             children: [
                               Center(
-                                child: fecha('${message.mes}/${message.dia}/${message.ao}')==true ?Card(
-                                  color: message.user!.toUpperCase() ==
-                                          widget.nombre!.toUpperCase()
-                                      ? Color.fromARGB(255, 101, 87, 170) //Color.fromARGB(255, 111, 96, 187)
-                                      : chatBubbleColor,
+                                child: fecha('${message.mes}/${message.dia}/${message.ao}')==true  
+                                ?Card(
+                                  color: Color.fromARGB(255, 101, 87, 170),
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Text(hoy_ayer('${message.mes}/${message.dia}/${message.ao}'), style: TextStyle(color: Colors.white, fontSize: 17)),
