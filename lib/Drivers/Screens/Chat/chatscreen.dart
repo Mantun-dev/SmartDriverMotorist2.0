@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:back_button_interceptor/back_button_interceptor.dart';
-import 'package:date_format/date_format.dart';
 import 'package:flutter_auth/Drivers/Screens/Chat/chatViews.dart';
 
 import 'package:flutter_auth/Drivers/Screens/Chat/chatapis.dart';
@@ -344,11 +343,14 @@ class _ChatScreenState extends State<ChatScreen> {
                             children: [
                               Center(
                                 child: fecha('${message.mes}/${message.dia}/${message.ao}')==true  
-                                ?Card(
-                                  color: Color.fromARGB(255, 101, 87, 170),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(hoy_ayer('${message.mes}/${message.dia}/${message.ao}'), style: TextStyle(color: Colors.white, fontSize: 17)),
+                                ?Padding(
+                                  padding: const EdgeInsets.all(15.0),
+                                  child: Card(
+                                    color: Color.fromARGB(255, 101, 87, 170),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(hoy_ayer('${message.mes}/${message.dia}/${message.ao}'), style: TextStyle(color: Colors.white, fontSize: 17)),
+                                    ),
                                   ),
                                 ) : null,
                               ),
