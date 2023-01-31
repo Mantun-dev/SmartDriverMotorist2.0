@@ -232,6 +232,48 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    String fechaA = '';
+    
+    bool fecha(fechaBs){
+      if(fechaA!=fechaBs){
+        fechaA=fechaBs;
+        return true;
+      }
+      else
+        return false;
+    }
+
+    // ignore: non_constant_identifier_names
+    String hoy_ayer(fechaBs){
+
+      DateTime now = new DateTime.now();
+      DateTime date = new DateTime(now.year, now.month, now.day);
+
+      String day = date.day.toString();
+      String month = date.month.toString();
+      String year = date.year.toString();
+
+      if(day.toString().length!=2){
+        day='0'+day;
+      }
+      if(month.toString().length!=2){
+        month='0'+month;
+      }
+      if(year.toString().length==4){
+        year=year[2]+year[3];
+      }
+
+      String fecha = '$month/$day/$year';
+
+      if(fecha==fechaBs){
+        fechaA=fechaBs;
+        return 'Hoy';
+      }
+      else
+        return fechaBs;
+    }
+
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
@@ -299,6 +341,19 @@ class _ChatScreenState extends State<ChatScreen> {
                                 ? WrapAlignment.end
                                 : WrapAlignment.start,
                             children: [
+                              Center(
+                                child: fecha('${message.mes}/${message.dia}/${message.ao}')==true  
+                                ?Padding(
+                                  padding: const EdgeInsets.all(15.0),
+                                  child: Card(
+                                    color: Color.fromARGB(255, 101, 87, 170),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(hoy_ayer('${message.mes}/${message.dia}/${message.ao}'), style: TextStyle(color: Colors.white, fontSize: 17)),
+                                    ),
+                                  ),
+                                ) : null,
+                              ),
                               Card(
                                 color: message.user!.toUpperCase() ==
                                         widget.nombre!.toUpperCase()

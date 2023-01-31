@@ -41,12 +41,12 @@ android {
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.driverapp.devs"
-        versionCode 36
+        versionCode 39
         minSdkVersion 19
         targetSdkVersion 31
         multiDexEnabled true
         versionCode flutterVersionCode.toInteger()
-        versionName "2.0.4"
+        versionName "2.0.7"
     }
 
     signingConfigs {

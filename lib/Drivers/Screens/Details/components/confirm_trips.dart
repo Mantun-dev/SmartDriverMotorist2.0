@@ -84,8 +84,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
     http.Response responses = await http
         .get(Uri.parse('$ip/apis/registerTripAsCompleted/${prefs.tripId}'));
     final si = Driver2.fromJson(json.decode(responses.body));
-    print('holaaaa');
-    print(responses.body);
+    
+    //print(responses.body);
     if (responses.statusCode == 200 && si.ok!) {
       if (mounted) {  
         QuickAlert.show(
@@ -109,6 +109,11 @@ class _DataTableExample extends State<MyConfirmAgent> {
       text: si.message,
       );      
     }
+    Map data2 = {"Estado": 'FINALIZADO'};
+      String sendData2 = json.encode(data2);
+      http.Response response2 = await http
+        .put(Uri.parse('https://apichat.smtdriver.com/api/salas/Viaje_Estado/${prefs.tripId}'), body: sendData2, headers: {"Content-Type": "application/json"});
+    print(response2.body);
     return Driver2.fromJson(json.decode(responses.body));
     //throw Exception('Failed to load Data');
   }
@@ -200,6 +205,12 @@ class _DataTableExample extends State<MyConfirmAgent> {
       text: resp.message,
       );
     }
+
+    Map data2 = {"Estado": 'FINALIZADO'};
+      String sendData2 = json.encode(data2);
+      http.Response response2 = await http
+        .put(Uri.parse('https://apichat.smtdriver.com/api/salas/Viaje_Estado/${prefs.tripId}'), body: sendData2, headers: {"Content-Type": "application/json"});
+      
     return Driver.fromJson(json.decode(response.body));
   }
 
@@ -1084,7 +1095,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
               onPressed: () {
                 QuickAlert.show(
                 context: context,
-                type: QuickAlertType.error,                
+                type: QuickAlertType.error,        
+                title: 'Alerta',        
                 text: "¿Está seguro que desea cancelar el viaje en proceso?",
                 confirmBtnText: "Confirmar",
                 cancelBtnText: "Cancelar",

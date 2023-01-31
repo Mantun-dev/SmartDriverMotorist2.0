@@ -17,7 +17,7 @@ import 'package:quickalert/quickalert.dart';
 import '../../../../constants.dart';
 import '../../../models/agentsInTravelModel.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert' show json;
+import 'dart:convert' show json, jsonDecode;
 import 'package:url_launcher/url_launcher.dart';
 
 void main() {
@@ -72,6 +72,11 @@ class _DataTableExample extends State<MyAgent> {
       );
     }
 
+    Map data2 = {"idU": agentId.toString(), "Estado": 'CONFIRMADO'};
+    String sendData2 = json.encode(data2);
+    http.Response response2 = await http
+        .put(Uri.parse('https://apichat.smtdriver.com/api/salas/$tripId'), body: sendData2, headers: {"Content-Type": "application/json"});
+
     return Driver.fromJson(json.decode(response.body));
   }
 
@@ -102,6 +107,11 @@ class _DataTableExample extends State<MyAgent> {
         }
       });
     }
+    Map data2 = {"idU": agentId.toString(), "Estado": 'RECHAZADO'};
+    String sendData2 = json.encode(data2);
+    http.Response response2 = await http
+        .put(Uri.parse('https://apichat.smtdriver.com/api/salas/$tripId'), body: sendData2, headers: {"Content-Type": "application/json"});
+
     return Driver.fromJson(json.decode(response.body));
   }
 
@@ -136,7 +146,11 @@ class _DataTableExample extends State<MyAgent> {
           text: resp.message,
           );
     }
-
+    Map data2 = {"Estado": 'INICIADO'};
+      String sendData2 = json.encode(data2);
+      http.Response response2 = await http
+        .put(Uri.parse('https://apichat.smtdriver.com/api/salas/Viaje_Estado/${prefs.tripId}'), body: sendData2, headers: {"Content-Type": "application/json"});
+   
     return Driver.fromJson(json.decode(response.body));
   }
 
@@ -194,6 +208,11 @@ class _DataTableExample extends State<MyAgent> {
           );
     }
 
+     Map data2 = {"Estado": 'FINALIZADO'};
+      String sendData2 = json.encode(data2);
+      http.Response response2 = await http
+        .put(Uri.parse('https://apichat.smtdriver.com/api/salas/Viaje_Estado/${prefs.tripId}'), body: sendData2, headers: {"Content-Type": "application/json"});
+      
     return Driver.fromJson(json.decode(response.body));
   }
 
@@ -203,6 +222,7 @@ class _DataTableExample extends State<MyAgent> {
     item = fetchAgentsInTravel2();
   }
   
+  BuildContext? contextP;
 
   static DateTime _eventdDate = DateTime.now();
   static var now =
@@ -210,6 +230,7 @@ class _DataTableExample extends State<MyAgent> {
   final format = DateFormat('HH:mm');
   @override
   Widget build(BuildContext context) {
+     contextP = context;
     return MaterialApp(
       color: backgroundColor,
       debugShowCheckedModeBanner: false,
@@ -701,6 +722,7 @@ class _DataTableExample extends State<MyAgent> {
     return FutureBuilder<TripsList2>(
       future: item,
       builder: (BuildContext context, abc) {
+        
         if (abc.connectionState == ConnectionState.done) {
           if (abc.data!.trips![1].noConfirmados!.length == 0) {
             return Padding(
@@ -754,6 +776,7 @@ class _DataTableExample extends State<MyAgent> {
             return FutureBuilder<TripsList2>(
               future: item,
               builder: (BuildContext context, AsyncSnapshot snapshot) {
+                
                 return ListView.builder(
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
@@ -1034,21 +1057,23 @@ class _DataTableExample extends State<MyAgent> {
                                                       confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
                                                       cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
                                                       onConfirmBtnTap: () {
-                                                        QuickAlert.show(
-                                                        context: context,
-                                                        type: QuickAlertType.success,
-                                                        text: "Agente marcado como no confirmó",
-                                                        );
-                                                        new Future.delayed(
-                                                            new Duration(
-                                                                seconds: 2),
-                                                            () {
-                                                          fetchNoConfirm(abc.data!.trips![1].noConfirmados![index].agentId.toString(),abc.data!.trips![1].noConfirmados![index].tripId.toString());
-                                                          Navigator.pushReplacement(context,MaterialPageRoute(builder: (_) =>MyAgent())).then( (_) => MyAgent());
-                                                        });
+                                                        //Navigator.maybePop(context,MaterialPageRoute(builder: (context) {return MyAgent();},),);
+                                                        // new Future.delayed(
+                                                        //     new Duration(
+                                                        //         seconds: 2),
+                                                        //     () {
+                                                        // });
+                                                        Navigator.pop(contextP!);
+                                                        fetchNoConfirm(abc.data!.trips![1].noConfirmados![index].agentId.toString(),abc.data!.trips![1].noConfirmados![index].tripId.toString());
+                                                        // QuickAlert.show(
+                                                        // context: context,
+                                                        // type: QuickAlertType.success,
+                                                        // text: "Agente marcado como no confirmó",
+                                                        // );
+                                                        _refresh();
                                                       },
                                                       onCancelBtnTap: () {
-                                                        Navigator.pop(context);
+                                                        Navigator.pop(contextP!);
                                                         QuickAlert.show(
                                                         context: context,
                                                         type: QuickAlertType.success,
@@ -1226,7 +1251,8 @@ class _DataTableExample extends State<MyAgent> {
           showCancelBtn: true,  
           confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
           cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
-          onConfirmBtnTap: () async{            
+          onConfirmBtnTap: () async{ 
+            Navigator.pop(contextP!);           
               setState(() {                              
                 _eventTime = time.toString().substring(10, 15);
                 //print(_eventTime);
@@ -1236,15 +1262,16 @@ class _DataTableExample extends State<MyAgent> {
                 //Navigator.of(context).popUntil((route) =>  route.);
                 //Navigator.push(context,MaterialPageRoute(builder: (_) => MyAgent()));              
               }); 
-              await Future.delayed(Duration(seconds: 2), () {
-                cancelHour();
-              },);                                                                                                                                                                               
+              // await Future.delayed(Duration(seconds: 2), () {
+              //   cancelHour();
+              // },);                                                                                                                                                                               
           },
           onCancelBtnTap: () {  
-            cancelHour(); 
+            Navigator.pop(contextP!);
             setState(() {            
               flagalert = time;                                            
             });
+            _refresh();
           },);                                                         
     }                                                                                                  
   }
