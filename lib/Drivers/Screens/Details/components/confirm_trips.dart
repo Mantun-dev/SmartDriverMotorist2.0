@@ -89,11 +89,11 @@ class _DataTableExample extends State<MyConfirmAgent> {
     if (responses.statusCode == 200 && si.ok!) {
       if (mounted) {  
         QuickAlert.show(
-      context: context,
-      type: QuickAlertType.success,
-      title: 'Completado',
-      text: 'su viaje ha sido completado',
-      );      
+          context: context,
+          type: QuickAlertType.success,
+          title: 'Completado',
+          text: 'su viaje ha sido completado',
+        );      
       }
         new Future.delayed(new Duration(seconds: 2), () {                                      
           Navigator.of(context).pushAndRemoveUntil(
@@ -207,10 +207,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
     }
 
     Map data2 = {"Estado": 'FINALIZADO'};
-      String sendData2 = json.encode(data2);
-      http.Response response2 = await http
-        .put(Uri.parse('https://apichat.smtdriver.com/api/salas/Viaje_Estado/${prefs.tripId}'), body: sendData2, headers: {"Content-Type": "application/json"});
-      
+    String sendData2 = json.encode(data2);
+    await http.put(Uri.parse('https://apichat.smtdriver.com/api/salas/Viaje_Estado/${prefs.tripId}'), body: sendData2, headers: {"Content-Type": "application/json"});      
     return Driver.fromJson(json.decode(response.body));
   }
 
@@ -372,29 +370,18 @@ class _DataTableExample extends State<MyConfirmAgent> {
         text: "¿Está seguro que desea marcar como no salio el agente?",
         confirmBtnText: "Confirmar",
         cancelBtnText: "Cancelar",
-        title: '¿Esta seguro?',
+        title: '¿Está seguro?',
         showCancelBtn: true,  
         confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
         cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
         onConfirmBtnTap: () {
 
-          fetchRegisterAgentDidntGetOut(
-            abc
-            .data
-            !.trips![0]
-            .tripAgent![index]
-            .agentId
-            .toString(),
-            prefs.tripId
-          );
-
+          fetchRegisterAgentDidntGetOut(abc.data!.trips![0].tripAgent![index].agentId.toString(),prefs.tripId);
           abc.data!.trips![0].tripAgent![index].didntGetOut = 1;
-
           if(abc.data!.trips![0].tripAgent![index].traveled = traveled){
             abc.data!.trips![0].tripAgent![index].traveled = false;
             traveled = abc.data!.trips![0].tripAgent![index].traveled;
-          }
-        
+          }        
           Navigator.pop(context);
         },
         onCancelBtnTap: () {
@@ -478,6 +465,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                     children: <Widget>[
                                       Row(
                                         children: [
+                                          SizedBox(width: 3.0),
                                           RoundCheckBox(
                                               border: Border.all(
                                                   style: BorderStyle.none),
@@ -487,33 +475,20 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                               uncheckedWidget: Icon(
                                                 Icons.close,
                                                 color: backgroundColor,
-                                                size: 40,
+                                                size: 15,
                                               ),
                                               checkedColor: firstColor,
                                               checkedWidget: Icon(
                                                 Icons.check,
                                                 color: backgroundColor,
-                                                size: 40,
+                                                size: 15,
                                               ),
-                                              // border: Border.all(
-                                              //     style: BorderStyle.none),
-                                              // animationDuration:
-                                              //     Duration(seconds: 1),
-                                              // uncheckedColor: Colors.red,
-                                              // uncheckedWidget: Icon(
-                                              //     Icons.person_add_alt_1,
-                                              //     color: backgroundColor),
-                                              // checkedColor: firstColor,
-                                              // checkedWidget: Icon(
-                                              //   Icons.person_remove_alt_1,
-                                              //   color: backgroundColor,
-                                              // ),
-                                              size: 45,
+                                              size: 20,
                                               isChecked: traveledB(abc,index),
                                               onTap: (bool? isChecked) {
                                                 alertaAbordo(abc, index, isChecked);
                                               }),
-                                          SizedBox(width: 20.0),
+                                          SizedBox(width: 15.0),
                                           Text('Abordó ',
                                               style: TextStyle(
                                                   color: Colors.white,
@@ -521,25 +496,22 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                   fontSize: 20.0)),
                                         ],
                                       ),
-                                      ListTile(
-                                        contentPadding:
-                                            EdgeInsets.fromLTRB(0, 5, 10, 0),
-                                        title: Text('Nombre: ',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 20.0)),
-                                        subtitle: Text(
-                                            '${abc.data!.trips![0].tripAgent![index].agentFullname}',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.normal,
-                                                fontSize: 15.0)),
-                                        leading: Icon(
-                                            Icons
-                                                .supervised_user_circle_rounded,
-                                            color: thirdColor,
-                                            size: 50.0),
+                                      SizedBox(height: 15,),
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(0,0,20,0),
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.person,color: thirdColor),
+                                            SizedBox(width: 15,),
+                                            Flexible(
+                                              child: Text('Nombre: ${abc.data!.trips![0].tripAgent![index].agentFullname}',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    //fontWeight: FontWeight.bold,
+                                                    fontSize: 18.0)),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -549,133 +521,125 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                       margin: EdgeInsets.only(left: 18),
                                       child: Column(
                                         children: [
-                                          ListTile(
-                                            contentPadding: EdgeInsets.fromLTRB(
-                                                0, 5, 10, 0),
-                                            title: Text('Empresa: ',
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 20.0)),
-                                            subtitle: Text(
-                                                '${abc.data!.trips![0].tripAgent![index].companyName}',
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    fontSize: 15.0)),
-                                            leading: Icon(Icons.location_city,
-                                                color: thirdColor, size: 50.0),
+                                          SizedBox(height: 15,),
+                                          Padding(
+                                          padding: const EdgeInsets.fromLTRB(0,0,20,0),
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.location_city,color: thirdColor),
+                                              SizedBox(width: 15,),
+                                              Flexible(
+                                                child: Text('Empresa: ${abc.data!.trips![0].tripAgent![index].companyName}',
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      //fontWeight: FontWeight.bold,
+                                                      fontSize: 18.0)),
+                                              ),
+                                            ],
                                           ),
-                                          ListTile(
-                                            contentPadding: EdgeInsets.fromLTRB(
-                                                0, 5, 10, 0),
-                                            title: Text('Teléfono: ',
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 20.0)),
-                                            subtitle: TextButton(
+                                        ), 
+                                        SizedBox(height: 15,),
+                                          Padding(
+                                          padding: const EdgeInsets.fromLTRB(0,0,20,0),
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.phone,color: thirdColor),
+                                              SizedBox(width: 7,),
+                                              Flexible(
+                                                child: TextButton(
                                                 onPressed: () => launchUrl(
                                                     Uri.parse(
                                                         'tel://${abc.data!.trips![0].tripAgent![index].agentPhone}')),
                                                 child: Container(
-                                                    padding: EdgeInsets.only(
-                                                        right: 160),
                                                     child: Text(
-                                                        '${abc.data!.trips![0].tripAgent![index].agentPhone}',
+                                                        'Teléfono: ${abc.data!.trips![0].tripAgent![index].agentPhone}',
                                                         style: TextStyle(
                                                             color: Colors.white,
                                                             fontWeight:
                                                                 FontWeight
                                                                     .normal,
-                                                            fontSize: 15.0)))),
-                                            leading: Icon(Icons.phone,
-                                                color: thirdColor, size: 50.0),
+                                                            fontSize: 18.0)))
+                                                            ),
+                                              ),
+                                            ],
                                           ),
-                                          ListTile(
-                                            contentPadding: EdgeInsets.fromLTRB(
-                                                0, 5, 10, 0),
-                                            title: Text('Entrada: ',
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 20.0)),
-                                            subtitle: Text(
-                                                '${abc.data!.trips![0].tripAgent![index].hourIn}',
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    fontSize: 15.0)),
-                                            leading: Icon(Icons.access_time,
-                                                color: thirdColor, size: 50.0),
+                                        ),                  
+                                        SizedBox(height: 15,),
+                                          Padding(
+                                          padding: const EdgeInsets.fromLTRB(0,0,20,0),
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.access_time,color: thirdColor),
+                                              SizedBox(width: 15,),
+                                              Flexible(
+                                                child: Text('Entrada: ${abc.data!.trips![0].tripAgent![index].hourIn}',
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      //fontWeight: FontWeight.bold,
+                                                      fontSize: 18.0)),
+                                              ),
+                                            ],
                                           ),
-                                           ListTile(contentPadding: EdgeInsets.fromLTRB(
-                                                0, 5, 10, 0),
-                                                        title: Text('Dirección: ',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontSize:
-                                                                    18.0)),
-                                                        subtitle: Text(
-                                                          abc.data!.trips![0].tripAgent![index].agentReferencePoint==null
+                                        ),
+                                        SizedBox(height: 15,),
+                                          Padding(
+                                          padding: const EdgeInsets.fromLTRB(0,0,20,0),
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.location_pin,color: thirdColor),
+                                              SizedBox(width: 15,),
+                                              Flexible(
+                                                child: Text(abc.data!.trips![0].tripAgent![index].agentReferencePoint==null
                                                         ||abc.data!.trips![0].tripAgent![index].agentReferencePoint==""
-                                                        ?"${abc.data!.trips![0].tripAgent![index].neighborhoodName}, ${abc.data!.trips![0].tripAgent![index].townName}":'${abc.data!.trips![0].tripAgent![index].agentReferencePoint}, ${abc.data!.trips![0].tripAgent![index].neighborhoodName}, ${abc.data!.trips![0].tripAgent![index].townName},',style: TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .normal,
-                                                                fontSize:
-                                                                    15.0)),
-                                                        leading: Icon(Icons.location_pin,color: thirdColor, size: 50,),
-                                                      ),
-                                                      if (abc.data!.trips![0].tripAgent![index].neighborhoodReferencePoint != null)... {                                                    
-                                                        ListTile(contentPadding: EdgeInsets.fromLTRB(
-                                                0, 5, 10, 0),
-                                                          title: Text('Acceso autorizado: ',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontSize:
-                                                                    18.0)),
-                                                          subtitle: Text('${abc.data!.trips![0].tripAgent![index].neighborhoodReferencePoint}',style: TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .normal,
-                                                                fontSize:
-                                                                    15.0)),
-                                                          leading: Icon(Icons.directions,color: thirdColor, size: 50,),
-                                                        ),
-                                                      },
-                                          ListTile(
-                                            contentPadding: EdgeInsets.fromLTRB(
-                                                0, 5, 10, 0),
-                                            title: Text('Hora de encuentro: ',
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 20.0)),
-                                            subtitle: Text(
-                                                '${abc.data!.trips![0].tripAgent![index].hourForTrip}',
-                                                style: TextStyle(
+                                                        ?"Dirección: ${abc.data!.trips![0].tripAgent![index].neighborhoodName}, ${abc.data!.trips![0].tripAgent![index].townName}":'Dirección: ${abc.data!.trips![0].tripAgent![index].agentReferencePoint}, ${abc.data!.trips![0].tripAgent![index].neighborhoodName}, ${abc.data!.trips![0].tripAgent![index].townName},',
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      //fontWeight: FontWeight.bold,
+                                                      fontSize: 18.0)),
+                                              ),
+                                            ],
+                                          ),
+                                        ), 
+                                      if (abc.data!.trips![0].tripAgent![index].neighborhoodReferencePoint != null)... {
+                                        SizedBox(height: 15,),
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(0,0,20,0),
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.directions,color: thirdColor),
+                                              SizedBox(width: 15,),
+                                              Flexible(child: Text('Acceso autorizado: ${abc.data!.trips![0].tripAgent![index].neighborhoodReferencePoint}',
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      //fontWeight: FontWeight.bold,
+                                                      fontSize: 18.0)),
+                                              ),
+                                            ],
+                                          ),
+                                        ), 
+                                      },
+                                      SizedBox(height: 15,),
+                                          Padding(
+                                          padding: const EdgeInsets.fromLTRB(0,0,20,0),
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.access_time,color: thirdColor),
+                                              SizedBox(width: 15,),
+                                              Column(
+                                                crossAxisAlignment :CrossAxisAlignment.start,
+                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                children: [
+                                                  Text('Hora de encuentro: ',style: TextStyle(color: Colors.white,fontSize: 18.0)),
+                                                  Text(textAlign:TextAlign.start,'${abc.data!.trips![0].tripAgent![index].hourForTrip}',style: TextStyle(
                                                     color: firstColor,
                                                     fontWeight: FontWeight.bold,
-                                                    fontSize: 25)),
-                                            leading: Icon(Icons.access_time,
-                                                color: thirdColor, size: 50.0),
+                                                    fontSize: 20)),
+                                                ],
+                                              ),
+                                            ],
                                           ),
-                                          SizedBox(height: 10.0),
+                                        ),
+                                        SizedBox(height: 15.0),
                                         ],
                                       ),
                                     ),
@@ -1027,6 +991,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
         }
       },
     );
+  
   }
 
   Widget _buttonsAgents() {
@@ -1053,7 +1018,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
               onPressed: () {
                 QuickAlert.show(
                 context: context,
-                type: QuickAlertType.success,                
+                type: QuickAlertType.success,
+                title: "...",                
                 text: "¿Está seguro que desea completar el viaje?",
                 confirmBtnText: "Confirmar",
                 cancelBtnText: "Cancelar",
@@ -1065,67 +1031,62 @@ class _DataTableExample extends State<MyConfirmAgent> {
                   fetchRegisterTripCompleted();
                 },
                 onCancelBtnTap: () {
-                  QuickAlert.show(
-                  context: context,
-                  type: QuickAlertType.success,
-                  text: '¡Cancelado!',
-                  autoCloseDuration:Duration(seconds: 1)
-                  );
+                  Navigator.pop(context);
                 },
                 );
               },
             ),
           ),
           SizedBox(height: 10),
-          Container(
-            width: 200,
-            height: 40,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                  textStyle: TextStyle(color: Colors.white),
-                  backgroundColor: Colors.red,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                  )),
-              child: Text("Marcar como cancelado",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15)),
-              onPressed: () {
-                QuickAlert.show(
-                context: context,
-                type: QuickAlertType.error,        
-                title: 'Alerta',        
-                text: "¿Está seguro que desea cancelar el viaje en proceso?",
-                confirmBtnText: "Confirmar",
-                cancelBtnText: "Cancelar",
-                showCancelBtn: true,  
-                confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
-                cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
-                onConfirmBtnTap: () {
-                  QuickAlert.show(
-                  context: context,
-                  type: QuickAlertType.success,
-                  text: 'Su viaje ha sido cancelado',
-                  title: 'Cancelado'
-                  );
-                  new Future.delayed(new Duration(seconds: 2), () {
-                      fetchTripCancel();
-                    });
-                },
-                onCancelBtnTap: () {
-                  Navigator.pop(context);
-                  QuickAlert.show(
-                  context: context,
-                  type: QuickAlertType.success,
-                  text: "¡No ha sido cancelado el viaje!",
-                  );
-                  },
-                );
-              },
-            ),
-          ),
+          // Container(
+          //   width: 200,
+          //   height: 40,
+          //   child: ElevatedButton(
+          //     style: ElevatedButton.styleFrom(
+          //         textStyle: TextStyle(color: Colors.white),
+          //         backgroundColor: Colors.red,
+          //         shape: RoundedRectangleBorder(
+          //           borderRadius: BorderRadius.circular(20.0),
+          //         )),
+          //     child: Text("Marcar como cancelado",
+          //         style: TextStyle(
+          //             color: Colors.white,
+          //             fontWeight: FontWeight.bold,
+          //             fontSize: 15)),
+          //     onPressed: () {
+          //       QuickAlert.show(
+          //       context: context,
+          //       type: QuickAlertType.error,        
+          //       title: 'Alerta',        
+          //       text: "¿Está seguro que desea cancelar el viaje en proceso?",
+          //       confirmBtnText: "Confirmar",
+          //       cancelBtnText: "Cancelar",
+          //       showCancelBtn: true,  
+          //       confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
+          //       cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
+          //       onConfirmBtnTap: () {
+          //         QuickAlert.show(
+          //         context: context,
+          //         type: QuickAlertType.success,
+          //         text: 'Su viaje ha sido cancelado',
+          //         title: 'Cancelado'
+          //         );
+          //         new Future.delayed(new Duration(seconds: 2), () {
+          //             fetchTripCancel();
+          //           });
+          //       },
+          //       onCancelBtnTap: () {
+          //         Navigator.pop(context);
+          //         QuickAlert.show(
+          //         context: context,
+          //         type: QuickAlertType.success,
+          //         text: "¡No ha sido cancelado el viaje!",
+          //         );
+          //         },
+          //       );
+          //     },
+          //   ),
+          // ),
         ],
       ),
     );

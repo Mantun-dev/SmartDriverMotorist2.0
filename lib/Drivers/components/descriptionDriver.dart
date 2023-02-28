@@ -84,6 +84,8 @@ class _DriverDescriptionState extends State<DriverDescription>
   TextEditingController vehicule = new TextEditingController();
   TextEditingController hourOut = TextEditingController();
 
+  bool vehFlag = false;
+
   @override
   void initState() {
     super.initState();
@@ -154,8 +156,7 @@ class _DriverDescriptionState extends State<DriverDescription>
     }           
   }
 
-// ignore: missing_return
-  Future<Salida?> fetchAgentsLeftPastToProgres( String hourOut, String nameController) async {
+  fetchAgentsLeftPastToProgres( String hourOut, String nameVehicle) async {
     http.Response responses = await http
         .get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
     final si = DriverData.fromJson(json.decode(responses.body));
@@ -169,92 +170,112 @@ class _DriverDescriptionState extends State<DriverDescription>
             text: "No hay agentes agregados",
             type: QuickAlertType.error,
           ); 
-    } else {
+    } else { 
       if (si.driverCoord == true) {
-        Map datas = {
-          'companyId': prefs.companyId,
-          'tripHour': hourOut,
-          'driverId': radioShowAndHide == false
-              ? si.driverId.toString()
-              : prefs.driverIdx,
-          'tripVehicle': prefs.vehiculo,
-        };
-        http.Response response1 = await http
-            .post(Uri.parse('$ip/apis/registerDeparture2'), body: datas);
-        final send = Salida.fromJson(json.decode(response1.body));
-        prefs.tripId = send.tripId!.tripId.toString();
-        for (var i = 0; i < tables.length; i++) {
-          Map datas2 = {
-            "agentId": tables[i]['idsend'].toString(),
-            "tripId": send.tripId!.tripId.toString(),
-            "tripHour": send.tripId!.tripHour
-          };
-
-          await http.post(Uri.parse('$ip/apis/registerAgentForOutTrip'),
-              body: datas2);
-        }
-        if (response1.statusCode == 200) {
-          await http.get(Uri.parse('$ip/apis/agentsInTravel/${prefs.tripId}'));
-
-          Navigator.pop(context);
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => MyConfirmAgent(),
-              ));
-          prefs.removeIdCompanyAndVehicle();
+        if(prefs.vehiculo == ""){
           QuickAlert.show(
             context: context,
-            title: send.title,
-            text: send.message,
-            type: QuickAlertType.success,
-          ); 
-          this.handler!.cleanTable();
-        } else {
-          throw Exception('Failed to load Data');
+            title: "Alerta",
+            text: "Necesita agregar el vehículo",
+            type: QuickAlertType.error,
+            onConfirmBtnTap:() { 
+              Scrollable.ensureVisible(dataKey.currentContext!);
+              setState(() {                
+                vehFlag = true;
+              });
+
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
+          );
+        }else{
+          Map datas = {
+            'companyId': prefs.companyId,
+            'tripHour': hourOut,
+            'driverId': radioShowAndHide == false
+                ? si.driverId.toString()
+                : prefs.driverIdx,
+            'tripVehicle': prefs.vehiculo,
+          };
+          http.Response response1 = await http
+              .post(Uri.parse('$ip/apis/registerDeparture2'), body: datas);
+          final send = Salida.fromJson(json.decode(response1.body));
+          prefs.tripId = send.tripId!.tripId.toString();
+          for (var i = 0; i < tables.length; i++) {
+            Map datas2 = {
+              "agentId": tables[i]['idsend'].toString(),
+              "tripId": send.tripId!.tripId.toString(),
+              "tripHour": send.tripId!.tripHour
+            };
+            await http.post(Uri.parse('$ip/apis/registerAgentForOutTrip'),body: datas2);
+          }
+          if (response1.statusCode == 200) {
+            await http.get(Uri.parse('$ip/apis/agentsInTravel/${prefs.tripId}'));
+            Navigator.pop(context);
+            Navigator.push(context,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
+            prefs.removeIdCompanyAndVehicle();
+            QuickAlert.show(
+              context: context,
+              title: send.title,
+              text: send.message,
+              type: QuickAlertType.success,
+            ); 
+            this.handler!.cleanTable();
+          } else {
+            throw Exception('Failed to load Data');
+          }
         }
       } else {
         Map datas = {
           'companyId': prefs.companyId,
           'driverId': si.driverId.toString(),
-          'tripVehicle': nameController,
+          'tripVehicle': nameVehicle,
         };
-        http.Response response1 = await http
-            .post(Uri.parse('$ip/apis/registerDeparture2'), body: datas);
-        final send = Salida.fromJson(json.decode(response1.body));
-        prefs.tripId = send.tripId!.tripId.toString();
-
-        for (var i = 0; i < tables.length; i++) {
-          Map datas2 = {
-            "agentId": tables[i]['idsend'].toString(),
-            "tripId": send.tripId!.tripId.toString(),
-            "tripHour": send.tripId!.tripHour
-          };
-
-          await http.post(Uri.parse('$ip/apis/registerAgentForOutTrip'),
-              body: datas2);
-        }
-
-        if (response1.statusCode == 200) {
-          await http.get(Uri.parse('$ip/apis/agentsInTravel/${prefs.tripId}'));
-
-          Navigator.pop(context);
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => MyConfirmAgent(),
-              ));
-          prefs.removeIdCompanyAndVehicle();
+        if(prefs.vehiculo == ""){
           QuickAlert.show(
             context: context,
-            title: send.title,
-            text: send.message,
-            type: QuickAlertType.success,
+            title: "Alerta",
+            text: "Necesita agregar el vehículo",
+            type: QuickAlertType.error,
+            onConfirmBtnTap:() {  
+              Scrollable.ensureVisible(dataKey.currentContext!);
+              setState(() {                
+                vehFlag = true;
+              });                          
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
           ); 
+        }else{
+          http.Response response1 = await http
+              .post(Uri.parse('$ip/apis/registerDeparture2'), body: datas);
+          final send = Salida.fromJson(json.decode(response1.body));
+          prefs.tripId = send.tripId!.tripId.toString();
 
-          this.handler!.cleanTable();
-        } else {
-          throw Exception('Failed to load Data');
+          for (var i = 0; i < tables.length; i++) {
+            Map datas2 = {
+              "agentId": tables[i]['idsend'].toString(),
+              "tripId": send.tripId!.tripId.toString(),
+              "tripHour": send.tripId!.tripHour
+            };
+            await http.post(Uri.parse('$ip/apis/registerAgentForOutTrip'),body: datas2);
+          }
+          if (response1.statusCode == 200) {
+            await http.get(Uri.parse('$ip/apis/agentsInTravel/${prefs.tripId}'));
+            Navigator.pop(context);
+            Navigator.push(context,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
+            prefs.removeIdCompanyAndVehicle();
+            QuickAlert.show(
+              context: context,
+              title: send.title,
+              text: send.message,
+              type: QuickAlertType.success,
+            ); 
+
+            this.handler!.cleanTable();
+          } else {
+            throw Exception('Failed to load Data');
+          }
         }
       }
     }
@@ -275,9 +296,7 @@ class _DriverDescriptionState extends State<DriverDescription>
     final tables = await db.rawQuery('SELECT * FROM userX ;');
     final tables2 = await db.rawQuery(
         "SELECT noempid FROM userX WHERE noempid = '${prefs.nameSalida}'");
-    if (responsed.statusCode == 200 &&
-        data1.ok == true &&
-        data1.agent!.msg != null) {
+    if (responsed.statusCode == 200 && data1.ok == true && data1.agent!.msg != null) {
       if (barcodeScan == '${-1}') {
         print('');
       } else {
@@ -302,14 +321,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                       children: <Widget>[
                         SizedBox(height: 15),
                         Center(
-                          child: Text(
-                            '¿Agregar agente al viaje?',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: GradiantV_2),
-                          ),
+                          child: Text('¿Agregar agente al viaje?',textAlign: TextAlign.center,style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold,color: GradiantV_2),),
                         ),
                         SizedBox(height: 15),
                         ListTile(
@@ -391,34 +403,15 @@ class _DriverDescriptionState extends State<DriverDescription>
                                 setState(() {
                                   if (tables.length <= 13) {
                                     if (prefs.nameSalida != tables2) {
-                                      noemp.insert(
-                                          0, '${data1.agent!.agentEmployeeId}');
-                                      names.insert(
-                                          0, '${data1.agent!.agentFullname}');
-                                      hourout.insert(
-                                          0, '${data1.agent!.hourOut}');
-                                      direction.insert(0,
-                                          '${data1.agent!.departmentName} ${data1.agent!.neighborhoodName}\n${data1.agent!.agentReferencePoint}');
-                                      tempArr.add(data1.agent!.agentId);
-                                      prefs.companyIdAgent =
-                                          data1.agent!.companyId.toString();
-                                      prefs.nameSalida = data1
-                                          .agent!.agentEmployeeId
-                                          .toString();
-                                      User firstUser = User(
-                                          noempid:
-                                              '${data1.agent!.agentEmployeeId}',
-                                          nameuser:
-                                              '${data1.agent!.agentFullname}',
-                                          hourout: '${data1.agent!.hourOut}',
-                                          direction:
-                                              '${data1.agent!.departmentName} ${data1.agent!.neighborhoodName}\n${data1.agent!.agentReferencePoint}',
-                                          idsend: data1.agent!.agentId);
+                                      noemp.insert(0, '${data1.agent!.agentEmployeeId}');
+                                      names.insert(0, '${data1.agent!.agentFullname}');
+                                      hourout.insert(0, '${data1.agent!.hourOut}');
+                                      direction.insert(0,'${data1.agent!.departmentName} ${data1.agent!.neighborhoodName}\n${data1.agent!.agentReferencePoint}');
+                                      tempArr.add(data1.agent!.agentId);prefs.companyIdAgent =data1.agent!.companyId.toString();
+                                      prefs.nameSalida = data1.agent!.agentEmployeeId.toString();
+                                      User firstUser = User(noempid: '${data1.agent!.agentEmployeeId}',nameuser:'${data1.agent!.agentFullname}',hourout: '${data1.agent!.hourOut}',direction:'${data1.agent!.departmentName} ${data1.agent!.neighborhoodName}\n${data1.agent!.agentReferencePoint}',idsend: data1.agent!.agentId);
                                       List<User> listOfUsers = [firstUser];
                                       this.handler!.insertUser(listOfUsers);
-
-                                      //guardar();
-
                                     } else {
                                       print('yasta we');
                                       Navigator.pop(context);
@@ -828,28 +821,18 @@ class _DriverDescriptionState extends State<DriverDescription>
                                   setState(() {
                                     if (tables.length <= 13) {
                                       if (prefs.nameSalida != tables2) {
-                                        noemp.insert(0,
-                                            '${data1.agent!.agentEmployeeId}');
-                                        names.insert(
-                                            0, '${data1.agent!.agentFullname}');
-                                        hourout.insert(
-                                            0, '${data1.agent!.hourOut}');
-                                        direction.insert(0,
-                                            '${data1.agent!.departmentName} ${data1.agent!.neighborhoodName}\n${data1.agent!.agentReferencePoint}');
+                                        noemp.insert(0,'${data1.agent!.agentEmployeeId}');
+                                        names.insert(0, '${data1.agent!.agentFullname}');
+                                        hourout.insert(0, '${data1.agent!.hourOut}');
+                                        direction.insert(0,'${data1.agent!.departmentName} ${data1.agent!.neighborhoodName}\n${data1.agent!.agentReferencePoint}');
                                         tempArr.add(data1.agent!.agentId);
-                                        prefs.companyIdAgent =
-                                            data1.agent!.companyId.toString();
-                                        prefs.nameSalida = data1
-                                            .agent!.agentEmployeeId
-                                            .toString();
+                                        prefs.companyIdAgent = data1.agent!.companyId.toString();
+                                        prefs.nameSalida = data1.agent!.agentEmployeeId.toString();
                                         User firstUser = User(
-                                            noempid:
-                                                '${data1.agent!.agentEmployeeId}',
-                                            nameuser:
-                                                '${data1.agent!.agentFullname}',
+                                            noempid: '${data1.agent!.agentEmployeeId}',
+                                            nameuser: '${data1.agent!.agentFullname}',
                                             hourout: '${data1.agent!.hourOut}',
-                                            direction:
-                                                '${data1.agent!.departmentName} ${data1.agent!.neighborhoodName}\n${data1.agent!.agentReferencePoint}',
+                                            direction:'${data1.agent!.departmentName} ${data1.agent!.neighborhoodName}\n${data1.agent!.agentReferencePoint}',
                                             idsend: data1.agent!.agentId);
                                         List<User> listOfUsers = [firstUser];
                                         this.handler!.insertUser(listOfUsers);
@@ -1059,7 +1042,6 @@ class _DriverDescriptionState extends State<DriverDescription>
                                           type: QuickAlertType.error,
                                         ); 
                                       }
-
                                       Navigator.pop(context);
                                     }),
                                     // },
@@ -1120,10 +1102,10 @@ class _DriverDescriptionState extends State<DriverDescription>
           'destinationId': prefs.destinationId,
           'tripVehicle': prefs.vehiculoSolid,
         };
-        http.Response response1 = await http
-            .post(Uri.parse('$ip/apis/registerTripEntryByDriver'), body: datas);
+        http.Response response1 = await http.post(Uri.parse('$ip/apis/registerTripEntryByDriver'), body: datas);
         final send = TripsToSolid.fromJson(json.decode(response1.body));
         prefs.tripId = send.trip!.tripId.toString();
+
         for (var i = 0; i < tables.length; i++) {
           Map datas2 = {
             "agentId": tables[i]['idsend'].toString(),
@@ -1132,16 +1114,10 @@ class _DriverDescriptionState extends State<DriverDescription>
           };
 
           if (response1.statusCode == 200) {
-            final sendDatas = await http.post(
-                Uri.parse('$ip/apis/registerAgentTripEntryByDriver'),
-                body: datas2);
+            final sendDatas = await http.post(Uri.parse('$ip/apis/registerAgentTripEntryByDriver'),body: datas2);
             print(sendDatas.body);
             Navigator.pop(context);
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => MyConfirmAgent(),
-                ));
+            Navigator.push(context,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
             prefs.removeIdCompanyAndVehicle();
             QuickAlert.show(
               context: context,
@@ -1161,10 +1137,9 @@ class _DriverDescriptionState extends State<DriverDescription>
           'destinationId': prefs.destinationId,
           'tripVehicle': prefs.vehiculoSolid,
         };
-        print(datas);
-        http.Response response1 = await http
-            .post(Uri.parse('$ip/apis/registerTripEntryByDriver'), body: datas);
-        print(response1.body);
+        //print(datas);
+        http.Response response1 = await http.post(Uri.parse('$ip/apis/registerTripEntryByDriver'), body: datas);
+        //print(response1.body);
         final send = TripsToSolid.fromJson(json.decode(response1.body));
         prefs.tripId = send.trip!.tripId.toString();
         if (response1.statusCode == 200) {
@@ -1175,15 +1150,9 @@ class _DriverDescriptionState extends State<DriverDescription>
               "tripHour": send.trip!.tripHour.toString()
             };
 
-            await http.post(
-                Uri.parse('$ip/apis/registerAgentTripEntryByDriver'),
-                body: datas2);
+            await http.post(Uri.parse('$ip/apis/registerAgentTripEntryByDriver'),body: datas2);
             Navigator.pop(context);
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => MyConfirmAgent(),
-                ));
+            Navigator.push(context,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
             prefs.removeIdCompanyAndVehicle();
             QuickAlert.show(
               context: context,
@@ -1252,59 +1221,49 @@ class _DriverDescriptionState extends State<DriverDescription>
   }
 
   Widget _mostrarTerceraVentana(BuildContext context) {
-    return Column(
-      //crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text('Compañía',
-            style: TextStyle(
-                color: GradiantV_2,
-                fontWeight: FontWeight.normal,
-                fontSize: 35.0)),
-        SizedBox(height: 20.0),
-        _crearDropdown(context),
-        SizedBox(height: 20.0),
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(15)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.2),
-                spreadRadius: 0,
-                blurStyle: BlurStyle.solid,
-                blurRadius: 10,
-                offset: Offset(0, 0), // changes position of shadow
-              ),
-              BoxShadow(
-                color: Colors.white.withOpacity(0.1),
-                spreadRadius: 0,
-                blurRadius: 5,
-                blurStyle: BlurStyle.inner,
-                offset: Offset(0, 0), // changes position of shadow
-              ),
-            ],
+    return SingleChildScrollView(
+      child: Column(
+        //crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text('Compañía',key: dataKey,style: TextStyle(color: GradiantV_2,fontWeight: FontWeight.normal,fontSize: 35.0)),
+          SizedBox(height: 20.0),
+          _crearDropdown(context),
+          SizedBox(height: 20.0),
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(15)),
+              boxShadow: [
+                BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0, 0), ),
+                BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0, 0), ),
+              ],
+            ),
+            width: 330,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: TextField(                  
+                  cursorColor: firstColor,
+                  style: TextStyle(color: Colors.white),
+                  onChanged: (value) {                
+                    setState(() {                     
+                      if (value.isEmpty) {
+                        vehFlag = true;
+                      }else{
+                        vehFlag = false;             
+                      }
+                      prefs.vehiculo = value;
+                    });
+                  },
+                  controller: nameController,
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.directions_bus,
+                        color:vehFlag==false? thirdColor:Colors.red, size: 30.0),
+                    border: InputBorder.none,
+                    hintText: prefs.vehiculo == "" ? "Vehículo" : prefs.vehiculo,
+                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 15.0),
+                  )),
+            ),
           ),
-          width: 320,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: TextField(
-                cursorColor: firstColor,
-                style: TextStyle(color: Colors.white),
-                onChanged: (value) {
-                  prefs.vehiculo = value;
-                },
-                controller: nameController,
-                decoration: InputDecoration(
-                  icon: Icon(Icons.directions_bus,
-                      color: thirdColor, size: 30.0),
-                  border: InputBorder.none,
-                  hintText:
-                      prefs.vehiculo == "" ? "Vehículo" : prefs.vehiculo,
-                  hintStyle: TextStyle(
-                      color: Colors.white.withOpacity(0.5), fontSize: 15.0),
-                )),
-          ),
-        ),
-        FutureBuilder<DriverData?>(
+          FutureBuilder<DriverData?>(
             future: itemx!,
             builder: (BuildContext context, abc) {
               switch (abc.connectionState) {
@@ -1322,497 +1281,282 @@ class _DriverDescriptionState extends State<DriverDescription>
                   }
               }
             }),
-        SizedBox(height: 20.0),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 75,
-              child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: GradiantV_2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                  ),
-                  child: Icon(Icons.delete,
-                      color: backgroundColor, size: 25.0),
+          SizedBox(height: 20.0),
+          Row(crossAxisAlignment: CrossAxisAlignment.center,mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(width: 75,
+                child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: GradiantV_2,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0),),),
+                    child: Icon(Icons.delete,color: backgroundColor, size: 25.0),
+                    onPressed: () {
+                      setState(() {
+                        this.handler!.cleanTable();
+                      });
+                    }),
+              ),
+              SizedBox(width: 8.0),
+              Container(
+                width: 75,
+                child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: GradiantV2,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0),),),
+                  child: Icon(Icons.search, color: backgroundColor, size: 25.0),
                   onPressed: () {
-                    setState(() {
-                      this.handler!.cleanTable();
-                    });
-                  }),
-            ),
-            SizedBox(width: 8.0),
-            Container(
-              width: 75,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: GradiantV2,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                ),
-                child:
-                    Icon(Icons.search, color: backgroundColor, size: 25.0),
-                onPressed: () {
-                  showGeneralDialog(
-                      barrierColor: Colors.black.withOpacity(0.5),
-                      transitionBuilder: (context, a1, a2, widget) {
-                        return Transform.scale(
-                          scale: a1.value,
-                          child: Opacity(
-                            opacity: a1.value,
-                            child: AlertDialog(
-                              backgroundColor: backgroundColor,
-                              shape: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.circular(16.0)),
-                              title: Center(
-                                  child: Text(
-                                'Buscar Agente',
-                                style: TextStyle(
-                                    color: GradiantV_2, fontSize: 20.0),
-                              )),
-                              content: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15)),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.2),
-                                      spreadRadius: 0,
-                                      blurStyle: BlurStyle.solid,
-                                      blurRadius: 10,
-                                      offset: Offset(0,
-                                          0), // changes position of shadow
+                    showGeneralDialog(
+                        barrierColor: Colors.black.withOpacity(0.5),
+                        transitionBuilder: (context, a1, a2, widget) {
+                          return Transform.scale(scale: a1.value,
+                            child: Opacity(opacity: a1.value,
+                              child: AlertDialog(
+                                backgroundColor: backgroundColor,
+                                shape: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.circular(16.0)),
+                                title: Center(child: Text('Buscar Agente',style: TextStyle(color: GradiantV_2, fontSize: 20.0),)),
+                                content: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius:BorderRadius.all(Radius.circular(15)),
+                                    boxShadow: [
+                                      BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0,0), ),
+                                      BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0,0),                                 ),
+                                    ],
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                    child: TextField(style: TextStyle(color: Colors.white),
+                                      controller: agentEmployeeId,
+                                      decoration: InputDecoration(border: InputBorder.none,labelText: 'Escriba aqui',labelStyle: TextStyle(color: Colors.white.withOpacity(0.5),fontSize: 15.0)),
                                     ),
-                                    BoxShadow(
-                                      color: Colors.white.withOpacity(0.1),
-                                      spreadRadius: 0,
-                                      blurRadius: 5,
-                                      blurStyle: BlurStyle.inner,
-                                      offset: Offset(0,
-                                          0), // changes position of shadow
-                                    ),
-                                  ],
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8.0),
-                                  child: TextField(
-                                    style: TextStyle(color: Colors.white),
-                                    controller: agentEmployeeId,
-                                    decoration: InputDecoration(
-                                        border: InputBorder.none,
-                                        labelText: 'Escriba aqui',
-                                        labelStyle: TextStyle(
-                                            color: Colors.white
-                                                .withOpacity(0.5),
-                                            fontSize: 15.0)),
                                   ),
                                 ),
+                                actions: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(width: 100,
+                                        child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: backgroundColor,),backgroundColor: Gradiant2,),
+                                          onPressed: () => {
+                                            fetchSearchAgents2(
+                                                agentEmployeeId.text),
+                                            Navigator.pop(context)
+                                          },
+                                          child: Text('Buscar',style: TextStyle(color: backgroundColor,fontSize: 15.0)),
+                                        ),
+                                      ),
+                                      SizedBox(width: 10.0),
+                                      Container(width: 100,
+                                        child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: Colors.white,),backgroundColor: Colors.red,),
+                                          onPressed: () => {
+                                            Navigator.pop(context),
+                                          },
+                                          child: Text('Cerrar',style: TextStyle(color: Colors.white,fontSize: 15.0)),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
-                              actions: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      width: 100,
-                                      child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(20.0),
-                                          ),
-                                          textStyle: TextStyle(
-                                            color: backgroundColor,
-                                          ),
-                                          backgroundColor: Gradiant2,
-                                        ),
-                                        onPressed: () => {
-                                          fetchSearchAgents2(
-                                              agentEmployeeId.text),
-                                          Navigator.pop(context)
-                                        },
-                                        child: Text('Buscar',
-                                            style: TextStyle(
-                                                color: backgroundColor,
-                                                fontSize: 15.0)),
-                                      ),
-                                    ),
-                                    SizedBox(width: 10.0),
-                                    Container(
-                                      width: 100,
-                                      child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(20.0),
-                                          ),
-                                          textStyle: TextStyle(
-                                            color: Colors.white,
-                                          ),
-                                          backgroundColor: Colors.red,
-                                        ),
-                                        onPressed: () => {
-                                          Navigator.pop(context),
-                                        },
-                                        child: Text('Cerrar',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 15.0)),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
                             ),
-                          ),
-                        );
-                      },
-                      transitionDuration: Duration(milliseconds: 200),
-                      barrierDismissible: true,
-                      barrierLabel: '',
-                      context: context,
-                      pageBuilder: (context, animation1, animation2) {
-                        return Text('');
-                      });
-                },
+                          );
+                        },
+                        transitionDuration: Duration(milliseconds: 200),
+                        barrierDismissible: true,
+                        barrierLabel: '',
+                        context: context,
+                        pageBuilder: (context, animation1, animation2) {
+                          return Text('');
+                        });
+                  },
+                ),
               ),
-            ),
-            SizedBox(width: 8.0),
-            Container(
-              width: 75,
-              child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0)),
-                      backgroundColor: firstColor),
-                  child: Icon(Icons.qr_code,
-                      color: backgroundColor, size: 25.0),
-                  onPressed: scanBarcodeNormal),
-            )
-          ],
-        ),
-        SizedBox(height: 6.0),
-        FutureBuilder(
-          future: this.handler!.retrieveUsers(),
-          builder:
-              (BuildContext context, AsyncSnapshot<List<User?>> snapshot) {
-            if (snapshot.hasData) {
-              noemp.add("${snapshot.data?.length}");
-              return Text("Total de agentes: ${snapshot.data?.length}",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 15.0,
-                      fontWeight: FontWeight.bold));
-            } else {
-              return CircularProgressIndicator();
-            }
-          },
-        ),
-        SizedBox(height: 6.0),
-        FutureBuilder(
+              SizedBox(width: 8.0),
+              Container(width: 75,
+                child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),backgroundColor: firstColor),child: Icon(Icons.qr_code,color: backgroundColor, size: 25.0),onPressed: scanBarcodeNormal),
+              )
+            ],
+          ),
+          SizedBox(height: 6.0),
+          FutureBuilder(
             future: this.handler!.retrieveUsers(),
             builder:
                 (BuildContext context, AsyncSnapshot<List<User?>> snapshot) {
               if (snapshot.hasData) {
-                return Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Container(
-                    child: Column(
-                      children: [
-                        for (var i = 0; i < snapshot.data!.length; i++) ...{
-                          Container(
-                            decoration: BoxDecoration(boxShadow: [
-                              BoxShadow(
-                                  blurStyle: BlurStyle.normal,
-                                  color: Colors.white.withOpacity(0.2),
-                                  blurRadius: 15,
-                                  spreadRadius: -30,
-                                  offset: Offset(-25, -25)),
-                              BoxShadow(
-                                  blurStyle: BlurStyle.normal,
-                                  color: Colors.black.withOpacity(0.6),
-                                  blurRadius: 30,
-                                  spreadRadius: -45,
-                                  offset: Offset(20, -15)),
-                            ]),
-                            child: Card(
-                              elevation: 20,
-                              color: backgroundColor,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10)),
-                              margin: EdgeInsets.all(4.0),
-                              child: Column(
-                                children: <Widget>[
-                                  Container(
-                                    margin: EdgeInsets.only(left: 15),
-                                    child: Column(
-                                      children: [
-                                        ListTile(
-                                          contentPadding:
-                                              EdgeInsets.fromLTRB(
-                                                  5, 5, 10, 0),
-                                          title: Text('# No empleado: ',
-                                              style: TextStyle(
-                                                  fontSize: 18,
-                                                  fontWeight:
-                                                      FontWeight.bold,
-                                                  color: Colors.white)),
-                                          subtitle: Text(
-                                              '${snapshot.data![i]!.noempid}',
-                                              style: TextStyle(
-                                                  fontSize: 15,
-                                                  color: Colors.white)),
-                                          leading: Icon(
-                                              Icons.confirmation_number,
-                                              color: thirdColor,
-                                              size: 40.0),
-                                        ),
-                                        ListTile(
-                                          contentPadding:
-                                              EdgeInsets.fromLTRB(
-                                                  5, 5, 10, 0),
-                                          title: Text('Nombre:',
-                                              style: TextStyle(
-                                                  fontSize: 20,
-                                                  fontWeight:
-                                                      FontWeight.bold,
-                                                  color: Colors.white)),
-                                          subtitle: Text(
-                                              '${snapshot.data![i]!.nameuser}',
-                                              style: TextStyle(
-                                                  fontSize: 15,
-                                                  color: Colors.white)),
-                                          leading: Icon(
-                                              Icons.account_box_sharp,
-                                              color: thirdColor,
-                                              size: 40.0),
-                                        ),
-                                        ListTile(
-                                          contentPadding:
-                                              EdgeInsets.fromLTRB(
-                                                  5, 5, 10, 0),
-                                          title: Text('Hora salida: ',
-                                              style: TextStyle(
-                                                  fontSize: 20,
-                                                  fontWeight:
-                                                      FontWeight.bold,
-                                                  color: Colors.white)),
-                                          subtitle: Text(
-                                              '${snapshot.data![i]!.hourout}',
-                                              style: TextStyle(
-                                                  fontSize: 15,
-                                                  color: Colors.white)),
-                                          leading: Icon(Icons.access_alarms,
-                                              color: thirdColor,
-                                              size: 40.0),
-                                        ),
-                                        ListTile(
-                                          contentPadding:
-                                              EdgeInsets.fromLTRB(
-                                                  5, 5, 10, 0),
-                                          title: Text('Dirección: ',
-                                              style: TextStyle(
-                                                  fontSize: 20,
-                                                  fontWeight:
-                                                      FontWeight.bold,
-                                                  color: Colors.white)),
-                                          subtitle: Text(
-                                              '${snapshot.data![i]!.direction}',
-                                              style: TextStyle(
-                                                  fontSize: 15,
-                                                  color: Colors.white)),
-                                          leading: Icon(Icons.location_pin,
-                                              color: thirdColor,
-                                              size: 40.0),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Container(
-                                    decoration: BoxDecoration(boxShadow: [
-                                      BoxShadow(
-                                          blurStyle: BlurStyle.normal,
-                                          color:
-                                              Colors.white.withOpacity(0.2),
-                                          blurRadius: 10,
-                                          spreadRadius: -8,
-                                          offset: Offset(-10, -6)),
-                                      BoxShadow(
-                                          blurStyle: BlurStyle.normal,
-                                          color:
-                                              Colors.black.withOpacity(0.6),
-                                          blurRadius: 10,
-                                          spreadRadius: -15,
-                                          offset: Offset(18, 5)),
-                                    ]),
-                                    width: 150,
-                                    child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        textStyle: TextStyle(
-                                          color: Colors.white,
-                                        ),
-                                        backgroundColor: backgroundColor,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(
-                                                    20.0)),
-                                      ),
-                                      onPressed: () async {
-                                        final Database db =
-                                            await handler!.initializeDB();
-                                        await this.handler!.deleteUser(
-                                            snapshot.data![i]!.idsend!);
-                                        await db.rawQuery(
-                                            "DELETE FROM userX WHERE nameuser = '${snapshot.data![i]!.nameuser}'");
-                                        QuickAlert.show(
-                                          context: context,
-                                          title: "¿Desea eliminar el Agente?",
-                                          confirmBtnText: "Si",
-                                          cancelBtnText: "Cancelar",
-                                          showCancelBtn: true,  
-                                          confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
-                                          cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
-                                          onConfirmBtnTap: () {
-                                            Navigator.pop(context);
-                                            QuickAlert.show(
-                                              context: context,
-                                              title: "Eliminado",
-                                              type: QuickAlertType.success,
-                                            );
-                                            setState(() {
-                                              snapshot.data
-                                                  !.remove(snapshot.data![i]);
-                                            });
-                                          },
-                                          onCancelBtnTap: () {
-                                            Navigator.pop(context);
-                                            QuickAlert.show(
-                                              context: context,
-                                              title: "Cancelado",
-                                              type: QuickAlertType.error,                                                  
-                                            );                                                
-                                          },                                              
-                                          type: QuickAlertType.success,
-                                        ); 
-                                      },
-                                      child: Text('Quitar',
-                                          style: TextStyle(
-                                              color: Colors.red,
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold)),
-                                    ),
-                                  ),
-                                  SizedBox(height: 10.0),
-                                ],
-                              ),
-                            ),
-                          )
-                        },
-                        Center(
-                          child: Column(
-                            children: [
-                              SizedBox(height: 20.0),
-                              Container(
-                                decoration: BoxDecoration(boxShadow: [
-                                  BoxShadow(
-                                      blurStyle: BlurStyle.normal,
-                                      color: Colors.white.withOpacity(0.2),
-                                      blurRadius: 15,
-                                      spreadRadius: -30,
-                                      offset: Offset(-25, -25)),
-                                  BoxShadow(
-                                      blurStyle: BlurStyle.normal,
-                                      color: Colors.black.withOpacity(0.6),
-                                      blurRadius: 30,
-                                      spreadRadius: -45,
-                                      offset: Offset(20, -15)),
-                                ]),
-                                child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(
-                                                    10.0)),
-                                        backgroundColor: thirdColor,
-                                        padding: EdgeInsets.symmetric(
-                                            vertical: 5, horizontal: 22)),
-                                    child: Icon(Icons.save,
-                                        color: backgroundColor, size: 25.0),
-                                    onPressed: () async {
-                                      showGeneralDialog(
-                                          context: context,
-                                          transitionBuilder:
-                                              (context, a1, a2, widget) {
-                                            return Center(
-                                                child: ColorLoader3());
-                                          },
-                                          transitionDuration:
-                                              Duration(milliseconds: 200),
-                                          barrierDismissible: false,
-                                          barrierLabel: '',
-                                          pageBuilder: (context, animation1,
-                                              animation2) {
-                                            return Text('');
-                                          });
-
-                                      await fetchAgentsLeftPastToProgres(
-                                          hourOut.text, vehicule.text);
-
-                                      setState(() {
-                                        this.handler!.cleanTable();
-                                      });
-                                    }),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 50,)
-                      ],
-                    ),
-                  ),
-                );
-              } else if (names.length == 0) {
-                return Card(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                  margin: EdgeInsets.symmetric(vertical: 25),
-                  child: Container(
-                    color: backgroundColor,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        ListTile(
-                          leading: Icon(
-                            Icons.bus_alert,
-                            color: thirdColor,
-                          ),
-                          title: Text('Agentes',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: 26.0)),
-                          subtitle: Text('No hay agentes en el viaje',
-                              style: TextStyle(
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: 18.0)),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
+                noemp.add("${snapshot.data?.length}");
+                return Text("Total de agentes: ${snapshot.data?.length}",style: TextStyle(color: Colors.white,fontSize: 15.0,fontWeight: FontWeight.bold));
               } else {
-                return Center(child: CircularProgressIndicator());
+                return CircularProgressIndicator();
               }
-            })
-      ],
+            },
+          ),
+          SizedBox(height: 6.0),
+          FutureBuilder(
+              future: this.handler!.retrieveUsers(),
+              builder:
+                  (BuildContext context, AsyncSnapshot<List<User?>> snapshot) {
+                if (snapshot.hasData) {
+                  return Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Container(
+                      child: Column(
+                        children: [
+                          for (var i = 0; i < snapshot.data!.length; i++) ...{
+                            Container(
+                              decoration: BoxDecoration(boxShadow: [
+                                BoxShadow(blurStyle: BlurStyle.normal,color: Colors.white.withOpacity(0.2),blurRadius: 15,spreadRadius: -30,offset: Offset(-25, -25)),
+                                BoxShadow(blurStyle: BlurStyle.normal,color: Colors.black.withOpacity(0.6),blurRadius: 30,spreadRadius: -45,offset: Offset(20, -15)),
+                              ]),
+                              child: Card(elevation: 20,color: backgroundColor,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),margin: EdgeInsets.all(4.0),
+                                child: Column(
+                                  children: <Widget>[
+                                    Container(margin: EdgeInsets.only(left: 15),
+                                      child: Column(
+                                        children: [
+                                          Column(crossAxisAlignment:CrossAxisAlignment.end,
+                                            children: <Widget>[
+                                              Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.confirmation_number,color: thirdColor),
+                                                  SizedBox(width: 15,),
+                                                  Flexible(child: Text('# No empleado: ${snapshot.data![i]!.noempid}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
+                                                ],
+                                                ),
+                                              ),                       
+                                            ],
+                                          ),
+                                          Column(crossAxisAlignment:CrossAxisAlignment.end,
+                                            children: <Widget>[
+                                              Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.account_box_sharp,color: thirdColor),
+                                                  SizedBox(width: 15,),
+                                                  Flexible(child: Text('Nombre: ${snapshot.data![i]!.nameuser}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
+                                                ],
+                                                ),
+                                              ),                       
+                                            ],
+                                          ),
+                                          Column(crossAxisAlignment:CrossAxisAlignment.end,
+                                            children: <Widget>[
+                                              Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.access_alarms,color: thirdColor),
+                                                  SizedBox(width: 15,),
+                                                  Flexible(child: Text('Hora salida: ${snapshot.data![i]!.hourout}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
+                                                ],
+                                                ),
+                                              ),                       
+                                            ],
+                                          ),
+                                          Column(crossAxisAlignment:CrossAxisAlignment.end,
+                                            children: <Widget>[
+                                              Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
+                                              child: Row(
+                                                children: [
+                                                  Padding(padding: const EdgeInsets.only(bottom: 18),child: Icon(Icons.location_pin,color: thirdColor)),
+                                                  SizedBox(width: 15,),
+                                                  Flexible(child: Text('Dirección: ${snapshot.data![i]!.direction}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
+                                                ],
+                                                ),
+                                              ),                       
+                                            ],
+                                          ),          
+                                        ],
+                                      ),
+                                    ),
+                                    Container(width: 150,
+                                      decoration: BoxDecoration(boxShadow: [
+                                        BoxShadow(blurStyle: BlurStyle.normal,color:Colors.white.withOpacity(0.2),blurRadius: 10,spreadRadius: -8,offset: Offset(-10, -6)),
+                                        BoxShadow(blurStyle: BlurStyle.normal,color:Colors.black.withOpacity(0.6),blurRadius: 10,spreadRadius: -15,offset: Offset(18, 5)),
+                                      ]),                                    
+                                      child: ElevatedButton(style: ElevatedButton.styleFrom(textStyle: TextStyle(color: Colors.white,),backgroundColor: backgroundColor,shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0)),),
+                                        onPressed: () async {
+                                          final Database db = await handler!.initializeDB();
+                                          await this.handler!.deleteUser(snapshot.data![i]!.idsend!);
+                                          await db.rawQuery("DELETE FROM userX WHERE nameuser = '${snapshot.data![i]!.nameuser}'");
+                                          QuickAlert.show(context: context,title: "¿Desea eliminar el Agente?",confirmBtnText: "Si",cancelBtnText: "Cancelar",showCancelBtn: true,  confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
+                                            onConfirmBtnTap: () {
+                                              Navigator.pop(context);
+                                              QuickAlert.show(
+                                                context: context,
+                                                title: "Eliminado",
+                                                type: QuickAlertType.success,
+                                              );
+                                              setState(() {
+                                                snapshot.data!.remove(snapshot.data![i]);
+                                              });
+                                            },
+                                            onCancelBtnTap: () {
+                                              Navigator.pop(context);
+                                              QuickAlert.show(
+                                                context: context,
+                                                title: "Cancelado",
+                                                type: QuickAlertType.error,                                                  
+                                              );                                                
+                                            },                                              
+                                            type: QuickAlertType.success,
+                                          ); 
+                                        },
+                                        child: Text('Quitar',style: TextStyle(color: Colors.red,fontSize: 20,fontWeight: FontWeight.bold)),
+                                      ),
+                                    ),
+                                    SizedBox(height: 10.0),
+                                  ],
+                                ),
+                              ),
+                            )
+                          },
+                          Center(
+                            child: Column(
+                              children: [
+                                SizedBox(height: 20.0),
+                                Container(
+                                  decoration: BoxDecoration(boxShadow: [
+                                    BoxShadow(blurStyle: BlurStyle.normal,color: Colors.white.withOpacity(0.2),blurRadius: 15,spreadRadius: -30,offset: Offset(-25, -25)),
+                                    BoxShadow(blurStyle: BlurStyle.normal,color: Colors.black.withOpacity(0.6),blurRadius: 30,spreadRadius: -45,offset: Offset(20, -15)),
+                                  ]),
+                                  child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10.0)),backgroundColor: thirdColor,padding: EdgeInsets.symmetric(vertical: 5, horizontal: 22)),
+                                      child: Icon(Icons.save,color: backgroundColor, size: 25.0),
+                                      onPressed: () async {                                       
+                                        showGeneralDialog(context: context,transitionBuilder:(context, a1, a2, widget) {return Center( child: ColorLoader3());},
+                                          transitionDuration:Duration(milliseconds: 200),barrierDismissible: false,barrierLabel: '',pageBuilder: (context, animation1,animation2) {
+                                          return Text('');
+                                        });
+                                        await fetchAgentsLeftPastToProgres(hourOut.text, vehicule.text);
+                                        if(prefs.vehiculo != "" || nameController.text != ""){
+                                          setState(() {
+                                            this.handler!.cleanTable();
+                                          });
+                                        }
+                                      }),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 60,)
+                        ],
+                      ),
+                    ),
+                  );
+                } else if (names.length == 0) {
+                  return Card(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),margin: EdgeInsets.symmetric(vertical: 25),
+                    child: Container(color: backgroundColor,
+                      child: Column(mainAxisSize: MainAxisSize.max,crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          ListTile(
+                            leading: Icon(Icons.bus_alert,color: thirdColor,),
+                            title: Text('Agentes',style: TextStyle(color: Colors.white,fontWeight: FontWeight.normal,fontSize: 26.0)),
+                            subtitle: Text('No hay agentes en el viaje',style: TextStyle(color: Colors.red,fontWeight: FontWeight.normal,fontSize: 18.0)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                } else {
+                  return Center(child: CircularProgressIndicator());
+                }
+              })
+        ],
+      ),
     );
   }
 
@@ -1823,119 +1567,66 @@ class _DriverDescriptionState extends State<DriverDescription>
           SizedBox(height: 30.0),
           Container(
             decoration: BoxDecoration(boxShadow: [
-              BoxShadow(
-                  blurStyle: BlurStyle.normal,
-                  color: Colors.white.withOpacity(0.2),
-                  blurRadius: 30,
-                  spreadRadius: -8,
-                  offset: Offset(-15, -6)),
-              BoxShadow(
-                  blurStyle: BlurStyle.normal,
-                  color: Colors.black.withOpacity(0.6),
-                  blurRadius: 30,
-                  spreadRadius: -15,
-                  offset: Offset(18, 5)),
+              BoxShadow(blurStyle: BlurStyle.normal,color: Colors.white.withOpacity(0.2),blurRadius: 30,spreadRadius: -8,offset: Offset(-15, -6)),
+              BoxShadow(blurStyle: BlurStyle.normal,color: Colors.black.withOpacity(0.6),blurRadius: 30,spreadRadius: -15,offset: Offset(18, 5)),
             ]),
-            child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                    backgroundColor: Gradiant2,
-                    padding:
-                        EdgeInsets.symmetric(vertical: 10, horizontal: 40)),
-                child: Text(
-                    radioShowAndHide == false
-                        ? 'Presione aquí para asignar conductor'
-                        : 'Presione aquí si usted realizará el viaje',
-                    style: TextStyle(color: backgroundColor)),
-                onPressed: () {
-                  if (radioShowAndHide) {
-                    setState(() {
-                      radioShowAndHide = false;
-                    });
-                  } else {
-                    setState(() {
-                      radioShowAndHide = true;
-                    });
-                  }
-                }),
+            child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0),),backgroundColor: Gradiant2,padding:EdgeInsets.symmetric(vertical: 10, horizontal: 40)),
+              child: Text(radioShowAndHide == false? 'Presione aquí para asignar conductor': 'Presione aquí si usted realizará el viaje', style: TextStyle(color: backgroundColor)),
+              onPressed: () {
+                if (radioShowAndHide) {
+                  setState(() {
+                    radioShowAndHide = false;
+                  });
+                } else {
+                  setState(() {
+                    radioShowAndHide = true;
+                  });
+                }
+              }),
           ),
-          Visibility(
-              maintainSize: true,
-              maintainAnimation: true,
-              maintainState: true,
-              visible: radioShowAndHide,
-              child: getSearchableDropdown(context)),
+          Visibility(maintainSize: true,maintainAnimation: true,maintainState: true,visible: radioShowAndHide,child: getSearchableDropdown(context)),
         ],
       ),
     );
   }
 
   Widget getSearchableDropdown(BuildContext context) {
-    return Container(
-      width: 300,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(15)),
+    return Container(width: 300,
+      decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(15)),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            spreadRadius: 0,
-            blurStyle: BlurStyle.solid,
-            blurRadius: 10,
-            offset: Offset(0, 0), // changes position of shadow
-          ),
-          BoxShadow(
-            color: Colors.white.withOpacity(0.1),
-            spreadRadius: 0,
-            blurRadius: 5,
-            blurStyle: BlurStyle.inner,
-            offset: Offset(0, 0), // changes position of shadow
-          ),
+          BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0, 0),),
+          BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0, 0),),
         ],
       ),
-      child: DropdownSearch<TripsDrivers>(
-                  mode: Mode.DIALOG,
-                  showClearButton :false,
-                  items: driverId ,
-                  itemAsString: (TripsDrivers? u) => u!.driverFullname!,                  
-                  onChanged: (value){                                        
-                    setState(() {
-                      driver = value!.driverId.toString();
-                      prefs.driverIdx = driver.toString();
-                      print(prefs.driverIdx);
-                    });
-                  },
-                  showSearchBox: true,
-                  filterFn: (instance, filter){
-                    if(instance!.driverFullname!.contains(filter!)){
-                      print(filter);
-                      return true;
-                    }else if(instance.driverFullname!.toLowerCase().contains(filter)){
-                      print(filter);
-                      return true;
-                    }
-                    else{
-                      return false;
-                    }
-                  },
-                  popupItemBuilder: (context,TripsDrivers item,bool isSelected){
-                    return Container(
-                      margin: EdgeInsets.symmetric(horizontal: 8),
-                      decoration: !isSelected
-                          ? null
-                          : BoxDecoration(
-                        border: Border.all(color: Theme.of(context).primaryColor),
-                        borderRadius: BorderRadius.circular(5),
-                        color: Colors.white,
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(item.driverFullname!),
-                      ),
-                    );
-                  },
-                 ),
+      child: DropdownSearch<TripsDrivers>(mode: Mode.DIALOG, showClearButton :false, items: driverId ,
+          itemAsString: (TripsDrivers? u) => u!.driverFullname!,                  
+            onChanged: (value){                                        
+              setState(() {
+                driver = value!.driverId.toString();
+                prefs.driverIdx = driver.toString();
+                print(prefs.driverIdx);
+              });
+            },
+            showSearchBox: true,
+            filterFn: (instance, filter){
+              if(instance!.driverFullname!.contains(filter!)){
+                print(filter);
+                return true;
+              }else if(instance.driverFullname!.toLowerCase().contains(filter)){
+                print(filter);
+                return true;
+              }
+              else{
+                return false;
+              }
+            },
+            popupItemBuilder: (context,TripsDrivers item,bool isSelected){
+              return Container(margin: EdgeInsets.symmetric(horizontal: 8),
+                decoration: !isSelected? null: BoxDecoration(border: Border.all(color: Theme.of(context).primaryColor),borderRadius: BorderRadius.circular(5),color: Colors.white,),
+                child: Padding(padding: const EdgeInsets.all(8.0),child: Text(item.driverFullname!),),
+              );
+            },
+          ),
       // SearchableDropdown(
       //   closeButton: (selectedItem) {
       //     return (selectedItem == null || selectedItem.length == 0)
@@ -2006,54 +1697,22 @@ class _DriverDescriptionState extends State<DriverDescription>
     final String aloricaSPS = "Alorica SPS";
     final String zerovarianceSPS = "Zero Variance SPS";
     return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(15)),
+      decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(15)),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            spreadRadius: 0,
-            blurStyle: BlurStyle.solid,
-            blurRadius: 10,
-            offset: Offset(0, 0), // changes position of shadow
-          ),
-          BoxShadow(
-            color: Colors.white.withOpacity(0.1),
-            spreadRadius: 0,
-            blurRadius: 5,
-            blurStyle: BlurStyle.inner,
-            offset: Offset(0, 0), // changes position of shadow
-          ),
+          BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0, 0),),
+          BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0, 0), ),
         ],
       ),
       margin: EdgeInsets.symmetric(horizontal: 40.0),
       child: Row(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Icon(
-              Icons.location_city,
-              color: thirdColor,
-              size: 30.0,
-            ),
-          ),
-          
+          Padding(padding: const EdgeInsets.all(8.0),child: Icon(Icons.location_city,color: thirdColor,size: 30.0,),),          
           Expanded(
-              child: new DropdownButton(
-            underline: SizedBox(),
-            style: TextStyle(color: Colors.white60),
-            dropdownColor: backgroundColor2,
-            elevation: 20,
-            hint: Text(prefs.companyPrueba,
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.normal,
-                    fontSize: 15.0)),
+            child: new DropdownButton(underline: SizedBox(),style: TextStyle(color: Colors.white60),dropdownColor: backgroundColor2,elevation: 20,
+            hint: Text(prefs.companyPrueba,style: TextStyle(color: Colors.white,fontWeight: FontWeight.normal,fontSize: 15.0)),
             items: data.map((e) {
-              return new DropdownMenuItem(
-                alignment: Alignment.centerLeft,
-                child: Text(e['companyName'] == null || e['companyName'] == ""
-                    ? prefs.companyPrueba
-                    : e['companyName']),
+              return new DropdownMenuItem(alignment: Alignment.centerLeft,
+                child: Text(e['companyName'] == null || e['companyName'] == "" ? prefs.companyPrueba: e['companyName']),
                 value: e['companyId'].toString(),
               );
             }).toList(),
@@ -2102,15 +1761,13 @@ class _DriverDescriptionState extends State<DriverDescription>
     final String destination1 = "Gasolinera";
     final String destination2 = "Emisoras";
 
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 40.0),
+    return Container(margin: EdgeInsets.symmetric(horizontal: 40.0),
       child: Row(
         children: [
           Icon(Icons.location_city),
           SizedBox(width: 20.0),
           Expanded(
-              child: new DropdownButton(
-            hint: Text(prefs.destinationPrueba),
+            child: new DropdownButton(hint: Text(prefs.destinationPrueba),
             items: data2.map((e) {
               return new DropdownMenuItem(
                 child: Text(
@@ -2149,223 +1806,107 @@ class _DriverDescriptionState extends State<DriverDescription>
   Widget _mostrarQuintaVentana(BuildContext context) {
     return Column(
       children: [
-        Text('Compañía',
-                style: TextStyle(
-                    color: GradiantV_2,
-                    fontWeight: FontWeight.normal,
-                    fontSize: 35.0)),
-            SizedBox(height: 20.0),
+        Text('Compañía',style: TextStyle(color: GradiantV_2,fontWeight: FontWeight.normal,fontSize: 35.0)),
+        SizedBox(height: 20.0),
         _crearDropdown(context),
         SizedBox(height: 10.0),
-        Text('Destino',
-                style: TextStyle(
-                    color: GradiantV_2,
-                    fontWeight: FontWeight.normal,
-                    fontSize: 35.0)),
+        Text('Destino',style: TextStyle(color: GradiantV_2,fontWeight: FontWeight.normal,fontSize: 35.0)),
         SizedBox(height: 5.0),
         _crearDropdownToDestination(context),
-        FutureBuilder<DriverData>(
-            future: itemx,
-            builder: (BuildContext context, abc) {
-              switch (abc.connectionState) {
-                case ConnectionState.waiting:
-                  return Text('Cargando....');
-                default:
-                  if (abc.hasError) {
-                    return Text('Error: ${abc.error}');
-                  } else {
-                    return Column(
-                      children: [
-                        if (abc.data?.driverCoord == true) showAndHide()
-                      ],
-                    );
-                  }
-              }
-            }),
-        Container(
-          width: 320,
-          decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(15)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    spreadRadius: 0,
-                    blurStyle: BlurStyle.solid,
-                    blurRadius: 10,
-                    offset: Offset(0, 0), // changes position of shadow
-                  ),
-                  BoxShadow(
-                    color: Colors.white.withOpacity(0.1),
-                    spreadRadius: 0,
-                    blurRadius: 5,
-                    blurStyle: BlurStyle.inner,
-                    offset: Offset(0, 0), // changes position of shadow
-                  ),
-                ],
-              ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: TextField(
-              cursorColor: firstColor,
-              style: TextStyle(color: Colors.white),
-                onChanged: (value) {
+        FutureBuilder<DriverData>(future: itemx,
+          builder: (BuildContext context, abc) {
+            switch (abc.connectionState) {
+              case ConnectionState.waiting:
+                return Text('Cargando....');
+              default:
+                if (abc.hasError) {
+                  return Text('Error: ${abc.error}');
+                } else {
+                  return Column(
+                    children: [
+                      if (abc.data?.driverCoord == true) showAndHide()
+                    ],
+                  );
+                }
+            }
+          }),
+        Container(width: 320,
+          decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(15)),
+            boxShadow: [
+              BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0, 0), ),
+              BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0, 0), ),
+            ],
+          ),
+          child: Padding(padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: TextField(cursorColor: firstColor,style: TextStyle(color: Colors.white),
+              onChanged: (value) {
+                setState(() {                    
                   prefs.vehiculo = value;
-                },
-                controller: nameController,
-                decoration: InputDecoration(
-                  icon: Icon(Icons.directions_bus,
-                          color: thirdColor, size: 30.0),
-                      border: InputBorder.none,                  
-                  hintText: prefs.vehiculoSolid == ""
-                      ? "Vehículo"
-                      : prefs.vehiculoSolid,
-                  hintStyle: TextStyle(
-                          color: Colors.white.withOpacity(0.5), fontSize: 15.0)
-                )),
+                });
+              },
+              controller: nameController,
+              decoration: InputDecoration(icon: Icon(Icons.directions_bus,color: thirdColor, size: 30.0),border: InputBorder.none,                  
+              hintText: prefs.vehiculoSolid == ""? "Vehículo": prefs.vehiculoSolid,
+              hintStyle: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 15.0)
+              )),
           ),
         ),
         SizedBox(height: 20.0),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
+        Row(crossAxisAlignment: CrossAxisAlignment.center,mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-                  width: 75,
-                  child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: GradiantV_2,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                      ),
-                      child: Icon(Icons.delete,
-                          color: backgroundColor, size: 25.0),
-                      onPressed: () {
-                        setState(() {
-                          this.handler!.cleanTableAgent();
-                        });
-                      }),
-                ),
+            Container(width: 75,
+              child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: GradiantV_2,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0),),),
+                child: Icon(Icons.delete,color: backgroundColor, size: 25.0),
+                onPressed: () {
+                  setState(() {
+                    this.handler!.cleanTableAgent();
+                  });
+                }),
+            ),
             SizedBox(width: 5.0),
-            Container(
-                  width: 75,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: GradiantV2,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                    ),
-                    child:
-                        Icon(Icons.search, color: backgroundColor, size: 25.0),
-                    onPressed: () {
+            Container(width: 75,
+              child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: GradiantV2,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0),),),
+                child:Icon(Icons.search, color: backgroundColor, size: 25.0),
+                  onPressed: () {
                       showGeneralDialog(
                           barrierColor: Colors.black.withOpacity(0.5),
                           transitionBuilder: (context, a1, a2, widget) {
-                            return Transform.scale(
-                              scale: a1.value,
-                              child: Opacity(
-                                opacity: a1.value,
-                                child: AlertDialog(
-                                  backgroundColor: backgroundColor,
-                                  shape: OutlineInputBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(16.0)),
+                            return Transform.scale(scale: a1.value,
+                              child: Opacity(opacity: a1.value,
+                                child: AlertDialog(backgroundColor: backgroundColor,shape: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
                                   title: Center(
-                                      child: Text(
-                                    'Buscar Agente',
-                                    style: TextStyle(
-                                        color: GradiantV_2, fontSize: 20.0),
-                                  )),
-                                  content: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(15)),
+                                    child: Text('Buscar Agente',style: TextStyle(color: GradiantV_2, fontSize: 20.0),)),
+                                    content: Container(decoration: BoxDecoration(borderRadius:BorderRadius.all(Radius.circular(15)),
                                       boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.2),
-                                          spreadRadius: 0,
-                                          blurStyle: BlurStyle.solid,
-                                          blurRadius: 10,
-                                          offset: Offset(0,
-                                              0), // changes position of shadow
-                                        ),
-                                        BoxShadow(
-                                          color: Colors.white.withOpacity(0.1),
-                                          spreadRadius: 0,
-                                          blurRadius: 5,
-                                          blurStyle: BlurStyle.inner,
-                                          offset: Offset(0,
-                                              0), // changes position of shadow
-                                        ),
+                                        BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0,0),),
+                                        BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0,0), ),
                                       ],
                                     ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8.0),
-                                      child: TextField(
-                                        style: TextStyle(color: Colors.white),
-                                        controller: agentEmployeeId,
-                                        decoration: InputDecoration(
-                                            border: InputBorder.none,
-                                            labelText: 'Escriba aqui',
-                                            labelStyle: TextStyle(
-                                                color: Colors.white
-                                                    .withOpacity(0.5),
-                                                fontSize: 15.0)),
+                                    child: Padding(padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                      child: TextField(style: TextStyle(color: Colors.white),controller: agentEmployeeId,
+                                        decoration: InputDecoration(border: InputBorder.none,labelText: 'Escriba aqui',labelStyle: TextStyle(color: Colors.white.withOpacity(0.5),fontSize: 15.0)),
                                       ),
                                     ),
                                   ),
                                   actions: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                    Row(mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                        Container(
-                                          width: 100,
-                                          child: ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(20.0),
-                                              ),
-                                              textStyle: TextStyle(
-                                                color: backgroundColor,
-                                              ),
-                                              backgroundColor: Gradiant2,
-                                            ),
+                                        Container(width: 100,
+                                          child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: backgroundColor,),backgroundColor: Gradiant2,),
                                             onPressed: () => {
-                                              fetchSearchAgentsSolid(
-                                          agentEmployeeId.text),
+                                              fetchSearchAgentsSolid(agentEmployeeId.text),
                                               Navigator.pop(context)
                                             },
-                                            child: Text('Buscar',
-                                                style: TextStyle(
-                                                    color: backgroundColor,
-                                                    fontSize: 15.0)),
+                                            child: Text('Buscar',style: TextStyle(color: backgroundColor,fontSize: 15.0)),
                                           ),
                                         ),
                                         SizedBox(width: 10.0),
-                                        Container(
-                                          width: 100,
-                                          child: ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(20.0),
-                                              ),
-                                              textStyle: TextStyle(
-                                                color: Colors.white,
-                                              ),
-                                              backgroundColor: Colors.red,
-                                            ),
+                                        Container(width: 100,
+                                          child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: Colors.white,),backgroundColor: Colors.red,),
                                             onPressed: () => {
                                               Navigator.pop(context),
                                             },
-                                            child: Text('Cerrar',
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 15.0)),
+                                            child: Text('Cerrar',style: TextStyle(color: Colors.white,fontSize: 15.0)),
                                           ),
                                         ),
                                       ],
@@ -2375,28 +1916,15 @@ class _DriverDescriptionState extends State<DriverDescription>
                               ),
                             );
                           },
-                          transitionDuration: Duration(milliseconds: 200),
-                          barrierDismissible: true,
-                          barrierLabel: '',
-                          context: context,
-                          pageBuilder: (context, animation1, animation2) {
-                            return Text('');
-                          });
+                        transitionDuration: Duration(milliseconds: 200),barrierDismissible: true,barrierLabel: '',context: context,pageBuilder: (context, animation1, animation2) {return Text('');});
                     },
                   ),
                 ),
             SizedBox(width: 8.0),
-            Container(
-                  width: 75,
-                  child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0)),
-                          backgroundColor: firstColor),
-                      child: Icon(Icons.qr_code,
-                          color: backgroundColor, size: 25.0),
-                      onPressed: scanBarcodeNormalSolid),
-                ) 
+            Container(width: 75,
+              child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),backgroundColor: firstColor),
+                child: Icon(Icons.qr_code,color: backgroundColor, size: 25.0),onPressed: scanBarcodeNormalSolid),
+            ) 
           ],
         ),
         SizedBox(height: 6.0),
@@ -2405,11 +1933,7 @@ class _DriverDescriptionState extends State<DriverDescription>
           builder: (BuildContext context, AsyncSnapshot<List<User?>> snapshot) {
             if (snapshot.hasData) {
               noemp.add("${snapshot.data?.length}");
-              return Text("Total de agentes: ${snapshot.data?.length}",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 15.0,
-                          fontWeight: FontWeight.bold));
+              return Text("Total de agentes: ${snapshot.data?.length}",style: TextStyle(color: Colors.white,fontSize: 15.0,fontWeight: FontWeight.bold));
             } else {
               return CircularProgressIndicator();
             }
@@ -2418,218 +1942,95 @@ class _DriverDescriptionState extends State<DriverDescription>
         SizedBox(height: 6.0),
         FutureBuilder(
             future: this.handler!.retrieveAgent(),
-            builder:
-                (BuildContext context, AsyncSnapshot<List<User?>> snapshot) {
+            builder: (BuildContext context, AsyncSnapshot<List<User?>> snapshot) {
               if (snapshot.hasData) {
-                return Padding(
-                  padding: const EdgeInsets.all(15.0),
+                return Padding(padding: const EdgeInsets.all(15.0),
                   child: Container(
                     child: Column(
                       children: [
                         for (var i = 0; i < snapshot.data!.length; i++) ...{
-                          Container(
-                            decoration: BoxDecoration(boxShadow: [
-                                  BoxShadow(
-                                      blurStyle: BlurStyle.normal,
-                                      color: Colors.white.withOpacity(0.2),
-                                      blurRadius: 15,
-                                      spreadRadius: -30,
-                                      offset: Offset(-25, -25)),
-                                  BoxShadow(
-                                      blurStyle: BlurStyle.normal,
-                                      color: Colors.black.withOpacity(0.6),
-                                      blurRadius: 30,
-                                      spreadRadius: -45,
-                                      offset: Offset(20, -15)),
-                                ]),                            
-                            child: Card(
-                              elevation: 20,
-                                  color: backgroundColor,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10)),
-                                  margin: EdgeInsets.all(4.0),
+                          Container(decoration: BoxDecoration(boxShadow: [
+                            BoxShadow(blurStyle: BlurStyle.normal,color: Colors.white.withOpacity(0.2),blurRadius: 15,spreadRadius: -30,offset: Offset(-25, -25)),
+                            BoxShadow(blurStyle: BlurStyle.normal,color: Colors.black.withOpacity(0.6),blurRadius: 30,spreadRadius: -45,offset: Offset(20, -15)),
+                            ]),                            
+                            child: Card(elevation: 20,color: backgroundColor,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),margin: EdgeInsets.all(4.0),
                               child: Column(
                                 children: <Widget>[
-                                  Container(
-                                    margin: EdgeInsets.only(left: 15),
+                                  Container(margin: EdgeInsets.only(left: 15),
                                     child: Column(
                                       children: [
-                                        ListTile(
-                                          contentPadding:
-                                              EdgeInsets.fromLTRB(5, 5, 10, 0),
-                                          title: Text('# No empleado: ',
-                                                  style: TextStyle(
-                                                      fontSize: 18,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Colors.white)),
-                                          subtitle:
-                                            Text('${snapshot.data![i]!.noempid}',
-                                                  style: TextStyle(
-                                                      fontSize: 15,
-                                                      color: Colors.white)),
-                                        leading: Icon(Icons.confirmation_number,
-                                            color: thirdColor,
-                                                  size: 40.0),
-                                      ),
-                                      ListTile(
-                                        contentPadding:
-                                            EdgeInsets.fromLTRB(5, 5, 10, 0),
-                                        title: Text('Nombre:',
-                                            style: TextStyle(
-                                                      fontSize: 18,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Colors.white)),
-                                        subtitle:
-                                            Text('${snapshot.data![i]!.nameuser}',
-                                                  style: TextStyle(
-                                                      fontSize: 15,
-                                                      color: Colors.white)),
-                                        leading: Icon(Icons.account_box_sharp,
-                                             color: thirdColor,
-                                                  size: 40.0),
-                                      ),
-                                      ListTile(
-                                        contentPadding:
-                                          EdgeInsets.fromLTRB(5, 5, 10, 0),
-                                      title: Text('Hora: ',
-                                            style: TextStyle(
-                                                      fontSize: 18,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Colors.white)),
-                                      subtitle:
-                                          Text('${snapshot.data![i]!.hourout}',
-                                                  style: TextStyle(
-                                                      fontSize: 15,
-                                                      color: Colors.white)),
-                                      leading: Icon(Icons.access_alarms,
-                                          color: thirdColor,
-                                                  size: 40.0),
-                                    ),
-                                    ListTile(
-                                      contentPadding:
-                                          EdgeInsets.fromLTRB(5, 5, 10, 0),
-                                      title: Text('Dirección: ',
-                                          style: TextStyle(
-                                                      fontSize: 18,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Colors.white)),
-                                      subtitle:
-                                          Text('${snapshot.data![i]!.direction}',
-                                                  style: TextStyle(
-                                                      fontSize: 15,
-                                                      color: Colors.white)),
-                                      leading: Icon(Icons.location_pin,
-                                                color: thirdColor,
-                                                  size: 40.0),
-                                          ),
+                                        ListTile(contentPadding:EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                          title: Text('# No empleado: ',style: TextStyle(fontSize: 18,fontWeight:FontWeight.bold,color: Colors.white)),
+                                          subtitle:Text('${snapshot.data![i]!.noempid}',style: TextStyle(fontSize: 15,color: Colors.white)),
+                                          leading: Icon(Icons.confirmation_number,color: thirdColor,size: 40.0),
+                                        ),
+                                        ListTile(contentPadding:EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                          title: Text('Nombre:',style: TextStyle(fontSize: 18,fontWeight:FontWeight.bold,color: Colors.white)),
+                                          subtitle: Text('${snapshot.data![i]!.nameuser}',style: TextStyle(fontSize: 15,color: Colors.white)),
+                                          leading: Icon(Icons.account_box_sharp,color: thirdColor,size: 40.0),
+                                        ),
+                                        ListTile(contentPadding:EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                          title: Text('Hora: ',style: TextStyle(fontSize: 18,fontWeight:FontWeight.bold,color: Colors.white)),
+                                          subtitle: Text('${snapshot.data![i]!.hourout}',style: TextStyle(fontSize: 15,color: Colors.white)),
+                                          leading: Icon(Icons.access_alarms,color: thirdColor,size: 40.0),
+                                        ),
+                                        ListTile(contentPadding:EdgeInsets.fromLTRB(5, 5, 10, 0),
+                                          title: Text('Dirección: ',style: TextStyle(fontSize: 18,fontWeight:FontWeight.bold,color: Colors.white)),
+                                          subtitle: Text('${snapshot.data![i]!.direction}',style: TextStyle(fontSize: 15,color: Colors.white)),
+                                          leading: Icon(Icons.location_pin,color: thirdColor,size: 40.0),
+                                        ),
                                         ],
                                       ),
                                     ),
                                     Container(
                                       decoration: BoxDecoration(boxShadow: [
-                                          BoxShadow(
-                                              blurStyle: BlurStyle.normal,
-                                              color:
-                                                  Colors.white.withOpacity(0.2),
-                                              blurRadius: 10,
-                                              spreadRadius: -8,
-                                              offset: Offset(-10, -6)),
-                                          BoxShadow(
-                                              blurStyle: BlurStyle.normal,
-                                              color:
-                                                  Colors.black.withOpacity(0.6),
-                                              blurRadius: 10,
-                                              spreadRadius: -15,
-                                              offset: Offset(18, 5)),
+                                          BoxShadow(blurStyle: BlurStyle.normal,color:Colors.white.withOpacity(0.2),blurRadius: 10,spreadRadius: -8,offset: Offset(-10, -6)),
+                                          BoxShadow(blurStyle: BlurStyle.normal,color:Colors.black.withOpacity(0.6),blurRadius: 10,spreadRadius: -15,offset: Offset(18, 5)),
                                         ]),
-                                        width: 150,
-                                      child: ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              textStyle: TextStyle(
-                                                color: Colors.white,
-                                              ),
-                                              backgroundColor: backgroundColor,
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          20.0)),
-                                            ),
-                                            onPressed: () async {
-                                            final Database db =
-                                                await handler!.initializeDB();
-                                            await this
-                                                .handler
-                                                !.deleteAgent(snapshot.data![i]!.idsend);
-                                            await db.rawQuery(
-                                                "DELETE FROM agentInsert WHERE nameuser = '${snapshot.data![i]!.nameuser}'");
+                                      width: 150,
+                                      child: ElevatedButton(style: ElevatedButton.styleFrom(textStyle: TextStyle(color: Colors.white,),backgroundColor: backgroundColor,shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0)),),
+                                      onPressed: () async {
+                                        final Database db = await handler!.initializeDB();
+                                          await this.handler!.deleteAgent(snapshot.data![i]!.idsend);
+                                          await db.rawQuery("DELETE FROM agentInsert WHERE nameuser = '${snapshot.data![i]!.nameuser}'");
                                             setState(() {
                                               snapshot.data!.remove(snapshot.data![i]);
                                             });
                                           },
-                                          child: Text('Quitar',
-                                              style: TextStyle(color: Colors.white)),
-                                                            ),
+                                          child: Text('Quitar',style: TextStyle(color: Colors.white)),),
                                     ),
-                                                          SizedBox(height: 10.0),
-                                                        ],
-                                                      ),
-                                                    ),
+                                    SizedBox(height: 10.0),
+                                ],
+                              ),
+                            ),
                           ),
                         },
                         Center(
                           child: Column(
                             children: [                             
-                              Container(
-                                decoration: BoxDecoration(boxShadow: [
-                                      BoxShadow(
-                                          blurStyle: BlurStyle.normal,
-                                          color: Colors.white.withOpacity(0.2),
-                                          blurRadius: 15,
-                                          spreadRadius: -30,
-                                          offset: Offset(-25, -25)),
-                                      BoxShadow(
-                                          blurStyle: BlurStyle.normal,
-                                          color: Colors.black.withOpacity(0.6),
-                                          blurRadius: 30,
-                                          spreadRadius: -45,
-                                          offset: Offset(20, -15)),
-                                    ]),
-                                child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        10.0)),
-                                            backgroundColor: thirdColor,
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 5, horizontal: 22)),
-                                    child: Icon(Icons.save),
+                              Container(decoration: BoxDecoration(boxShadow: [
+                                BoxShadow(blurStyle: BlurStyle.normal,color: Colors.white.withOpacity(0.2),blurRadius: 15,spreadRadius: -30,offset: Offset(-25, -25)),
+                                BoxShadow(blurStyle: BlurStyle.normal,color: Colors.black.withOpacity(0.6),blurRadius: 30,spreadRadius: -45,offset: Offset(20, -15)),
+                                ]),
+                              child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10.0)),
+                                backgroundColor: thirdColor,padding: EdgeInsets.symmetric(vertical: 5, horizontal: 22)),
+                                  child: Icon(Icons.save),
                                     onPressed: () async {
-                                      showGeneralDialog(
-                                          context: context,
-                                          transitionBuilder:
-                                              (context, a1, a2, widget) {
-                                            return Center(child: ColorLoader3());
-                                          },
-                                          transitionDuration:
-                                              Duration(milliseconds: 200),
-                                          barrierDismissible: false,
-                                          barrierLabel: '',
-                                          pageBuilder:
-                                              (context, animation1, animation2) {
-                                            return Text('');
-                                          });
-                                      // await fetchAgentsLeftPastToProgres( hourOut.text, vehicule.text);
-                                              
-                                      await fetchAgentsLeftPastToProgresToSolid();
-                                      setState(() {
-                                        this.handler!.cleanTableAgent();
-                                      });
-                                    }),
+                                      showGeneralDialog(context: context,
+                                        transitionBuilder: (context, a1, a2, widget) {
+                                          return Center(child: ColorLoader3());
+                                        },
+                                        transitionDuration:Duration(milliseconds: 200),
+                                        barrierDismissible: false,
+                                        barrierLabel: '',
+                                        pageBuilder: (context, animation1, animation2) {
+                                          return Text('');
+                                        });      
+                                        await fetchAgentsLeftPastToProgresToSolid();
+                                        setState(() {
+                                          this.handler!.cleanTableAgent();
+                                        });
+                                }),
                               ),                              
                             ],
                           ),
@@ -2639,31 +2040,13 @@ class _DriverDescriptionState extends State<DriverDescription>
                   ),
                 );
               } else if (names.length == 0) {
-                return Card(
-                   shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                      margin: EdgeInsets.symmetric(vertical: 25),
-                  child: Container(
-                    color: backgroundColor,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                return Card(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),margin: EdgeInsets.symmetric(vertical: 25),
+                  child: Container(color: backgroundColor,
+                    child: Column(mainAxisSize: MainAxisSize.max,crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        ListTile(
-                          leading: Icon(
-                            Icons.bus_alert,
-                            color: thirdColor,
-                          ),
-                          title: Text('Agentes',
-                              style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.normal,
-                                      fontSize: 26.0)),
-                          subtitle: Text('No hay agentes en el viaje',
-                              style: TextStyle(
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: 18.0)),
+                        ListTile(leading: Icon(Icons.bus_alert,color: thirdColor,),
+                          title: Text('Agentes',style: TextStyle(color: Colors.white,fontWeight: FontWeight.normal,fontSize: 26.0)),
+                          subtitle: Text('No hay agentes en el viaje',style: TextStyle(color: Colors.red,fontWeight: FontWeight.normal,fontSize: 18.0)),
                         ),
                       ],
                     ),
@@ -2678,42 +2061,13 @@ class _DriverDescriptionState extends State<DriverDescription>
   }
 }
 
-class User {
-  //final int id;
+class User {  
   final String? noempid;
   final String? nameuser;
   final String? hourout;
   final String? direction;
   final int? idsend;
-  // final String vehicle;
-
-  User({
-    //this.id,
-    this.noempid,
-    this.nameuser,
-    this.hourout,
-    this.direction,
-    this.idsend,
-    //this.vehicle
-  });
-
-  User.fromMap(Map<String, dynamic> res)
-      :
-        //id = res["id"],
-        noempid = res["noempid"],
-        nameuser = res["nameuser"],
-        hourout = res["hourout"],
-        direction = res["direction"],
-        idsend = res["idsend"]
-  //vehicle = res["vehicle"]
-  ;
-
-  Map<String, Object> toMap() {
-    return {
-      //"id" :id ,
-      'noempid': noempid!, 'nameuser': nameuser!, 'hourout': hourout!,
-      'direction': direction!, 'idsend': idsend!,
-      //vehicle: 'vehicle'
-    };
-  }
+  User({this.noempid,this.nameuser,this.hourout,this.direction,this.idsend,});
+  User.fromMap(Map<String, dynamic> res):noempid = res["noempid"],nameuser = res["nameuser"],hourout = res["hourout"],direction = res["direction"],idsend = res["idsend"];
+  Map<String, Object> toMap() {return {'noempid': noempid!, 'nameuser': nameuser!, 'hourout': hourout!,'direction': direction!, 'idsend': idsend!,};}
 }

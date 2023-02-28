@@ -145,13 +145,14 @@ class _HomeDriverScreenState extends State<HomeDriverScreen>
                 margin: EdgeInsets.only(bottom: 420.0),
                 height: 60,
                 child: AlertDialog(
-                  title: Center(child: Text('Pendientes')),
+                  backgroundColor: backgroundColor,
+                  title: Center(child: Text('Pendientes',style: TextStyle(color: Colors.white))),
                   content: Column(
                     children: [
                       // ignore: deprecated_member_use
                       TextButton(
                         style: TextButton.styleFrom(
-                          backgroundColor: Colors.white,
+                          backgroundColor: backgroundColor,
                         ),
                         onPressed: () => {
                           Navigator.pop(context),
@@ -162,7 +163,6 @@ class _HomeDriverScreenState extends State<HomeDriverScreen>
                           })),
                         },
                         child: Column(
-                          // Replace with a Row for horizontal icon + text
                           children: <Widget>[
                             Row(
                               children: [
@@ -170,46 +170,26 @@ class _HomeDriverScreenState extends State<HomeDriverScreen>
                                   children: [
                                     Stack(children: <Widget>[
                                       new Icon(Icons.car_rental),
-                                      new Positioned(
-                                        // draw a red marble
-                                        top: 0.0,
-                                        right: 0.0,
-                                        child: Container(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 3, vertical: 0),
-                                            decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                color: Colors.red),
-                                            child: Text(
-                                                '${abc.data![0].tripsCreated}',
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 13))),
+                                      new Positioned(top: 0.0,right: 0.0,
+                                        child: Container(padding: EdgeInsets.symmetric(horizontal: 3, vertical: 0),decoration: BoxDecoration(shape: BoxShape.circle,color: Colors.red),
+                                          child: Text('${abc.data![0].tripsCreated}',style: TextStyle(color: Colors.white,fontSize: 13))),
                                       )
                                     ]),
                                   ],
                                 ),
                                 SizedBox(width: 20),
-                                Column(
-                                  children: [Text("Viajes creados")],
-                                ),
+                                Text("Viajes creados",style: TextStyle(color: Colors.white)),
                               ],
                             ),
                           ],
                         ),
                       ),
                       // ignore: deprecated_member_use
-                      TextButton(
-                        style: TextButton.styleFrom(
-                          backgroundColor: Colors.white,
-                        ),
+                      TextButton(style: TextButton.styleFrom(backgroundColor: backgroundColor,),
                         onPressed: () => {
                           Navigator.pop(context),
                           Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return DetailsDriverTripInProgress(
-                                plantillaDriver: plantillaDriver[1]);
-                          })),
+                            MaterialPageRoute(builder: (context) {return DetailsDriverTripInProgress(plantillaDriver: plantillaDriver[1]);})),
                         },
                         child: Column(
                           // Replace with a Row for horizontal icon + text
@@ -220,29 +200,16 @@ class _HomeDriverScreenState extends State<HomeDriverScreen>
                                   children: [
                                     Stack(children: <Widget>[
                                       new Icon(Icons.check),
-                                      new Positioned(
-                                        // draw a red marble
-                                        top: 0.0,
-                                        right: 0.0,
-                                        child: Container(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 3, vertical: 0),
-                                            decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                color: Colors.red),
-                                            child: Text(
-                                                '${abc.data![0].tripsInProgress}',
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 13))),
+                                      new Positioned(top: 0.0,right: 0.0,
+                                        child: Container(padding: EdgeInsets.symmetric(horizontal: 3, vertical: 0),
+                                          decoration: BoxDecoration(shape: BoxShape.circle,color: Colors.red),
+                                            child: Text('${abc.data![0].tripsInProgress}',style: TextStyle( color: Colors.white,fontSize: 13))),
                                       )
                                     ]),
                                   ],
                                 ),
                                 SizedBox(width: 20),
-                                Column(
-                                  children: [Text("Viajes en proceso")],
-                                ),
+                                Text("Viajes en proceso",style: TextStyle(color: Colors.white)),
                               ],
                             ),
                           ],

@@ -136,6 +136,7 @@ class _AsignarHorasState extends State<AsignarHoras> {
                                   SizedBox(height: 20.0),
                                   Container(
                                     child: Row(
+                                      crossAxisAlignment : CrossAxisAlignment.end,
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceEvenly,
                                       children: [
@@ -144,8 +145,7 @@ class _AsignarHorasState extends State<AsignarHoras> {
                                           width: 170,
                                           child: Column(
                                             children: [
-                                              if (abc.data![index].companyId ==
-                                                  1) ...{
+                                              if (abc.data![index].companyId == 1) ...{
                                                 Container(
                                                   height: 80,
                                                   width: 170,
@@ -200,8 +200,7 @@ class _AsignarHorasState extends State<AsignarHoras> {
                                                       'assets/images/ibex-logo.jpg'),
                                                 ),
                                               },
-                                              if (abc.data![index].companyId ==
-                                                  10) ...{
+                                              if (abc.data![index].companyId == 10) ...{
                                                 Container(
                                                   height: 80,
                                                   width: 170,

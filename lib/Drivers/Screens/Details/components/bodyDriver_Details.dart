@@ -42,9 +42,7 @@ class _BodyState extends State<Body> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: <Widget>[
-                      DriverDescription(
-                        plantillaDriver: widget.plantillaDriver!,
-                      ),
+                      DriverDescription(plantillaDriver: widget.plantillaDriver!,),
                     ],
                   ),
                 ),

@@ -83,9 +83,9 @@ class _MyAppState extends State<MyApp> {
 
 Future<dynamic> showMyDialog() {
   return QuickAlert.show(
-   context: navigatorKey.currentContext!,
-   type: QuickAlertType.error,
-   title: "¡Advertencia!",
-   text: "El agente seleccionado ya está agregado al viaje",
+    context: navigatorKey.currentContext!,
+    type: QuickAlertType.error,
+    title: "¡Advertencia!",
+    text: "El agente seleccionado ya está agregado al viaje",
   );
 }

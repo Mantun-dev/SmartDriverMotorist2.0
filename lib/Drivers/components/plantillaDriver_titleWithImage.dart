@@ -40,6 +40,7 @@ class PlantillaDriverTitleWithImage extends StatelessWidget {
                 ),
               ),
               Container(
+                width: 100,
                 child: Column(
                   children: [
                     Hero(

@@ -84,9 +84,9 @@ var userStatus = List<bool>.empty(growable: true);
 Future<TripsList4> fetchAgentsTripInProgress() async {
   http.Response responsed = await http
       .get(Uri.parse('$ip/apis/agentsTripInProgress/${prefs.tripId}'));
-  final data1 = TripsList4.fromJson(json.decode(responsed.body));
+  TripsList4.fromJson(json.decode(responsed.body));
   if (responsed.statusCode == 200) {
-    print(data1.trips!.length);
+  
     userStatus.add(false);
     return TripsList4.fromJson(json.decode(responsed.body));
   } else {

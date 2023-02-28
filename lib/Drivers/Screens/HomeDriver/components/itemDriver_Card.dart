@@ -32,40 +32,58 @@ class _ItemDriverCardState extends State<ItemDriverCard> {
                     children: [
                       Column(
                         children: [
-                          Hero(
-                            tag: "${widget.plantillaDriver!.id}",
-                            child: Container(
-                              padding:
-                                  EdgeInsets.only(top: 15, left: 15, right: 20),
-                              // padding: EdgeInsets.only(right: 150),
-                              height: 100,
-                              child: Image.asset(
-                                widget.plantillaDriver!.image!,
+                          if(widget.plantillaDriver!.id == 2)...{
+                            Hero(
+                              tag: "${widget.plantillaDriver!.id}",
+                              child: Container(
+                                padding:
+                                    EdgeInsets.only(top: 15, left: 10, right: 20),
+                                // padding: EdgeInsets.only(right: 150),
+                                height: 80,
+                                child: Image.asset(
+                                  widget.plantillaDriver!.image!,
+                                ),
                               ),
                             ),
-                          ),
+                          }else...{
+                            Hero(
+                              tag: "${widget.plantillaDriver!.id}",
+                              child: Container(
+                                padding:
+                                    EdgeInsets.only(top: 15, left: 15, right: 20),
+                                // padding: EdgeInsets.only(right: 150),
+                                height: 90,
+                                child: Image.asset(
+                                  widget.plantillaDriver!.image!,
+                                ),
+                              ),
+                            ),
+                          },
                         ],
                       ),
                       Container(
-                        child: Column(
-                          children: [
-                            Text(
-                              widget.plantillaDriver!.title!,
-                              textAlign: TextAlign.start,
-                              style: TextStyle(
-                                  color: GradiantV_2,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w900),
-                            ),
-                            Text(
-                              widget.plantillaDriver!.description,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
+                        child: Flexible(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start ,
+                            children: [
+                              Text(
+                                widget.plantillaDriver!.title!,
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                    color: GradiantV_2,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w900),
+                              ),
+                              Text(
+                                widget.plantillaDriver!.description,
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
                         ),
                       )
                     ],

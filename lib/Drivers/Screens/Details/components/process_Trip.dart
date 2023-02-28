@@ -130,6 +130,7 @@ class _ProcessTripState extends State<ProcessTrip> {
                                   SizedBox(height: 20.0),
                                   Container(
                                     child: Row(
+                                      crossAxisAlignment : CrossAxisAlignment.end,
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceEvenly,
                                       children: [

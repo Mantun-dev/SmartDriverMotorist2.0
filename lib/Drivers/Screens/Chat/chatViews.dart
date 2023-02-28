@@ -40,7 +40,7 @@ class _ChatPageState extends State<ChatPage> {
         });
       }
     }
-    print(chatUsers);
+    //print(chatUsers);
   }
 
   bool myInterceptor(bool stopDefaultButtonEvent, RouteInfo info) {

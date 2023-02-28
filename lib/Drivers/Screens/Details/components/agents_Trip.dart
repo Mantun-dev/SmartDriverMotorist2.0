@@ -17,7 +17,7 @@ import 'package:quickalert/quickalert.dart';
 import '../../../../constants.dart';
 import '../../../models/agentsInTravelModel.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert' show json, jsonDecode;
+import 'dart:convert' show json;
 import 'package:url_launcher/url_launcher.dart';
 
 void main() {
@@ -74,8 +74,7 @@ class _DataTableExample extends State<MyAgent> {
 
     Map data2 = {"idU": agentId.toString(), "Estado": 'CONFIRMADO'};
     String sendData2 = json.encode(data2);
-    http.Response response2 = await http
-        .put(Uri.parse('https://apichat.smtdriver.com/api/salas/$tripId'), body: sendData2, headers: {"Content-Type": "application/json"});
+    await http.put(Uri.parse('https://apichat.smtdriver.com/api/salas/$tripId'), body: sendData2, headers: {"Content-Type": "application/json"});
 
     return Driver.fromJson(json.decode(response.body));
   }
@@ -94,7 +93,7 @@ class _DataTableExample extends State<MyAgent> {
               QuickAlert.show(
           context: context,
           type: QuickAlertType.success,
-          title: resp.title,
+          title: '¡Hecho!',
           text: resp.message,
           );
         } else if (response.statusCode == 500) {
@@ -109,8 +108,7 @@ class _DataTableExample extends State<MyAgent> {
     }
     Map data2 = {"idU": agentId.toString(), "Estado": 'RECHAZADO'};
     String sendData2 = json.encode(data2);
-    http.Response response2 = await http
-        .put(Uri.parse('https://apichat.smtdriver.com/api/salas/$tripId'), body: sendData2, headers: {"Content-Type": "application/json"});
+    await http.put(Uri.parse('https://apichat.smtdriver.com/api/salas/$tripId'), body: sendData2, headers: {"Content-Type": "application/json"});
 
     return Driver.fromJson(json.decode(response.body));
   }
@@ -148,8 +146,7 @@ class _DataTableExample extends State<MyAgent> {
     }
     Map data2 = {"Estado": 'INICIADO'};
       String sendData2 = json.encode(data2);
-      http.Response response2 = await http
-        .put(Uri.parse('https://apichat.smtdriver.com/api/salas/Viaje_Estado/${prefs.tripId}'), body: sendData2, headers: {"Content-Type": "application/json"});
+      await http.put(Uri.parse('https://apichat.smtdriver.com/api/salas/Viaje_Estado/${prefs.tripId}'), body: sendData2, headers: {"Content-Type": "application/json"});
    
     return Driver.fromJson(json.decode(response.body));
   }
@@ -210,8 +207,7 @@ class _DataTableExample extends State<MyAgent> {
 
      Map data2 = {"Estado": 'FINALIZADO'};
       String sendData2 = json.encode(data2);
-      http.Response response2 = await http
-        .put(Uri.parse('https://apichat.smtdriver.com/api/salas/Viaje_Estado/${prefs.tripId}'), body: sendData2, headers: {"Content-Type": "application/json"});
+      await http.put(Uri.parse('https://apichat.smtdriver.com/api/salas/Viaje_Estado/${prefs.tripId}'), body: sendData2, headers: {"Content-Type": "application/json"});
       
     return Driver.fromJson(json.decode(response.body));
   }
@@ -230,7 +226,7 @@ class _DataTableExample extends State<MyAgent> {
   final format = DateFormat('HH:mm');
   @override
   Widget build(BuildContext context) {
-     contextP = context;
+    contextP = context;
     return MaterialApp(
       color: backgroundColor,
       debugShowCheckedModeBanner: false,
@@ -352,7 +348,7 @@ class _DataTableExample extends State<MyAgent> {
                   children: <Widget>[
                     ListTile(
                       leading: Icon(Icons.supervised_user_circle,
-                          color: thirdColor, size: 40),
+                          color: thirdColor),
                       title: Text('Agentes',
                           style: TextStyle(
                               color: Colors.white,
@@ -382,322 +378,258 @@ class _DataTableExample extends State<MyAgent> {
                       itemCount: abc.data!.trips![0].agentes!.length,
                       itemBuilder: (context, index) {
                         return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 0.0),
                           child: Container(
                             width: size.width,
                             child: Column(
                               children: [
-                                InkWell(
-                                  child: Container(
-                                    decoration: BoxDecoration(boxShadow: [
-                                      BoxShadow(
-                                          blurStyle: BlurStyle.normal,
-                                          color: Colors.white.withOpacity(0.2),
-                                          blurRadius: 15,
-                                          spreadRadius: -10,
-                                          offset: Offset(-15, -6)),
-                                      BoxShadow(
-                                          blurStyle: BlurStyle.normal,
-                                          color: Colors.black.withOpacity(0.6),
-                                          blurRadius: 30,
-                                          spreadRadius: -15,
-                                          offset: Offset(18, 5)),
-                                    ]),
-                                    child: Card(
-                                      color: backgroundColor,
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10)),
-                                      margin: EdgeInsets.all(5.0),
-                                      elevation: 2,
-                                      child: Column(
+                                Container(
+                                  decoration: BoxDecoration(boxShadow: [
+                                    BoxShadow(
+                                        blurStyle: BlurStyle.normal,
+                                        color: Colors.white.withOpacity(0.2),
+                                        blurRadius: 15,
+                                        spreadRadius: -10,
+                                        offset: Offset(-15, -6)),
+                                    BoxShadow(
+                                        blurStyle: BlurStyle.normal,
+                                        color: Colors.black.withOpacity(0.6),
+                                        blurRadius: 30,
+                                        spreadRadius: -15,
+                                        offset: Offset(18, 5)),
+                                  ]),
+                                  child: Card(
+                                    color: backgroundColor,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    margin: EdgeInsets.all(5.0),
+                                    elevation: 2,
+                                    child: Column(
+                                      children: <Widget>[
+                                        Padding(
+                                    padding: const EdgeInsets.all(1.0),
+                                    child: ExpansionTile(
+                                      backgroundColor: backgroundColor,
+                                      title: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
                                         children: <Widget>[
-                                          Padding(
-                                            padding: const EdgeInsets.all(1.0),
-                                            child: ExpansionTile(
-                                              backgroundColor: backgroundColor,
-                                              title: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.end,
-                                                children: <Widget>[
-                                                  ListTile(
-                                                    contentPadding:
-                                                        EdgeInsets.fromLTRB(
-                                                            5, 5, 10, 0),
-                                                    title: Text('Nombre:',
-                                                        style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize: 18.0)),
-                                                    subtitle: Text(
-                                                        '${abc.data!.trips![0].agentes![index].agentFullname}',
-                                                        style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .normal,
-                                                            fontSize: 15.0)),
-                                                    leading: Icon(
-                                                        Icons
-                                                            .supervised_user_circle_rounded,
-                                                        color: thirdColor,
-                                                        size: 40),
-                                                  ),
-                                                ],
-                                              ),
-                                              trailing: SizedBox(),
+                                          Padding(padding: const EdgeInsets.fromLTRB(14,0,20,0),
+                                            child: Row(
                                               children: [
-                                                Container(
-                                                  margin:
-                                                      EdgeInsets.only(left: 18),
-                                                  child: Column(
-                                                    children: [
-                                                      ListTile(contentPadding:EdgeInsets.fromLTRB(5, 5, 10, 0),
-                                                        title: Text('Empresa: ',style: TextStyle(color: Colors.white,fontWeight:FontWeight.bold,fontSize:18.0)),
-                                                        subtitle: Text(
-                                                            '${abc.data!.trips![0].agentes![index].companyName}',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .normal,
-                                                                fontSize:
-                                                                    15.0)),
-                                                        leading: Icon(
-                                                            Icons.location_city,
-                                                            color: thirdColor,
-                                                            size: 40),
-                                                      ),
-                                                      ListTile(
-                                                        contentPadding:
-                                                            EdgeInsets.fromLTRB(
-                                                                5, 5, 10, 0),
-                                                        title: Text(
-                                                            'Teléfono: ',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontSize:
-                                                                    18.0)),
-                                                        subtitle: TextButton(
-                                                            onPressed: () =>
-                                                                launchUrl(Uri.parse(
-                                                                    'tel://${abc.data!.trips![0].agentes![index].agentPhone}')),
-                                                            child: Container(
-                                                                margin: EdgeInsets
-                                                                    .only(
-                                                                        right:
-                                                                            175),
-                                                                child: Text(
-                                                                    '${abc.data!.trips![0].agentes![index].agentPhone}',
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .white,
-                                                                        fontSize:
-                                                                            15)))),
-                                                        leading: Icon(
-                                                            Icons.phone,
-                                                            color: thirdColor,
-                                                            size: 40),
-                                                      ),
-                                                      ListTile(
-                                                        contentPadding:
-                                                            EdgeInsets.fromLTRB(
-                                                                5, 5, 10, 0),
-                                                        title: Text('Entrada: ',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontSize:
-                                                                    18.0)),
-                                                        subtitle: Text(
-                                                            '${abc.data!.trips![0].agentes![index].hourIn}',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .normal,
-                                                                fontSize:
-                                                                    15.0)),
-                                                        leading: Icon(
-                                                            Icons.access_time,
-                                                            color: thirdColor,
-                                                            size: 40),
-                                                      ),
-                                                      ListTile(contentPadding: EdgeInsets.symmetric(
-                                                    vertical: 0,
-                                                    horizontal: 25),
-                                                        title: Text('Dirección: ',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontSize:
-                                                                    18.0)),
-                                                        subtitle: Text(
-                                                          abc.data!.trips![0].agentes![index].agentReferencePoint==null
-                                                        ||abc.data!.trips![0].agentes![index].agentReferencePoint==""
-                                                        ?"${abc.data!.trips![0].agentes![index].neighborhoodName}, ${abc.data!.trips![0].agentes![index].townName}":'${abc.data!.trips![0].agentes![index].agentReferencePoint}, ${abc.data!.trips![0].agentes![index].neighborhoodName}, ${abc.data!.trips![0].agentes![index].townName},',style: TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .normal,
-                                                                fontSize:
-                                                                    15.0)),
-                                                        leading: Icon(Icons.location_pin,color: thirdColor, size: 40,),
-                                                      ),
-                                                      if (abc.data!.trips![0].agentes![index].neighborhoodReferencePoint != null)... {                                                    
-                                                        ListTile(contentPadding: EdgeInsets.symmetric(
-                                                    vertical: 0,
-                                                    horizontal: 25),
-                                                          title: Text('Acceso autorizado: ',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontSize:
-                                                                    18.0)),
-                                                          subtitle: Text('${abc.data!.trips![0].agentes![index].neighborhoodReferencePoint}',style: TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .normal,
-                                                                fontSize:
-                                                                    15.0)),
-                                                          leading: Icon(Icons.directions,color: thirdColor, size: 40,),
-                                                        ),
-                                                      },
-                                                    ],
-                                                  ),
+                                                Icon(Icons.person,color: thirdColor),
+                                                SizedBox(width: 15,),
+                                                Flexible(
+                                                  child: Text('Nombre: ${abc.data!.trips![0].agentes![index].agentFullname}',
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        //fontWeight: FontWeight.bold,
+                                                        fontSize: 18.0)),
                                                 ),
-
-                                                //aqui lo demás
-
-                                                SizedBox(height: 30.0),
-                                                if (abc
-                                                        .data
-                                                        !.trips![0]
-                                                        .agentes![index]
-                                                        .hourForTrip ==
-                                                    "00:00") ...{
-                                                  Text('Hora de encuentro: ',
+                                              ],
+                                            ),
+                                          ),                       
+                                        ],
+                                      ),
+                                      trailing: SizedBox(),
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 30),
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.location_city,color: thirdColor),
+                                              SizedBox(width: 15,),
+                                              Text('Empresa: ${abc.data!.trips![0].agentes![index].companyName}',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    //fontWeight: FontWeight.bold,
+                                                    fontSize: 18.0)),
+                                            ],
+                                          ),
+                                        ),
+                                        SizedBox(height: 8,),
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 30),
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.phone,
+                                              color: thirdColor),
+                                              SizedBox(width: 8,),
+                                              TextButton(
+                                              onPressed: () =>
+                                                  launchUrl(Uri.parse(
+                                                    'tel://${abc.data!.trips![0].agentes![index].agentPhone}',
+                                                  )),
+                                              child: Container(
+                                                  child: Text('Teléfono: ${abc.data!.trips![0].agentes![index].agentPhone}',
+                                                      textAlign:
+                                                          TextAlign.left,
                                                       style: TextStyle(
                                                           color: Colors.white,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontSize: 18.0)),
-                                                } else ...{
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      Column(
-                                                        children: [
-                                                          Text(
-                                                              'Hora de encuentro:',
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .white,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  fontSize:
-                                                                      18.0)),
-                                                        ],
-                                                      ),
-                                                      Column(
-                                                        children: [
-                                                          Text(
-                                                              ' ${abc.data!.trips![0].agentes![index].hourForTrip}',
-                                                              style: TextStyle(
-                                                                  color:
-                                                                      thirdColor,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  fontSize:
-                                                                      19.0))
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                },
-                                                SizedBox(height: 10.0),
-
-                                                Container(
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.all(
-                                                            Radius.circular(
-                                                                15)),
-                                                    boxShadow: [
-                                                      BoxShadow(
-                                                        color: Colors.black
-                                                            .withOpacity(0.2),
-                                                        spreadRadius: 0,
-                                                        blurStyle:
-                                                            BlurStyle.solid,
-                                                        blurRadius: 10,
-                                                        offset: Offset(0,
-                                                            0), // changes position of shadow
-                                                      ),
-                                                      BoxShadow(
-                                                        color: Colors.white
-                                                            .withOpacity(0.1),
-                                                        spreadRadius: 0,
-                                                        blurRadius: 5,
-                                                        blurStyle:
-                                                            BlurStyle.inner,
-                                                        offset: Offset(0,
-                                                            0), // changes position of shadow
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  margin: EdgeInsets.symmetric(
-                                                      horizontal: 40.0),
-                                                  child: Column(
-                                                    children: [
-                                                      DateTimeField(decoration:InputDecoration(border: InputBorder.none,),
-                                                        keyboardType: TextInputType.datetime,
-                                                        format: format,
-                                                        onShowPicker: (context,currentValue) async {
-                                                          var time =await showTimePicker(context: context,initialTime:TimeOfDay.now(),);                                                            
-                                                          validateHour(abc.data!.trips![0].agentes![index].agentId.toString(), abc.data!.trips![0].agentes![index].tripId.toString(), time);
-                                                          return DateTimeField.convert(flagalert);
-                                                        },
-                                                      ),
-                                                    ],
-                                                  ),
+                                                          fontSize: 18)))),
+                                            ],
+                                          ),
+                                        ),
+                                        SizedBox(height: 8,),
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 30),
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.access_time,color: thirdColor),
+                                              SizedBox(width: 15,),
+                                              Text('Entrada: ${abc.data!.trips![0].agentes![index].hourIn}',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    //fontWeight: FontWeight.bold,
+                                                    fontSize: 18.0)),
+                                            ],
+                                          ),
+                                        ),
+                                        SizedBox(height: 18),
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(30,0,20,0),
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.location_pin,color: thirdColor),
+                                              SizedBox(width: 15,),
+                                              Flexible(
+                                                child: Text( abc.data!.trips![0].agentes![index].agentReferencePoint==null
+                                                      ||abc.data!.trips![0].agentes![index].agentReferencePoint==""
+                                                      ?"Dirección: ${abc.data!.trips![0].agentes![index].neighborhoodName}, ${abc.data!.trips![0].agentes![index].townName}":'Dirección: ${abc.data!.trips![0].agentes![index].agentReferencePoint}, ${abc.data!.trips![0].agentes![index].neighborhoodName}, ${abc.data!.trips![0].agentes![index].townName},',
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      //fontWeight: FontWeight.bold,
+                                                      fontSize: 18.0)),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        if (abc.data!.trips![0].agentes![index].neighborhoodReferencePoint != null)... {
+                                          SizedBox(height: 18),
+                                          Padding(
+                                            padding: const EdgeInsets.only(left: 30),
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.location_pin,color: thirdColor),
+                                                SizedBox(width: 15,),
+                                                Flexible(
+                                                  child: Text('Acceso autorizado: ${abc.data!.trips![0].agentes![index].neighborhoodReferencePoint}',
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        //fontWeight: FontWeight.bold,
+                                                        fontSize: 18.0)),
                                                 ),
-
-                                                SizedBox(height: 20.0),
                                               ],
                                             ),
                                           ),
-                                        ],
-                                      ),
+                                        },
+                                        SizedBox(height: 30.0),
+                                              if (abc
+                                                      .data
+                                                      !.trips![0]
+                                                      .agentes![index]
+                                                      .hourForTrip ==
+                                                  "00:00") ...{
+                                                Text('Hora de encuentro: ',
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 18.0)),
+                                              } else ...{
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .center,
+                                                  children: [
+                                                    Column(
+                                                      children: [
+                                                        Text(
+                                                            'Hora de encuentro:',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize:
+                                                                    18.0)),
+                                                      ],
+                                                    ),
+                                                    Column(
+                                                      children: [
+                                                        Text(
+                                                            ' ${abc.data!.trips![0].agentes![index].hourForTrip}',
+                                                            style: TextStyle(
+                                                                color:
+                                                                    thirdColor,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize:
+                                                                    19.0))
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              },
+                                              SizedBox(height: 10.0),
+
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(
+                                                              15)),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.black
+                                                          .withOpacity(0.2),
+                                                      spreadRadius: 0,
+                                                      blurStyle:
+                                                          BlurStyle.solid,
+                                                      blurRadius: 10,
+                                                      offset: Offset(0,
+                                                          0), // changes position of shadow
+                                                    ),
+                                                    BoxShadow(
+                                                      color: Colors.white
+                                                          .withOpacity(0.1),
+                                                      spreadRadius: 0,
+                                                      blurRadius: 5,
+                                                      blurStyle:
+                                                          BlurStyle.inner,
+                                                      offset: Offset(0,
+                                                          0), // changes position of shadow
+                                                    ),
+                                                  ],
+                                                ),
+                                                margin: EdgeInsets.symmetric(
+                                                    horizontal: 40.0),
+                                                child: Column(
+                                                  children: [
+                                                    DateTimeField(decoration:InputDecoration(border: InputBorder.none,),
+                                                      keyboardType: TextInputType.datetime,
+                                                      format: format,
+                                                      onShowPicker: (context,currentValue) async {
+                                                        var time =await showTimePicker(context: context,initialTime:TimeOfDay.now(),);                                                            
+                                                        validateHour(abc.data!.trips![0].agentes![index].agentId.toString(), abc.data!.trips![0].agentes![index].tripId.toString(), time);
+                                                        return DateTimeField.convert(flagalert);
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+
+                                              SizedBox(height: 20.0),
+                                        // Usamos una fila para ordenar los botones del card
+                                      ],
+                                    ),
+                                  ),                                                                          
+                                      ],
                                     ),
                                   ),
-                                  onTap: () {
-                                    // if (agentHours != 00.00) {
-                                    // }
-                                  },
                                 ),
                               ],
                             ),
@@ -753,7 +685,7 @@ class _DataTableExample extends State<MyAgent> {
                     children: <Widget>[
                       ListTile(
                         leading:
-                            Icon(Icons.person, size: 40.0, color: thirdColor),
+                            Icon(Icons.person,color: thirdColor),
                         title: Text('Agentes',
                             style: TextStyle(
                               color: Colors.white,
@@ -809,7 +741,7 @@ class _DataTableExample extends State<MyAgent> {
                                 color: backgroundColor,
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10)),
-                                margin: EdgeInsets.all(5.0),
+                                margin: EdgeInsets.all(0.0),
                                 elevation: 10,
                                 child: Column(
                                   children: <Widget>[
@@ -821,148 +753,118 @@ class _DataTableExample extends State<MyAgent> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.end,
                                           children: <Widget>[
-                                            ListTile(
-                                              contentPadding:
-                                                  EdgeInsets.fromLTRB(
-                                                      5, 5, 10, 0),
-                                              title: Text('Nombre:',
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 18.0)),
-                                              subtitle: Text(
-                                                  '${abc.data!.trips![1].noConfirmados![index].agentFullname}',
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.normal,
-                                                      fontSize: 15.0)),
-                                              leading: Icon(Icons.person,
-                                                  color: thirdColor,
-                                                  size: 40.0),
-                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.fromLTRB(14,0,20,0),
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.person,color: thirdColor),
+                                                  SizedBox(width: 15,),
+                                                  Flexible(
+                                                    child: Text('Nombre: ${abc.data!.trips![1].noConfirmados![index].agentFullname}',
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          //fontWeight: FontWeight.bold,
+                                                          fontSize: 18.0)),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),                       
                                           ],
                                         ),
                                         trailing: SizedBox(),
                                         children: [
-                                          ListTile(
-                                            contentPadding:
-                                                EdgeInsets.symmetric(
-                                                    vertical: 0,
-                                                    horizontal: 20),
-                                            title: Text('Empresa: ',
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 18.0)),
-                                            subtitle: Text(
-                                                '${abc.data!.trips![1].noConfirmados![index].companyName}',
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    fontSize: 15.0)),
-                                            leading: Icon(Icons.location_city,
-                                                color: thirdColor, size: 40.0),
+                                          Padding(
+                                            padding: const EdgeInsets.only(left: 30),
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.location_city,color: thirdColor),
+                                                SizedBox(width: 15,),
+                                                Text('Empresa: ${abc.data!.trips![1].noConfirmados![index].companyName}',
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      //fontWeight: FontWeight.bold,
+                                                      fontSize: 18.0)),
+                                              ],
+                                            ),
                                           ),
-                                          ListTile(
-                                            contentPadding:
-                                                EdgeInsets.symmetric(
-                                                    vertical: 0,
-                                                    horizontal: 20),
-                                            title: Text('Teléfono: ',
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 18.0)),
-                                            subtitle: TextButton(
+                                          SizedBox(height: 8,),
+                                          Padding(
+                                            padding: const EdgeInsets.only(left: 30),
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.phone,
+                                                color: thirdColor),
+                                                SizedBox(width: 8,),
+                                                TextButton(
                                                 onPressed: () =>
                                                     launchUrl(Uri.parse(
                                                       'tel://${abc.data!.trips![1].noConfirmados![index].agentPhone}',
                                                     )),
                                                 child: Container(
                                                     padding: EdgeInsets.only(
-                                                        right: 175),
+                                                        right: 128),
                                                     child: Text(
-                                                        '${abc.data!.trips![1].noConfirmados![index].agentPhone}',
+                                                        'Teléfono: ${abc.data!.trips![1].noConfirmados![index].agentPhone}',
                                                         textAlign:
                                                             TextAlign.left,
                                                         style: TextStyle(
                                                             color: Colors.white,
-                                                            fontSize: 15)))),
-                                            leading: Icon(Icons.phone,
-                                                color: thirdColor, size: 40.0),
+                                                            fontSize: 18)))),
+                                              ],
+                                            ),
                                           ),
-                                          ListTile(
-                                            contentPadding:
-                                                EdgeInsets.symmetric(
-                                                    vertical: 0,
-                                                    horizontal: 25),
-                                            title: Text('Entrada: ',
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 18.0)),
-                                            subtitle: Text(
-                                                '${abc.data!.trips![1].noConfirmados![index].hourIn}',
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    fontSize: 15.0)),
-                                            leading: Icon(Icons.access_time,
-                                                color: thirdColor, size: 40.0),
+                                          SizedBox(height: 8,),
+                                          Padding(
+                                            padding: const EdgeInsets.only(left: 30),
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.access_time,color: thirdColor),
+                                                SizedBox(width: 15,),
+                                                Text('Entrada: ${abc.data!.trips![1].noConfirmados![index].hourIn}',
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      //fontWeight: FontWeight.bold,
+                                                      fontSize: 18.0)),
+                                              ],
+                                            ),
                                           ),
-                                          ListTile(contentPadding: EdgeInsets.symmetric(
-                                                    vertical: 0,
-                                                    horizontal: 25),
-                                                        title: Text('Dirección: ',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontSize:
-                                                                    18.0)),
-                                                        subtitle: Text(
-                                                          abc.data!.trips![1].noConfirmados![index].agentReferencePoint==null
-                                                        ||abc.data!.trips![1].noConfirmados![index].agentReferencePoint==""
-                                                        ?"${abc.data!.trips![1].noConfirmados![index].neighborhoodName}, ${abc.data!.trips![1].noConfirmados![index].townName}":'${abc.data!.trips![1].noConfirmados![index].agentReferencePoint}, ${abc.data!.trips![1].noConfirmados![index].neighborhoodName}, ${abc.data!.trips![1].noConfirmados![index].townName},',style: TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .normal,
-                                                                fontSize:
-                                                                    15.0)),
-                                                        leading: Icon(Icons.location_pin,color: thirdColor, size: 40,),
-                                                      ),
-                                                      if (abc.data!.trips![1].noConfirmados![index].neighborhoodReferencePoint != null)... {                                                    
-                                                        ListTile(contentPadding: EdgeInsets.symmetric(
-                                                    vertical: 0,
-                                                    horizontal: 25),
-                                                          title: Text('Acceso autorizado: ',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontSize:
-                                                                    18.0)),
-                                                          subtitle: Text('${abc.data!.trips![1].noConfirmados![index].neighborhoodReferencePoint}',style: TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .normal,
-                                                                fontSize:
-                                                                    15.0)),
-                                                          leading: Icon(Icons.directions,color: thirdColor, size: 40,),
-                                                        ),
-                                                      },
+                                          SizedBox(height: 18),
+                                          Padding(
+                                            padding: const EdgeInsets.fromLTRB(30,0,20,0),
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.location_pin,color: thirdColor),
+                                                SizedBox(width: 15,),
+                                                Flexible(
+                                                  child: Text(abc.data!.trips![1].noConfirmados![index].agentReferencePoint==null || abc.data!.trips![1].noConfirmados![index].agentReferencePoint==""
+                                                          ?"Dirección: ${abc.data!.trips![1].noConfirmados![index].neighborhoodName}, ${abc.data!.trips![1].noConfirmados![index].townName}":'Dirección: ${abc.data!.trips![1].noConfirmados![index].agentReferencePoint}, ${abc.data!.trips![1].noConfirmados![index].neighborhoodName}, ${abc.data!.trips![1].noConfirmados![index].townName},',
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        //fontWeight: FontWeight.bold,
+                                                        fontSize: 18.0)),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          if (abc.data!.trips![1].noConfirmados![index].neighborhoodReferencePoint != null)... {
+                                            SizedBox(height: 18),
+                                            Padding(
+                                              padding: const EdgeInsets.only(left: 30),
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.location_pin,color: thirdColor),
+                                                  SizedBox(width: 15,),
+                                                  Flexible(
+                                                    child: Text('Acceso autorizado: ${abc.data!.trips![1].noConfirmados![index].neighborhoodReferencePoint}',
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          //fontWeight: FontWeight.bold,
+                                                          fontSize: 18.0)),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          },
                                           //aqui lo demás
                                           SizedBox(height: 30.0),
                                           Text('Hora de encuentro: ',
@@ -1008,8 +910,7 @@ class _DataTableExample extends State<MyAgent> {
                                                       TextInputType.datetime,
                                                   format: format,
                                                   onShowPicker: (context,currentValue) async {
-                                                    var time =await showTimePicker(context: context,initialTime:TimeOfDay.now(),);  
-                                                      
+                                                    var time =await showTimePicker(context: context,initialTime:TimeOfDay.now(),);                                                        
                                                     validateHour(abc.data!.trips![1].noConfirmados![index].agentId.toString(),abc.data!.trips![1].noConfirmados![index].tripId.toString(), time );                                                    
                                                     return DateTimeField.convert(flagalert);
                                                   },
@@ -1049,7 +950,8 @@ class _DataTableExample extends State<MyAgent> {
                                                   onPressed: () {
                                                     QuickAlert.show(
                                                     context: context,
-                                                    type: QuickAlertType.confirm,          
+                                                    type: QuickAlertType.confirm,
+                                                    title: "...",          
                                                     text: "¿Está seguro que desea marcar como no \nconfirmado al agente?",
                                                       confirmBtnText: "Confirmar",
                                                       cancelBtnText: "Cancelar",
@@ -1057,19 +959,8 @@ class _DataTableExample extends State<MyAgent> {
                                                       confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
                                                       cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
                                                       onConfirmBtnTap: () {
-                                                        //Navigator.maybePop(context,MaterialPageRoute(builder: (context) {return MyAgent();},),);
-                                                        // new Future.delayed(
-                                                        //     new Duration(
-                                                        //         seconds: 2),
-                                                        //     () {
-                                                        // });
                                                         Navigator.pop(contextP!);
-                                                        fetchNoConfirm(abc.data!.trips![1].noConfirmados![index].agentId.toString(),abc.data!.trips![1].noConfirmados![index].tripId.toString());
-                                                        // QuickAlert.show(
-                                                        // context: context,
-                                                        // type: QuickAlertType.success,
-                                                        // text: "Agente marcado como no confirmó",
-                                                        // );
+                                                        fetchNoConfirm(abc.data!.trips![1].noConfirmados![index].agentId.toString(),abc.data!.trips![1].noConfirmados![index].tripId.toString());                                        
                                                         _refresh();
                                                       },
                                                       onCancelBtnTap: () {
@@ -1077,6 +968,7 @@ class _DataTableExample extends State<MyAgent> {
                                                         QuickAlert.show(
                                                         context: context,
                                                         type: QuickAlertType.success,
+                                                        title: "...",
                                                         text: "¡Cancelado!",                                                        
                                                         );
                                                       },
@@ -1088,137 +980,13 @@ class _DataTableExample extends State<MyAgent> {
                                                           fontSize: 17)),
                                                 ),
                                               ),
-                                              // Padding(
-                                              //   padding:
-                                              //       const EdgeInsets.all(5.0),
-                                              //   child: TextButton(
-                                              //       child: Container(
-                                              //         height: 30,
-                                              //         width: 80,
-                                              //         child: Row(
-                                              //           children: [
-                                              //             InkWell(
-                                              //                 onTap: () => {
-                                              //                       fetchRefresProfile().then(
-                                              //                           (value) =>
-                                              //                               {
-                                              //                                 Navigator.push(
-                                              //                                     context,
-                                              //                                     MaterialPageRoute(
-                                              //                                         builder: (context) => ChatScreen(
-                                              //                                               id: "${value.driver.driverId}",
-                                              //                                               rol: "MOTORISTA",
-                                              //                                               nombre: "${value.driver.driverFullname}".toUpperCase(),
-                                              //                                             )))
-                                              //                               })
-                                              //                     },
-                                              //                 child: Container(
-                                              //                   width: 30,
-                                              //                   height: 30,
-                                              //                   child: Stack(
-                                              //                     children: [
-                                              //                       Icon(
-                                              //                         Icons
-                                              //                             .telegram,
-                                              //                         color:
-                                              //                             backgroundColor,
-                                              //                         size: 30,
-                                              //                       ),
-                                              //                       Container(
-                                              //                         width: 30,
-                                              //                         height:
-                                              //                             30,
-                                              //                         alignment:
-                                              //                             Alignment
-                                              //                                 .topLeft,
-                                              //                         margin: EdgeInsets
-                                              //                             .only(
-                                              //                                 top: 0),
-                                              //                         child:
-                                              //                             Container(
-                                              //                           width:
-                                              //                               15,
-                                              //                           height:
-                                              //                               15,
-                                              //                           decoration: BoxDecoration(
-                                              //                               shape:
-                                              //                                   BoxShape.circle,
-                                              //                               color: Color(0xffc32c37),
-                                              //                               border: Border.all(color: Color(0xffc32c37), width: 1)),
-                                              //                           child:
-                                              //                               Padding(
-                                              //                             padding:
-                                              //                                 const EdgeInsets.all(0.0),
-                                              //                             child:
-                                              //                                 Center(
-                                              //                               child:
-                                              //                                   Text(
-                                              //                                 "0",
-                                              //                                 style: TextStyle(fontSize: 10, color: Colors.white),
-                                              //                               ),
-                                              //                             ),
-                                              //                           ),
-                                              //                         ),
-                                              //                       ),
-                                              //                     ],
-                                              //                   ),
-                                              //                 )),
-                                              //             SizedBox(width: 5),
-                                              //             Text('Chat',
-                                              //                 style: TextStyle(
-                                              //                     color:
-                                              //                         backgroundColor,
-                                              //                     fontSize: 15,
-                                              //                     fontWeight:
-                                              //                         FontWeight
-                                              //                             .bold)),
-                                              //           ],
-                                              //         ),
-                                              //       ),
-                                              //       style: TextButton.styleFrom(
-                                              //         textStyle: TextStyle(
-                                              //           color: Colors
-                                              //               .white, // foreground
-                                              //         ),
-                                              //         backgroundColor:
-                                              //             firstColor,
-                                              //         shape: RoundedRectangleBorder(
-                                              //             side: BorderSide(
-                                              //                 color: firstColor,
-                                              //                 width: 2,
-                                              //                 style: BorderStyle
-                                              //                     .solid),
-                                              //             borderRadius:
-                                              //                 BorderRadius
-                                              //                     .circular(
-                                              //                         10)),
-                                              //       ),
-                                              //       onPressed: () {
-                                              //         Navigator
-                                              //             .pushAndRemoveUntil(
-                                              //                 context,
-                                              //                 MaterialPageRoute(
-                                              //                     builder:
-                                              //                         (context) =>
-                                              //                             // ConversationList(name, messageText: messageText, imageUrl: imageUrl, time: time, isMessageRead: isMessageRead)),
-                                              //                             ChatScreen(
-                                              //                               rol:
-                                              //                                   "MOTORISTA",
-                                              //                               id: "0",
-                                              //                               nombre:
-                                              //                                   "DEREK",
-                                              //                             )),
-                                              //                 (Route<dynamic>
-                                              //                         route) =>
-                                              //                     false);
-                                              //       }),
-                                              // ),
                                             ],
                                           ),
                                           // Usamos una fila para ordenar los botones del card
                                         ],
                                       ),
                                     ),
+                                  
                                   ],
                                 ),
                               ),
@@ -1240,8 +1008,9 @@ class _DataTableExample extends State<MyAgent> {
 
   validateHour(String agentId, String tripId, dynamic time)async{
     //var time =await showTimePicker(context: context,initialTime:TimeOfDay.now(),);    
+    String _eventTime = now.toString().substring(10, 15);
+    _eventTime = time.toString().substring(10, 15);
     if (time!= null) {      
-      String _eventTime = now.toString().substring(10, 15);
       QuickAlert.show(context: context,
           type: QuickAlertType.confirm,
           title: "Agregando hora",          
@@ -1254,7 +1023,6 @@ class _DataTableExample extends State<MyAgent> {
           onConfirmBtnTap: () async{ 
             Navigator.pop(contextP!);           
               setState(() {                              
-                _eventTime = time.toString().substring(10, 15);
                 //print(_eventTime);
                 fetchHours(agentId,_eventTime,tripId);
                 _refresh();
@@ -1334,9 +1102,8 @@ class _DataTableExample extends State<MyAgent> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
-                    ListTile(
-                      leading: Icon(Icons.directions_car,
-                          size: 40, color: thirdColor),
+                    ListTile(                      
+                      leading: Icon(Icons.directions_car, color: thirdColor),
                       title: Text('Agentes',
                           style: TextStyle(
                             color: Colors.white,
@@ -1395,143 +1162,110 @@ class _DataTableExample extends State<MyAgent> {
                                   elevation: 2,
                                   child: Column(
                                     children: <Widget>[
-                                      Padding(
-                                        padding: const EdgeInsets.all(1.0),
-                                        child: ExpansionTile(
-                                          backgroundColor: backgroundColor,
-                                          title: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.end,
-                                            children: <Widget>[
-                                              ListTile(
-                                                contentPadding:
-                                                    EdgeInsets.fromLTRB(
-                                                        5, 5, 10, 0),
-                                                title: Text('Nombre: ',
-                                                    style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 20.0,
-                                                    )),
-                                                subtitle: Text(
-                                                    '${abc.data!.trips![2].cancelados![index].agentFullname}',
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontWeight:
-                                                            FontWeight.normal,
-                                                        fontSize: 15.0)),
-                                                leading: Icon(
-                                                    Icons
-                                                        .supervised_user_circle_rounded,
-                                                    size: 40,
-                                                    color: thirdColor),
+                                        Padding(
+                                      padding: const EdgeInsets.all(1.0),
+                                      child: ExpansionTile(
+                                        backgroundColor: backgroundColor,
+                                        title: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
+                                          children: <Widget>[
+                                            Padding(
+                                              padding: const EdgeInsets.fromLTRB(14,0,20,0),
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.person,color: thirdColor),
+                                                  SizedBox(width: 15,),
+                                                  Flexible(
+                                                    child: Text('Nombre: ${abc.data!.trips![2].cancelados![index].agentFullname}',
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          //fontWeight: FontWeight.bold,
+                                                          fontSize: 18.0)),
+                                                  ),
+                                                ],
                                               ),
-                                            ],
-                                          ),
-                                          trailing: SizedBox(),
-                                          children: [
-                                            ListTile(
-                                              contentPadding:
-                                                  EdgeInsets.symmetric(
-                                                      vertical: 0,
-                                                      horizontal: 25),
-                                              title: Text('Empresa: ',
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 20.0,
-                                                  )),
-                                              subtitle: Text(
-                                                  '${abc.data!.trips![2].cancelados![index].companyName}',
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.normal,
-                                                      fontSize: 15.0)),
-                                              leading: Icon(Icons.location_city,
-                                                  size: 40, color: thirdColor),
-                                            ),
-                                            ListTile(
-                                              contentPadding:
-                                                  EdgeInsets.symmetric(
-                                                      vertical: 0,
-                                                      horizontal: 25),
-                                              title: Text('Teléfono: ',
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 20.0,
-                                                  )),
-                                              subtitle: TextButton(
-                                                  onPressed: () =>
-                                                      launchUrl(Uri.parse(
-                                                        'tel://${abc.data!.trips![2].cancelados![index].agentPhone}',
-                                                      )),
-                                                  child: Container(
-                                                      padding: EdgeInsets.only(
-                                                          right: 170),
-                                                      child: Text(
-                                                          '${abc.data!.trips![2].cancelados![index].agentPhone}',
-                                                          textAlign:
-                                                              TextAlign.start,
-                                                          style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .normal,
-                                                            fontSize: 15.0,
-                                                          )))),
-                                              leading: Icon(Icons.phone,
-                                                  color: thirdColor,
-                                                  size: 40.0),
-                                            ),
-                                            ListTile(
-                                              contentPadding:
-                                                  EdgeInsets.symmetric(
-                                                      vertical: 0,
-                                                      horizontal: 25),
-                                              title: Text('Entrada: ',
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 20.0,
-                                                  )),
-                                              subtitle: Text(
-                                                  '${abc.data!.trips![2].cancelados![index].hourIn}',
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.normal,
-                                                      fontSize: 15.0)),
-                                              leading: Icon(Icons.access_time,
-                                                  size: 40, color: thirdColor),
-                                            ),
-                                            ListTile(
-                                              contentPadding:
-                                                  EdgeInsets.symmetric(
-                                                      vertical: 0,
-                                                      horizontal: 25),
-                                              title: Text('Dirección: ',
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 20.0,
-                                                  )),
-                                              subtitle: Text(
-                                                  '${abc.data!.trips![2].cancelados![index].agentReferencePoint} \n ${abc.data!.trips![2].cancelados![index].neighborhoodName} ${abc.data!.trips![2].cancelados![index].districtName}',
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.normal,
-                                                      fontSize: 15.0)),
-                                              leading: Icon(Icons.location_pin,
-                                                  size: 40, color: thirdColor),
-                                            ),
-                                            SizedBox(height: 20.0),
+                                            ),                       
                                           ],
                                         ),
+                                        trailing: SizedBox(),
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.only(left: 30),
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.location_city,color: thirdColor),
+                                                SizedBox(width: 15,),
+                                                Text('Empresa: ${abc.data!.trips![2].cancelados![index].companyName}',
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      //fontWeight: FontWeight.bold,
+                                                      fontSize: 18.0)),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(height: 8,),
+                                          Padding(
+                                            padding: const EdgeInsets.only(left: 30),
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.phone,
+                                                color: thirdColor),
+                                                SizedBox(width: 8,),
+                                                TextButton(
+                                                onPressed: () =>
+                                                    launchUrl(Uri.parse(
+                                                      'tel://${abc.data!.trips![2].cancelados![index].agentPhone}',
+                                                    )),
+                                                child: Container(
+                                                    padding: EdgeInsets.only(
+                                                        right: 140),
+                                                    child: Text(
+                                                        'Teléfono: ${abc.data!.trips![2].cancelados![index].agentPhone}',
+                                                        textAlign:
+                                                            TextAlign.left,
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 18)))),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(height: 8,),
+                                          Padding(
+                                            padding: const EdgeInsets.only(left: 30),
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.access_time,color: thirdColor),
+                                                SizedBox(width: 15,),
+                                                Text('Entrada: ${abc.data!.trips![2].cancelados![index].hourIn}',
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      //fontWeight: FontWeight.bold,
+                                                      fontSize: 18.0)),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(height: 18),
+                                          Padding(
+                                            padding: const EdgeInsets.fromLTRB(30,0,20,0),
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.location_pin,color: thirdColor),
+                                                SizedBox(width: 15,),
+                                                Flexible(
+                                                  child: Text('Dirección: ${abc.data!.trips![2].cancelados![index].agentReferencePoint} ${abc.data!.trips![2].cancelados![index].neighborhoodName} ${abc.data!.trips![2].cancelados![index].districtName}',
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        //fontWeight: FontWeight.bold,
+                                                        fontSize: 18.0)),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(height: 20.0),                                  
+                                        ],
                                       ),
+                                    ),                                  
                                     ],
                                   ),
                                 ),
@@ -1572,6 +1306,7 @@ class _DataTableExample extends State<MyAgent> {
               QuickAlert.show(
               context: context,
               type: QuickAlertType.success,
+              title: "...",
               text: "¿Está seguro que desea pasar el viaje en proceso?",
               confirmBtnText: "Confirmar",
               cancelBtnText: "Cancelar",
@@ -1593,6 +1328,7 @@ class _DataTableExample extends State<MyAgent> {
                 Navigator.pop(context);
                 QuickAlert.show(
                 context: context,
+                title: "...",
                 type: QuickAlertType.success,
                 text: "¡Cancelado!",                                
                 );
@@ -1614,78 +1350,37 @@ class _DataTableExample extends State<MyAgent> {
             child: Text('Marcar agentes como "Cancelados"'),
             onPressed: () {
               QuickAlert.show(
-              context: context,
-              type: QuickAlertType.success,
-              text: "¿Está seguro que desea marcarlos como cancelados?",
-              confirmBtnText: "Confirmar",
-              cancelBtnText: "Cancelar",
-              showCancelBtn: true,  
-              confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
-              cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
-              onConfirmBtnTap: () {
-                QuickAlert.show(
                 context: context,
                 type: QuickAlertType.success,
-                text: "Han sido marcado como cancelados",                
-                );
-                new Future.delayed(new Duration(seconds: 2), () {
-                    fetchTripAgentsNotConfirm();
-                  });
-              },
-              onCancelBtnTap: () {
-                Navigator.pop(context);
-                QuickAlert.show(
-                context: context,
-                type: QuickAlertType.success,
-                text: "¡Entendido!",                
-                );
-              },
+                title: "...",
+                text: "¿Está seguro que desea marcarlos como cancelados?",
+                confirmBtnText: "Confirmar",
+                cancelBtnText: "Cancelar",
+                showCancelBtn: true,  
+                confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
+                cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
+                onConfirmBtnTap: () {
+                  QuickAlert.show(
+                  context: context,
+                  type: QuickAlertType.success,
+                  text: "Han sido marcado como cancelados",                
+                  );
+                  new Future.delayed(new Duration(seconds: 2), () {
+                      fetchTripAgentsNotConfirm();
+                    });
+                },
+                onCancelBtnTap: () {
+                  Navigator.pop(context);
+                  QuickAlert.show(
+                  context: context,
+                  title: "...",
+                  type: QuickAlertType.success,
+                  text: "¡Entendido!",                
+                  );
+                },
               );
             },
-          ),
-          // SizedBox(width: 5),
-          // ElevatedButton(
-          //   style: TextButton.styleFrom(
-          //     textStyle: TextStyle(
-          //       color: Colors.white, // foreground
-          //     ),
-          //     // foreground
-          //     backgroundColor: Colors.red,
-          //     shape: RoundedRectangleBorder(
-          //         borderRadius: BorderRadius.circular(10)),
-          //   ),
-          //   child: Text("Marcar como cancelado"),
-          //   onPressed: () {
-          //      QuickAlert.show(
-          //     context: context,
-          //     type: QuickAlertType.success,
-          //     text: "¿Está seguro que desea cancelar el viaje?",
-          //     confirmBtnText: "Confirmar",
-          //     cancelBtnText: "Cancelar",
-          //     showCancelBtn: true,  
-          //     confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
-          //     cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
-          //     onConfirmBtnTap: () {
-          //       QuickAlert.show(
-          //       context: context,
-          //       type: QuickAlertType.success,
-          //       text: "El viaje ha sido cancelado",                
-          //       );
-          //       new Future.delayed(new Duration(seconds: 2), () {
-          //           fetchTripCancel();
-          //         });
-          //     },
-          //     onCancelBtnTap: () {
-          //       Navigator.pop(context);
-          //       QuickAlert.show(
-          //       context: context,
-          //       type: QuickAlertType.success,
-          //       text: "¡No ha sido cancelado el viaje!",                
-          //       );
-          //     },
-          //     );
-          //   },
-          // ),       
+          ),     
         ],
       ),
     );

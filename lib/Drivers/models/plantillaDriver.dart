@@ -23,7 +23,7 @@ class PlantillaDriver {
 List<PlantillaDriver> plantillaDriver = [
   PlantillaDriver(
       id: 1,
-      title: "Asignar horas de viaje",
+      title: "Asignar horas de encuentro",
       name: 'Carlos',
       size: 20,
       description: dummyText,
@@ -77,12 +77,12 @@ List<PlantillaDriver> plantillaDriver = [
       color: backgroundColor),
 ];
 
-String dummyText = "Asigna la hora a tus\nViajes disponibles";
+String dummyText = "Asigna las horas de encuentro a tus viajes disponibles";
 
-String dummyText2 = "Revisa los viajes que\nestas realizando";
+String dummyText2 = "Revisa los viajes que estas realizando";
 
-String dummyText3 = "Registra la salida de\nun vehículo";
+String dummyText3 = "Registra un viaje de salida.";
 
-String dummyText4 = "Revisa tus viaje\nrealizados";
+String dummyText4 = "Revisa tus viaje realizados";
 
 String dummyText5 = "prueba 5 we";

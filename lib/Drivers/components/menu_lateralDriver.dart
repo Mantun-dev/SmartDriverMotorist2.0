@@ -58,110 +58,131 @@ class _DriverMenuLateralState extends State<DriverMenuLateral> {
                     image: ExactAssetImage('assets/fondos.jpg'),
                     fit: BoxFit.cover)),
           ),
-          ListTile(
-            title: Text('Mi perfil',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold)),
-            leading: Icon(Icons.account_circle, color: Colors.white),
-            onTap: () {
-              Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (_) => DriverProfilePage()))
-                  .then((_) => HomeDriverScreen());
+          InkWell(
+            onTap: (){
+              Navigator.pushReplacement(context,MaterialPageRoute(builder: (_) => DriverProfilePage())).then((_) => HomeDriverScreen());
             },
+            child: Column(crossAxisAlignment:CrossAxisAlignment.end,
+              children: <Widget>[
+                Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
+                child: Row(
+                  children: [
+                    Icon(Icons.account_circle, color: Colors.white),
+                    SizedBox(width: 15,),
+                    Flexible(child: Text('Mi perfil',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
+                  ],
+                  ),
+                ),                       
+              ],
+            ),
           ),
           Divider(
             color: Colors.white,
           ),
-          ListTile(
-            title: Text('Asignar horas de viaje',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold)),
-            leading: Icon(Icons.airport_shuttle, color: Colors.white),
-            onTap: () {
+          InkWell(
+            onTap: (){
+              Navigator.pushReplacement(context,MaterialPageRoute(builder: (_) => DetailsDriverHour(plantillaDriver: plantillaDriver[0]))).then((_) =>DetailsDriverHour(plantillaDriver: plantillaDriver[1]));
+            },
+            child: Column(crossAxisAlignment:CrossAxisAlignment.end,
+              children: <Widget>[
+                Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
+                child: Row(
+                  children: [
+                    Icon(Icons.airport_shuttle, color: Colors.white),
+                    SizedBox(width: 15,),
+                    Flexible(child: Text('Asignar horas de viaje',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
+                  ],
+                  ),
+                ),                       
+              ],
+            ),
+          ),          
+          Divider(
+            color: Colors.white,
+          ),
+          InkWell(
+            onTap: (){
               Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(
-                      builder: (_) => DetailsDriverHour(
-                          plantillaDriver: plantillaDriver[0]))).then((_) =>
-                  DetailsDriverHour(plantillaDriver: plantillaDriver[1]));
+                  MaterialPageRoute(builder: (_) => DetailsDriverTripInProgress(plantillaDriver: plantillaDriver[1]))).then((_) =>DetailsDriverScreen(plantillaDriver: plantillaDriver[3]));
             },
+            child: Column(crossAxisAlignment:CrossAxisAlignment.end,
+              children: <Widget>[
+                Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
+                child: Row(
+                  children: [
+                    Icon(Icons.outbox, color: Colors.white),
+                    SizedBox(width: 15,),
+                    Flexible(child: Text('Viajes en proceso',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
+                  ],
+                  ),
+                ),                       
+              ],
+            ),
+          ), 
+          Divider(
+            color: Colors.white,
+          ),
+          InkWell(
+            onTap: (){
+              Navigator.pushReplacement(context,MaterialPageRoute(builder: (_) => DetailsDriverHistory(plantillaDriver: plantillaDriver[3]))).then((_) =>DetailsDriverHoursOut(plantillaDriver: plantillaDriver[2]));
+            },
+            child: Column(crossAxisAlignment:CrossAxisAlignment.end,
+              children: <Widget>[
+                Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
+                child: Row(
+                  children: [
+                    Icon(Icons.history, color: Colors.white),
+                    SizedBox(width: 15,),
+                    Flexible(child: Text('Historial de Viajes ',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
+                  ],
+                  ),
+                ),                       
+              ],
+            ),
           ),
           Divider(
             color: Colors.white,
           ),
-          ListTile(
-            title: Text('Viajes en proceso',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold)),
-            leading: Icon(Icons.outbox, color: Colors.white),
-            onTap: () {
-              Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => DetailsDriverTripInProgress(
-                          plantillaDriver: plantillaDriver[1]))).then((_) =>
-                  DetailsDriverScreen(plantillaDriver: plantillaDriver[3]));
+          InkWell(
+            onTap: (){
+              Navigator.pushReplacement(context,MaterialPageRoute(builder: (_) => DetailsDriverHistory(plantillaDriver: plantillaDriver[3]))).then((_) =>DetailsDriverHoursOut(plantillaDriver: plantillaDriver[2]));
             },
+            child: Column(crossAxisAlignment:CrossAxisAlignment.end,
+              children: <Widget>[
+                Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
+                child: Row(
+                  children: [
+                    Icon(Icons.qr_code, color: Colors.white),
+                    SizedBox(width: 15,),
+                    Flexible(child: Text('Registrar Salidas',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
+                  ],
+                  ),
+                ),                       
+              ],
+            ),
           ),
           Divider(
             color: Colors.white,
           ),
-          ListTile(
-            title: Text('Historial de Viajes ',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold)),
-            leading: Icon(Icons.history, color: Colors.white),
-            onTap: () {
-              Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => DetailsDriverHistory(
-                          plantillaDriver: plantillaDriver[3]))).then((_) =>
-                  DetailsDriverHoursOut(plantillaDriver: plantillaDriver[2]));
-            },
-          ),
-          Divider(
-            color: Colors.white,
-          ),
-          ListTile(
-            title: Text('Registrar Salidas',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold)),
-            leading: Icon(Icons.qr_code, color: Colors.white),
-            onTap: () {
-              Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => DetailsDriverHoursOut(
-                              plantillaDriver: plantillaDriver[2])))
-                  .then((_) => DetailsDriverScreen());
-            },
-          ),
-          Divider(
-            color: Colors.white,
-          ),
-          ListTile(
-            title: Text('Viajes ejecutivos',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold)),
-            leading: Icon(Icons.supervised_user_circle, color: Colors.white),
-            onTap: () {
+          InkWell(
+            onTap: (){
+              //Navigator.pushReplacement(context,MaterialPageRoute(builder: (_) => DetailsDriverHistory(plantillaDriver: plantillaDriver[3]))).then((_) =>DetailsDriverHoursOut(plantillaDriver: plantillaDriver[2]));
               _noDisponible(context);
-              // Navigator.pushReplacement(context,MaterialPageRoute(builder: (_) => DetailsDriverScreen(plantillaDriver: plantillaDriver[4])))
-              // .then((_) => DetailsDriverScreen(plantillaDriver: plantillaDriver[5]));
             },
+            child: Column(crossAxisAlignment:CrossAxisAlignment.end,
+              children: <Widget>[
+                Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
+                child: Row(
+                  children: [
+                    Icon(Icons.supervised_user_circle, color: Colors.white),
+                    SizedBox(width: 15,),
+                    Flexible(child: Text('Viajes ejecutivos',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
+                  ],
+                  ),
+                ),                       
+              ],
+            ),
           ),
           Divider(
             color: Colors.white,
@@ -173,22 +194,23 @@ class _DriverMenuLateralState extends State<DriverMenuLateral> {
                 if (snapshot.data.departmentId == 2) {
                   return Column(
                     children: [
-                      ListTile(
-                        title: Text('Registrar viaje sólido',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold)),
-                        leading: Icon(Icons.emoji_people_rounded,
-                            color: Colors.white),
-                        onTap: () {
-                          Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (_) => DetailsDriverScreen(
-                                          plantillaDriver: plantillaDriver[5])))
-                              .then((_) => DetailsDriverScreen());
+                      InkWell(
+                        onTap: (){
+                          Navigator.pushReplacement(context,MaterialPageRoute(builder: (_) => DetailsDriverScreen(plantillaDriver: plantillaDriver[5]))).then((_) => DetailsDriverScreen());
                         },
+                        child: Column(crossAxisAlignment:CrossAxisAlignment.end,
+                          children: <Widget>[
+                            Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
+                            child: Row(
+                              children: [
+                                Icon(Icons.emoji_people_rounded, color: Colors.white),
+                                SizedBox(width: 15,),
+                                Flexible(child: Text('Registrar viaje sólido',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
+                              ],
+                              ),
+                            ),                       
+                          ],
+                        ),
                       ),
                       Divider(
                         color: Colors.white,
@@ -202,18 +224,13 @@ class _DriverMenuLateralState extends State<DriverMenuLateral> {
               }
             },
           ),
-          ListTile(
-            title: Text('Cerrar sesión',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold)),
-            leading: Icon(Icons.logout, color: Colors.white),
-            onTap: () {
-               QuickAlert.show(
+          InkWell(
+            onTap: (){
+              QuickAlert.show(
                   context: context,
                   type: QuickAlertType.confirm,
-                  text: "Está seguro que desea salir?",
+                  title: "Salir",
+                  text: "¿Está seguro que desea salir?",
                   confirmBtnText: 'Confirmar',
                   cancelBtnText: 'Cancelar',
                   showCancelBtn: true,  
@@ -236,16 +253,32 @@ class _DriverMenuLateralState extends State<DriverMenuLateral> {
                   },
                   onCancelBtnTap: () {
                     Navigator.pop(context);
-                    QuickAlert.show(
-                    context: context,
-                    type: QuickAlertType.success,
-                    text: "¡Cancelado!",                    
-                    );
+                    // QuickAlert.show(
+                    // context: context,
+                    // type: QuickAlertType.success,
+                    // text: "¡Cancelado!",                    
+                    // );
                   },
                 );
             },
+            child: Column(crossAxisAlignment:CrossAxisAlignment.end,
+              children: <Widget>[
+                Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
+                child: Row(
+                  children: [
+                    Icon(Icons.logout, color: Colors.white),
+                    SizedBox(width: 15,),
+                    Flexible(child: Text('Cerrar sesión',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
+                  ],
+                  ),
+                ),                       
+              ],
+            ),
           ),
-          Divider(),
+          Divider(
+            color: Colors.white,
+          ),
+          //Divider(),
         ],
       ),
     );
