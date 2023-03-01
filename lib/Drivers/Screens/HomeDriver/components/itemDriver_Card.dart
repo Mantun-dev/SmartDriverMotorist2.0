@@ -49,9 +49,7 @@ class _ItemDriverCardState extends State<ItemDriverCard> {
                             Hero(
                               tag: "${widget.plantillaDriver!.id}",
                               child: Container(
-                                padding:
-                                    EdgeInsets.only(top: 15, left: 15, right: 20),
-                                // padding: EdgeInsets.only(right: 150),
+                                padding:EdgeInsets.only(top: 15, left: 15, right: 20),
                                 height: 90,
                                 child: Image.asset(
                                   widget.plantillaDriver!.image!,

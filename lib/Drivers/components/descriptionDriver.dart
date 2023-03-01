@@ -701,19 +701,17 @@ class _DriverDescriptionState extends State<DriverDescription>
     http.Response responsed =
         await http.post(Uri.parse('$ip/apis/searchAgent'), body: data);
     final data1 = Search.fromJson(json.decode(responsed.body));
-    if (responsed.statusCode == 200 &&
-        data1.ok == true &&
-        data1.agent!.msg != null) {
-      print(data1.agent!.msg);
-      print('Este es el agentId' + data1.agent!.agentId.toString());
-      if (data1.agent!.agentId != null) {
+    if (responsed.statusCode == 200 && data1.ok == true && data1.agent!.msg != null) {
+      //print(data1.agent!.msg);
+      //print('Este es el agentId' + data1.agent!.agentId.toString());
+      // if (data1.agent!.agentId != null) {
+      // }
         QuickAlert.show(
           context: context,
           title: '¡No encontrado!',
           text: data1.agent!.msg,
           type: QuickAlertType.error,
         );
-      }
     } else if (responsed.statusCode == 200 && data1.ok == true) {
       showDialog(
           context: context,
@@ -1555,6 +1553,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                   return Center(child: CircularProgressIndicator());
                 }
               })
+        
         ],
       ),
     );

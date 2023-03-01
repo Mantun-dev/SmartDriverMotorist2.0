@@ -173,8 +173,7 @@ class _AsignarHorasState extends State<AsignarHoras> {
                                                       'assets/images/Alorica_Logo.png'),
                                                 ),
                                               },
-                                              if (abc.data![index].companyId ==
-                                                  7) ...{
+                                              if (abc.data![index].companyId == 7) ...{
                                                 Container(
                                                   height: 80,
                                                   width: 170,
@@ -182,8 +181,7 @@ class _AsignarHorasState extends State<AsignarHoras> {
                                                       'assets/images/zero.png'),
                                                 ),
                                               },
-                                              if (abc.data![index].companyId ==
-                                                  8) ...{
+                                              if (abc.data![index].companyId == 8) ...{
                                                 Container(
                                                   height: 80,
                                                   width: 170,
@@ -191,8 +189,7 @@ class _AsignarHorasState extends State<AsignarHoras> {
                                                       'assets/images/emerge-bpo-largex5-logo.png'),
                                                 ),
                                               },
-                                              if (abc.data![index].companyId ==
-                                                  9) ...{
+                                              if (abc.data![index].companyId == 9) ...{
                                                 Container(
                                                   height: 80,
                                                   width: 170,
