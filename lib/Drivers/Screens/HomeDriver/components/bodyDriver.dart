@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_auth/Drivers/Screens/Details/components/details_solidtrip.dart';
 //import 'package:flutter/scheduler.dart';
 
 import 'package:flutter_auth/Drivers/Screens/Details/detailsDriver_Screen.dart';
@@ -183,10 +184,7 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                                     plantillaDriver: plantillaDriver[index],
                                     press: () {
                                       // si.method();
-                                      if (plantillaDriver[index].id == 5) {
-                                        _noDisponible(context);
-                                      } else if (plantillaDriver[index] ==
-                                          plantillaDriver[0]) {
+                                      if (plantillaDriver[index] == plantillaDriver[0]) {
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
@@ -196,8 +194,7 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                                                     plantillaDriver[index],
                                               ),
                                             ));
-                                      } else if (plantillaDriver[index] ==
-                                          plantillaDriver[1]) {
+                                      } else if (plantillaDriver[index] == plantillaDriver[1]) {
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
@@ -207,8 +204,7 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                                                     plantillaDriver[index],
                                               ),
                                             ));
-                                      } else if (plantillaDriver[index] ==
-                                          plantillaDriver[2]) {
+                                      } else if (plantillaDriver[index] == plantillaDriver[2]) {
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
@@ -218,8 +214,7 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                                                     plantillaDriver[index],
                                               ),
                                             ));
-                                      } else if (plantillaDriver[index] ==
-                                          plantillaDriver[3]) {
+                                      } else if (plantillaDriver[index] == plantillaDriver[3]) {
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
@@ -229,42 +224,89 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                                                     plantillaDriver[index],
                                               ),
                                             ));
+                                      }else if (plantillaDriver[index].id == 5) {
+                                        _noDisponible(context);
                                       }
                                     }),
                               )),
                     );
+                  }else{
+                    return Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: kDefaultPadding),
+                        child: GridView.builder(
+                            itemCount: plantillaDriver.length,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 1,
+                              mainAxisExtent: kDefaultPadding * 10,
+                            ),
+                            itemBuilder: (context, index) => Padding(
+                              padding: const EdgeInsets.only(
+                                    top: 20.0, bottom: 20.0),
+                              child: ItemDriverCard(
+                                  plantillaDriver: plantillaDriver[index],
+                                  press: () {
+                                    // si.method();
+                                    if (plantillaDriver[index] == plantillaDriver[0]) {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DetailsDriverHour(
+                                                  plantillaDriver:
+                                                      plantillaDriver[index],
+                                                ),
+                                              ));
+                                        } else if (plantillaDriver[index] == plantillaDriver[1]) {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DetailsDriverTripInProgress(
+                                                  plantillaDriver:
+                                                      plantillaDriver[index],
+                                                ),
+                                              ));
+                                        } else if (plantillaDriver[index] == plantillaDriver[2]) {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DetailsDriverHoursOut(
+                                                  plantillaDriver:
+                                                      plantillaDriver[index],
+                                                ),
+                                              ));
+                                        } else if (plantillaDriver[index] == plantillaDriver[3]) {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DetailsDriverHistory(
+                                                  plantillaDriver:
+                                                      plantillaDriver[index],
+                                                ),
+                                              ));
+                                        }else if (plantillaDriver[index].id == 5) {
+                                          _noDisponible(context);
+                                        }else if (plantillaDriver[index].id == 6) {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DetailsSolidTrip(
+                                                  plantillaDriver:
+                                                      plantillaDriver[index],
+                                                ),
+                                              ));
+                                        }
+                                  }),
+                            )),
+                      ),
+                    );
                   }
-                  return Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: kDefaultPadding),
-                      child: GridView.builder(
-                          itemCount: plantillaDriver.length,
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 1,
-                            mainAxisExtent: kDefaultPadding * 10,
-                          ),
-                          itemBuilder: (context, index) => ItemDriverCard(
-                              plantillaDriver: plantillaDriver[index],
-                              press: () {
-                                // si.method();
-                                if (plantillaDriver[index].id == 5) {
-                                  _noDisponible(context);
-                                } else {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            DetailsDriverScreen(
-                                          plantillaDriver:
-                                              plantillaDriver[index],
-                                        ),
-                                      ));
-                                }
-                              })),
-                    ),
-                  );
                 } else {
                   return Container(
                     height: 200,

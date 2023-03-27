@@ -11,18 +11,31 @@ class DatabaseHandler {
     return openDatabase(
       join(path, 'agent.db'),
       onCreate: (database, version) async {
+        print('aquiiii week');
+        print(version);
         await database.execute(
           "CREATE TABLE userX(noempid TEXT PRIMARY KEY, nameuser TEXT NOT NULL,hourout TEXT NOT NULL, direction TEXT NOT NULL, idsend INTEGER NOT NULL)",
         );
+        await database.execute(
+            "CREATE TABLE agentInsert(noempid TEXT PRIMARY KEY, nameuser TEXT NOT NULL,hourout TEXT NOT NULL, direction TEXT NOT NULL, idsend INTEGER NOT NULL)",
+          );
+          await database.execute(
+            "CREATE TABLE agentInsertSolid(noempid TEXT PRIMARY KEY, nameuser TEXT NOT NULL,hourout TEXT NOT NULL, direction TEXT NOT NULL, idsend INTEGER NOT NULL)",
+          );
       },
       onUpgrade: (db, oldVersion, newVersion) async {
-        if (oldVersion == 1) {
+        print('aquiiii week2wwe');
+        print(oldVersion);
+        if (oldVersion == 2) {
           await db.execute(
             "CREATE TABLE agentInsert(noempid TEXT PRIMARY KEY, nameuser TEXT NOT NULL,hourout TEXT NOT NULL, direction TEXT NOT NULL, idsend INTEGER NOT NULL)",
           );
+          await db.execute(
+            "CREATE TABLE agentInsertSolid(noempid TEXT PRIMARY KEY, nameuser TEXT NOT NULL,hourout TEXT NOT NULL, direction TEXT NOT NULL, idsend INTEGER NOT NULL)",
+          );
         }
       },
-      version: 2,
+      version: 3,
     );
   }
 
@@ -54,6 +67,20 @@ class DatabaseHandler {
     return result;
   }
 
+  Future<int> insertAgentSolid(List<User> users) async {
+    int result = 0;
+    final Database db = await initializeDB();
+    for (var user in users) {
+      try {
+        result = await db.insert('agentInsertSolid', user.toMap());
+      } catch (e) {
+        showMyDialog();
+        print(e);
+      }
+    }
+    return result;
+  }
+
   Future<List<User?>> retrieveUsers() async {
     final Database db = await initializeDB();
     final List<Map<String, Object?>> queryResult = await db.query('userX');
@@ -66,6 +93,13 @@ class DatabaseHandler {
     return queryResult.map((e) => User.fromMap(e)).toList();
   }
 
+  Future<List<User?>> retrieveAgentSolid() async {
+    final Database db = await initializeDB();
+    final List<Map<String, Object?>> queryResult = await db.query('agentInsertSolid');
+    return queryResult.map((e) => User.fromMap(e)).toList();
+  }
+
+
   Future<void> cleanTable() async {
     final Database db = await initializeDB();
     await db.rawQuery('delete from userX ;');
@@ -74,6 +108,11 @@ class DatabaseHandler {
   Future<void> cleanTableAgent() async {
     final Database db = await initializeDB();
     await db.rawQuery('delete from agentInsert ;');
+  }
+
+  Future<void> cleanTableAgentSolid() async {
+    final Database db = await initializeDB();
+    await db.rawQuery('delete from agentInsertSolid ;');
   }
 
   Future<void> deleteUser(int id) async {
@@ -89,6 +128,15 @@ class DatabaseHandler {
     final db = await initializeDB();
     await db.delete(
       'agentInsert',
+      where: "idsend = ?",
+      whereArgs: [id],
+    );
+  }
+
+  Future<void> deleteAgentSolid(dynamic id) async {
+    final db = await initializeDB();
+    await db.delete(
+      'agentInsertSolid',
       where: "idsend = ?",
       whereArgs: [id],
     );

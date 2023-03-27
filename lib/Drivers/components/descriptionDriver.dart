@@ -480,9 +480,9 @@ class _DriverDescriptionState extends State<DriverDescription>
     };
     final Database db = await handler!.initializeDB();
 
-    final tables = await db.rawQuery('SELECT * FROM agentInsert ;');
+    final tables = await db.rawQuery('SELECT * FROM agentInsertSolid ;');
     final tables2 = await db.rawQuery(
-        "SELECT noempid FROM agentInsert WHERE noempid = '${prefs.nameSalida}'");
+        "SELECT noempid FROM agentInsertSolid WHERE noempid = '${prefs.nameSalida}'");
     http.Response responsed =
         await http.post(Uri.parse('$ip/apis/getAgentForEntryTrip'), body: data);
     final data1 = FindAgentSolid.fromJson(json.decode(responsed.body));
@@ -498,8 +498,7 @@ class _DriverDescriptionState extends State<DriverDescription>
           text: 'No se encontró el agente con número de empleado \n $agentEmployeeId',
           type: QuickAlertType.error,
         );
-      } else if (data1.type == "success") {
-        print(data1.type);
+      } else if (data1.type == "success") { 
         showDialog(
             context: context,
             builder: (context) => AlertDialog(
@@ -513,39 +512,73 @@ class _DriverDescriptionState extends State<DriverDescription>
                         children: <Widget>[
                           SizedBox(height: 15),
                           Text(
-                            '¿Agregar agente al viaje?',
-                            style: TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.bold),
+                            '¿Agregar agente al viaje?',textAlign: TextAlign.center,style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold,color: GradiantV_2),
                           ),
                           SizedBox(height: 15),
                           ListTile(
                             contentPadding: EdgeInsets.fromLTRB(5, 5, 5, 0),
-                            title: Text('No empleado: '),
-                            subtitle: Text('${data1.agent!.agentEmployeeId}'),
-                            leading:
-                                Icon(Icons.card_travel, color: kColorAppBar),
+                            title: Text('No empleado: ',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white)),
+                          subtitle: Text('${data1.agent!.agentEmployeeId}',
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.normal,
+                                  color: Colors.white)),
+                          leading: Icon(Icons.card_travel,
+                            color: thirdColor,
+                            size: 35,),
                           ),
                           ListTile(
                             contentPadding: EdgeInsets.fromLTRB(5, 5, 5, 0),
-                            title: Text('Nombre: '),
-                            subtitle: Text('${data1.agent!.agentFullname}'),
-                            leading: Icon(Icons.contact_page_outlined,
-                                color: kColorAppBar),
+                            title: Text('Nombre: ',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white)),
+                          subtitle: Text('${data1.agent!.agentFullname}',
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.normal,
+                                  color: Colors.white)),
+                          leading: Icon(Icons.contact_page_outlined,
+                            color: thirdColor,
+                            size: 35,),
                           ),
                           ListTile(
                             contentPadding: EdgeInsets.fromLTRB(5, 5, 5, 0),
-                            title: Text('Hora: '),
-                            subtitle: Text('${data1.agent!.hourAgent}'),
-                            leading:
-                                Icon(Icons.access_time, color: kColorAppBar),
+                            title: Text('Hora: ',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white)),
+                          subtitle: Text('${data1.agent!.hourAgent}',
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.normal,
+                                  color: Colors.white)),
+                          leading: Icon(Icons.access_time,
+                            color: thirdColor,
+                            size: 35,),
                           ),
                           ListTile(
                             contentPadding: EdgeInsets.fromLTRB(5, 5, 5, 0),
-                            title: Text('Dirección: '),
-                            subtitle: Text(
-                                '${data1.agent!.neighborhoodName} ${data1.agent!.agentReferencePoint}\n${data1.agent!.departmentName} '),
-                            leading:
-                                Icon(Icons.directions, color: kColorAppBar),
+                            title: Text('Dirección: ',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white)),
+                          subtitle: Text(
+                              '${data1.agent!.departmentName} ${data1.agent!.neighborhoodName}\n${data1.agent!.agentReferencePoint} ',
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.normal,
+                                  color: Colors.white)),
+                          leading: Icon(Icons.directions,
+                            color: thirdColor,
+                            size: 35,),
                           ),
                           SizedBox(height: 40),
                           Row(
@@ -587,7 +620,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                                             idsend: data1.agent!.agentId);
                                         print(firstUser);
                                         List<User> listOfUsers = [firstUser];
-                                        this.handler!.insertAgent(listOfUsers);
+                                        this.handler!.insertAgentSolid(listOfUsers);
                                         clearText();
                                         //guardar();
 
@@ -899,12 +932,13 @@ class _DriverDescriptionState extends State<DriverDescription>
                   ),
                 ),
               ));
+    
     }
     return Search.fromJson(json.decode(responsed.body));
   }
 
   // ignore: missing_return
-  Future<FindAgentSolid?> fetchSearchAgentsSolid(String agentEmployeeId) async {
+  fetchSearchAgentsSolid(String agentEmployeeId) async {
     Map data = {
       "companyId": prefs.companyId,
       "agentEmployeeId": agentEmployeeId,
@@ -913,11 +947,9 @@ class _DriverDescriptionState extends State<DriverDescription>
     if (agentEmployeeId != "" && prefs.destinationId != null) {
       final Database db = await handler!.initializeDB();
 
-      final tables = await db.rawQuery('SELECT * FROM agentInsert ;');
-      final tables2 = await db.rawQuery(
-          "SELECT noempid FROM agentInsert WHERE noempid = '${prefs.nameSalida}'");
-      http.Response responsed = await http
-          .post(Uri.parse('$ip/apis/getAgentForEntryTrip'), body: data);
+      final tables = await db.rawQuery('SELECT * FROM agentInsertSolid ;');
+      final tables2 = await db.rawQuery("SELECT noempid FROM agentInsertSolid WHERE noempid = '${prefs.nameSalida}'");
+      http.Response responsed = await http.post(Uri.parse('$ip/apis/getAgentForEntryTrip'), body: data);
 
       final data1 = FindAgentSolid.fromJson(json.decode(responsed.body));
       if (responsed.statusCode == 200) {
@@ -928,11 +960,11 @@ class _DriverDescriptionState extends State<DriverDescription>
             text: 'No se encontró el agente con número de empleado \n $agentEmployeeId',
             type: QuickAlertType.error,
           );    
-        } else if (data1.type == "success") {
-          print(data1);
+        } else if (data1.type == "success") { 
           showDialog(
               context: context,
               builder: (context) => AlertDialog(
+                    backgroundColor: backgroundColor,
                     content: Container(
                       width: 450,
                       height: 490,
@@ -942,125 +974,177 @@ class _DriverDescriptionState extends State<DriverDescription>
                             SizedBox(height: 15),
                             Text(
                               '¿Agregar agente al viaje?',
+                              textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: GradiantV_2),
+                            ),
+                             SizedBox(height: 15),
+                        ListTile(
+                          contentPadding: EdgeInsets.fromLTRB(5, 5, 5, 0),
+                          title: Text('No empleado:',
                               style: TextStyle(
-                                  fontSize: 24, fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(height: 15),
-                            ListTile(
-                              contentPadding: EdgeInsets.fromLTRB(5, 5, 5, 0),
-                              title: Text('No empleado: '),
-                              subtitle: Text('${data1.agent!.agentEmployeeId}'),
-                              leading:
-                                  Icon(Icons.card_travel, color: kColorAppBar),
-                            ),
-                            ListTile(
-                              contentPadding: EdgeInsets.fromLTRB(5, 5, 5, 0),
-                              title: Text('Nombre: '),
-                              subtitle: Text('${data1.agent!.agentFullname}'),
-                              leading: Icon(Icons.contact_page_outlined,
-                                  color: kColorAppBar),
-                            ),
-                            ListTile(
-                              contentPadding: EdgeInsets.fromLTRB(5, 5, 5, 0),
-                              title: Text('Hora: '),
-                              subtitle: Text('${data1.agent!.hourAgent}'),
-                              leading:
-                                  Icon(Icons.access_time, color: kColorAppBar),
-                            ),
-                            ListTile(
-                              contentPadding: EdgeInsets.fromLTRB(5, 5, 5, 0),
-                              title: Text('Dirección: '),
-                              subtitle: Text(
-                                  '${data1.agent!.neighborhoodName} ${data1.agent!.agentReferencePoint}\n${data1.agent!.departmentName} '),
-                              leading:
-                                  Icon(Icons.directions, color: kColorAppBar),
-                            ),
-                            SizedBox(height: 40),
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white)),
+                          subtitle: Text('${data1.agent!.agentEmployeeId}',
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.normal,
+                                  color: Colors.white)),
+                          leading: Icon(
+                            Icons.card_travel,
+                            color: thirdColor,
+                            size: 35,
+                          ),
+                        ),
+                        ListTile(
+                          contentPadding: EdgeInsets.fromLTRB(5, 5, 5, 0),
+                          title: Text('Nombre: ',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white)),
+                          subtitle: Text('${data1.agent!.agentFullname}',
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.normal,
+                                  color: Colors.white)),
+                          leading:
+                              Icon(Icons.person, color: thirdColor, size: 35),
+                        ),
+                        ListTile(
+                          contentPadding: EdgeInsets.fromLTRB(5, 5, 5, 0),
+                          title: Text('Hora salida: ',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white)),
+                          subtitle: Text('${data1.agent!.hourAgent}',
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.normal,
+                                  color: Colors.white)),
+                          leading: Icon(Icons.access_time,
+                              color: thirdColor, size: 35),
+                        ),
+                        ListTile(
+                          contentPadding: EdgeInsets.fromLTRB(5, 5, 5, 0),
+                          title: Text('Dirección: ',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white)),
+                          subtitle: Text(
+                              '${data1.agent!.neighborhoodName} ${data1.agent!.agentReferencePoint}\n${data1.agent!.departmentName}',
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.normal,
+                                  color: Colors.white)),
+                          leading: Icon(Icons.directions,
+                              color: thirdColor, size: 35),
+                        ),
+                        SizedBox(height: 40),
                             Row(
                               children: [
                                 SizedBox(width: 40),
-                                TextButton(
-                                  style: TextButton.styleFrom(
-                                    textStyle: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                    backgroundColor: Colors.green,
+                                Container(
+                                  width: 100,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20)),
+                                  textStyle: TextStyle(
+                                    color: backgroundColor,
                                   ),
-                                  onPressed: () => {
-                                    setState(() {
-                                      if (tables.length <= 13) {
-                                        if (prefs.nameSalida != tables2) {
-                                          noemp.insert(0,
-                                              '${data1.agent!.agentEmployeeId}');
-                                          names.insert(0,
-                                              '${data1.agent!.agentFullname}');
-                                          hourout.insert(
-                                              0, '${data1.agent!.hourAgent}');
-                                          direction.insert(0,
-                                              '${data1.agent!.agentReferencePoint} ${data1.agent!.neighborhoodName}\n${data1.agent!.departmentName}');
-                                          tempArr.add(data1.agent!.agentId);
-                                          prefs.destinationIdAgent =
-                                              data1.agent!.companyId.toString();
-                                          prefs.nameSalida = data1
-                                              .agent!.agentEmployeeId
-                                              .toString();
-                                          User firstUser = User(
-                                              noempid:
-                                                  '${data1.agent!.agentEmployeeId}',
-                                              nameuser:
-                                                  '${data1.agent!.agentFullname}',
-                                              hourout:
-                                                  '${data1.agent!.hourAgent}',
-                                              direction:
-                                                  '${data1.agent!.departmentName} ${data1.agent!.neighborhoodName}\n${data1.agent!.agentReferencePoint}',
-                                              idsend: data1.agent!.agentId);
-                                          print(firstUser);
-                                          List<User> listOfUsers = [firstUser];
-                                          this.handler!.insertAgent(listOfUsers);
-                                          clearText();
-                                          //guardar();
+                                  backgroundColor: firstColor,
+                                ),
+                                    onPressed: () => {
+                                      setState(() {
+                                        if (tables.length <= 13) {
+                                          if (prefs.nameSalida != tables2) {
+                                            noemp.insert(0,
+                                                '${data1.agent!.agentEmployeeId}');
+                                            names.insert(0,
+                                                '${data1.agent!.agentFullname}');
+                                            hourout.insert(
+                                                0, '${data1.agent!.hourAgent}');
+                                            direction.insert(0,
+                                                '${data1.agent!.agentReferencePoint} ${data1.agent!.neighborhoodName}\n${data1.agent!.departmentName}');
+                                            tempArr.add(data1.agent!.agentId);
+                                            prefs.destinationIdAgent =
+                                                data1.agent!.companyId.toString();
+                                            prefs.nameSalida = data1
+                                                .agent!.agentEmployeeId
+                                                .toString();
+                                            User firstUser = User(
+                                                noempid:
+                                                    '${data1.agent!.agentEmployeeId}',
+                                                nameuser:
+                                                    '${data1.agent!.agentFullname}',
+                                                hourout:
+                                                    '${data1.agent!.hourAgent}',
+                                                direction:
+                                                    '${data1.agent!.departmentName} ${data1.agent!.neighborhoodName}\n${data1.agent!.agentReferencePoint}',
+                                                idsend: data1.agent!.agentId);
+                                            print(firstUser);
+                                            List<User> listOfUsers = [firstUser];
+                                            this.handler!.insertAgentSolid(listOfUsers);
+                                            clearText();
+                                            //guardar();
 
-                                        } else {
+                                          } else {
+                                            print('yasta we');
+                                            Navigator.pop(context);
+                                            QuickAlert.show(
+                                              context: context,
+                                              title: "¡Advertencia!",
+                                              text: " El agente con número de empleado \n '${data1.agent!.agentEmployeeId}' ya está agregado al viaje",
+                                              type: QuickAlertType.error,
+                                            ); 
+                                          }
+                                        } else if (tables.length > 13) {
                                           print('yasta we');
                                           Navigator.pop(context);
                                           QuickAlert.show(
                                             context: context,
                                             title: "¡Advertencia!",
-                                            text: " El agente con número de empleado \n '${data1.agent!.agentEmployeeId}' ya está agregado al viaje",
+                                            text: " El limite de agentes son 14, favor \n comunicarse con su cordinador",
                                             type: QuickAlertType.error,
                                           ); 
                                         }
-                                      } else if (tables.length > 13) {
-                                        print('yasta we');
                                         Navigator.pop(context);
-                                        QuickAlert.show(
-                                          context: context,
-                                          title: "¡Advertencia!",
-                                          text: " El limite de agentes son 14, favor \n comunicarse con su cordinador",
-                                          type: QuickAlertType.error,
-                                        ); 
-                                      }
-                                      Navigator.pop(context);
-                                    }),
-                                    // },
-                                  },
-                                  child: Text('Agregar'),
+                                      }),
+                                      // },
+                                    },
+                                    child: Text('Agregar'),
+                                  ),
                                 ),
                                 SizedBox(width: 20),
-                                TextButton(
-                                  style: TextButton.styleFrom(
-                                    textStyle: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                    backgroundColor: Colors.orange,
+                                Container(
+                              width: 100,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20)),
+                                  textStyle: TextStyle(
+                                    color: Colors.white,
                                   ),
-                                  onPressed: () => {
-                                    setState(() {
-                                      Navigator.pop(context);
-                                    }),
-                                  },
-                                  child: Text('Cancelar'),
+                                  backgroundColor: Colors.red,
                                 ),
+                                onPressed: () => {
+                                  setState(() {
+                                    Navigator.pop(context);
+                                  }),
+                                },
+                                child: Text('Cancelar',
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.normal,
+                                        color: Colors.white)),
+                              ),
+                            ),
                               ],
                             ),
                             SizedBox(height: 40),
@@ -1069,6 +1153,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                       ),
                     ),
                   ));
+        
         }
       }
       return FindAgentSolid.fromJson(json.decode(responsed.body));
@@ -1076,12 +1161,12 @@ class _DriverDescriptionState extends State<DriverDescription>
   }
 
   // ignore: missing_return
-  Future<TripsToSolid?> fetchAgentsLeftPastToProgresToSolid() async {
+  fetchAgentsLeftPastToProgresToSolid() async {
     http.Response responses = await http
         .get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
     final si = DriverData.fromJson(json.decode(responses.body));
     final Database db = await handler!.initializeDB();
-    final tables = await db.rawQuery('SELECT * FROM agentInsert ;');
+    final tables = await db.rawQuery('SELECT * FROM agentInsertSolid ;');
     if (tables.length == 0) {
       Navigator.pop(context);
       QuickAlert.show(
@@ -1108,7 +1193,7 @@ class _DriverDescriptionState extends State<DriverDescription>
           Map datas2 = {
             "agentId": tables[i]['idsend'].toString(),
             "tripId": send.trip!.tripId.toString(),
-            "tripHour": send.trip!.tripHour
+            "tripHour": send.trip!.tripHour.toString()
           };
 
           if (response1.statusCode == 200) {
@@ -1204,7 +1289,7 @@ class _DriverDescriptionState extends State<DriverDescription>
           //_noDisponible(context),
         ] else if (widget.plantillaDriver.id == 6) ...[
           _mostrarQuintaVentana(context),
-          SizedBox(height: 20.0),
+          SizedBox(height: 120.0),
         ]
       ],
     );
@@ -1761,12 +1846,21 @@ class _DriverDescriptionState extends State<DriverDescription>
     final String destination2 = "Emisoras";
 
     return Container(margin: EdgeInsets.symmetric(horizontal: 40.0),
+    decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(15)),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0, 0),),
+          BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0, 0), ),
+        ],
+      
+      ),
       child: Row(
+        
         children: [
-          Icon(Icons.location_city),
+          Padding(padding: const EdgeInsets.all(8.0),child: Icon(Icons.location_city,color: thirdColor,size: 30.0,),),  
           SizedBox(width: 20.0),
           Expanded(
-            child: new DropdownButton(hint: Text(prefs.destinationPrueba),
+            child: new DropdownButton(underline: SizedBox(),style: TextStyle(color: Colors.white60),dropdownColor: backgroundColor2,elevation: 20,
+              hint: Text(prefs.destinationPrueba,style: TextStyle(color: Colors.white,fontWeight: FontWeight.normal,fontSize: 15.0)),
             items: data2.map((e) {
               return new DropdownMenuItem(
                 child: Text(
@@ -1812,23 +1906,24 @@ class _DriverDescriptionState extends State<DriverDescription>
         Text('Destino',style: TextStyle(color: GradiantV_2,fontWeight: FontWeight.normal,fontSize: 35.0)),
         SizedBox(height: 5.0),
         _crearDropdownToDestination(context),
-        FutureBuilder<DriverData>(future: itemx,
-          builder: (BuildContext context, abc) {
-            switch (abc.connectionState) {
-              case ConnectionState.waiting:
-                return Text('Cargando....');
-              default:
-                if (abc.hasError) {
-                  return Text('Error: ${abc.error}');
-                } else {
-                  return Column(
-                    children: [
-                      if (abc.data?.driverCoord == true) showAndHide()
-                    ],
-                  );
-                }
-            }
-          }),
+        FutureBuilder<DriverData?>(
+            future: itemx!,
+            builder: (BuildContext context, abc) {
+              switch (abc.connectionState) {
+                case ConnectionState.waiting:
+                  return Text('Cargando....');
+                default:
+                  if (abc.hasError) {
+                    return Text('Error: ${abc.error}');
+                  } else {
+                    return Column(
+                      children: [
+                        if (abc.data?.driverCoord == true) showAndHide()
+                      ],
+                    );
+                  }
+              }
+            }),
         Container(width: 320,
           decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(15)),
             boxShadow: [
@@ -1858,7 +1953,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                 child: Icon(Icons.delete,color: backgroundColor, size: 25.0),
                 onPressed: () {
                   setState(() {
-                    this.handler!.cleanTableAgent();
+                    this.handler!.cleanTableAgentSolid();
                   });
                 }),
             ),
@@ -1928,7 +2023,7 @@ class _DriverDescriptionState extends State<DriverDescription>
         ),
         SizedBox(height: 6.0),
         FutureBuilder(
-          future: this.handler!.retrieveAgent(),
+          future: this.handler!.retrieveAgentSolid(),
           builder: (BuildContext context, AsyncSnapshot<List<User?>> snapshot) {
             if (snapshot.hasData) {
               noemp.add("${snapshot.data?.length}");
@@ -1940,7 +2035,7 @@ class _DriverDescriptionState extends State<DriverDescription>
         ),
         SizedBox(height: 6.0),
         FutureBuilder(
-            future: this.handler!.retrieveAgent(),
+            future: this.handler!.retrieveAgentSolid(),
             builder: (BuildContext context, AsyncSnapshot<List<User?>> snapshot) {
               if (snapshot.hasData) {
                 return Padding(padding: const EdgeInsets.all(15.0),
@@ -1958,26 +2053,58 @@ class _DriverDescriptionState extends State<DriverDescription>
                                   Container(margin: EdgeInsets.only(left: 15),
                                     child: Column(
                                       children: [
-                                        ListTile(contentPadding:EdgeInsets.fromLTRB(5, 5, 10, 0),
-                                          title: Text('# No empleado: ',style: TextStyle(fontSize: 18,fontWeight:FontWeight.bold,color: Colors.white)),
-                                          subtitle:Text('${snapshot.data![i]!.noempid}',style: TextStyle(fontSize: 15,color: Colors.white)),
-                                          leading: Icon(Icons.confirmation_number,color: thirdColor,size: 40.0),
-                                        ),
-                                        ListTile(contentPadding:EdgeInsets.fromLTRB(5, 5, 10, 0),
-                                          title: Text('Nombre:',style: TextStyle(fontSize: 18,fontWeight:FontWeight.bold,color: Colors.white)),
-                                          subtitle: Text('${snapshot.data![i]!.nameuser}',style: TextStyle(fontSize: 15,color: Colors.white)),
-                                          leading: Icon(Icons.account_box_sharp,color: thirdColor,size: 40.0),
-                                        ),
-                                        ListTile(contentPadding:EdgeInsets.fromLTRB(5, 5, 10, 0),
-                                          title: Text('Hora: ',style: TextStyle(fontSize: 18,fontWeight:FontWeight.bold,color: Colors.white)),
-                                          subtitle: Text('${snapshot.data![i]!.hourout}',style: TextStyle(fontSize: 15,color: Colors.white)),
-                                          leading: Icon(Icons.access_alarms,color: thirdColor,size: 40.0),
-                                        ),
-                                        ListTile(contentPadding:EdgeInsets.fromLTRB(5, 5, 10, 0),
-                                          title: Text('Dirección: ',style: TextStyle(fontSize: 18,fontWeight:FontWeight.bold,color: Colors.white)),
-                                          subtitle: Text('${snapshot.data![i]!.direction}',style: TextStyle(fontSize: 15,color: Colors.white)),
-                                          leading: Icon(Icons.location_pin,color: thirdColor,size: 40.0),
-                                        ),
+                                        Column(crossAxisAlignment:CrossAxisAlignment.end,
+                                            children: <Widget>[
+                                              Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.confirmation_number,color: thirdColor),
+                                                  SizedBox(width: 15,),
+                                                  Flexible(child: Text('# No empleado: ${snapshot.data![i]!.noempid}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
+                                                ],
+                                                ),
+                                              ),                       
+                                            ],
+                                          ),
+                                          Column(crossAxisAlignment:CrossAxisAlignment.end,
+                                            children: <Widget>[
+                                              Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.account_box_sharp,color: thirdColor),
+                                                  SizedBox(width: 15,),
+                                                  Flexible(child: Text('Nombre: ${snapshot.data![i]!.nameuser}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
+                                                ],
+                                                ),
+                                              ),                       
+                                            ],
+                                          ),
+                                          Column(crossAxisAlignment:CrossAxisAlignment.end,
+                                            children: <Widget>[
+                                              Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.access_alarms,color: thirdColor),
+                                                  SizedBox(width: 15,),
+                                                  Flexible(child: Text('Hora salida: ${snapshot.data![i]!.hourout}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
+                                                ],
+                                                ),
+                                              ),                       
+                                            ],
+                                          ),
+                                          Column(crossAxisAlignment:CrossAxisAlignment.end,
+                                            children: <Widget>[
+                                              Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
+                                              child: Row(
+                                                children: [
+                                                  Padding(padding: const EdgeInsets.only(bottom: 18),child: Icon(Icons.location_pin,color: thirdColor)),
+                                                  SizedBox(width: 15,),
+                                                  Flexible(child: Text('Dirección: ${snapshot.data![i]!.direction}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
+                                                ],
+                                                ),
+                                              ),                       
+                                            ],
+                                          ),  
                                         ],
                                       ),
                                     ),
@@ -1990,8 +2117,8 @@ class _DriverDescriptionState extends State<DriverDescription>
                                       child: ElevatedButton(style: ElevatedButton.styleFrom(textStyle: TextStyle(color: Colors.white,),backgroundColor: backgroundColor,shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0)),),
                                       onPressed: () async {
                                         final Database db = await handler!.initializeDB();
-                                          await this.handler!.deleteAgent(snapshot.data![i]!.idsend);
-                                          await db.rawQuery("DELETE FROM agentInsert WHERE nameuser = '${snapshot.data![i]!.nameuser}'");
+                                          await this.handler!.deleteAgentSolid(snapshot.data![i]!.idsend);
+                                          await db.rawQuery("DELETE FROM agentInsertSolid WHERE nameuser = '${snapshot.data![i]!.nameuser}'");
                                             setState(() {
                                               snapshot.data!.remove(snapshot.data![i]);
                                             });
@@ -2027,7 +2154,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                                         });      
                                         await fetchAgentsLeftPastToProgresToSolid();
                                         setState(() {
-                                          this.handler!.cleanTableAgent();
+                                          this.handler!.cleanTableAgentSolid();
                                         });
                                 }),
                               ),                              

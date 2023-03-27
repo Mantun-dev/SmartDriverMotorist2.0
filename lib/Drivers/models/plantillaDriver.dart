@@ -73,7 +73,7 @@ List<PlantillaDriver> plantillaDriver = [
       size: 20,
       description: dummyText3,
       image: "assets/images/adduser.png",
-      imageMain: "assets/images/clipBoard.svg",
+      imageMain: "assets/images/adduser.svg",
       color: backgroundColor),
 ];
 
