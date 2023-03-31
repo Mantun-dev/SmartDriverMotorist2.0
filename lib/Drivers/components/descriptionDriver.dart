@@ -157,128 +157,80 @@ class _DriverDescriptionState extends State<DriverDescription>
   }
 
   fetchAgentsLeftPastToProgres( String hourOut, String nameVehicle) async {
-    http.Response responses = await http
-        .get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
-    final si = DriverData.fromJson(json.decode(responses.body));
+    http.Response responses = await http.get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
+    final data = DriverData.fromJson(json.decode(responses.body));
+    int? statusCodex;
     final Database db = await handler!.initializeDB();
     final tables = await db.rawQuery('SELECT * FROM userX ;');
     if (tables.length == 0) {
       Navigator.pop(context);      
-      QuickAlert.show(
-            context: context,
-            title: "Alerta",
-            text: "No hay agentes agregados",
-            type: QuickAlertType.error,
-          ); 
-    } else { 
-      if (si.driverCoord == true) {
-        if(prefs.vehiculo == ""){
-          QuickAlert.show(
-            context: context,
-            title: "Alerta",
-            text: "Necesita agregar el vehículo",
-            type: QuickAlertType.error,
-            onConfirmBtnTap:() { 
-              Scrollable.ensureVisible(dataKey.currentContext!);
-              setState(() {                
-                vehFlag = true;
-              });
-
-              Navigator.pop(context);
-              Navigator.pop(context);
-            },
-          );
-        }else{
-          Map datas = {
-            'companyId': prefs.companyId,
-            'tripHour': hourOut,
-            'driverId': radioShowAndHide == false
-                ? si.driverId.toString()
-                : prefs.driverIdx,
-            'tripVehicle': prefs.vehiculo,
-          };
-          http.Response response1 = await http
-              .post(Uri.parse('$ip/apis/registerDeparture2'), body: datas);
-          final send = Salida.fromJson(json.decode(response1.body));
-          prefs.tripId = send.tripId!.tripId.toString();
-          for (var i = 0; i < tables.length; i++) {
-            Map datas2 = {
-              "agentId": tables[i]['idsend'].toString(),
-              "tripId": send.tripId!.tripId.toString(),
-              "tripHour": send.tripId!.tripHour
-            };
-            await http.post(Uri.parse('$ip/apis/registerAgentForOutTrip'),body: datas2);
-          }
-          if (response1.statusCode == 200) {
-            await http.get(Uri.parse('$ip/apis/agentsInTravel/${prefs.tripId}'));
-            Navigator.pop(context);
-            Navigator.push(context,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
-            prefs.removeIdCompanyAndVehicle();
-            QuickAlert.show(
-              context: context,
-              title: send.title,
-              text: send.message,
-              type: QuickAlertType.success,
-            ); 
-            this.handler!.cleanTable();
-          } else {
-            throw Exception('Failed to load Data');
-          }
-        }
-      } else {
+      QuickAlert.show(context: context,title: "Alerta",text: "No hay agentes agregados",type: QuickAlertType.error,); 
+    } 
+    if(prefs.vehiculo == ""){
+      QuickAlert.show(context: context,title: "Alerta",text: "Necesita agregar el vehículo",type: QuickAlertType.error,
+        onConfirmBtnTap:() { 
+          Scrollable.ensureVisible(dataKey.currentContext!);
+          setState(() {                
+            vehFlag = true;
+          });
+          Navigator.pop(context);
+          Navigator.pop(context);
+        },
+      );
+    }
+    if(prefs.vehiculo.isNotEmpty && tables.length != 0){
+      if (data.driverCoord == true) {                
         Map datas = {
           'companyId': prefs.companyId,
-          'driverId': si.driverId.toString(),
-          'tripVehicle': nameVehicle,
+          'tripHour': hourOut,
+          'driverId': radioShowAndHide == false? data.driverId.toString(): prefs.driverIdx,
+          'tripVehicle': prefs.vehiculo,
         };
-        if(prefs.vehiculo == ""){
-          QuickAlert.show(
-            context: context,
-            title: "Alerta",
-            text: "Necesita agregar el vehículo",
-            type: QuickAlertType.error,
-            onConfirmBtnTap:() {  
-              Scrollable.ensureVisible(dataKey.currentContext!);
-              setState(() {                
-                vehFlag = true;
-              });                          
-              Navigator.pop(context);
-              Navigator.pop(context);
-            },
-          ); 
-        }else{
-          http.Response response1 = await http
-              .post(Uri.parse('$ip/apis/registerDeparture2'), body: datas);
-          final send = Salida.fromJson(json.decode(response1.body));
-          prefs.tripId = send.tripId!.tripId.toString();
-
-          for (var i = 0; i < tables.length; i++) {
-            Map datas2 = {
-              "agentId": tables[i]['idsend'].toString(),
-              "tripId": send.tripId!.tripId.toString(),
-              "tripHour": send.tripId!.tripHour
-            };
-            await http.post(Uri.parse('$ip/apis/registerAgentForOutTrip'),body: datas2);
-          }
-          if (response1.statusCode == 200) {
-            await http.get(Uri.parse('$ip/apis/agentsInTravel/${prefs.tripId}'));
-            Navigator.pop(context);
-            Navigator.push(context,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
-            prefs.removeIdCompanyAndVehicle();
-            QuickAlert.show(
-              context: context,
-              title: send.title,
-              text: send.message,
-              type: QuickAlertType.success,
-            ); 
-
-            this.handler!.cleanTable();
-          } else {
-            throw Exception('Failed to load Data');
-          }
+        http.Response response1 = await http.post(Uri.parse('$ip/apis/registerDeparture2'), body: datas);
+        final send = Salida.fromJson(json.decode(response1.body));
+        prefs.tripId = send.tripId!.tripId.toString();
+        for (var i = 0; i < tables.length; i++) {
+          Map datas2 = {
+            "agentId": tables[i]['idsend'].toString(),
+            "tripId": send.tripId!.tripId.toString(),
+            "tripHour": send.tripId!.tripHour
+          };
+          var dataResp = await http.post(Uri.parse('$ip/apis/registerAgentForOutTrip'),body: datas2);
+          setState(() {            
+            statusCodex = dataResp.statusCode;
+          });
         }
+        validationLastToPassProgres(statusCodex, prefs.tripId, send.title, send.message);        
+      } else {
+        Map datas = {'companyId': prefs.companyId,'driverId': data.driverId.toString(),'tripVehicle': nameVehicle,};
+        http.Response response1 = await http.post(Uri.parse('$ip/apis/registerDeparture2'), body: datas);
+        final send = Salida.fromJson(json.decode(response1.body));
+        prefs.tripId = send.tripId!.tripId.toString();
+        for (var i = 0; i < tables.length; i++) {
+          Map datas2 = {"agentId": tables[i]['idsend'].toString(),
+          "tripId": send.tripId!.tripId.toString(),
+          "tripHour": send.tripId!.tripHour};
+          var dataResp = await http.post(Uri.parse('$ip/apis/registerAgentForOutTrip'),body: datas2);          
+          setState(() {            
+            statusCodex = dataResp.statusCode;
+          });
+        }
+        validationLastToPassProgres(statusCodex, prefs.tripId, send.title, send.message);
       }
     }
+  }
+
+  void validationLastToPassProgres(statusCode, tripId, title, message)async{
+    if (statusCode == 200) {
+      await http.get(Uri.parse('$ip/apis/agentsInTravel/$tripId'));    
+      Navigator.pop(context);
+      Navigator.push(context,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
+      prefs.removeIdCompanyAndVehicle();
+      QuickAlert.show(context: context,title: title,text: message,type: QuickAlertType.success,); 
+      this.handler!.cleanTable();
+    } else {
+        throw Exception('Failed to load Data');
+    } 
   }
 
   Future scanBarcodeNormal() async {
@@ -1371,9 +1323,31 @@ class _DriverDescriptionState extends State<DriverDescription>
                 child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: GradiantV_2,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0),),),
                     child: Icon(Icons.delete,color: backgroundColor, size: 25.0),
                     onPressed: () {
-                      setState(() {
-                        this.handler!.cleanTable();
-                      });
+                      QuickAlert.show(context: context,title: "...",
+                      text: "¿Desea eliminar a los agentes?",
+                      confirmBtnText: "Si",cancelBtnText: "Cancelar",showCancelBtn: true,  confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
+                        onConfirmBtnTap: () {
+                          Navigator.pop(context);
+                          QuickAlert.show(
+                            context: context,
+                            title: "Eliminando...",
+                            type: QuickAlertType.success,
+                          );
+                          setState(() {
+                            this.handler!.cleanTable();
+                          });
+                          },
+                          onCancelBtnTap: () {
+                            Navigator.pop(context);
+                            QuickAlert.show(
+                              context: context,
+                              title: "Cancelado",
+                              type: QuickAlertType.success,                                                  
+                            );                                                
+                          },                                              
+                          type: QuickAlertType.warning,
+                        );
+                      
                     }),
               ),
               SizedBox(width: 8.0),

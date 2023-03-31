@@ -80,14 +80,15 @@ Future<TripsList3> fetchAgentsCompleted() async {
   }
 }
 
-var userStatus = List<bool>.empty(growable: true);
+//var userStatus = List<bool>.empty(growable: true);
 Future<TripsList4> fetchAgentsTripInProgress() async {
-  http.Response responsed = await http
-      .get(Uri.parse('$ip/apis/agentsTripInProgress/${prefs.tripId}'));
+  http.Response responsed = await http.get(Uri.parse('$ip/apis/agentsTripInProgress/${prefs.tripId}'));
+
+  //print(responsed.body);
   TripsList4.fromJson(json.decode(responsed.body));
   if (responsed.statusCode == 200) {
   
-    userStatus.add(false);
+    //userStatus.add(false);
     return TripsList4.fromJson(json.decode(responsed.body));
   } else {
     throw Exception('Failed to load Data');
