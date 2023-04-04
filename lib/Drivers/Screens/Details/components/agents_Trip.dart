@@ -204,11 +204,19 @@ class _DataTableExample extends State<MyAgent> {
           text: resp.message,
           );
     }
-
-     Map data2 = {"Estado": 'FINALIZADO'};
-      String sendData2 = json.encode(data2);
-      await http.put(Uri.parse('https://apichat.smtdriver.com/api/salas/Viaje_Estado/${prefs.tripId}'), body: sendData2, headers: {"Content-Type": "application/json"});
       
+    http.Response responseSala = await http.get(Uri.parse('https://apichat.smtdriver.com/api/salas/Tripid/${prefs.tripId}'));
+    final respS = json.decode(responseSala.body);
+
+    for(int i = 0; i<respS['salas']['Agentes'].length; i++){
+
+      if(respS['salas']['Agentes'][i]['Estado']=='ESPERA'){
+        Map data2 = {"idU": respS['salas']['Agentes'][i]['agenteId'].toString(), "Estado": 'RECHAZADO'};
+        String sendData2 = json.encode(data2);
+        await http.put(Uri.parse('https://apichat.smtdriver.com/api/salas/${prefs.tripId}'), body: sendData2, headers: {"Content-Type": "application/json"});
+      }
+    }
+
     return Driver.fromJson(json.decode(response.body));
   }
 
