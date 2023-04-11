@@ -3,6 +3,7 @@
 import 'package:flutter_auth/Drivers/Screens/Chat/chatViews.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/travel_In_Trips.dart';
+import 'package:flutter_auth/Drivers/Screens/Details/detailsDriver_Screen.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
 import 'package:flutter_auth/Drivers/components/loader.dart';
@@ -24,6 +25,16 @@ void main() {
   runApp(MyAgent());
 }
 
+int recargar=-1;
+
+void setRecargar(int numero){
+  recargar=numero;
+}
+
+int gerRecargar(){
+  return recargar;
+}
+
 class MyAgent extends StatefulWidget {
   final TripsList2? item;
   final PlantillaDriver? plantillaDriver;
@@ -33,13 +44,26 @@ class MyAgent extends StatefulWidget {
   _DataTableExample createState() => _DataTableExample();
 }
 
-class _DataTableExample extends State<MyAgent> {
+class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
   List<int>? counter;
   Future<TripsList2>? item;
   TextEditingController agentHours = new TextEditingController();
   final prefs = new PreferenciasUsuario();
   String ip = "https://driver.smtdriver.com";
   dynamic flagalert;
+  
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if(AppLifecycleState.resumed==state){
+      if(mounted){
+        if(gerRecargar()==0){
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (_) => MyAgent()))
+          .then((_) => MyAgent());
+        }
+      }
+    }
+    
+  }
 
   Future<Driver> fetchHours(
       String agentId, String agentTripHour, String tripId) async {
@@ -223,6 +247,8 @@ class _DataTableExample extends State<MyAgent> {
   @override
   void initState() {
     super.initState();
+    setRecargar(0);
+    WidgetsBinding.instance.addObserver(this);
     item = fetchAgentsInTravel2();
   }
   
@@ -249,6 +275,7 @@ class _DataTableExample extends State<MyAgent> {
                 icon:
                     Icon(Icons.textsms_rounded, color: thirdColor, size: 30.0),
                 onPressed: () {
+                  setRecargar(-1);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -262,6 +289,7 @@ class _DataTableExample extends State<MyAgent> {
                 icon:
                     Icon(Icons.arrow_circle_left, color: secondColor, size: 30),
                 onPressed: () {
+                  setRecargar(-1);
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => Trips()),
@@ -874,7 +902,7 @@ class _DataTableExample extends State<MyAgent> {
                                             ),
                                           },
                                           //aqui lo demás
-                                          SizedBox(height: 30.0),
+                                          /*SizedBox(height: 30.0),
                                           Text('Hora de encuentro: ',
                                               style: TextStyle(
                                                   color: Colors.white,
@@ -925,7 +953,7 @@ class _DataTableExample extends State<MyAgent> {
                                                 ),
                                               ],
                                             ),
-                                          ),
+                                          ),*/
                                           SizedBox(height: 20.0),
                                           Row(
                                             mainAxisAlignment:
@@ -990,6 +1018,7 @@ class _DataTableExample extends State<MyAgent> {
                                               ),
                                             ],
                                           ),
+                                          SizedBox(height: 30.0),
                                           // Usamos una fila para ordenar los botones del card
                                         ],
                                       ),

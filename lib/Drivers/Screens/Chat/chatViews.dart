@@ -2,6 +2,7 @@ import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Chat/chatapis.dart';
 import 'package:flutter_auth/Drivers/Screens/Chat/listchat_agents.dart';
+import 'package:flutter_auth/Drivers/Screens/Details/components/agents_Trip.dart';
 //import 'package:flutter_auth/Drivers/Screens/Details/components/agents_Trip.dart';
 //import 'package:provider/provider.dart';
 
@@ -65,7 +66,9 @@ class _ChatPageState extends State<ChatPage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (_) => MyAgent()))
+          .then((_) => MyAgent());
           },
         ),
         actions: [
