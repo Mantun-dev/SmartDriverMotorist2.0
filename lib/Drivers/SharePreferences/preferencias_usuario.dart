@@ -157,6 +157,14 @@ class PreferenciasUsuario {
     _prefs.setString('vehiculo', value);
   }
 
+  String get vehiculoId {
+    return _prefs.getString('vehiculoSolid') ?? '';
+  }
+
+  set vehiculoId( String value ) {
+    _prefs.setString('vehiculoSolid', value);
+  }
+
   String get vehiculoSolid {
     return _prefs.getString('vehiculoSolid') ?? '';
   }

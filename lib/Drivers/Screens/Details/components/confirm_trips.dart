@@ -14,6 +14,7 @@ import 'package:flutter_auth/Drivers/models/messageTripCompleted.dart';
 import 'package:flutter_auth/Drivers/models/network.dart';
 import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 import 'package:flutter_auth/Drivers/models/registerTripAsCompleted.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' show json;
 import 'package:flutter_auth/constants.dart';
@@ -50,6 +51,10 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
   List<TextEditingController> check = [];
   List<TextEditingController> comment = new List.empty(growable: true);
+  TextEditingController vehicleController = new TextEditingController();
+
+  var tripVehicle = '';
+  bool vehicleL = false;
 
   Future<Message> fetchCheckAgentTrip(String agentId) async {
     int flag = (traveled) ? 1 : 0;
@@ -218,6 +223,27 @@ class _DataTableExample extends State<MyConfirmAgent> {
     item = fetchAgentsTripInProgress();
     comment = new List<TextEditingController>.empty(growable: true);
     check = [];
+    getInfoViaje();
+  }
+
+  void getInfoViaje() async{
+    http.Response responseSala = await http.get(Uri.parse('$ip/apis/agentsInTravel/${prefs.tripId}'));
+    final infoViaje = json.decode(responseSala.body);
+
+    print(infoViaje[3]);
+
+    if(infoViaje[3]['viajeActual']['tripVehicle']!=null){
+      setState(() {
+      tripVehicle = infoViaje[3]['viajeActual']['tripVehicle'];
+      vehicleL = true;
+    });
+    }else{
+      setState(() {
+      tripVehicle = '';
+      vehicleL = true;
+    });
+    }
+    
   }
 
   @override
@@ -268,7 +294,10 @@ class _DataTableExample extends State<MyConfirmAgent> {
                     style: TextStyle(
                         color: firstColor,
                         fontWeight: FontWeight.bold,
-                        fontSize: 35.0))),
+                        fontSize: 35.0
+                      )
+                )
+            ),
             SizedBox(height: 10.0),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -301,11 +330,291 @@ class _DataTableExample extends State<MyConfirmAgent> {
                 ],
               ),
             ),
+            ingresarVehiculo(),
+            SizedBox(height: 10.0),
             _agentToConfirm(),
             SizedBox(height: 20.0),
             _buttonsAgents(),
             SizedBox(height: 30.0),
           ])),
+    );
+  }
+
+  Widget ingresarVehiculo() {
+    return FutureBuilder<TripsList4>(
+      future: item,
+      builder: (BuildContext context, abc) {
+        if (abc.connectionState == ConnectionState.done) {
+          return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: vehicleL==false?null: (){
+                      showGeneralDialog(
+                              barrierColor: Colors.black.withOpacity(0.5),
+                              transitionBuilder: (context, a1, a2, widget) {
+                                return Transform.scale(scale: a1.value,
+                                  child: Opacity(opacity: a1.value,
+                                    child: AlertDialog(backgroundColor: backgroundColor,shape: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
+                                      title: Center(
+                                        child: Flexible(child: Text('Ingrese el Vehículo',style: TextStyle(color: GradiantV_2, fontSize: 20.0),))),
+                                        content: Container(decoration: BoxDecoration(borderRadius:BorderRadius.all(Radius.circular(15)),
+                                          boxShadow: [
+                                            BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0,0),),
+                                            BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0,0), ),
+                                          ],
+                                        ),
+                                        child: Padding(padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                          child: TextField(style: TextStyle(color: Colors.white),controller: vehicleController,
+                                            decoration: InputDecoration(border: InputBorder.none,labelText: 'Escriba aqui',labelStyle: TextStyle(color: Colors.white.withOpacity(0.5),fontSize: 15.0)),
+                                          ),
+                                        ),
+                                      ),
+                                      actions: [
+                                        Row(mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Container(width: 100,
+                                              child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: backgroundColor,),backgroundColor: Gradiant2,),
+                                                onPressed: () async{
+
+                                                    http.Response responses = await http.get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
+                                                                      final data2 = DriverData.fromJson(json.decode(responses.body));
+                                                                      Map data = {
+                                                                        "driverId": data2.driverId.toString(),
+                                                                        "tripId": prefs.tripId.toString(),
+                                                                        "vehicleId": "",
+                                                                        "tripVehicle": vehicleController.text
+                                                                      };
+
+                                                                      http.Response responsed = await http.post(Uri.parse('https://driver.smtdriver.com/apis/editTripVehicle'), body: data);
+                                                                      
+                                                                      final resp2 = json.decode(responsed.body);
+                                                                      
+                                                                      if(resp2['type']=='success'){
+                                                                        if(mounted){
+                                                                          Navigator.pop(context);
+                                                                          QuickAlert.show(context: context,title: "Exito",text: resp2['message'],type: QuickAlertType.success,);
+                                                                          setState(() {
+                                                                            tripVehicle = vehicleController.text;  
+                                                                          });
+                                                                        }else{
+                                                                          QuickAlert.show(context: context,title: "Alerta",text: resp2['message'],type: QuickAlertType.error,);
+                                                                        }
+                                                                        
+                                                                      }
+                                                  
+                                                  vehicleController.clear();
+                                                },
+                                                child: Text('Ingresar',style: TextStyle(color: backgroundColor,fontSize: 15.0)),
+                                              ),
+                                            ),
+                                            SizedBox(width: 10.0),
+                                            Container(width: 100,
+                                              child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: Colors.white,),backgroundColor: Colors.red,),
+                                                onPressed: () => {
+                                                  Navigator.pop(context),
+                                                },
+                                                child: Text('Cerrar',style: TextStyle(color: Colors.white,fontSize: 15.0)),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            transitionDuration: Duration(milliseconds: 200),barrierDismissible: true,barrierLabel: '',context: context,pageBuilder: (context, animation1, animation2) {return Text('');});
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(15)),
+                        boxShadow: [
+                          BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0, 0), ),
+                          BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0, 0), ),
+                        ],
+                      ),
+                      width: 220,
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Row(
+                          children: [
+                            Icon(Icons.emoji_transportation,color: thirdColor,size: 30.0,),
+                            SizedBox(width: 10.0),
+                            Flexible(
+                              child: Text(tripVehicle == '' ? "Vehículo" : tripVehicle,
+                                style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 15.0),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 10,),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: firstColor,
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: IconButton(
+                      icon: Icon(Icons.qr_code),
+                      color: backgroundColor,
+                      iconSize: 30.0,
+                      onPressed: vehicleL==false?null:() async{
+                        String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);
+              
+                        if (codigoQR == "-1") {
+                          return;
+                        } else {
+                          http.Response responseSala = await http.get(Uri.parse('https://app.mantungps.com/3rd/vehicles/$codigoQR'),headers: {"Content-Type": "application/json", "x-api-key": 'a10xhq0p21h3fb9y86hh1oxp66c03f'});
+                          final resp = json.decode(responseSala.body);
+
+                          if(resp['type']=='success'){
+                            print(responseSala.body);
+                                                    
+                            if(context.mounted){
+                              showGeneralDialog(
+                                barrierColor: Colors.black.withOpacity(0.5),
+                                transitionBuilder: (context, a1, a2, widget) {
+                                  return Transform.scale(
+                                    scale: a1.value,
+                                    child: Opacity(
+                                    opacity: a1.value,
+                                    child: vehiculoE(resp, context),
+                                  ),
+                                  );
+                                },
+                                transitionDuration: Duration(milliseconds: 220),
+                                barrierDismissible: false,
+                                barrierLabel: '',
+                                context: context,
+                                pageBuilder: (context, animation1, animation2) {
+                                  return widget;
+                                }
+                              );
+                            }
+                          }else{
+                            if(context.mounted){
+                              QuickAlert.show(context: context,title: "Alerta",text: "Vehículo no valido",type: QuickAlertType.error,); 
+                            }
+                          }
+                        }
+                      }
+                    ),
+                  ),
+                ],
+              ),
+            );
+        } else {
+          return ColorLoader3();
+        }
+      },
+    );
+  }
+
+  AlertDialog vehiculoE(resp, BuildContext context) {
+    var size = MediaQuery.of(context).size;
+    return AlertDialog(
+      //scrollable: true,
+      backgroundColor: backgroundColor,shape: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
+      title: Center(child: Flexible(child: Text('Vehículo Encontrado',style: TextStyle(color: GradiantV_2, fontSize: 20.0),))),
+      content: SizedBox(
+        width: size.width * 0.8,
+        //height: MediaQuery.of(context).size.height/1.9,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const SizedBox(height: 8.0),
+                                                                      Row(
+                                                                        children: [
+                                                                          Text('Descripcion:',
+                                                                                  style: TextStyle(
+                                                                                    color: Colors.white,
+                                                                                    fontSize: 18.0,
+                                                                                    fontWeight: FontWeight.bold
+                                                                                  )
+                                                                                ),
+                                                                            SizedBox(width: 5,),
+                                                                            Text(resp['vehicle']['name'],
+                                                                              style: TextStyle(
+                                                                                color: Colors.white,
+                                                                                fontSize: 18.0
+                                                                              )
+                                                                            ),
+                                                                        ],
+                                                                      ),
+                                                                      SizedBox(height: 15,),
+                                                                      Row(
+                                                                        children: [
+                                                                          Text('Placa:',
+                                                                                  style: TextStyle(
+                                                                                    color: Colors.white,
+                                                                                    fontSize: 18.0,
+                                                                                    fontWeight: FontWeight.bold
+                                                                                  )
+                                                                                ),
+                                                                                SizedBox(width: 10,),
+                                                                            Text(resp['vehicle']['registrationNumber'],
+                                                                              style: TextStyle(
+                                                                                color: Colors.white,
+                                                                                fontSize: 18.0
+                                                                              )
+                                                                            ),
+                                                                        ],
+                                                                      ),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+                                                              Row(mainAxisAlignment: MainAxisAlignment.center,
+                                                                children: [
+                                                                  Container(width: 100,
+                                                                    child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: backgroundColor,),backgroundColor: Gradiant2,),
+                                                                      onPressed: () async{
+                                                                        http.Response responses = await http.get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
+                                                                        final data2 = DriverData.fromJson(json.decode(responses.body));
+                                                                        Map data = {
+                                                                          "driverId": data2.driverId.toString(),
+                                                                          "tripId": prefs.tripId.toString(),
+                                                                          "vehicleId": resp['vehicle']['_id'],
+                                                                          "tripVehicle": "${resp['vehicle']['name']} [${resp['vehicle']['registrationNumber']}]"
+                                                                        };
+
+                                                                        http.Response responsed = await http.post(Uri.parse('https://driver.smtdriver.com/apis/editTripVehicle'), body: data);
+                                                                        
+                                                                        final resp2 = json.decode(responsed.body);
+                                                                        
+                                                                        if(resp2['type']=='success'){
+                                                                          if(mounted){
+                                                                            Navigator.pop(context);
+                                                                            QuickAlert.show(context: context,title: "Exito",text: resp2['message'],type: QuickAlertType.success,);
+                                                                            setState(() {
+                                                                              tripVehicle = "${resp['vehicle']['name']} [${resp['vehicle']['registrationNumber']}]";  
+                                                                            });
+                                                                          }else{
+                                                                            QuickAlert.show(context: context,title: "Alerta",text: resp2['message'],type: QuickAlertType.error,);
+                                                                          }
+                                                                          
+                                                                        }
+                                                                      },
+                                                                      child: Text('Agregar',style: TextStyle(color: backgroundColor,fontSize: 15.0)),
+                                                                    ),
+                                                                  ),
+                                                                  SizedBox(width: 10.0),
+                                                                  Container(width: 100,
+                                                                    child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: Colors.white,),backgroundColor: Colors.red,),
+                                                                      onPressed: () => {
+                                                                        Navigator.pop(context),
+                                                                      },
+                                                                      child: Text('Cancelar',style: TextStyle(color: Colors.white,fontSize: 15.0)),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ],
     );
   }
 
@@ -1027,7 +1336,12 @@ class _DataTableExample extends State<MyConfirmAgent> {
                 confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
                 cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
                 onConfirmBtnTap: () {
-                  Navigator.pop(context);                                 
+                  Navigator.pop(context);  
+
+                  if(tripVehicle == ''){
+                    QuickAlert.show(context: context,title: "Alerta",text: 'Tiene que ingresar un vehiculo.',type: QuickAlertType.error,);
+                    return;
+                  }                               
                   fetchRegisterTripCompleted();
                 },
                 onCancelBtnTap: () {
