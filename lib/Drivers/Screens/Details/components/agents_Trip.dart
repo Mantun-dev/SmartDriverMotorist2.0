@@ -333,7 +333,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                           fontWeight: FontWeight.bold,
                           fontSize: 25.0))),
               SizedBox(height: 20.0),
-              //ingresarVehiculo(),
+              ingresarVehiculo(),
               SizedBox(height: 20.0),
               Padding(
                 padding: const EdgeInsets.only(left: 15.0),
@@ -499,9 +499,11 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                       color: backgroundColor,
                       iconSize: 30.0,
                       onPressed: vehicleL==false?null:() async{
+                        setRecargar(-1);
                         String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);
               
                         if (codigoQR == "-1") {
+                          setRecargar(0);
                           return;
                         } else {
                           
@@ -537,6 +539,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                               QuickAlert.show(context: context,title: "Alerta",text: "Vehículo no valido",type: QuickAlertType.error,); 
                             }
                           }
+                          setRecargar(0);
                         }
                       }
                     ),

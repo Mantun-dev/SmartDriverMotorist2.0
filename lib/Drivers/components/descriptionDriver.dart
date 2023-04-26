@@ -207,15 +207,16 @@ class _DriverDescriptionState extends State<DriverDescription>
         }
         validationLastToPassProgres(statusCodex, prefs.tripId, send.title, send.message);        
       } else {
-        Map datas = {'companyId': prefs.companyId,'driverId': data.driverId.toString(),'tripVehicle': nameVehicle,};
-        http.Response response1 = await http.post(Uri.parse('$ip/apis/registerDeparture2'), body: datas);
+        Map datas = {'companyId': prefs.companyId,'driverId': data.driverId.toString(),'tripVehicle': nameVehicle,'vehicleId': prefs.vehiculoId,};
+        http.Response response1 = await http.post(Uri.parse('https://driver.smtdriver.com/apis/registerDeparture/test'), body: datas);
         final send = Salida.fromJson(json.decode(response1.body));
         prefs.tripId = send.tripId!.tripId.toString();
         for (var i = 0; i < tables.length; i++) {
           Map datas2 = {"agentId": tables[i]['idsend'].toString(),
           "tripId": send.tripId!.tripId.toString(),
-          "tripHour": send.tripId!.tripHour};
-          var dataResp = await http.post(Uri.parse('$ip/apis/registerAgentForOutTrip'),body: datas2);          
+          "tripHour": send.tripId!.tripHour,
+          "driverId":data.driverId.toString()};
+          var dataResp = await http.post(Uri.parse('$ip/apis/test/registerAgentForOutTrip'),body: datas2);          
           setState(() {            
             statusCodex = dataResp.statusCode;
           });
