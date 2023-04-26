@@ -299,7 +299,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                         ),
                         ListTile(
                           contentPadding: EdgeInsets.fromLTRB(5, 5, 5, 0),
-                          title: Text('Descripcion: ',
+                          title: Text('Nombre: ',
                               style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
