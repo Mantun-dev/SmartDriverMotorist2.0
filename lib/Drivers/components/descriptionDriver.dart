@@ -10,6 +10,7 @@ import 'package:flutter_auth/Drivers/Screens/Details/components/history_TripDriv
 import 'package:flutter_auth/Drivers/Screens/Details/components/process_Trip.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
 import 'package:flutter_auth/Drivers/components/loader.dart';
+import 'package:flutter_auth/Drivers/components/progress_indicator.dart';
 import 'package:flutter_auth/Drivers/models/DriverData.dart';
 import 'package:flutter_auth/Drivers/models/company.dart';
 import 'package:flutter_auth/Drivers/models/findAgentSolid.dart';
@@ -96,6 +97,7 @@ class _DriverDescriptionState extends State<DriverDescription>
     itemx!.then((value) => print(value.driverCoord) );
     fetchDriversDriver();
     vehicule = new TextEditingController(text: prefs.vehiculo);
+    vehicleController.text=prefs.vehiculo;
     //print(prefs.vehiculo);
     // print(prefs.companyId);
     this.handler = DatabaseHandler();
@@ -1262,6 +1264,7 @@ class _DriverDescriptionState extends State<DriverDescription>
   }
 
   Widget _mostrarTerceraVentana(BuildContext context) {
+
     return SingleChildScrollView(
       child: Column(
         //crossAxisAlignment: CrossAxisAlignment.center,
@@ -1275,85 +1278,35 @@ class _DriverDescriptionState extends State<DriverDescription>
             child: Row(
               
               children: [
-                GestureDetector(
-                  onTap: (){
-                    showGeneralDialog(
-                            barrierColor: Colors.black.withOpacity(0.5),
-                            transitionBuilder: (context, a1, a2, widget) {
-                              return Transform.scale(scale: a1.value,
-                                child: Opacity(opacity: a1.value,
-                                  child: AlertDialog(backgroundColor: backgroundColor,shape: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
-                                    title: Center(
-                                      child: Text('Buscar Vehiculo',style: TextStyle(color: GradiantV_2, fontSize: 20.0),)),
-                                      content: Container(decoration: BoxDecoration(borderRadius:BorderRadius.all(Radius.circular(15)),
-                                        boxShadow: [
-                                          BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0,0),),
-                                          BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0,0), ),
-                                        ],
-                                      ),
-                                      child: Padding(padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                        child: TextField(style: TextStyle(color: Colors.white),controller: vehicleController,
-                                          decoration: InputDecoration(border: InputBorder.none,labelText: 'Escriba aqui',labelStyle: TextStyle(color: Colors.white.withOpacity(0.5),fontSize: 15.0)),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(15)),
+                    boxShadow: [
+                      BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0, 0), ),
+                      BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0, 0), ),
+                    ],
+                  ),
+                  width: 220,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left:10.0, right: 10),
+                    child: Row(
+                      children: [
+                        Icon(Icons.emoji_transportation,color: thirdColor,size: 30.0,),
+                        SizedBox(width: 10.0),
+                        Flexible(
+                          child: TextField(
+                                        style: TextStyle(color: Colors.white),
+                                        controller: vehicleController,
+                                        decoration: InputDecoration(
+                                          border: InputBorder.none,
+                                          hintText: 'Vehículo',
+                                          hintStyle: TextStyle(color: Colors.white.withOpacity(0.5),
+                                          fontSize: 15.0)
                                         ),
+                                        onChanged: (value) => prefs.vehiculo=value,
                                       ),
-                                    ),
-                                    actions: [
-                                      Row(mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Container(width: 100,
-                                            child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: backgroundColor,),backgroundColor: Gradiant2,),
-                                              onPressed: () async{
-                                                setState(() {
-                                                  prefs.vehiculo = vehicleController.text;
-                                                  prefs.vehiculoId = "";
-                                                
-                                                });
-                                                vehicleController.clear();
-                                                Navigator.pop(context);
-                                              },
-                                              child: Text('Buscar',style: TextStyle(color: backgroundColor,fontSize: 15.0)),
-                                            ),
-                                          ),
-                                          SizedBox(width: 10.0),
-                                          Container(width: 100,
-                                            child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: Colors.white,),backgroundColor: Colors.red,),
-                                              onPressed: () => {
-                                                Navigator.pop(context),
-                                              },
-                                              child: Text('Cerrar',style: TextStyle(color: Colors.white,fontSize: 15.0)),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          transitionDuration: Duration(milliseconds: 200),barrierDismissible: true,barrierLabel: '',context: context,pageBuilder: (context, animation1, animation2) {return Text('');});
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(15)),
-                      boxShadow: [
-                        BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0, 0), ),
-                        BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0, 0), ),
+                        ),
                       ],
-                    ),
-                    width: 220,
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Row(
-                        children: [
-                          Icon(Icons.emoji_transportation,color: thirdColor,size: 30.0,),
-                          SizedBox(width: 10.0),
-                          Flexible(
-                            child: Text(prefs.vehiculo == "" ? "Vehículo" : prefs.vehiculo,
-                              style: TextStyle(color: prefs.vehiculo == "" ?Colors.white.withOpacity(0.5):Colors.white, fontSize: 15.0),
-                            ),
-                          ),
-                        ],
-                      ),
                     ),
                   ),
                 ),
@@ -1373,9 +1326,11 @@ class _DriverDescriptionState extends State<DriverDescription>
                         if (codigoQR == "-1") {
                           return;
                         } else {
+
+                          LoadingIndicatorDialog().show(context);
                           http.Response responseSala = await http.get(Uri.parse('https://app.mantungps.com/3rd/vehicles/$codigoQR'),headers: {"Content-Type": "application/json", "x-api-key": 'a10xhq0p21h3fb9y86hh1oxp66c03f'});
                           final resp = json.decode(responseSala.body);
-
+                          LoadingIndicatorDialog().dismiss();
                           if(resp['type']=='success'){
                             print(responseSala.body);
                             
@@ -1749,49 +1704,41 @@ class _DriverDescriptionState extends State<DriverDescription>
         width: size.width * 0.8,
         //height: MediaQuery.of(context).size.height/1.9,
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 8.0),
-                                                                      Row(
-                                                                        children: [
-                                                                          Text('Descripcion:',
-                                                                                  style: TextStyle(
-                                                                                    color: Colors.white,
-                                                                                    fontSize: 18.0,
-                                                                                    fontWeight: FontWeight.bold
-                                                                                  )
-                                                                                ),
-                                                                            SizedBox(width: 5,),
-                                                                            Flexible(
-                                                                              child: Text(resp['vehicle']['name'],
-                                                                                style: TextStyle(
-                                                                                  color: Colors.white,
-                                                                                  fontSize: 18.0
-                                                                                )
-                                                                              ),
-                                                                            ),
-                                                                        ],
-                                                                      ),
-                                                                      SizedBox(height: 15,),
-                                                                      Row(
-                                                                        children: [
-                                                                          Text('Placa:',
-                                                                                  style: TextStyle(
-                                                                                    color: Colors.white,
-                                                                                    fontSize: 18.0,
-                                                                                    fontWeight: FontWeight.bold
-                                                                                  )
-                                                                                ),
-                                                                                SizedBox(width: 10,),
-                                                                            Text(resp['vehicle']['registrationNumber'],
-                                                                              style: TextStyle(
-                                                                                color: Colors.white,
-                                                                                fontSize: 18.0
-                                                                              )
-                                                                            ),
-                                                                        ],
-                                                                      ),
-            ],
+          child: Flexible(
+            child: Column(
+              children: [
+                const SizedBox(height: 8.0),
+                Text('Descripcion:',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold
+                  )
+                ),
+                SizedBox(height: 5,),
+                Text(resp['vehicle']['name'],
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18.0
+                  )
+                ),
+                SizedBox(height: 15,),
+                Text('Placa:',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold
+                  )
+                ),
+                SizedBox(height: 10,),
+                Text(resp['vehicle']['registrationNumber'],
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18.0
+                  )
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -1804,6 +1751,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                                                                         setState(() { 
                                                                           prefs.vehiculo = "${resp['vehicle']['name']} [${resp['vehicle']['registrationNumber']}]";
                                                                           prefs.vehiculoId=codigoQR;
+                                                                          vehicleController.text=prefs.vehiculo;
                                                                         });
                                                                         Navigator.pop(context);
                                                                       },

@@ -17,6 +17,7 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:intl/intl.dart';
 import 'package:quickalert/quickalert.dart';
 import '../../../../constants.dart';
+import '../../../components/progress_indicator.dart';
 import '../../../models/agentsInTravelModel.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' show json;
@@ -262,15 +263,21 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
     final infoViaje = json.decode(responseSala.body);
 
     if(infoViaje[3]['viajeActual']['tripVehicle']!=null){
-      setState(() {
-      tripVehicle = infoViaje[3]['viajeActual']['tripVehicle'];
-      vehicleL = true;
-    });
+      if(mounted){
+        setState(() {
+          tripVehicle = infoViaje[3]['viajeActual']['tripVehicle'];
+          vehicleL = true;
+          vehicleController.text=tripVehicle;
+        });
+      }
     }else{
-      setState(() {
-      tripVehicle = '';
-      vehicleL = true;
-    });
+      if(mounted){
+        setState(() {
+          tripVehicle = '';
+          vehicleL = true;
+          vehicleController.text=tripVehicle;
+        });
+      }
     }
     
   }
@@ -377,6 +384,20 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
   }
 
   Widget ingresarVehiculo() {
+    final myFocusNode = FocusNode();
+    myFocusNode.addListener(() async{
+      if (!myFocusNode.hasFocus) {
+        http.Response responses = await http.get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
+        final data2 = DriverData.fromJson(json.decode(responses.body));
+        Map data = {
+          "driverId": data2.driverId.toString(),
+          "tripId": prefs.tripId.toString(),
+          "vehicleId": "",
+          "tripVehicle": vehicleController.text
+        };
+        http.Response responsed = await http.post(Uri.parse('https://driver.smtdriver.com/apis/editTripVehicle'), body: data);
+      }
+    });
     return FutureBuilder<TripsList2>(
       future: item,
       builder: (BuildContext context, abc) {
@@ -385,109 +406,39 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Row(
                 children: [
-                  GestureDetector(
-                    onTap: vehicleL==false?null: (){
-                      showGeneralDialog(
-                              barrierColor: Colors.black.withOpacity(0.5),
-                              transitionBuilder: (context, a1, a2, widget) {
-                                return Transform.scale(scale: a1.value,
-                                  child: Opacity(opacity: a1.value,
-                                    child: AlertDialog(backgroundColor: backgroundColor,shape: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
-                                      title: Center(
-                                        child: Flexible(child: Text('Ingrese el Vehículo',style: TextStyle(color: GradiantV_2, fontSize: 20.0),))),
-                                        content: Container(decoration: BoxDecoration(borderRadius:BorderRadius.all(Radius.circular(15)),
-                                          boxShadow: [
-                                            BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0,0),),
-                                            BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0,0), ),
-                                          ],
-                                        ),
-                                        child: Padding(padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                          child: TextField(style: TextStyle(color: Colors.white),controller: vehicleController,
-                                            decoration: InputDecoration(border: InputBorder.none,labelText: 'Escriba aqui',labelStyle: TextStyle(color: Colors.white.withOpacity(0.5),fontSize: 15.0)),
-                                          ),
-                                        ),
-                                      ),
-                                      actions: [
-                                        Row(mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Container(width: 100,
-                                              child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: backgroundColor,),backgroundColor: Gradiant2,),
-                                                onPressed: () async{
-
-                                                    http.Response responses = await http.get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
-                                                                      final data2 = DriverData.fromJson(json.decode(responses.body));
-                                                                      Map data = {
-                                                                        "driverId": data2.driverId.toString(),
-                                                                        "tripId": prefs.tripId.toString(),
-                                                                        "vehicleId": "",
-                                                                        "tripVehicle": vehicleController.text
-                                                                      };
-
-                                                                      http.Response responsed = await http.post(Uri.parse('https://driver.smtdriver.com/apis/editTripVehicle'), body: data);
-                                                                      
-                                                                      final resp2 = json.decode(responsed.body);
-                                                                      
-                                                                      if(resp2['type']=='success'){
-                                                                        if(mounted){
-                                                                          Navigator.pop(context);
-                                                                          QuickAlert.show(context: context,title: "Exito",text: resp2['message'],type: QuickAlertType.success,);
-                                                                          setState(() {
-                                                                            tripVehicle = vehicleController.text;  
-                                                                          });
-                                                                        }else{
-                                                                          QuickAlert.show(context: context,title: "Alerta",text: resp2['message'],type: QuickAlertType.error,);
-                                                                        }
-                                                                        
-                                                                      }
-                                                  
-                                                  vehicleController.clear();
-                                                },
-                                                child: Text('Ingresar',style: TextStyle(color: backgroundColor,fontSize: 15.0)),
-                                              ),
-                                            ),
-                                            SizedBox(width: 10.0),
-                                            Container(width: 100,
-                                              child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: Colors.white,),backgroundColor: Colors.red,),
-                                                onPressed: () => {
-                                                  Navigator.pop(context),
-                                                },
-                                                child: Text('Cerrar',style: TextStyle(color: Colors.white,fontSize: 15.0)),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            transitionDuration: Duration(milliseconds: 200),barrierDismissible: true,barrierLabel: '',context: context,pageBuilder: (context, animation1, animation2) {return Text('');});
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(15)),
-                        boxShadow: [
-                          BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0, 0), ),
-                          BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0, 0), ),
-                        ],
-                      ),
-                      width: 220,
-                      child: Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Row(
-                          children: [
-                            Icon(Icons.emoji_transportation,color: thirdColor,size: 30.0,),
-                            SizedBox(width: 10.0),
-                            Flexible(
-                              child: Text(tripVehicle == '' ? "Vehículo" : tripVehicle,
-                                style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 15.0),
-                              ),
+                  Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(15)),
+                    boxShadow: [
+                      BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0, 0), ),
+                      BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0, 0), ),
+                    ],
+                  ),
+                  width: 220,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left:10.0, right: 10),
+                    child: Row(
+                      children: [
+                        Icon(Icons.emoji_transportation,color: thirdColor,size: 30.0,),
+                        SizedBox(width: 10.0),
+                        Flexible(
+                          child: TextField(
+                            style: TextStyle(color: Colors.white),
+                            controller: vehicleController,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: 'Vehículo',
+                              hintStyle: TextStyle(color: Colors.white.withOpacity(0.5),
+                              fontSize: 15.0)
                             ),
-                          ],
+                            onChanged: (value) => tripVehicle,
+                            focusNode: myFocusNode,
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
+                ),
                   SizedBox(width: 10,),
                   Container(
                     decoration: BoxDecoration(
@@ -506,10 +457,10 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                           setRecargar(0);
                           return;
                         } else {
-                          
+                          LoadingIndicatorDialog().show(context);
                           http.Response responseSala = await http.get(Uri.parse('https://app.mantungps.com/3rd/vehicles/$codigoQR'),headers: {"Content-Type": "application/json", "x-api-key": 'a10xhq0p21h3fb9y86hh1oxp66c03f'});
                           final resp = json.decode(responseSala.body);
-
+                          LoadingIndicatorDialog().dismiss();
                           if(resp['type']=='success'){
                             print(responseSala.body);
                             print('###########################');
@@ -564,72 +515,41 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
         width: size.width * 0.8,
         //height: MediaQuery.of(context).size.height/1.9,
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 8.0),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text('Id:',
-                                                                                style: TextStyle(
-                                                                                  color: Colors.white,
-                                                                                  fontSize: 18.0,
-                                                                                  fontWeight: FontWeight.bold
-                                                                                )
-                                                                              ),
-              ),
-                                                                            SizedBox(height: 10,),
-                                                                            Align(
-                                                                              alignment: Alignment.centerRight,
-                                                                              child: Text(resp['vehicle']['_id'],
-                                                                                style: TextStyle(
-                                                                                  color: Colors.white,
-                                                                                  fontSize: 18.0
-                                                                                )
-                                                                              ),
-                                                                            ),
-                                                                      SizedBox(height: 15,),
-                                                                      Align(
-                alignment: Alignment.centerLeft,
-                                                                        child: Text('Nombre:',
-                                                                                style: TextStyle(
-                                                                                  color: Colors.white,
-                                                                                  fontSize: 18.0,
-                                                                                  fontWeight: FontWeight.bold
-                                                                                )
-                                                                              ),
-                                                                      ),
-                                                                            SizedBox(height: 10,),
-                                                                            Align(
-                alignment: Alignment.centerLeft,
-                                                                              child: Text(resp['vehicle']['name'],
-                                                                                style: TextStyle(
-                                                                                  color: Colors.white,
-                                                                                  fontSize: 18.0
-                                                                                )
-                                                                              ),
-                                                                            ),
-                                                                      SizedBox(height: 15,),
-                                                                      Align(
-                alignment: Alignment.centerLeft,
-                                                                        child: Text('Numero:',
-                                                                                style: TextStyle(
-                                                                                  color: Colors.white,
-                                                                                  fontSize: 18.0,
-                                                                                  fontWeight: FontWeight.bold
-                                                                                )
-                                                                              ),
-                                                                      ),
-                                                                            SizedBox(height: 10,),
-                                                                            Align(
-                alignment: Alignment.centerLeft,
-                                                                              child: Text(resp['vehicle']['registrationNumber'],
-                                                                                style: TextStyle(
-                                                                                  color: Colors.white,
-                                                                                  fontSize: 18.0
-                                                                                )
-                                                                              ),
-                                                                            ),
-            ],
+          child: Flexible(
+            child: Column(
+              children: [
+                const SizedBox(height: 8.0),
+                Text('Descripcion:',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold
+                  )
+                ),
+                SizedBox(height: 5,),
+                Text(resp['vehicle']['name'],
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18.0
+                  )
+                ),
+                SizedBox(height: 15,),
+                Text('Placa:',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold
+                  )
+                ),
+                SizedBox(height: 10,),
+                Text(resp['vehicle']['registrationNumber'],
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18.0
+                  )
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -639,6 +559,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                                                   Container(width: 100,
                                                                     child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: backgroundColor,),backgroundColor: Gradiant2,),
                                                                       onPressed: () async{
+                                                                        LoadingIndicatorDialog().show(context);
                                                                         http.Response responses = await http.get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
                                                                         final data2 = DriverData.fromJson(json.decode(responses.body));
                                                                         Map data = {
@@ -650,18 +571,19 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                                                         http.Response responsed = await http.post(Uri.parse('https://driver.smtdriver.com/apis/editTripVehicle'), body: data);
                                                                         
                                                                         final resp2 = json.decode(responsed.body);
-
+                                                                        LoadingIndicatorDialog().dismiss();
                                                                         if(resp2['type']=='success'){
                                                                           if(mounted){
                                                                             Navigator.pop(context);
                                                                             QuickAlert.show(context: context,title: "Exito",text: resp2['message'],type: QuickAlertType.success,);
                                                                             setState(() {
-                                                                              tripVehicle = "${resp['vehicle']['name']} [${resp['vehicle']['registrationNumber']}]";  
+                                                                              tripVehicle = "${resp['vehicle']['name']} [${resp['vehicle']['registrationNumber']}]";
+                                                                              vehicleController.text=tripVehicle;  
                                                                             });
-                                                                          }else{
-                                                                            QuickAlert.show(context: context,title: "Alerta",text: resp2['message'],type: QuickAlertType.error,);
                                                                           }
                                                                           
+                                                                        }else{
+                                                                          QuickAlert.show(context: context,title: "Alerta",text: resp2['message'],type: QuickAlertType.error,);
                                                                         }
                                                                       },
                                                                       child: Text('Agregar',style: TextStyle(color: backgroundColor,fontSize: 15.0)),
@@ -1682,6 +1604,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
               confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
               cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ),         
               onConfirmBtnTap: () {
+                Navigator.pop(context);
                 QuickAlert.show(
                 context: context,
                 type: QuickAlertType.success,
@@ -1728,6 +1651,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                 confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
                 cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
                 onConfirmBtnTap: () {
+                  Navigator.pop(context);
                   QuickAlert.show(
                   context: context,
                   type: QuickAlertType.success,
