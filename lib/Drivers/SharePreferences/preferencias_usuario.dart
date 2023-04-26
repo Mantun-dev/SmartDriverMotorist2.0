@@ -158,11 +158,11 @@ class PreferenciasUsuario {
   }
 
   String get vehiculoId {
-    return _prefs.getString('vehiculoSolid') ?? '';
+    return _prefs.getString('vehiculoId') ?? '';
   }
 
   set vehiculoId( String value ) {
-    _prefs.setString('vehiculoSolid', value);
+    _prefs.setString('vehiculoId', value);
   }
 
   String get vehiculoSolid {
