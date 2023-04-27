@@ -11,6 +11,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../constants.dart';
 import 'package:package_info/package_info.dart';
 
+import '../../../../main.dart';
 import '../../Details/components/detailsDriver_assignHour.dart';
 import '../../Details/components/details_HoursOut.dart';
 import '../../Details/components/details_TripProgress.dart';
@@ -183,6 +184,7 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                                 child: ItemDriverCard(
                                     plantillaDriver: plantillaDriver[index],
                                     press: () {
+                                      setPantallaP(0);
                                       // si.method();
                                       if (plantillaDriver[index] == plantillaDriver[0]) {
                                         Navigator.push(
@@ -248,6 +250,7 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                               child: ItemDriverCard(
                                   plantillaDriver: plantillaDriver[index],
                                   press: () {
+                                    setPantallaP(0);
                                     // si.method();
                                     if (plantillaDriver[index] == plantillaDriver[0]) {
                                           Navigator.push(

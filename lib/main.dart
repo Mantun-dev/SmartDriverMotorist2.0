@@ -21,6 +21,12 @@ class MyHttpoverrides extends HttpOverrides {
   }
 }
 
+int pantallaP = 0;
+
+void setPantallaP(int numero){
+  pantallaP = numero;
+}
+
 final GlobalKey<NavigatorState> navigatorKey =
     GlobalKey(debugLabel: "Main Navigator");
 
@@ -38,6 +44,7 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 }
 
+
 class _MyAppState extends State<MyApp> {
   final prefs = new PreferenciasUsuario();
   @override
@@ -45,7 +52,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     PushNotificationServices.messageStream.listen((event) {
 
-      if (event != "MESSAGE_NOTIFICATION") {
+      if (event != "MESSAGE_NOTIFICATION" && pantallaP  ==1) {
         prefs.tripId = event.toString();
         //print(event);
         navigatorKey.currentState

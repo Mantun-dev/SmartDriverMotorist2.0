@@ -12,6 +12,7 @@ import 'package:flutter_auth/Drivers/models/DriverData.dart';
 import 'package:flutter_auth/Drivers/models/countNotify.dart';
 import 'package:flutter_auth/Drivers/models/network.dart';
 import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
+import 'package:flutter_auth/main.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:quickalert/quickalert.dart';
 import '../../../constants.dart';
@@ -34,6 +35,7 @@ class _HomeDriverScreenState extends State<HomeDriverScreen>
   //GlobalKey _one = GlobalKey();
   @override
   void initState() {
+    setPantallaP(1);
     super.initState();
     item = fetchCountNotify();
 
