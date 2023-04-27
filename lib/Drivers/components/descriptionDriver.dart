@@ -112,7 +112,6 @@ class _DriverDescriptionState extends State<DriverDescription>
 
   void clearText() {
     agentEmployeeId.clear();
-    vehicleController.clear();
   }
 
   Future<List> fetchDriversDrivers() async {

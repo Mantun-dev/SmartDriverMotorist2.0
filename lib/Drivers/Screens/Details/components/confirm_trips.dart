@@ -292,56 +292,59 @@ class _DataTableExample extends State<MyConfirmAgent> {
               ),
             ],
           ),
-          body: ListView(children: <Widget>[
-            SizedBox(height: 20.0),
-            Center(
-                child: Text('Información de viaje',
+          body: GestureDetector(
+            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+            child: ListView(children: <Widget>[
+              SizedBox(height: 20.0),
+              Center(
+                  child: Text('Información de viaje',
+                      style: TextStyle(
+                          color: firstColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 35.0
+                        )
+                  )
+              ),
+              SizedBox(height: 10.0),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Text(' Viaje en proceso ',
+                    textAlign: TextAlign.start,
                     style: TextStyle(
-                        color: firstColor,
+                        color: GradiantV_2,
                         fontWeight: FontWeight.bold,
-                        fontSize: 35.0
-                      )
-                )
-            ),
-            SizedBox(height: 10.0),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Text(' Viaje en proceso ',
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                      color: GradiantV_2,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.0)),
-            ),
-            SizedBox(height: 10.0),
-            Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.rectangle,
-                borderRadius: BorderRadius.circular(10),
+                        fontSize: 20.0)),
               ),
-              margin: EdgeInsets.symmetric(horizontal: 15.0),
-              width: 300,
-              height: 90,
-              child: Column(
-                children: [
-                  SizedBox(height: 10.0),
-                  Center(
-                      child: Text(
-                          'Nota: Debe marcar el abordaje al momento en que el agente ingrese a la unidad, en caso de no abordar, solo debe llenar la observación.',
-                          style: TextStyle(
-                              color: Colors.white70,
-                              fontWeight: FontWeight.normal,
-                              fontSize: 15.0))),
-                ],
+              SizedBox(height: 10.0),
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                margin: EdgeInsets.symmetric(horizontal: 15.0),
+                width: 300,
+                height: 90,
+                child: Column(
+                  children: [
+                    SizedBox(height: 10.0),
+                    Center(
+                        child: Text(
+                            'Nota: Debe marcar el abordaje al momento en que el agente ingrese a la unidad, en caso de no abordar, solo debe llenar la observación.',
+                            style: TextStyle(
+                                color: Colors.white70,
+                                fontWeight: FontWeight.normal,
+                                fontSize: 15.0))),
+                  ],
+                ),
               ),
-            ),
-            ingresarVehiculo(),
-            SizedBox(height: 10.0),
-            _agentToConfirm(),
-            SizedBox(height: 20.0),
-            _buttonsAgents(),
-            SizedBox(height: 30.0),
-          ])),
+              ingresarVehiculo(),
+              SizedBox(height: 10.0),
+              _agentToConfirm(),
+              SizedBox(height: 20.0),
+              _buttonsAgents(),
+              SizedBox(height: 30.0),
+            ]),
+          )),
     );
   }
 

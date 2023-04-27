@@ -158,6 +158,9 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
       //   subtitle: resp.message,
       //   style: SweetAlertStyle.success
       // );
+      Map data2 = {"Estado": 'INICIADO'};
+      String sendData2 = json.encode(data2);
+      await http.put(Uri.parse('https://apichat.smtdriver.com/api/salas/Viaje_Estado/${prefs.tripId}'), body: sendData2, headers: {"Content-Type": "application/json"});
     } else if (response.statusCode == 200 && resp.ok == false) {
       QuickAlert.show(
           context: context,
@@ -173,9 +176,6 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
           text: resp.message,
           );
     }
-    Map data2 = {"Estado": 'INICIADO'};
-      String sendData2 = json.encode(data2);
-      await http.put(Uri.parse('https://apichat.smtdriver.com/api/salas/Viaje_Estado/${prefs.tripId}'), body: sendData2, headers: {"Content-Type": "application/json"});
    
     return Driver.fromJson(json.decode(response.body));
   }
@@ -329,56 +329,59 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
               SizedBox(width: kDefaultPadding / 2)
             ],
           ),
-          body: RefreshIndicator(
-            onRefresh: _refresh,
-            child: ListView(children: <Widget>[
-              SizedBox(height: 25.0),
-              Center(
-                  child: Text('Asignación de Horas',
-                      style: TextStyle(
-                          color: firstColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 25.0))),
-              SizedBox(height: 20.0),
-              ingresarVehiculo(),
-              SizedBox(height: 20.0),
-              Padding(
-                padding: const EdgeInsets.only(left: 15.0),
-                child: Text('Agentes confirmados',
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                        color: GradiantV_2,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18.0)),
-              ),
-              SizedBox(height: 10.0),
-              _agentToConfirm(),
-              SizedBox(height: 20.0),
-              Padding(
+          body: GestureDetector(
+            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+            child: RefreshIndicator(
+              onRefresh: _refresh,
+              child: ListView(children: <Widget>[
+                SizedBox(height: 25.0),
+                Center(
+                    child: Text('Asignación de Horas',
+                        style: TextStyle(
+                            color: firstColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 25.0))),
+                SizedBox(height: 20.0),
+                ingresarVehiculo(),
+                SizedBox(height: 20.0),
+                Padding(
                   padding: const EdgeInsets.only(left: 15.0),
-                  child: Text('Agentes no confirmados',
+                  child: Text('Agentes confirmados',
                       textAlign: TextAlign.left,
                       style: TextStyle(
                           color: GradiantV_2,
                           fontWeight: FontWeight.bold,
-                          fontSize: 18.0))),
-              _agentoNoConfirm(),
-              SizedBox(height: 20.0),
-              Padding(
-                padding: const EdgeInsets.only(left: 15.0),
-                child: Text('Agentes que han cancelado',
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                        color: GradiantV_2,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18.0)),
-              ),
-              SizedBox(height: 10.0),
-              _agentToCancel(),
-              SizedBox(height: 20.0),
-              _buttonsAgents(),
-              SizedBox(height: 30.0),
-            ]),
+                          fontSize: 18.0)),
+                ),
+                SizedBox(height: 10.0),
+                _agentToConfirm(),
+                SizedBox(height: 20.0),
+                Padding(
+                    padding: const EdgeInsets.only(left: 15.0),
+                    child: Text('Agentes no confirmados',
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                            color: GradiantV_2,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18.0))),
+                _agentoNoConfirm(),
+                SizedBox(height: 20.0),
+                Padding(
+                  padding: const EdgeInsets.only(left: 15.0),
+                  child: Text('Agentes que han cancelado',
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                          color: GradiantV_2,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18.0)),
+                ),
+                SizedBox(height: 10.0),
+                _agentToCancel(),
+                SizedBox(height: 20.0),
+                _buttonsAgents(),
+                SizedBox(height: 30.0),
+              ]),
+            ),
           )),
     );
   }
