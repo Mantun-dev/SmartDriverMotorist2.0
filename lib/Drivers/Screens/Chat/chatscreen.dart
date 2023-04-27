@@ -88,18 +88,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if(AppLifecycleState.resumed==state){
       if(mounted){
-            print(recargar);
+            
         if(recargar==0){
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => ChatScreen(
-                        idAgent: widget.idAgent.toString(),
-                        nombreAgent: nameAgent,
-                        nombre: nameDriver,
-                        id: widget.id,
-                        rol: "MOTORISTA",
-                      )));
+          print(recargar);
         }
       }
     }
