@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Chat/chatapis.dart';
 import 'package:flutter_auth/Drivers/Screens/Chat/listchat_agents.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/agents_Trip.dart';
+import 'package:flutter_auth/main.dart';
 //import 'package:flutter_auth/Drivers/Screens/Details/components/agents_Trip.dart';
 //import 'package:provider/provider.dart';
 
 import '../../../constants.dart';
+import '../Details/components/confirm_trips.dart';
 
 class ChatPage extends StatefulWidget {
   final String? tripId;
@@ -66,10 +68,14 @@ class _ChatPageState extends State<ChatPage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (_) => MyAgent()))
-          .then((_) => MyAgent());
-          },
+            if(getUb()==1){
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => MyAgent())).then((_) => MyAgent());
+            }
+            if(getUb()==2){
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => MyConfirmAgent())).then((_) => MyConfirmAgent());
+            }
+          }
+            
         ),
         actions: [
           IconButton(

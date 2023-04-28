@@ -13,6 +13,7 @@ import 'package:flutter_auth/Drivers/models/network.dart';
 import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter_auth/Drivers/models/registerTripAsCompleted.dart';
+import 'package:flutter_auth/main.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:intl/intl.dart';
 import 'package:quickalert/quickalert.dart';
@@ -253,6 +254,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     setRecargar(0);
+    setUb(1);
     WidgetsBinding.instance.addObserver(this);
     item = fetchAgentsInTravel2();
     getInfoViaje();

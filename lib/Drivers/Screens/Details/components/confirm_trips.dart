@@ -14,6 +14,7 @@ import 'package:flutter_auth/Drivers/models/messageTripCompleted.dart';
 import 'package:flutter_auth/Drivers/models/network.dart';
 import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 import 'package:flutter_auth/Drivers/models/registerTripAsCompleted.dart';
+import 'package:flutter_auth/main.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' show json;
@@ -87,8 +88,12 @@ class _DataTableExample extends State<MyConfirmAgent> {
   }
 
   Future<Driver2> fetchRegisterTripCompleted() async {
+    http.Response response = await http
+        .get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
+    final data = DriverData.fromJson(json.decode(response.body));
+
     http.Response responses = await http
-        .get(Uri.parse('$ip/apis/registerTripAsCompleted/${prefs.tripId}'));
+        .get(Uri.parse('$ip/apis/test/registerTripAsCompleted/${prefs.tripId}/${data.driverId}/mobile'));
     final si = Driver2.fromJson(json.decode(responses.body));
     
     //print(responses.body);
@@ -221,6 +226,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
   @override
   void initState() {
     super.initState();
+    setUb(2);
     item = fetchAgentsTripInProgress();
     comment = new List<TextEditingController>.empty(growable: true);
     check = [];

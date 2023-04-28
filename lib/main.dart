@@ -27,6 +27,16 @@ void setPantallaP(int numero){
   pantallaP = numero;
 }
 
+int ub = 0;
+
+void setUb(int numero){
+  ub = numero;
+}
+
+int getUb(){
+  return ub;
+}
+
 final GlobalKey<NavigatorState> navigatorKey =
     GlobalKey(debugLabel: "Main Navigator");
 
