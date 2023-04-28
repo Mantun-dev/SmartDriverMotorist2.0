@@ -1334,25 +1334,9 @@ class _DriverDescriptionState extends State<DriverDescription>
                             print(responseSala.body);
                             
                             if(context.mounted){
-                              showGeneralDialog(
-                                barrierColor: Colors.black.withOpacity(0.5),
-                                transitionBuilder: (context, a1, a2, widget) {
-                                  return Transform.scale(
-                                    scale: a1.value,
-                                    child: Opacity(
-                                    opacity: a1.value,
-                                    child: vehiculoE(resp, context, codigoQR),
-                                  ),
-                                  );
-                                },
-                                transitionDuration: Duration(milliseconds: 220),
-                                barrierDismissible: false,
-                                barrierLabel: '',
-                                context: context,
-                                pageBuilder: (context, animation1, animation2) {
-                                  return widget;
-                                }
-                              );
+                              showDialog(
+                                      context: context,
+                                      builder: (context) => vehiculoE(resp, context, codigoQR),);
                             }
                           }else{
                             if(context.mounted){
@@ -1696,49 +1680,42 @@ class _DriverDescriptionState extends State<DriverDescription>
   AlertDialog vehiculoE(resp, BuildContext context, codigoQR) {
     var size = MediaQuery.of(context).size;
     return AlertDialog(
-      //scrollable: true,
-      backgroundColor: backgroundColor,shape: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
-      title: Center(child: Flexible(child: Text('Vehículo Encontrado',style: TextStyle(color: GradiantV_2, fontSize: 20.0),))),
-      content: SizedBox(
-        width: size.width * 0.8,
-        //height: MediaQuery.of(context).size.height/1.9,
-        child: SingleChildScrollView(
-          child: Flexible(
-            child: Column(
-              children: [
+      backgroundColor: backgroundColor,
+      shape: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
+      title: Center(
+          child: Text(
+        'Vehículo Encontrado',
+        style: TextStyle(color: GradiantV_2, fontSize: 20.0),
+      )),
+      content: Container(
+        height: 130,
+        child: Column(
+          children: [
                 const SizedBox(height: 8.0),
                 Text('Descripcion:',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold
-                  )
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold)),
+                SizedBox(
+                  height: 5,
                 ),
-                SizedBox(height: 5,),
                 Text(resp['vehicle']['name'],
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18.0
-                  )
+                    style: TextStyle(color: Colors.white, fontSize: 18.0)),
+                SizedBox(
+                  height: 15,
                 ),
-                SizedBox(height: 15,),
                 Text('Placa:',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold
-                  )
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold)),
+                SizedBox(
+                  height: 10,
                 ),
-                SizedBox(height: 10,),
                 Text(resp['vehicle']['registrationNumber'],
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18.0
-                  )
-                ),
+                    style: TextStyle(color: Colors.white, fontSize: 18.0)),
               ],
-            ),
-          ),
         ),
       ),
       actions: [
