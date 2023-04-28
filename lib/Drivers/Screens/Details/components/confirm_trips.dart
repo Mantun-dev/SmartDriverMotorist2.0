@@ -368,6 +368,9 @@ class _DataTableExample extends State<MyConfirmAgent> {
           "tripVehicle": vehicleController.text
         };
         http.Response responsed = await http.post(Uri.parse('https://driver.smtdriver.com/apis/editTripVehicle'), body: data);
+        setState(() {
+          getInfoViaje();
+        });
       }
     });
     return FutureBuilder<TripsList4>(
@@ -434,13 +437,13 @@ class _DataTableExample extends State<MyConfirmAgent> {
                           if(resp['type']=='success'){
                             print(responseSala.body);
                             print('###########################');
-                            if(context.mounted){
+                            if(mounted){
                               showDialog(
                                       context: context,
                                       builder: (context) => vehiculoE(resp, context),);
                             }
                           }else{
-                            if(context.mounted){
+                            if(mounted){
                               QuickAlert.show(context: context,title: "Alerta",text: "Vehículo no valido",type: QuickAlertType.error,); 
                             }
                           }

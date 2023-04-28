@@ -1333,13 +1333,13 @@ class _DriverDescriptionState extends State<DriverDescription>
                           if(resp['type']=='success'){
                             print(responseSala.body);
                             
-                            if(context.mounted){
+                            if(mounted){
                               showDialog(
                                       context: context,
                                       builder: (context) => vehiculoE(resp, context, codigoQR),);
                             }
                           }else{
-                            if(context.mounted){
+                            if(mounted){
                               QuickAlert.show(context: context,title: "Alerta",text: "Vehículo no valido",type: QuickAlertType.error,); 
                             }
                           }
