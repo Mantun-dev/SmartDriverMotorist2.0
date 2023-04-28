@@ -805,7 +805,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                             padding: const EdgeInsets.only(left: 30),
                                             child: Row(
                                               children: [
-                                                Icon(Icons.location_pin,color: thirdColor),
+                                                Icon(Icons.warning_amber_outlined,color: thirdColor),
                                                 SizedBox(width: 15,),
                                                 Flexible(
                                                   child: Text('Acceso autorizado: ${abc.data!.trips![0].agentes![index].neighborhoodReferencePoint}',
@@ -1146,7 +1146,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                               padding: const EdgeInsets.only(left: 30),
                                               child: Row(
                                                 children: [
-                                                  Icon(Icons.location_pin,color: thirdColor),
+                                                  Icon(Icons.warning_amber_outlined,color: thirdColor),
                                                   SizedBox(width: 15,),
                                                   Flexible(
                                                     child: Text('Acceso autorizado: ${abc.data!.trips![1].noConfirmados![index].neighborhoodReferencePoint}',

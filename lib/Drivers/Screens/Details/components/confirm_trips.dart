@@ -93,7 +93,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
     final data = DriverData.fromJson(json.decode(response.body));
 
     http.Response responses = await http
-        .get(Uri.parse('$ip/apis/test/registerTripAsCompleted/${prefs.tripId}/${data.driverId}/mobile'));
+        .get(Uri.parse('https://admin.smtdriver.com/test/registerTripAsCompleted/${prefs.tripId}/${data.driverId}/mobile'));
+        print(responses.body);
     final si = Driver2.fromJson(json.decode(responses.body));
     
     //print(responses.body);
@@ -884,7 +885,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                               padding: const EdgeInsets.fromLTRB(0,0,20,0),
                                               child: Row(
                                                 children: [
-                                                  Icon(Icons.directions,color: thirdColor),
+                                                  Icon(Icons.warning_amber_outlined,color: thirdColor),
                                                   SizedBox(width: 15,),
                                                   Flexible(child: Text('Acceso autorizado: ${abc.data!.trips![0].tripAgent![index].neighborhoodReferencePoint}',
                                                       style: TextStyle(

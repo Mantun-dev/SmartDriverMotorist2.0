@@ -1268,7 +1268,7 @@ class _DriverDescriptionState extends State<DriverDescription>
       child: Column(
         //crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text('Compañía',key: dataKey,style: TextStyle(color: GradiantV_2,fontWeight: FontWeight.normal,fontSize: 35.0)),
+          Text('Seleccione una Compañía',key: dataKey,style: TextStyle(color: GradiantV_2,fontWeight: FontWeight.normal,fontSize: 20.0)),
           SizedBox(height: 20.0),
           _crearDropdown(context),
           SizedBox(height: 20.0),
@@ -1804,41 +1804,54 @@ class _DriverDescriptionState extends State<DriverDescription>
 
   Widget getSearchableDropdown(BuildContext context) {
     return Container(width: 300,
-      decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(15)),
+      decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(15),),
         boxShadow: [
           BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0, 0),),
           BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0, 0),),
         ],
       ),
-      child: DropdownSearch<TripsDrivers>(mode: Mode.DIALOG, showClearButton :false, items: driverId ,
-          itemAsString: (TripsDrivers? u) => u!.driverFullname!,                  
-            onChanged: (value){                                        
-              setState(() {
-                driver = value!.driverId.toString();
-                prefs.driverIdx = driver.toString();
-                print(prefs.driverIdx);
-              });
-            },
-            showSearchBox: true,
-            filterFn: (instance, filter){
-              if(instance!.driverFullname!.contains(filter!)){
-                print(filter);
-                return true;
-              }else if(instance.driverFullname!.toLowerCase().contains(filter)){
-                print(filter);
-                return true;
-              }
-              else{
-                return false;
-              }
-            },
-            popupItemBuilder: (context,TripsDrivers item,bool isSelected){
-              return Container(margin: EdgeInsets.symmetric(horizontal: 8),
-                decoration: !isSelected? null: BoxDecoration(border: Border.all(color: Theme.of(context).primaryColor),borderRadius: BorderRadius.circular(5),color: Colors.white,),
-                child: Padding(padding: const EdgeInsets.all(8.0),child: Text(item.driverFullname!),),
-              );
-            },
+      child: Theme(
+        data: ThemeData(
+          textTheme: TextTheme(subtitle1: TextStyle(color: Colors.white)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: DropdownSearch<TripsDrivers>(mode: Mode.DIALOG, showClearButton :false, items: driverId ,
+          dropdownSearchDecoration: InputDecoration(
+              
+            hintStyle: TextStyle(color: Colors.white),
+            labelStyle: TextStyle(color: Colors.white),
           ),
+              itemAsString: (TripsDrivers? u) => u!.driverFullname!,                  
+                onChanged: (value){                                        
+                  setState(() {
+                    driver = value!.driverId.toString();
+                    prefs.driverIdx = driver.toString();
+                    print(prefs.driverIdx);
+                  });
+                },
+                showSearchBox: true,
+                filterFn: (instance, filter){
+                  if(instance!.driverFullname!.contains(filter!)){
+                    print(filter);
+                    return true;
+                  }else if(instance.driverFullname!.toLowerCase().contains(filter)){
+                    print(filter);
+                    return true;
+                  }
+                  else{
+                    return false;
+                  }
+                },
+                popupItemBuilder: (context,TripsDrivers item,bool isSelected){
+                  return Container(margin: EdgeInsets.symmetric(horizontal: 8),
+                    decoration: !isSelected? null: BoxDecoration(border: Border.all(color: Theme.of(context).primaryColor),borderRadius: BorderRadius.circular(5),color: Colors.white,),
+                    child: Padding(padding: const EdgeInsets.all(8.0),child: Text(item.driverFullname!,),),
+                  );
+                },
+              ),
+        ),
+      ),
       // SearchableDropdown(
       //   closeButton: (selectedItem) {
       //     return (selectedItem == null || selectedItem.length == 0)
@@ -1920,7 +1933,7 @@ class _DriverDescriptionState extends State<DriverDescription>
         children: [
           Padding(padding: const EdgeInsets.all(8.0),child: Icon(Icons.location_city,color: thirdColor,size: 30.0,),),          
           Expanded(
-            child: new DropdownButton(underline: SizedBox(),style: TextStyle(color: Colors.white60),dropdownColor: backgroundColor2,elevation: 20,
+            child: new DropdownButton(underline: SizedBox(),style: TextStyle(color: Colors.white),dropdownColor: backgroundColor2,elevation: 20,
             hint: Text(prefs.companyPrueba,style: TextStyle(color: Colors.white,fontWeight: FontWeight.normal,fontSize: 15.0)),
             items: data.map((e) {
               return new DropdownMenuItem(alignment: Alignment.centerLeft,
@@ -1987,7 +2000,7 @@ class _DriverDescriptionState extends State<DriverDescription>
           Padding(padding: const EdgeInsets.all(8.0),child: Icon(Icons.location_city,color: thirdColor,size: 30.0,),),  
           SizedBox(width: 20.0),
           Expanded(
-            child: new DropdownButton(underline: SizedBox(),style: TextStyle(color: Colors.white60),dropdownColor: backgroundColor2,elevation: 20,
+            child: new DropdownButton(underline: SizedBox(),style: TextStyle(color: Colors.white),dropdownColor: backgroundColor2,elevation: 20,
               hint: Text(prefs.destinationPrueba,style: TextStyle(color: Colors.white,fontWeight: FontWeight.normal,fontSize: 15.0)),
             items: data2.map((e) {
               return new DropdownMenuItem(
