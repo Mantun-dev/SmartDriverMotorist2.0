@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Chat/chatViews.dart';
+import 'package:flutter_auth/Drivers/Screens/Details/components/trip_In_Process.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
 import 'package:flutter_auth/Drivers/components/loader.dart';
@@ -104,7 +105,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
           context: context,
           type: QuickAlertType.success,
           title: 'Completado',
-          text: 'su viaje ha sido completado',
+          text: 'Su viaje ha sido completado',
         );      
       }
         new Future.delayed(new Duration(seconds: 2), () {                                      
@@ -289,8 +290,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                     context,
                     MaterialPageRoute(
                       builder: (context) {
-                        return DetailsDriverTripInProgress(
-                            plantillaDriver: plantillaDriver[1]);
+                        return Process();
                       },
                     ),
                   );
@@ -575,7 +575,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
         text: isChecked==false ?"¿Está seguro que desea marcar como no \nabordado al agente?":"¿Está seguro que desea marcar como \nabordado al agente?",
         confirmBtnText: "Confirmar",
         cancelBtnText: "Cancelar",
-        title: '¿Esta seguro?',
+        title: isChecked==false ?'No abordó':'Abordó',
         showCancelBtn: true,  
         confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
         cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
@@ -1280,7 +1280,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                 QuickAlert.show(
                 context: context,
                 type: QuickAlertType.success,
-                title: "...",                
+                title: "Completar viaje",                
                 text: "¿Está seguro que desea completar el viaje?",
                 confirmBtnText: "Confirmar",
                 cancelBtnText: "Cancelar",

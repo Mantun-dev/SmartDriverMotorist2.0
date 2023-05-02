@@ -167,11 +167,11 @@ class _DriverDescriptionState extends State<DriverDescription>
     final tables = await db.rawQuery('SELECT * FROM userX ;');
     if (tables.length == 0) {
       Navigator.pop(context);      
-      QuickAlert.show(context: context,title: "Alerta",text: "No hay agentes agregados",type: QuickAlertType.error,); 
+      QuickAlert.show(context: context,title: "¡Alerta",text: "No hay agentes agregados",type: QuickAlertType.warning,); 
     } 
 
     if(prefs.vehiculo == ""){
-      QuickAlert.show(context: context,title: "Alerta",text: "Necesita agregar el vehículo",type: QuickAlertType.error,
+      QuickAlert.show(context: context,title: "¡Alerta!",text: "Necesita agregar el vehículo",type: QuickAlertType.warning,
         onConfirmBtnTap:() { 
           Scrollable.ensureVisible(dataKey.currentContext!);
           setState(() {                
@@ -222,7 +222,7 @@ class _DriverDescriptionState extends State<DriverDescription>
             statusCodex = dataResp.statusCode;
           });
         }
-        validationLastToPassProgres(statusCodex, prefs.tripId, send.title, send.message);
+        validationLastToPassProgres(statusCodex, prefs.tripId, send.title, send.message,);
       }
     }
   }
@@ -233,7 +233,7 @@ class _DriverDescriptionState extends State<DriverDescription>
       Navigator.pop(context);
       Navigator.push(context,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
       prefs.removeIdCompanyAndVehicle();
-      QuickAlert.show(context: context,title: title,text: message,type: QuickAlertType.success,); 
+      QuickAlert.show(context: context,title: title,text: message,type: QuickAlertType.success,confirmBtnText: 'Ok'); 
       this.handler!.cleanTable();
     } else {
         throw Exception('Failed to load Data');

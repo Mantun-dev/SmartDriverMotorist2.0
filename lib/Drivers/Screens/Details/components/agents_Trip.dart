@@ -90,7 +90,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
       QuickAlert.show(
       context: context,
       type: QuickAlertType.success,
-      title: resp.title,
+      title: '¡Hecho!',
       text: resp.message,
       );
     } else if (response.statusCode == 200 && resp.ok != true) {
@@ -125,6 +125,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
           type: QuickAlertType.success,
           title: '¡Hecho!',
           text: resp.message,
+          confirmBtnText: 'OK'
           );
         } else if (response.statusCode == 500) {
           QuickAlert.show(
@@ -144,9 +145,11 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
   }
 
   Future<Driver> fetchPastInProgress() async {
+    
     http.Response response = await http
         .get(Uri.parse('$ip/apis/passTripToProgress/${prefs.tripId}'));
     final resp = Driver.fromJson(json.decode(response.body));
+    LoadingIndicatorDialog().dismiss();
     //print(response.body);
     if (response.statusCode == 200 && resp.ok == true) {
       //print(response.body);
@@ -154,6 +157,13 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
           MaterialPageRoute(
               builder: (BuildContext context) => HomeDriverScreen()),
           (Route<dynamic> route) => false);
+
+          QuickAlert.show(
+                context: context,
+                type: QuickAlertType.success,
+                text: 'Su viaje está en proceso',
+                title: 'Confirmado'
+                );
       //   SweetAlert.show(context,
       //   title: resp.title,
       //   subtitle: resp.message,
@@ -1587,15 +1597,12 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
               cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ),         
               onConfirmBtnTap: () {
                 Navigator.pop(context);
-                QuickAlert.show(
-                context: context,
-                type: QuickAlertType.success,
-                text: 'Su viaje está en proceso',
-                title: 'Confirmado'
-                );
+                LoadingIndicatorDialog().show(context);
                 new Future.delayed(new Duration(seconds: 2), () {
                     fetchPastInProgress();
                   });
+                
+                  
               },
               onCancelBtnTap: () {
                 Navigator.pop(context);
@@ -1625,7 +1632,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
               QuickAlert.show(
                 context: context,
                 type: QuickAlertType.success,
-                title: "...",
+                title: "Marcar como cancelados",
                 text: "¿Está seguro que desea marcarlos como cancelados?",
                 confirmBtnText: "Confirmar",
                 cancelBtnText: "Cancelar",
@@ -1635,6 +1642,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                 onConfirmBtnTap: () {
                   Navigator.pop(context);
                   QuickAlert.show(
+                  title: 'Completado',
                   context: context,
                   type: QuickAlertType.success,
                   text: "Han sido marcado como cancelados",                
