@@ -233,7 +233,6 @@ class PreferenciasUsuario {
     _prefs.remove('destinationPrueba');
     _prefs.remove('destinationIdAgent');
     _prefs.remove('vehiculoSolid');
-    _prefs.remove('companyId');
     _prefs.remove('vehiculo');
     _prefs.remove('companyPrueba');
   }

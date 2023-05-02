@@ -99,21 +99,23 @@ class _DataTableExample extends State<MyConfirmAgent> {
     final si = Driver2.fromJson(json.decode(responses.body));
     
     //print(responses.body);
+    LoadingIndicatorDialog().dismiss();
     if (responses.statusCode == 200 && si.ok!) {
+      Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                builder: (BuildContext context) => HomeDriverScreen(),
+              ),
+              (Route<dynamic> route) => false,
+            );
       if (mounted) {  
         QuickAlert.show(
           context: context,
           type: QuickAlertType.success,
           title: 'Completado',
           text: 'Su viaje ha sido completado',
-        );      
+        );    
       }
-        new Future.delayed(new Duration(seconds: 2), () {                                      
-          Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(
-                  builder: (BuildContext context) => HomeDriverScreen()),
-              (Route<dynamic> route) => false);
-        });          
+                
     } else if (si.ok != true) {
       QuickAlert.show(
       context: context,
@@ -1293,7 +1295,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
                   if(tripVehicle == ''){
                     QuickAlert.show(context: context,title: "Alerta",text: 'Tiene que ingresar un vehiculo.',type: QuickAlertType.error,);
                     return;
-                  }                               
+                  }          
+                  LoadingIndicatorDialog().show(context);                     
                   fetchRegisterTripCompleted();
                 },
                 onCancelBtnTap: () {
