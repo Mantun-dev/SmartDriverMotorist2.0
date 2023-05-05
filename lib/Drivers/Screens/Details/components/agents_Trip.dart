@@ -399,20 +399,6 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
   }
 
   Widget ingresarVehiculo() {
-    final myFocusNode = FocusNode();
-    myFocusNode.addListener(() async{
-      if (!myFocusNode.hasFocus) {
-        http.Response responses = await http.get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
-        final data2 = DriverData.fromJson(json.decode(responses.body));
-        Map data = {
-          "driverId": data2.driverId.toString(),
-          "tripId": prefs.tripId.toString(),
-          "vehicleId": "",
-          "tripVehicle": vehicleController.text
-        };
-        http.Response responsed = await http.post(Uri.parse('https://driver.smtdriver.com/apis/editTripVehicle'), body: data);
-      }
-    });
     return FutureBuilder<TripsList2>(
       future: item,
       builder: (BuildContext context, abc) {
@@ -447,13 +433,49 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                               fontSize: 15.0)
                             ),
                             onChanged: (value) => tripVehicle,
-                            focusNode: myFocusNode,
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
+                SizedBox(width: 10,),
+                Container(
+                    decoration: BoxDecoration(
+                      color: firstColor,
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: IconButton(
+                      icon: Icon(Icons.save),
+                      color: backgroundColor,
+                      iconSize: 30.0,
+                      onPressed: vehicleL==false?null:() async{
+                        LoadingIndicatorDialog().show(context);
+                        http.Response responses = await http.get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
+                        final data2 = DriverData.fromJson(json.decode(responses.body));
+                        Map data = {
+                          "driverId": data2.driverId.toString(),
+                          "tripId": prefs.tripId.toString(),
+                          "vehicleId": "",
+                          "tripVehicle": vehicleController.text
+                        };
+                        http.Response responsed = await http.post(Uri.parse('https://driver.smtdriver.com/apis/editTripVehicle'), body: data);
+
+                        final resp2 = json.decode(responsed.body);
+                        LoadingIndicatorDialog().dismiss();
+                        if(resp2['type']=='success'){
+                          if(mounted){
+                            QuickAlert.show(context: context,title: "Exito",text: resp2['message'],type: QuickAlertType.success,);
+                            setState(() {
+                              tripVehicle = vehicleController.text;
+                            });
+                          }                                            
+                        }else{
+                          QuickAlert.show(context: context,title: "Alerta",text: resp2['message'],type: QuickAlertType.error,);
+                         }
+                      }
+                    ),
+                  ),
                   SizedBox(width: 10,),
                   Container(
                     decoration: BoxDecoration(
@@ -840,7 +862,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                                     ),
                                                     Column(
                                                       children: [
-                                                        Text(
+                                                        Text(abc.data!.trips![0].agentes![index].hourForTrip==null?' --':
                                                             ' ${abc.data!.trips![0].agentes![index].hourForTrip}',
                                                             style: TextStyle(
                                                                 color:
@@ -1289,7 +1311,10 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
 
 
   validateHour(String agentId, String tripId, dynamic time)async{
-    //var time =await showTimePicker(context: context,initialTime:TimeOfDay.now(),);    
+    //var time =await showTimePicker(context: context,initialTime:TimeOfDay.now(),);   
+    if(time==null){
+      return;
+    } 
     String _eventTime = now.toString().substring(10, 15);
     _eventTime = time.toString().substring(10, 15);
     if (time!= null) {      
