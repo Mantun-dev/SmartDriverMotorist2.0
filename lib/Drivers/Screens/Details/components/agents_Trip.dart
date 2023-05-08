@@ -23,6 +23,8 @@ import '../../../models/agentsInTravelModel.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' show json;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:geolocator/geolocator.dart';
+
 
 void main() {
   runApp(MyAgent());
@@ -108,6 +110,15 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
 
     return Driver.fromJson(json.decode(response.body));
   }
+
+  void getCurrentLocation() async {
+    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    
+    print('**********************************');
+    print(position.latitude);
+    print(position.longitude); 
+  }
+
 
   Future<Driver> fetchNoConfirm(String agentId, String tripId) async {
     Map data = {'agentId': agentId, 'tripId': tripId};
@@ -469,7 +480,9 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                             setState(() {
                               tripVehicle = vehicleController.text;
                             });
-                          }                                            
+                          }      
+                          getCurrentLocation();
+
                         }else{
                           QuickAlert.show(context: context,title: "Alerta",text: resp2['message'],type: QuickAlertType.error,);
                          }
@@ -595,7 +608,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                                                               vehicleController.text=tripVehicle;  
                                                                             });
                                                                           }
-                                                                          
+                                                                          getCurrentLocation(); 
                                                                         }else{
                                                                           QuickAlert.show(context: context,title: "Alerta",text: resp2['message'],type: QuickAlertType.error,);
                                                                         }

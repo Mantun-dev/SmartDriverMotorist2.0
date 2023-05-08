@@ -21,6 +21,7 @@ import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 import 'package:flutter_auth/Drivers/models/tripToSolid.dart';
 import 'package:flutter_auth/Drivers/models/tripsPendin2.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:geolocator/geolocator.dart';
 //import 'package:localstorage/localstorage.dart';
 //import 'package:searchable_dropdown/searchable_dropdown.dart';
 import 'package:sqflite/sqflite.dart';
@@ -112,6 +113,14 @@ class _DriverDescriptionState extends State<DriverDescription>
 
   void clearText() {
     agentEmployeeId.clear();
+  }
+
+  void getCurrentLocation() async {
+    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    
+    print('**********************************');
+    print(position.latitude);
+    print(position.longitude); 
   }
 
   Future<List> fetchDriversDrivers() async {
@@ -222,6 +231,7 @@ class _DriverDescriptionState extends State<DriverDescription>
             statusCodex = dataResp.statusCode;
           });
         }
+        getCurrentLocation(); 
         validationLastToPassProgres(statusCodex, prefs.tripId, send.title, send.message,);
       }
     }
