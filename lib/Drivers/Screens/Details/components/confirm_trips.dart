@@ -26,7 +26,7 @@ import 'package:roundcheckbox/roundcheckbox.dart';
 
 import '../../../components/progress_indicator.dart';
 import 'details_TripProgress.dart';
-import 'package:geolocator/geolocator.dart';
+//import 'package:geolocator/geolocator.dart';
 
 //import 'package:shop_app/screens/details/details_screen.dart';
 
@@ -89,13 +89,13 @@ class _DataTableExample extends State<MyConfirmAgent> {
     return Message.fromJson(json.decode(response.body));
   }
 
-  void getCurrentLocation() async {
+  /*void getCurrentLocation() async {
     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     
     print('**********************************');
     print(position.latitude);
     print(position.longitude); 
-  }
+  }*/
 
 
   Future<Driver2> fetchRegisterTripCompleted() async {
@@ -440,7 +440,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                               tripVehicle = vehicleController.text;
                             });
                           }      
-                          getCurrentLocation();
+                          //getCurrentLocation();
                                  
                         }else{
                           QuickAlert.show(context: context,title: "Alerta",text: resp2['message'],type: QuickAlertType.error,);
@@ -564,7 +564,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                               vehicleController.text=tripVehicle;  
                                                                             });
                                                                           }
-                                                                          getCurrentLocation(); 
+                                                                          //getCurrentLocation(); 
                                                                         }else{
                                                                           QuickAlert.show(context: context,title: "Alerta",text: resp2['message'],type: QuickAlertType.error,);
                                                                         }
