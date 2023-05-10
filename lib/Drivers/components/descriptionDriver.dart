@@ -692,6 +692,8 @@ class _DriverDescriptionState extends State<DriverDescription>
   }
 
   Future<Search> fetchSearchAgents2(String agentEmployeeId) async {
+    Navigator.pop(context);
+    LoadingIndicatorDialog().show(context);
     Map data = {
       "companyId": prefs.companyId,
       "agentEmployeeId": agentEmployeeId
@@ -703,6 +705,8 @@ class _DriverDescriptionState extends State<DriverDescription>
     http.Response responsed =
         await http.post(Uri.parse('$ip/apis/searchAgent'), body: data);
     final data1 = Search.fromJson(json.decode(responsed.body));
+
+    LoadingIndicatorDialog().dismiss();
     if (responsed.statusCode == 200 && data1.ok == true && data1.agent!.msg != null) {
       //print(data1.agent!.msg);
       //print('Este es el agentId' + data1.agent!.agentId.toString());
@@ -1454,7 +1458,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                                           onPressed: () => {
                                             fetchSearchAgents2(
                                                 agentEmployeeId.text),
-                                            Navigator.pop(context)
+                                            
                                           },
                                           child: Text('Buscar',style: TextStyle(color: backgroundColor,fontSize: 15.0)),
                                         ),

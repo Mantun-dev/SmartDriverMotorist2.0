@@ -91,8 +91,8 @@ class _MyAppState extends State<MyApp> {
             ? 'login'
             : 'home',
         routes: {
-          'login': (BuildContext context) => UpgradeAlert(child: SplashView()),
-          'home': (BuildContext context) => UpgradeAlert(child: HomeDriverScreen())
+          'login': (BuildContext context) =>  UpgradeAlert(upgrader: Upgrader(dialogStyle: Platform.isIOS? UpgradeDialogStyle.cupertino: UpgradeDialogStyle.material),child: SplashView()),
+          'home': (BuildContext context) => UpgradeAlert(upgrader: Upgrader(dialogStyle: Platform.isIOS? UpgradeDialogStyle.cupertino: UpgradeDialogStyle.material),child: HomeDriverScreen())
         },
       ),
     );
