@@ -10,6 +10,7 @@ import 'package:flutter_auth/constants.dart';
 import 'package:flutter_auth/providers/chat.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
+import 'package:upgrader/upgrader.dart';
 import 'Drivers/SharePreferences/preferencias_usuario.dart';
 
 class MyHttpoverrides extends HttpOverrides {
@@ -90,8 +91,8 @@ class _MyAppState extends State<MyApp> {
             ? 'login'
             : 'home',
         routes: {
-          'login': (BuildContext context) => SplashView(),
-          'home': (BuildContext context) => HomeDriverScreen()
+          'login': (BuildContext context) => UpgradeAlert(child: SplashView()),
+          'home': (BuildContext context) => UpgradeAlert(child: HomeDriverScreen())
         },
       ),
     );
