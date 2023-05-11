@@ -386,38 +386,44 @@ class _DataTableExample extends State<MyConfirmAgent> {
                       DriverData? data = abc.data;
                       return Row(
                         children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(Radius.circular(15)),
-                              boxShadow: [
-                                BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0, 0), ),
-                                BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0, 0), ),
-                              ],
-                            ),
-                            width: 220,
-                            child: Padding(
-                              padding: const EdgeInsets.only(left:10.0, right: 10),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.emoji_transportation,color: thirdColor,size: 30.0,),
-                                  SizedBox(width: 10.0),
-                                  Flexible(
-                                    child: TextField(
-                                      enabled: data?.driverType=='Motorista'?false:true,
-                                      style: TextStyle(color: Colors.white),
-                                      controller: vehicleController,
-                                      decoration: InputDecoration(
-                                        border: InputBorder.none,
-                                        hintText: 'Vehículo',
-                                        hintStyle: TextStyle(color: Colors.white.withOpacity(0.5),
-                                        fontSize: 15.0)
+                          Column(
+                            children: [
+                              if(data?.driverType=='Motorista')
+                                Text('Escanee el codigo qr del vehículo', style: TextStyle(color: Colors.white.withOpacity(0.5)),),
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.all(Radius.circular(15)),
+                                  boxShadow: [
+                                    BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0, 0), ),
+                                    BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0, 0), ),
+                                  ],
+                                ),
+                                width: 220,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left:10.0, right: 10),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.emoji_transportation,color: thirdColor,size: 30.0,),
+                                      SizedBox(width: 10.0),
+                                      Flexible(
+                                        child: TextField(
+                                          enabled: data?.driverType=='Motorista'?false:true,
+                                          style: TextStyle(color: Colors.white),
+                                          controller: vehicleController,
+                                          decoration: InputDecoration(
+                                            border: InputBorder.none,
+                                            hintText: 'Vehículo',
+                                            hintStyle: TextStyle(color: Colors.white.withOpacity(0.5),
+                                            fontSize: 15.0)
+                                          ),
+                                          onChanged: (value) => tripVehicle,
+                                        ),
                                       ),
-                                      onChanged: (value) => tripVehicle,
-                                    ),
+                                    ],
                                   ),
-                                ],
+                                ),
                               ),
-                            ),
+                            ],
                           ),
 
                           if(data?.driverType!='Motorista')
