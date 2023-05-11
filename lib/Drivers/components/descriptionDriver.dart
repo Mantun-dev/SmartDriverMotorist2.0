@@ -199,7 +199,6 @@ class _DriverDescriptionState extends State<DriverDescription>
           'tripVehicle': prefs.vehiculo,
           'vehicleId': prefs.vehiculoId,
         };
-        print(datas);
         http.Response response1 = await http.post(Uri.parse('https://driver.smtdriver.com/apis/registerDeparture/test'), body: datas);
         final send = Salida.fromJson(json.decode(response1.body));
         prefs.tripId = send.tripId!.tripId.toString();
@@ -217,7 +216,7 @@ class _DriverDescriptionState extends State<DriverDescription>
         }
         validationLastToPassProgres(statusCodex, prefs.tripId, send.title, send.message);        
       } else {
-        Map datas = {'companyId': prefs.companyId,'driverId': data.driverId.toString(),'tripVehicle': nameVehicle,'vehicleId': prefs.vehiculoId,};
+        Map datas = {'companyId': prefs.companyId,'driverId': data.driverId.toString(),'tripVehicle': prefs.vehiculo,'vehicleId': prefs.vehiculoId,};
         http.Response response1 = await http.post(Uri.parse('https://driver.smtdriver.com/apis/registerDeparture/test'), body: datas);
         final send = Salida.fromJson(json.decode(response1.body));
         prefs.tripId = send.tripId!.tripId.toString();
