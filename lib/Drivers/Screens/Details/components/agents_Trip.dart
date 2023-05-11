@@ -50,6 +50,7 @@ class MyAgent extends StatefulWidget {
 }
 
 class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
+  Future<DriverData>? driverData;
   List<int>? counter;
   Future<TripsList2>? item;
   TextEditingController agentHours = new TextEditingController();
@@ -278,6 +279,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
     setUb(1);
     WidgetsBinding.instance.addObserver(this);
     item = fetchAgentsInTravel2();
+    driverData = fetchRefres();
     getInfoViaje();
   }
 
@@ -418,77 +420,96 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Row(
                 children: [
-                  Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(15)),
-                    boxShadow: [
-                      BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0, 0), ),
-                      BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0, 0), ),
-                    ],
-                  ),
-                  width: 220,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left:10.0, right: 10),
-                    child: Row(
-                      children: [
-                        Icon(Icons.emoji_transportation,color: thirdColor,size: 30.0,),
-                        SizedBox(width: 10.0),
-                        Flexible(
-                          child: TextField(
-                            style: TextStyle(color: Colors.white),
-                            controller: vehicleController,
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Vehículo',
-                              hintStyle: TextStyle(color: Colors.white.withOpacity(0.5),
-                              fontSize: 15.0)
+                  FutureBuilder<DriverData>(
+                  future: driverData,
+                  builder: (BuildContext context, abc) {
+                    if (abc.connectionState == ConnectionState.done) {
+                      DriverData? data = abc.data;
+                      return Row(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(Radius.circular(15)),
+                              boxShadow: [
+                                BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0, 0), ),
+                                BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0, 0), ),
+                              ],
                             ),
-                            onChanged: (value) => tripVehicle,
+                            width: 220,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left:10.0, right: 10),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.emoji_transportation,color: thirdColor,size: 30.0,),
+                                  SizedBox(width: 10.0),
+                                  Flexible(
+                                    child: TextField(
+                                      enabled: data?.driverType=='Motorista'?false:true,
+                                      style: TextStyle(color: Colors.white),
+                                      controller: vehicleController,
+                                      decoration: InputDecoration(
+                                        border: InputBorder.none,
+                                        hintText: 'Vehículo',
+                                        hintStyle: TextStyle(color: Colors.white.withOpacity(0.5),
+                                        fontSize: 15.0)
+                                      ),
+                                      onChanged: (value) => tripVehicle,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
+                          if(data?.driverType!='Motorista')
+                            SizedBox(width: 10,),
+
+                          if(data?.driverType!='Motorista')
+                            Container(
+                            decoration: BoxDecoration(
+                              color: firstColor,
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: IconButton(
+                              icon: Icon(Icons.save_outlined),
+                              color: backgroundColor,
+                              iconSize: 30.0,
+                              onPressed: vehicleL==false?null:() async{
+                                LoadingIndicatorDialog().show(context);
+                                http.Response responses = await http.get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
+                                final data2 = DriverData.fromJson(json.decode(responses.body));
+                                Map data = {
+                                  "driverId": data2.driverId.toString(),
+                                  "tripId": prefs.tripId.toString(),
+                                  "vehicleId": "",
+                                  "tripVehicle": vehicleController.text
+                                };
+                                http.Response responsed = await http.post(Uri.parse('https://driver.smtdriver.com/apis/editTripVehicle'), body: data);
+
+                                final resp2 = json.decode(responsed.body);
+                                LoadingIndicatorDialog().dismiss();
+                                if(resp2['type']=='success'){
+                                  if(mounted){
+                                    QuickAlert.show(context: context,title: "Exito",text: resp2['message'],type: QuickAlertType.success,);
+                                    setState(() {
+                                      tripVehicle = vehicleController.text;
+                                    });
+                                  }      
+                                  //getCurrentLocation();
+
+                                }else{
+                                  QuickAlert.show(context: context,title: "Alerta",text: resp2['message'],type: QuickAlertType.error,);
+                                }
+                              }
+                            ),
+                          ),
+                        ],
+                      );
+                    } else {
+                      return ColorLoader3();
+                    }
+                  },
                 ),
-                SizedBox(width: 10,),
-                Container(
-                    decoration: BoxDecoration(
-                      color: firstColor,
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: IconButton(
-                      icon: Icon(Icons.save_outlined),
-                      color: backgroundColor,
-                      iconSize: 30.0,
-                      onPressed: vehicleL==false?null:() async{
-                        LoadingIndicatorDialog().show(context);
-                        http.Response responses = await http.get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
-                        final data2 = DriverData.fromJson(json.decode(responses.body));
-                        Map data = {
-                          "driverId": data2.driverId.toString(),
-                          "tripId": prefs.tripId.toString(),
-                          "vehicleId": "",
-                          "tripVehicle": vehicleController.text
-                        };
-                        http.Response responsed = await http.post(Uri.parse('https://driver.smtdriver.com/apis/editTripVehicle'), body: data);
-
-                        final resp2 = json.decode(responsed.body);
-                        LoadingIndicatorDialog().dismiss();
-                        if(resp2['type']=='success'){
-                          if(mounted){
-                            QuickAlert.show(context: context,title: "Exito",text: resp2['message'],type: QuickAlertType.success,);
-                            setState(() {
-                              tripVehicle = vehicleController.text;
-                            });
-                          }      
-                          //getCurrentLocation();
-
-                        }else{
-                          QuickAlert.show(context: context,title: "Alerta",text: resp2['message'],type: QuickAlertType.error,);
-                         }
-                      }
-                    ),
-                  ),
+                
                   SizedBox(width: 10,),
                   Container(
                     decoration: BoxDecoration(
