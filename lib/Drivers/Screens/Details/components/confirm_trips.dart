@@ -359,6 +359,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
                 ),
               ),
               ingresarVehiculo(),
+              
+              escanearAgente(),
               SizedBox(height: 10.0),
               _agentToConfirm(),
               SizedBox(height: 20.0),
@@ -366,6 +368,83 @@ class _DataTableExample extends State<MyConfirmAgent> {
               SizedBox(height: 30.0),
             ]),
           )),
+    );
+  }
+
+  Widget escanearAgente() {
+
+    return FutureBuilder<TripsList4>(
+      future: item,
+      builder: (BuildContext context, abc) {
+        if (abc.connectionState == ConnectionState.done) {
+          return abc.data!.trips![1].actualTravel!.tripType=='Salida'?Text(''):Column(
+            children: [
+              SizedBox(height: 10.0),
+              Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Column(
+                    crossAxisAlignment:CrossAxisAlignment.start,
+                    children: [
+                      Text('Escanee el codigo del agente', style: TextStyle(color: Colors.white.withOpacity(0.5)),),
+                      SizedBox(height: 5),
+                      Row(
+                        children: [
+                           Container(
+                             decoration: BoxDecoration(
+                               borderRadius: BorderRadius.all(Radius.circular(15)),
+                               boxShadow: [
+                                 BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0, 0), ),
+                                 BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0, 0), ),
+                               ],
+                             ),
+                             width: 220,
+                             child: Padding(
+                               padding: const EdgeInsets.all(10),
+                               child: Row(
+                                 children: [
+                                  Icon(Icons.person,color: thirdColor,size: 30.0,),
+                                  SizedBox(width: 10.0),
+                                   Text(
+                                     'Abordar Agente',
+                                     style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 15),
+                                   ),
+                                 ],
+                               ),
+                             ),
+                           ),
+                          SizedBox(width: 10,),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: firstColor,
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: IconButton(
+                              icon: Icon(Icons.qr_code),
+                              color: backgroundColor,
+                              iconSize: 30.0,
+                              onPressed: vehicleL==false?null:() async{
+                                String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);
+                      
+                                if (codigoQR == "-1") {
+                                  return;
+                                } else {
+                                  print(codigoQR);
+                                  print('###########################');
+                                }
+                              }
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          );
+        } else {
+          return ColorLoader3();
+        }
+      },
     );
   }
 
@@ -377,53 +456,52 @@ class _DataTableExample extends State<MyConfirmAgent> {
         if (abc.connectionState == ConnectionState.done) {
           return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Row(
-                children: [
-                  FutureBuilder<DriverData>(
-                  future: driverData,
-                  builder: (BuildContext context, abc) {
-                    if (abc.connectionState == ConnectionState.done) {
-                      DriverData? data = abc.data;
-                      return Row(
+              child: FutureBuilder<DriverData>(
+              future: driverData,
+              builder: (BuildContext context, abc) {
+                if (abc.connectionState == ConnectionState.done) {
+                  DriverData? data = abc.data;
+                  return Column(
+                    crossAxisAlignment:CrossAxisAlignment.start,
+                    children: [
+                      if(data?.driverType=='Motorista')
+                        Text('Escanee el codigo qr del vehículo', style: TextStyle(color: Colors.white.withOpacity(0.5)),),
+                      if(data?.driverType=='Motorista')
+                        SizedBox(height: 5,),
+                      Row(
                         children: [
-                          Column(
-                            children: [
-                              if(data?.driverType=='Motorista')
-                                Text('Escanee el codigo qr del vehículo', style: TextStyle(color: Colors.white.withOpacity(0.5)),),
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(15)),
-                                  boxShadow: [
-                                    BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0, 0), ),
-                                    BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0, 0), ),
-                                  ],
-                                ),
-                                width: 220,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left:10.0, right: 10),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.emoji_transportation,color: thirdColor,size: 30.0,),
-                                      SizedBox(width: 10.0),
-                                      Flexible(
-                                        child: TextField(
-                                          enabled: data?.driverType=='Motorista'?false:true,
-                                          style: TextStyle(color: Colors.white),
-                                          controller: vehicleController,
-                                          decoration: InputDecoration(
-                                            border: InputBorder.none,
-                                            hintText: 'Vehículo',
-                                            hintStyle: TextStyle(color: Colors.white.withOpacity(0.5),
-                                            fontSize: 15.0)
-                                          ),
-                                          onChanged: (value) => tripVehicle,
-                                        ),
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(Radius.circular(15)),
+                              boxShadow: [
+                                BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0, 0), ),
+                                BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0, 0), ),
+                              ],
+                            ),
+                            width: 220,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left:10.0, right: 10),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.emoji_transportation,color: thirdColor,size: 30.0,),
+                                  SizedBox(width: 10.0),
+                                  Flexible(
+                                    child: TextField(
+                                      enabled: data?.driverType=='Motorista'?false:true,
+                                      style: TextStyle(color: Colors.white),
+                                      controller: vehicleController,
+                                      decoration: InputDecoration(
+                                        border: InputBorder.none,
+                                        hintText: 'Vehículo',
+                                        hintStyle: TextStyle(color: Colors.white.withOpacity(0.5),
+                                        fontSize: 15.0)
                                       ),
-                                    ],
+                                      onChanged: (value) => tripVehicle,
+                                    ),
                                   ),
-                                ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
 
                           if(data?.driverType!='Motorista')
@@ -468,52 +546,53 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                   }
                                 ),
                               ),
+
+                              SizedBox(width: 10,),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: firstColor,
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: IconButton(
+                              icon: Icon(Icons.qr_code),
+                              color: backgroundColor,
+                              iconSize: 30.0,
+                              onPressed: vehicleL==false?null:() async{
+                                String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);
+                      
+                                if (codigoQR == "-1") {
+                                  return;
+                                } else {
+                                  LoadingIndicatorDialog().show(context);
+                                  http.Response responseSala = await http.get(Uri.parse('https://app.mantungps.com/3rd/vehicles/$codigoQR'),headers: {"Content-Type": "application/json", "x-api-key": 'a10xhq0p21h3fb9y86hh1oxp66c03f'});
+                                  final resp = json.decode(responseSala.body);
+                                  LoadingIndicatorDialog().dismiss();
+                                  if(resp['type']=='success'){
+                                    print(responseSala.body);
+                                    print('###########################');
+                                    if(mounted){
+                                      showDialog(
+                                              context: context,
+                                              builder: (context) => vehiculoE(resp, context),);
+                                    }
+                                  }else{
+                                    if(mounted){
+                                      QuickAlert.show(context: context,title: "Alerta",text: "Vehículo no valido",type: QuickAlertType.error,); 
+                                    }
+                                  }
+                                }
+                              }
+                            ),
+                          ),
                         ],
-                      );
-                    } else {
-                      return ColorLoader3();
-                    }
-                  },
+                      ),
+                    ],
+                  );
+                } else {
+                  return ColorLoader3();
+                }
+              },
                 ),
-                  SizedBox(width: 10,),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: firstColor,
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: IconButton(
-                      icon: Icon(Icons.qr_code),
-                      color: backgroundColor,
-                      iconSize: 30.0,
-                      onPressed: vehicleL==false?null:() async{
-                        String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);
-              
-                        if (codigoQR == "-1") {
-                          return;
-                        } else {
-                          LoadingIndicatorDialog().show(context);
-                          http.Response responseSala = await http.get(Uri.parse('https://app.mantungps.com/3rd/vehicles/$codigoQR'),headers: {"Content-Type": "application/json", "x-api-key": 'a10xhq0p21h3fb9y86hh1oxp66c03f'});
-                          final resp = json.decode(responseSala.body);
-                          LoadingIndicatorDialog().dismiss();
-                          if(resp['type']=='success'){
-                            print(responseSala.body);
-                            print('###########################');
-                            if(mounted){
-                              showDialog(
-                                      context: context,
-                                      builder: (context) => vehiculoE(resp, context),);
-                            }
-                          }else{
-                            if(mounted){
-                              QuickAlert.show(context: context,title: "Alerta",text: "Vehículo no valido",type: QuickAlertType.error,); 
-                            }
-                          }
-                        }
-                      }
-                    ),
-                  ),
-                ],
-              ),
             );
         } else {
           return ColorLoader3();
@@ -1356,28 +1435,11 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                           Row(
                                             children: [
                                               SizedBox(width: 3.0),
-                                              RoundCheckBox(
-                                                  border: Border.all(
-                                                      style: BorderStyle.none),
-                                                  animationDuration:
-                                                      Duration(seconds: 1),
-                                                  uncheckedColor: Colors.red,
-                                                  uncheckedWidget: Icon(
-                                                    Icons.close,
-                                                    color: backgroundColor,
-                                                    size: 15,
-                                                  ),
-                                                  checkedColor: firstColor,
-                                                  checkedWidget: Icon(
-                                                    Icons.check,
-                                                    color: backgroundColor,
-                                                    size: 15,
-                                                  ),
-                                                  size: 20,
-                                                  isChecked: traveledB(abc,index),
-                                                  onTap: (bool? isChecked) {
-                                                    alertaAbordo(abc, index, isChecked);
-                                                  }),
+                                              Icon(
+                                                abc.data!.trips![0].tripAgent![index].traveled==1? Icons.check:Icons.close,
+                                                color: abc.data!.trips![0].tripAgent![index].traveled==1?firstColor:Colors.red,
+                                                size: 15,
+                                              ),
                                               SizedBox(width: 15.0),
                                               Text('Abordó ',
                                                   style: TextStyle(
@@ -1877,7 +1939,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                           )
                                         } else ...{
                                           Container(
-                                            width: 150,
                                             height: 40,
                                             decoration:
                                             BoxDecoration(boxShadow: [

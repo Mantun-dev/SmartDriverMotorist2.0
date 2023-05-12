@@ -418,53 +418,52 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
         if (abc.connectionState == ConnectionState.done) {
           return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Row(
-                children: [
-                  FutureBuilder<DriverData>(
-                  future: driverData,
-                  builder: (BuildContext context, abc) {
-                    if (abc.connectionState == ConnectionState.done) {
-                      DriverData? data = abc.data;
-                      return Row(
+              child: FutureBuilder<DriverData>(
+              future: driverData,
+              builder: (BuildContext context, abc) {
+                if (abc.connectionState == ConnectionState.done) {
+                  DriverData? data = abc.data;
+                  return Column(
+                    crossAxisAlignment:CrossAxisAlignment.start,
+                    children: [
+                      if(data?.driverType=='Motorista')
+                        Text('Escanee el codigo qr del vehículo', style: TextStyle(color: Colors.white.withOpacity(0.5)),),
+                      if(data?.driverType=='Motorista')
+                        SizedBox(height: 5,),
+                      Row(
                         children: [
-                          Column(
-                            children: [
-                              if(data?.driverType=='Motorista')
-                                Text('Escanee el codigo qr del vehículo', style: TextStyle(color: Colors.white.withOpacity(0.5)),),
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(15)),
-                                  boxShadow: [
-                                    BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0, 0), ),
-                                    BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0, 0), ),
-                                  ],
-                                ),
-                                width: 220,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left:10.0, right: 10),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.emoji_transportation,color: thirdColor,size: 30.0,),
-                                      SizedBox(width: 10.0),
-                                      Flexible(
-                                        child: TextField(
-                                          enabled: data?.driverType=='Motorista'?false:true,
-                                          style: TextStyle(color: Colors.white),
-                                          controller: vehicleController,
-                                          decoration: InputDecoration(
-                                            border: InputBorder.none,
-                                            hintText: 'Vehículo',
-                                            hintStyle: TextStyle(color: Colors.white.withOpacity(0.5),
-                                            fontSize: 15.0)
-                                          ),
-                                          onChanged: (value) => tripVehicle,
-                                        ),
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(Radius.circular(15)),
+                              boxShadow: [
+                                BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0, 0), ),
+                                BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0, 0), ),
+                              ],
+                            ),
+                            width: 220,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left:10.0, right: 10),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.emoji_transportation,color: thirdColor,size: 30.0,),
+                                  SizedBox(width: 10.0),
+                                  Flexible(
+                                    child: TextField(
+                                      enabled: data?.driverType=='Motorista'?false:true,
+                                      style: TextStyle(color: Colors.white),
+                                      controller: vehicleController,
+                                      decoration: InputDecoration(
+                                        border: InputBorder.none,
+                                        hintText: 'Vehículo',
+                                        hintStyle: TextStyle(color: Colors.white.withOpacity(0.5),
+                                        fontSize: 15.0)
                                       ),
-                                    ],
+                                      onChanged: (value) => tripVehicle,
+                                    ),
                                   ),
-                                ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
                           if(data?.driverType!='Motorista')
                             SizedBox(width: 10,),
@@ -508,56 +507,56 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                               }
                             ),
                           ),
+
+                          SizedBox(width: 10,),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: firstColor,
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: IconButton(
+                              icon: Icon(Icons.qr_code),
+                              color: backgroundColor,
+                              iconSize: 30.0,
+                              onPressed: vehicleL==false?null:() async{
+                                setRecargar(-1);
+                                String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);
+                      
+                                if (codigoQR == "-1") {
+                                  setRecargar(0);
+                                  return;
+                                } else {
+                                  LoadingIndicatorDialog().show(context);
+                                  http.Response responseSala = await http.get(Uri.parse('https://app.mantungps.com/3rd/vehicles/$codigoQR'),headers: {"Content-Type": "application/json", "x-api-key": 'a10xhq0p21h3fb9y86hh1oxp66c03f'});
+                                  final resp = json.decode(responseSala.body);
+                                  LoadingIndicatorDialog().dismiss();
+                                  if(resp['type']=='success'){
+                                    print(responseSala.body);
+                                    print('###########################');
+                                    if(mounted){
+                                      showDialog(
+                                              context: context,
+                                              builder: (context) => vehiculoE(resp, context),);
+                                    }
+                                  }else{
+                                    if(mounted){
+                                      QuickAlert.show(context: context,title: "Alerta",text: "Vehículo no valido",type: QuickAlertType.error,); 
+                                    }
+                                  }
+                                  setRecargar(0);
+                                }
+                              }
+                            ),
+                          ),
                         ],
-                      );
-                    } else {
-                      return ColorLoader3();
-                    }
-                  },
+                      ),
+                    ],
+                  );
+                } else {
+                  return ColorLoader3();
+                }
+              },
                 ),
-                
-                  SizedBox(width: 10,),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: firstColor,
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: IconButton(
-                      icon: Icon(Icons.qr_code),
-                      color: backgroundColor,
-                      iconSize: 30.0,
-                      onPressed: vehicleL==false?null:() async{
-                        setRecargar(-1);
-                        String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);
-              
-                        if (codigoQR == "-1") {
-                          setRecargar(0);
-                          return;
-                        } else {
-                          LoadingIndicatorDialog().show(context);
-                          http.Response responseSala = await http.get(Uri.parse('https://app.mantungps.com/3rd/vehicles/$codigoQR'),headers: {"Content-Type": "application/json", "x-api-key": 'a10xhq0p21h3fb9y86hh1oxp66c03f'});
-                          final resp = json.decode(responseSala.body);
-                          LoadingIndicatorDialog().dismiss();
-                          if(resp['type']=='success'){
-                            print(responseSala.body);
-                            print('###########################');
-                            if(mounted){
-                              showDialog(
-                                      context: context,
-                                      builder: (context) => vehiculoE(resp, context),);
-                            }
-                          }else{
-                            if(mounted){
-                              QuickAlert.show(context: context,title: "Alerta",text: "Vehículo no valido",type: QuickAlertType.error,); 
-                            }
-                          }
-                          setRecargar(0);
-                        }
-                      }
-                    ),
-                  ),
-                ],
-              ),
             );
         } else {
           return ColorLoader3();

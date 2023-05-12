@@ -1287,18 +1287,20 @@ class _DriverDescriptionState extends State<DriverDescription>
           SizedBox(height: 20.0),
           Container(
             margin: EdgeInsets.symmetric(horizontal: 40.0),
-            child: Row(
-              
-              children: [
-                FutureBuilder<DriverData>(
-                  future: itemx,
-                  builder: (BuildContext context, abc) {
-                    if (abc.connectionState == ConnectionState.done) {
-                      DriverData? driverData = abc.data;
-                      return Column(
+            child: FutureBuilder<DriverData>(
+              future: itemx,
+              builder: (BuildContext context, abc) {
+                if (abc.connectionState == ConnectionState.done) {
+                  DriverData? driverData = abc.data;
+                  return Column(
+                    crossAxisAlignment:CrossAxisAlignment.start,
+                    children: [
+                      if(driverData?.driverType=='Motorista')
+                        Text('Escanee el codigo qr del vehículo', style: TextStyle(color: Colors.white.withOpacity(0.5)),),
+                      if(driverData?.driverType=='Motorista')
+                        SizedBox(height: 5,),
+                      Row(
                         children: [
-                          if(driverData?.driverType=='Motorista')
-                            Text('Escanee el codigo qr del vehículo', style: TextStyle(color: Colors.white.withOpacity(0.5)),),
                           Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.all(Radius.circular(15)),
@@ -1332,53 +1334,52 @@ class _DriverDescriptionState extends State<DriverDescription>
                               ),
                             ),
                           ),
-                        ],
-                      );
-                    } else {
-                      return ColorLoader3();
-                    }
-                  },
-                ),
-                
-                SizedBox(width: 10,),
-                Container(
-                  decoration: BoxDecoration(
-                    color: firstColor,
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: IconButton(
-                    icon: Icon(Icons.qr_code),
-                    color: backgroundColor,
-                    iconSize: 30.0,
-                    onPressed: () async{
-                      String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);
-              
-                        if (codigoQR == "-1") {
-                          return;
-                        } else {
+                          SizedBox(width: 10,),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: firstColor,
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: IconButton(
+                              icon: Icon(Icons.qr_code),
+                              color: backgroundColor,
+                              iconSize: 30.0,
+                              onPressed: () async{
+                                String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);
+                        
+                                  if (codigoQR == "-1") {
+                                    return;
+                                  } else {
 
-                          LoadingIndicatorDialog().show(context);
-                          http.Response responseSala = await http.get(Uri.parse('https://app.mantungps.com/3rd/vehicles/$codigoQR'),headers: {"Content-Type": "application/json", "x-api-key": 'a10xhq0p21h3fb9y86hh1oxp66c03f'});
-                          final resp = json.decode(responseSala.body);
-                          LoadingIndicatorDialog().dismiss();
-                          if(resp['type']=='success'){
-                            print(responseSala.body);
-                            
-                            if(mounted){
-                              showDialog(
-                                      context: context,
-                                      builder: (context) => vehiculoE(resp, context, codigoQR),);
-                            }
-                          }else{
-                            if(mounted){
-                              QuickAlert.show(context: context,title: "Alerta",text: "Vehículo no valido",type: QuickAlertType.error,); 
-                            }
-                          }
-                        }
-                    }
-                  ),
-                ),
-              ],
+                                    LoadingIndicatorDialog().show(context);
+                                    http.Response responseSala = await http.get(Uri.parse('https://app.mantungps.com/3rd/vehicles/$codigoQR'),headers: {"Content-Type": "application/json", "x-api-key": 'a10xhq0p21h3fb9y86hh1oxp66c03f'});
+                                    final resp = json.decode(responseSala.body);
+                                    LoadingIndicatorDialog().dismiss();
+                                    if(resp['type']=='success'){
+                                      print(responseSala.body);
+                                      
+                                      if(mounted){
+                                        showDialog(
+                                                context: context,
+                                                builder: (context) => vehiculoE(resp, context, codigoQR),);
+                                      }
+                                    }else{
+                                      if(mounted){
+                                        QuickAlert.show(context: context,title: "Alerta",text: "Vehículo no valido",type: QuickAlertType.error,); 
+                                      }
+                                    }
+                                  }
+                              }
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                } else {
+                  return ColorLoader3();
+                }
+              },
             ),
           ),
           FutureBuilder<DriverData?>(
