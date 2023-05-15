@@ -115,14 +115,6 @@ class _DriverDescriptionState extends State<DriverDescription>
     agentEmployeeId.clear();
   }
 
-  /*void getCurrentLocation() async {
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    
-    print('**********************************');
-    print(position.latitude);
-    print(position.longitude); 
-  }*/
-
   Future<List> fetchDriversDrivers() async {
     http.Response response = await http
         .get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
@@ -230,7 +222,6 @@ class _DriverDescriptionState extends State<DriverDescription>
             statusCodex = dataResp.statusCode;
           });
         }
-        //getCurrentLocation(); 
         validationLastToPassProgres(statusCodex, prefs.tripId, send.title, send.message,);
       }
     }

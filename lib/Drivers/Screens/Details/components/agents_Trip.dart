@@ -112,15 +112,6 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
     return Driver.fromJson(json.decode(response.body));
   }
 
-  /*void getCurrentLocation() async {
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    
-    print('**********************************');
-    print(position.latitude);
-    print(position.longitude); 
-  }*/
-
-
   Future<Driver> fetchNoConfirm(String agentId, String tripId) async {
     Map data = {'agentId': agentId, 'tripId': tripId};
     //print(data);
@@ -499,7 +490,6 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                       tripVehicle = vehicleController.text;
                                     });
                                   }      
-                                  //getCurrentLocation();
 
                                 }else{
                                   QuickAlert.show(context: context,title: "Alerta",text: resp2['message'],type: QuickAlertType.error,);
@@ -634,7 +624,6 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                                                               vehicleController.text=tripVehicle;  
                                                                             });
                                                                           }
-                                                                          //getCurrentLocation(); 
                                                                         }else{
                                                                           QuickAlert.show(context: context,title: "Alerta",text: resp2['message'],type: QuickAlertType.error,);
                                                                         }
