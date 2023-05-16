@@ -191,6 +191,7 @@ class _DriverDescriptionState extends State<DriverDescription>
           'tripVehicle': prefs.vehiculo,
           'vehicleId': prefs.vehiculoId,
         };
+        print(datas);
         http.Response response1 = await http.post(Uri.parse('https://driver.smtdriver.com/apis/registerDeparture/test'), body: datas);
         final send = Salida.fromJson(json.decode(response1.body));
         prefs.tripId = send.tripId!.tripId.toString();
@@ -209,6 +210,7 @@ class _DriverDescriptionState extends State<DriverDescription>
         validationLastToPassProgres(statusCodex, prefs.tripId, send.title, send.message);        
       } else {
         Map datas = {'companyId': prefs.companyId,'driverId': data.driverId.toString(),'tripVehicle': prefs.vehiculo,'vehicleId': prefs.vehiculoId,};
+        print(datas);
         http.Response response1 = await http.post(Uri.parse('https://driver.smtdriver.com/apis/registerDeparture/test'), body: datas);
         final send = Salida.fromJson(json.decode(response1.body));
         prefs.tripId = send.tripId!.tripId.toString();
@@ -1286,10 +1288,10 @@ class _DriverDescriptionState extends State<DriverDescription>
                   return Column(
                     crossAxisAlignment:CrossAxisAlignment.start,
                     children: [
-                      if(driverData?.driverType=='Motorista')
-                        Text('Escanee el codigo qr del vehículo', style: TextStyle(color: Colors.white.withOpacity(0.5)),),
-                      if(driverData?.driverType=='Motorista')
-                        SizedBox(height: 5,),
+                      //if(driverData?.driverType=='Motorista')
+                        //Text('Escanee el codigo qr del vehículo', style: TextStyle(color: Colors.white.withOpacity(0.5)),),
+                      //if(driverData?.driverType=='Motorista')
+                        //SizedBox(height: 5,),
                       Row(
                         children: [
                           Container(
@@ -1309,7 +1311,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                                   SizedBox(width: 10.0),
                                   Flexible(
                                     child: TextField(
-                                      enabled: driverData?.driverType=='Motorista'?false:true,
+                                      //enabled: driverData?.driverType=='Motorista'?false:true,
                                                   style: TextStyle(color: Colors.white),
                                                   controller: vehicleController,
                                                   decoration: InputDecoration(
@@ -1318,7 +1320,10 @@ class _DriverDescriptionState extends State<DriverDescription>
                                                     hintStyle: TextStyle(color: Colors.white.withOpacity(0.5),
                                                     fontSize: 15.0)
                                                   ),
-                                                  onChanged: (value) => prefs.vehiculo=value,
+                                                  onChanged: (value) => {
+                                                    prefs.vehiculo=value,
+                                                    prefs.vehiculoId='',
+                                                  },
                                                 ),
                                   ),
                                 ],
@@ -1751,6 +1756,9 @@ class _DriverDescriptionState extends State<DriverDescription>
                                                                           prefs.vehiculo = "${resp['vehicle']['name']} [${resp['vehicle']['registrationNumber']}]";
                                                                           prefs.vehiculoId=codigoQR;
                                                                           vehicleController.text=prefs.vehiculo;
+
+                                                                          print(prefs.vehiculoId);
+                                                                          print(prefs.vehiculo);
                                                                         });
                                                                         Navigator.pop(context);
                                                                       },
