@@ -316,16 +316,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
             onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
             child: ListView(children: <Widget>[
               SizedBox(height: 10.0),
-              Center(
-                  child: Text('Información de viaje',
-                      style: TextStyle(
-                          color: firstColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 35.0
-                        )
-                  )
-              ),
-              SizedBox(height: 5.0),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Text(' Viaje en proceso ',
@@ -359,11 +349,9 @@ class _DataTableExample extends State<MyConfirmAgent> {
               ),
               ingresarVehiculo(),
               
-              //escanearAgente(),
+              //escanearAgente(),   
               SizedBox(height: 10.0),
               _agentToConfirm(),
-              SizedBox(height: 10.0),
-              _buttonsAgents(),
               SizedBox(height: 10.0),
             ]),
           )),
@@ -886,9 +874,11 @@ class _DataTableExample extends State<MyConfirmAgent> {
                             fontSize: 15.0)),
                   ),
                 ),
+                SizedBox(height: 10.0),
+                Center(child: _buttonsAgents()),
               SizedBox(height: 10.0),
                 Container(
-                  height: size.height*0.438, 
+                  height: size.height/2, 
                   child: ListView.builder(
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
@@ -1395,8 +1385,10 @@ class _DataTableExample extends State<MyConfirmAgent> {
                   ),
                 ),
               SizedBox(height: 10.0),
+              Center(child: _buttonsAgents()),
+              SizedBox(height: 10.0),
                 Container(
-                  height: size.height*0.5, 
+                  height: size.height/2, 
                   child: ListView.builder(
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
