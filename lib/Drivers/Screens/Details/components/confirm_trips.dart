@@ -26,7 +26,7 @@ import 'package:roundcheckbox/roundcheckbox.dart';
 
 import '../../../components/progress_indicator.dart';
 import 'details_TripProgress.dart';
-//import 'package:geolocator/geolocator.dart';
+import 'package:geolocator/geolocator.dart';
 
 //import 'package:shop_app/screens/details/details_screen.dart';
 
@@ -53,6 +53,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
   bool traveled1 = true;
   final prefs = new PreferenciasUsuario();
   String ip = "https://driver.smtdriver.com";
+  var tripId;
 
   List<TextEditingController> check = [];
   List<TextEditingController> comment = new List.empty(growable: true);
@@ -89,15 +90,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
     return Message.fromJson(json.decode(response.body));
   }
-
-  /*void getCurrentLocation() async {
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    
-    print('**********************************');
-    print(position.latitude);
-    print(position.longitude); 
-  }*/
-
 
   Future<Driver2> fetchRegisterTripCompleted() async {
     http.Response response = await http
@@ -252,20 +244,23 @@ class _DataTableExample extends State<MyConfirmAgent> {
   void getInfoViaje() async{
     http.Response responseSala = await http.get(Uri.parse('$ip/apis/agentsInTravel/${prefs.tripId}'));
     final infoViaje = json.decode(responseSala.body);
-
+   
 
     if(mounted){
       if(infoViaje[3]['viajeActual']['tripVehicle']!=null){
+
         setState(() {
           tripVehicle = infoViaje[3]['viajeActual']['tripVehicle'];
           vehicleL = true;
           vehicleController.text=tripVehicle;
+          tripId=infoViaje[3]['viajeActual']['tripId'];
         });
       }else{
         setState(() {
           tripVehicle = '';
           vehicleL = true;
           vehicleController.text=tripVehicle;
+          tripId=infoViaje[3]['viajeActual']['tripId'];
         });
       }
     }
@@ -349,7 +344,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
               ),
               ingresarVehiculo(),
               
-              //escanearAgente(),   
+              escanearAgente(context),   
               SizedBox(height: 10.0),
               _agentToConfirm(),
               SizedBox(height: 10.0),
@@ -358,7 +353,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
     );
   }
 
-  Widget escanearAgente() {
+  Widget escanearAgente(BuildContext contextP) {
 
     return FutureBuilder<TripsList4>(
       future: item,
@@ -409,14 +404,115 @@ class _DataTableExample extends State<MyConfirmAgent> {
                               icon: Icon(Icons.qr_code),
                               color: backgroundColor,
                               iconSize: 30.0,
-                              onPressed: vehicleL==false?null:() async{
+                              onPressed: () async{
+                                
                                 String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);
                       
                                 if (codigoQR == "-1") {
                                   return;
                                 } else {
-                                  print(codigoQR);
-                                  print('###########################');
+                                  LoadingIndicatorDialog().show(context);
+
+                                  Map data =   {
+                                    'agentUser':codigoQR, 
+                                    'tripId':tripId.toString()
+                                  };
+
+                                  print(data);
+                                  http.Response response = await http
+                                      .post(Uri.parse('https://driver.smtdriver.com/apis/agents/validateCheckIn'), body: data);
+
+                                  final resp = json.decode(response.body);
+
+                                  if(mounted){
+                                    LoadingIndicatorDialog().dismiss();
+                                    if(resp['type']=='error'){
+                                      return;
+                                    } 
+
+                                    if(resp['allow']==0){
+                                      LoadingIndicatorDialog().dismiss();
+                                      QuickAlert.show(
+                                        context: context,
+                                        title: '¡No encontrado!',
+                                        text: resp['msg'],
+                                        type: QuickAlertType.error,
+                                      ); 
+                                      return;
+                                    } 
+
+                                    int index = 0;
+
+                                    for (int i = 0; i < abc.data!.trips![0].tripAgent!.length; i++) {  
+                                      if(abc.data!.trips![0].tripAgent![i].agentId==resp['agentId']){
+
+                                        if(abc.data!.trips![0].tripAgent![i].traveled == 1){
+                                          traveled = true;
+                                        }else{
+                                          traveled = false;
+                                        }
+                                        index = i;
+                                      }
+                                    }
+
+                                    LoadingIndicatorDialog().dismiss();
+                                    QuickAlert.show(
+                                      context: contextP,
+                                      type: QuickAlertType.confirm,
+                                      title: traveled==false ?'No abordó':'Abordó',
+                                      text: traveled==false ?"¿Está seguro que desea marcar como no \nabordado al agente?":"¿Está seguro que desea marcar como \nabordado al agente?",
+                                      confirmBtnText: 'Confirmar',
+                                      cancelBtnText: 'Cancelar',
+                                      showCancelBtn: true,  
+                                      confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
+                                      cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ),
+                                      onConfirmBtnTap: () async{
+
+                                        if(traveled==false && abc.data!.trips![0].tripAgent![index].didntGetOut==1){
+                                          abc.data!.trips![0].tripAgent![index].didntGetOut=0;
+                                          fetchRegisterCommentAgent(
+                                          abc.data!.trips![0].tripAgent![index].agentId.toString(),
+                                          prefs.tripId,
+                                          ''
+                                        );  
+                                        }
+
+                                        if(abc.data!.trips![0].tripAgent![index].commentDriver=="Canceló transporte"){
+                                          abc.data!.trips![0].tripAgent![index].commentDriver="";
+
+                                          fetchRegisterCommentAgent(
+                                          abc.data!.trips![0].tripAgent![index].agentId.toString(),
+                                          prefs.tripId,
+                                          ''
+                                        );   
+                                        }
+                                        Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+  
+                                        traveled = !traveled;
+                                        abc.data!.trips![0].tripAgent![index].traveled = traveled;
+                                        
+                                        Map data =   {
+                                          'agentId':abc.data!.trips![0].tripAgent![index].agentId.toString(), 
+                                          'tripId':tripId.toString(),
+                                          'latitude':position.latitude.toString(),
+                                          'longitude':position.longitude.toString(),
+                                          'actionName':'Abordaje'
+                                        };
+                                      
+                                        print(data);
+                                        http.Response response = await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
+
+                                        print(response.body);
+
+                                        setState(() { });
+                                        Navigator.pop(contextP);
+                                      },
+                                      onCancelBtnTap: () {
+                                        Navigator.pop(contextP);
+                                      },
+                                    );
+                                
+                                  }
                                 }
                               }
                             ),
@@ -525,7 +621,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                           tripVehicle = vehicleController.text;
                                         });
                                       }      
-                                      //getCurrentLocation();
                                             
                                     }else{
                                       QuickAlert.show(context: context,title: "Alerta",text: resp2['message'],type: QuickAlertType.error,);
@@ -657,7 +752,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                               vehicleController.text=tripVehicle;  
                                                                             });
                                                                           }
-                                                                          //getCurrentLocation(); 
+
                                                                         }else{
                                                                           QuickAlert.show(context: context,title: "Alerta",text: resp2['message'],type: QuickAlertType.error,);
                                                                         }
@@ -760,9 +855,22 @@ class _DataTableExample extends State<MyConfirmAgent> {
         showCancelBtn: true,  
         confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
         cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
-        onConfirmBtnTap: () {
+        onConfirmBtnTap: () async{
 
-          fetchRegisterAgentDidntGetOut(abc.data!.trips![0].tripAgent![index].agentId.toString(),prefs.tripId);
+          //fetchRegisterAgentDidntGetOut(abc.data!.trips![0].tripAgent![index].agentId.toString(),prefs.tripId);
+          Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+          Map data =   {
+            'agentId':abc.data!.trips![0].tripAgent![index].agentId.toString(), 
+            'tripId':tripId.toString(),
+            'latitude':position.latitude.toString(),
+            'longitude':position.longitude.toString(),
+            'actionName':'No salió'
+          };
+                                      
+        print(data);
+        http.Response response = await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
+        print(response.body);
+
           abc.data!.trips![0].tripAgent![index].didntGetOut = 1;
           if(abc.data!.trips![0].tripAgent![index].traveled = traveled){
             abc.data!.trips![0].tripAgent![index].traveled = false;
@@ -1428,7 +1536,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                     Row(
                                       children: [
                                         SizedBox(width: 3.0),
-                                        RoundCheckBox(
+                                        traveledB(abc,index)==true ? RoundCheckBox(
                                             border: Border.all(
                                                 style: BorderStyle.none),
                                             animationDuration:
@@ -1449,13 +1557,21 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                             isChecked: traveledB(abc,index),
                                             onTap: (bool? isChecked) {
                                               alertaAbordo(abc, index, isChecked);
-                                            }),
+                                            }
+                                          ) 
+                                          :Icon(
+                                            Icons.close,
+                                            color:Colors.red,
+                                            size: 15,
+                                          ),
+                                        
                                         SizedBox(width: 15.0),
                                         Text('Abordó ',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.normal,
-                                                fontSize: 20.0)),
+                                        style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 20.0)),
+                            
                                       ],
                                     ),
                                     SizedBox(height: 15,),
