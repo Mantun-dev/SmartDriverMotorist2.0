@@ -511,7 +511,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                         QuickAlert.show(
                                         context: context,
                                         title: resp2['title'],
-                                        text: resp2['message'],
+                                        text: "El agente ${abc.data!.trips![0].tripAgent![index].agentFullname} ha abordado.",
                                         type: QuickAlertType.success,
                                       ); 
 
