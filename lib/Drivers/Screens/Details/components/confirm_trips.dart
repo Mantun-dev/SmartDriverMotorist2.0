@@ -459,8 +459,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                     QuickAlert.show(
                                       context: contextP,
                                       type: QuickAlertType.confirm,
-                                      title: traveled==false ?'No abordó':'Abordó',
-                                      text: traveled==false ?"¿Está seguro que desea marcar como no \nabordado al agente?":"¿Está seguro que desea marcar como \nabordado al agente?",
+                                      title: traveled==true ?'No abordó':'Abordó',
+                                      text: traveled==true ?"¿Está seguro que desea marcar como no \nabordado al agente?":"¿Está seguro que desea marcar como \nabordado al agente?",
                                       confirmBtnText: 'Confirmar',
                                       cancelBtnText: 'Cancelar',
                                       showCancelBtn: true,  
@@ -468,6 +468,9 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                       cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ),
                                       onConfirmBtnTap: () async{
 
+                                        Navigator.pop(contextP);
+
+                                        LoadingIndicatorDialog().show(contextP);
                                         if(traveled==false && abc.data!.trips![0].tripAgent![index].didntGetOut==1){
                                           abc.data!.trips![0].tripAgent![index].didntGetOut=0;
                                           fetchRegisterCommentAgent(
@@ -499,13 +502,20 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                           'actionName':'Abordaje'
                                         };
                                       
-                                        print(data);
-                                        http.Response response = await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
+                                        http.Response response2 = await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
+                                        final resp2 = json.decode(response2.body);
 
-                                        print(response.body);
+                                        LoadingIndicatorDialog().dismiss();
+                                        
 
-                                        setState(() { });
-                                        Navigator.pop(contextP);
+                                        QuickAlert.show(
+                                        context: context,
+                                        title: resp2['title'],
+                                        text: resp2['message'],
+                                        type: QuickAlertType.success,
+                                      ); 
+
+                                      setState(() { });
                                       },
                                       onCancelBtnTap: () {
                                         Navigator.pop(contextP);
@@ -856,7 +866,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
         confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
         cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
         onConfirmBtnTap: () async{
-
+          LoadingIndicatorDialog().show(context);
           //fetchRegisterAgentDidntGetOut(abc.data!.trips![0].tripAgent![index].agentId.toString(),prefs.tripId);
           Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
           Map data =   {
@@ -867,9 +877,9 @@ class _DataTableExample extends State<MyConfirmAgent> {
             'actionName':'No salió'
           };
                                       
-        print(data);
         http.Response response = await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
-        print(response.body);
+        
+        LoadingIndicatorDialog().dismiss();
 
           abc.data!.trips![0].tripAgent![index].didntGetOut = 1;
           if(abc.data!.trips![0].tripAgent![index].traveled = traveled){
@@ -986,7 +996,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                 Center(child: _buttonsAgents()),
               SizedBox(height: 10.0),
                 Container(
-                  height: size.height/2, 
+                  height: size.height*0.48, 
                   child: ListView.builder(
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
@@ -1496,7 +1506,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
               Center(child: _buttonsAgents()),
               SizedBox(height: 10.0),
                 Container(
-                  height: size.height/2, 
+                  height: size.height*0.38, 
                   child: ListView.builder(
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
