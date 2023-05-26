@@ -434,9 +434,9 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                       LoadingIndicatorDialog().dismiss();
                                       QuickAlert.show(
                                         context: context,
-                                        title: '¡No encontrado!',
+                                        title: '¡Alerta!',
                                         text: resp['msg'],
-                                        type: QuickAlertType.error,
+                                        type: QuickAlertType.warning,
                                       ); 
                                       return;
                                     } 
@@ -460,7 +460,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                       context: contextP,
                                       type: QuickAlertType.confirm,
                                       title: traveled==true ?'No abordó':'Abordó',
-                                      text: traveled==true ?"¿Está seguro que desea marcar como no \nabordado al agente?":"¿Está seguro que desea marcar como \nabordado al agente?",
+                                      text: traveled==true ?"¿Está seguro que desea marcar como no \nabordado al agente ${abc.data!.trips![0].tripAgent![index].agentFullname}?":"¿Está seguro que desea marcar como \nabordado al agente ${abc.data!.trips![0].tripAgent![index].agentFullname}?",
                                       confirmBtnText: 'Confirmar',
                                       cancelBtnText: 'Cancelar',
                                       showCancelBtn: true,  
