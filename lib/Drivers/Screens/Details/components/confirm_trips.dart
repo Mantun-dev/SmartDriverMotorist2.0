@@ -58,6 +58,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
   List<TextEditingController> check = [];
   List<TextEditingController> comment = new List.empty(growable: true);
   TextEditingController vehicleController = new TextEditingController();
+  TextEditingController agentEmployeeId = new TextEditingController();
 
   var tripVehicle = '';
   bool vehicleL = false;
@@ -371,26 +372,204 @@ class _DataTableExample extends State<MyConfirmAgent> {
                       SizedBox(height: 5),
                       Row(
                         children: [
-                           Container(
-                             decoration: BoxDecoration(
-                               borderRadius: BorderRadius.all(Radius.circular(15)),
-                               boxShadow: [
-                                 BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0, 0), ),
-                                 BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0, 0), ),
-                               ],
-                             ),
-                             width: 220,
-                             child: Padding(
-                               padding: const EdgeInsets.all(10),
-                               child: Row(
-                                 children: [
-                                  Icon(Icons.person,color: thirdColor,size: 30.0,),
-                                  SizedBox(width: 10.0),
-                                   Text(
-                                     'Abordar Agente',
-                                     style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 15),
-                                   ),
+                           GestureDetector(
+                            onTap: (){
+                              showGeneralDialog(
+                                barrierColor: Colors.black.withOpacity(0.5),
+                                transitionBuilder: (context, a1, a2, widget) {
+                                  return Transform.scale(scale: a1.value,
+                                    child: Opacity(opacity: a1.value,
+                                      child: AlertDialog(
+                                        backgroundColor: backgroundColor,
+                                        shape: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(16.0)),
+                                        title: Center(child: Text('Buscar Agente',style: TextStyle(color: GradiantV_2, fontSize: 20.0),)),
+                                        content: Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius:BorderRadius.all(Radius.circular(15)),
+                                            boxShadow: [
+                                              BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0,0), ),
+                                              BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0,0),                                 ),
+                                            ],
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                            child: TextField(style: TextStyle(color: Colors.white),
+                                              controller: agentEmployeeId,
+                                              decoration: InputDecoration(border: InputBorder.none,labelText: 'Escriba aqui',labelStyle: TextStyle(color: Colors.white.withOpacity(0.5),fontSize: 15.0)),
+                                            ),
+                                          ),
+                                        ),
+                                        actions: [
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              Container(width: 100,
+                                                child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: backgroundColor,),backgroundColor: Gradiant2,),
+                                                  onPressed: () async{
+                                                   
+                                                      LoadingIndicatorDialog().show(context);
+
+                                                      Map data =   {
+                                                        'agentUser':agentEmployeeId.text, 
+                                                        'tripId':tripId.toString()
+                                                      };
+
+                                                      http.Response response = await http
+                                                          .post(Uri.parse('https://driver.smtdriver.com/apis/agents/validateCheckIn'), body: data);
+
+                                                      final resp = json.decode(response.body);
+
+                                                      if(mounted){
+                                                        LoadingIndicatorDialog().dismiss();
+                                                        if(resp['type']=='error'){
+                                                          return;
+                                                        } 
+
+                                                        if(resp['allow']==0){
+                                                          LoadingIndicatorDialog().dismiss();
+                                                          QuickAlert.show(
+                                                            context: context,
+                                                            title: '¡Alerta!',
+                                                            text: resp['msg'],
+                                                            type: QuickAlertType.warning,
+                                                          ); 
+                                                          return;
+                                                        } 
+
+                                                        int index = 0;
+
+                                                        for (int i = 0; i < abc.data!.trips![0].tripAgent!.length; i++) {  
+                                                          if(abc.data!.trips![0].tripAgent![i].agentId==resp['agentId']){
+
+                                                            if(abc.data!.trips![0].tripAgent![i].traveled == 1){
+                                                              traveled = true;
+                                                            }else{
+                                                              traveled = false;
+                                                            }
+                                                            index = i;
+                                                          }
+                                                        }
+
+                                                        LoadingIndicatorDialog().dismiss();
+                                                        QuickAlert.show(
+                                                          context: contextP,
+                                                          type: QuickAlertType.confirm,
+                                                          title: traveled==true ?'No abordó':'Abordó',
+                                                          text: traveled==true ?"¿Está seguro que desea marcar como no \nabordado al agente ${abc.data!.trips![0].tripAgent![index].agentFullname}?":"¿Está seguro que desea marcar como \nabordado al agente ${abc.data!.trips![0].tripAgent![index].agentFullname}?",
+                                                          confirmBtnText: 'Confirmar',
+                                                          cancelBtnText: 'Cancelar',
+                                                          showCancelBtn: true,  
+                                                          confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
+                                                          cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ),
+                                                          onConfirmBtnTap: () async{
+
+                                                            Navigator.pop(contextP);
+
+                                                            LoadingIndicatorDialog().show(contextP);
+                                                            if(traveled==false && abc.data!.trips![0].tripAgent![index].didntGetOut==1){
+                                                              abc.data!.trips![0].tripAgent![index].didntGetOut=0;
+                                                              fetchRegisterCommentAgent(
+                                                              abc.data!.trips![0].tripAgent![index].agentId.toString(),
+                                                              prefs.tripId,
+                                                              ''
+                                                            );  
+                                                            }
+
+                                                            if(abc.data!.trips![0].tripAgent![index].commentDriver=="Canceló transporte"){
+                                                              abc.data!.trips![0].tripAgent![index].commentDriver="";
+
+                                                              fetchRegisterCommentAgent(
+                                                              abc.data!.trips![0].tripAgent![index].agentId.toString(),
+                                                              prefs.tripId,
+                                                              ''
+                                                            );   
+                                                            }
+                                                            Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+                      
+                                                            traveled = !traveled;
+                                                            abc.data!.trips![0].tripAgent![index].traveled = traveled;
+                                                            
+                                                            Map data =   {
+                                                              'agentId':abc.data!.trips![0].tripAgent![index].agentId.toString(), 
+                                                              'tripId':tripId.toString(),
+                                                              'latitude':position.latitude.toString(),
+                                                              'longitude':position.longitude.toString(),
+                                                              'actionName':'Abordaje'
+                                                            };
+                                                          
+                                                            http.Response response2 = await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
+                                                            final resp2 = json.decode(response2.body);
+                                                            Navigator.pop(contextP);
+                                                            LoadingIndicatorDialog().dismiss();
+                                                            
+
+                                                            QuickAlert.show(
+                                                            context: context,
+                                                            title: resp2['title'],
+                                                            text: "El agente ${abc.data!.trips![0].tripAgent![index].agentFullname} ha abordado.",
+                                                            type: QuickAlertType.success,
+                                                          ); 
+                                                          agentEmployeeId.text='';
+                                                          setState(() { });
+                                                          },
+                                                          onCancelBtnTap: () {
+                                                            Navigator.pop(contextP);
+                                                          },
+                                                        );
+                                                    
+                                                      }
+                                                    
+                                                  },
+                                                  child: Text('Abordar',style: TextStyle(color: backgroundColor,fontSize: 15.0)),
+                                                ),
+                                              ),
+                                              SizedBox(width: 10.0),
+                                              Container(width: 100,
+                                                child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: Colors.white,),backgroundColor: Colors.red,),
+                                                  onPressed: () => {
+                                                    Navigator.pop(context),
+                                                  },
+                                                  child: Text('Cerrar',style: TextStyle(color: Colors.white,fontSize: 15.0)),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                                transitionDuration: Duration(milliseconds: 200),
+                                barrierDismissible: true,
+                                barrierLabel: '',
+                                context: context,
+                                pageBuilder: (context, animation1, animation2) {
+                                  return Text('');
+                                });
+                            },
+                             child: Container(
+                               decoration: BoxDecoration(
+                                 borderRadius: BorderRadius.all(Radius.circular(15)),
+                                 boxShadow: [
+                                   BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0, 0), ),
+                                   BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0, 0), ),
                                  ],
+                               ),
+                               width: 220,
+                               child: Padding(
+                                 padding: const EdgeInsets.all(10),
+                                 child: Row(
+                                   children: [
+                                    Icon(Icons.person,color: thirdColor,size: 30.0,),
+                                    SizedBox(width: 10.0),
+                                     Text(
+                                       'Abordar Agente',
+                                       style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 15),
+                                     ),
+                                   ],
+                                 ),
                                ),
                              ),
                            ),
