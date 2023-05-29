@@ -373,7 +373,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                       Row(
                         children: [
                            GestureDetector(
-                            onTap: (){
+                            /*onTap: (){
                               showGeneralDialog(
                                 barrierColor: Colors.black.withOpacity(0.5),
                                 transitionBuilder: (context, a1, a2, widget) {
@@ -548,7 +548,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                 pageBuilder: (context, animation1, animation2) {
                                   return Text('');
                                 });
-                            },
+                            },*/
                              child: Container(
                                decoration: BoxDecoration(
                                  borderRadius: BorderRadius.all(Radius.circular(15)),
