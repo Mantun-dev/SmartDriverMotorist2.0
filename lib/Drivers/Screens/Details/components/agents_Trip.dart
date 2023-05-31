@@ -417,10 +417,10 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                   return Column(
                     crossAxisAlignment:CrossAxisAlignment.start,
                     children: [
-                      //if(data?.driverType=='Motorista')
-                        //Text('Escanee el codigo qr del vehículo', style: TextStyle(color: Colors.white.withOpacity(0.5)),),
-                      //if(data?.driverType=='Motorista')
-                        //SizedBox(height: 5,),
+                      if(data?.driverType=='Motorista')
+                        Text('Escanee el codigo qr del vehículo', style: TextStyle(color: Colors.white.withOpacity(0.5)),),
+                      if(data?.driverType=='Motorista')
+                        SizedBox(height: 5,),
                       Row(
                         children: [
                           Container(
@@ -440,7 +440,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                   SizedBox(width: 10.0),
                                   Flexible(
                                     child: TextField(
-                                      //enabled: data?.driverType=='Motorista'?false:true,
+                                      enabled: data?.driverType=='Motorista'?false:true,
                                       style: TextStyle(color: Colors.white),
                                       controller: vehicleController,
                                       decoration: InputDecoration(
@@ -456,10 +456,10 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                               ),
                             ),
                           ),
-                          //if(data?.driverType!='Motorista')
+                          if(data?.driverType!='Motorista')
                             SizedBox(width: 10,),
 
-                          //if(data?.driverType!='Motorista')
+                          if(data?.driverType!='Motorista')
                             Container(
                             decoration: BoxDecoration(
                               color: firstColor,

@@ -736,10 +736,10 @@ class _DataTableExample extends State<MyConfirmAgent> {
                   return Column(
                     crossAxisAlignment:CrossAxisAlignment.start,
                     children: [
-                      //if(data?.driverType=='Motorista')
-                        //Text('Escanee el codigo qr del vehículo', style: TextStyle(color: Colors.white70,fontWeight: FontWeight.normal,fontSize: 15.0),),
-                      //if(data?.driverType=='Motorista')
-                        //SizedBox(height: 5,),
+                      if(data?.driverType=='Motorista')
+                        Text('Escanee el codigo qr del vehículo', style: TextStyle(color: Colors.white70,fontWeight: FontWeight.normal,fontSize: 15.0),),
+                      if(data?.driverType=='Motorista')
+                        SizedBox(height: 5,),
                       Row(
                         children: [
                           Container(
@@ -759,7 +759,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                   SizedBox(width: 10.0),
                                   Flexible(
                                     child: TextField(
-                                      //enabled: data?.driverType=='Motorista'?false:true,
+                                      enabled: data?.driverType=='Motorista'?false:true,
                                       style: TextStyle(color: Colors.white),
                                       controller: vehicleController,
                                       decoration: InputDecoration(
@@ -776,10 +776,10 @@ class _DataTableExample extends State<MyConfirmAgent> {
                             ),
                           ),
 
-                          //if(data?.driverType!='Motorista')
+                          if(data?.driverType!='Motorista')
                             SizedBox(width: 10,),
                           
-                          //if(data?.driverType!='Motorista')
+                          if(data?.driverType!='Motorista')
                             Container(
                                 decoration: BoxDecoration(
                                   color: firstColor,
