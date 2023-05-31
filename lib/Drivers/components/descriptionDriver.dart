@@ -1288,10 +1288,10 @@ class _DriverDescriptionState extends State<DriverDescription>
                   return Column(
                     crossAxisAlignment:CrossAxisAlignment.start,
                     children: [
-                      //if(driverData?.driverType=='Motorista')
-                        //Text('Escanee el codigo qr del vehículo', style: TextStyle(color: Colors.white.withOpacity(0.5)),),
-                      //if(driverData?.driverType=='Motorista')
-                        //SizedBox(height: 5,),
+                      if(driverData?.driverType=='Motorista')
+                        Text('Escanee el codigo qr del vehículo', style: TextStyle(color: Colors.white.withOpacity(0.5)),),
+                      if(driverData?.driverType=='Motorista')
+                        SizedBox(height: 5,),
                       Row(
                         children: [
                           Container(
@@ -1311,7 +1311,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                                   SizedBox(width: 10.0),
                                   Flexible(
                                     child: TextField(
-                                      //enabled: driverData?.driverType=='Motorista'?false:true,
+                                      enabled: driverData?.driverType=='Motorista'?false:true,
                                                   style: TextStyle(color: Colors.white),
                                                   controller: vehicleController,
                                                   decoration: InputDecoration(
