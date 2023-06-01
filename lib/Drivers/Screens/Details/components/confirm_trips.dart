@@ -1685,7 +1685,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
               Center(child: _buttonsAgents()),
               SizedBox(height: 10.0),
                 Container(
-                  height: size.height*0.38, 
+                  height: size.height*0.48, 
                   child: ListView.builder(
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
