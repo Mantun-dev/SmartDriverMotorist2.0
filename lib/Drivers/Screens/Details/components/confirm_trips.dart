@@ -345,7 +345,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
               ),
               ingresarVehiculo(),
               
-              escanearAgente(context),   
+              //escanearAgente(context),   
               SizedBox(height: 10.0),
               _agentToConfirm(),
               SizedBox(height: 10.0),
@@ -1722,7 +1722,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                 title: Column(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: <Widget>[
-                                    Row(
+                                    /*Row(
                                       children: [
                                         SizedBox(width: 3.0),
                                         traveledB(abc,index)==true ? RoundCheckBox(
@@ -1761,6 +1761,39 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                         fontWeight: FontWeight.normal,
                                         fontSize: 20.0)),
                             
+                                      ],
+                                    ),*/
+                                    Row(
+                                      children: [
+                                        SizedBox(width: 3.0),
+                                        RoundCheckBox(
+                                            border: Border.all(
+                                                style: BorderStyle.none),
+                                            animationDuration:
+                                                Duration(seconds: 1),
+                                            uncheckedColor: Colors.red,
+                                            uncheckedWidget: Icon(
+                                              Icons.close,
+                                              color: backgroundColor,
+                                              size: 15,
+                                            ),
+                                            checkedColor: firstColor,
+                                            checkedWidget: Icon(
+                                              Icons.check,
+                                              color: backgroundColor,
+                                              size: 15,
+                                            ),
+                                            size: 20,
+                                            isChecked: traveledB(abc,index),
+                                            onTap: (bool? isChecked) {
+                                              alertaAbordo(abc, index, isChecked);
+                                            }),
+                                        SizedBox(width: 15.0),
+                                        Text('Abordó ',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.normal,
+                                                fontSize: 20.0)),
                                       ],
                                     ),
                                     SizedBox(height: 15,),
