@@ -345,7 +345,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
               ),
               ingresarVehiculo(),
               
-              //escanearAgente(context),   
+              escanearAgente(context),   
               SizedBox(height: 10.0),
               _agentToConfirm(),
               SizedBox(height: 10.0),
@@ -373,7 +373,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                       Row(
                         children: [
                            GestureDetector(
-                            /*onTap: (){
+                            onTap: (){
                               showGeneralDialog(
                                 barrierColor: Colors.black.withOpacity(0.5),
                                 transitionBuilder: (context, a1, a2, widget) {
@@ -548,7 +548,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                 pageBuilder: (context, animation1, animation2) {
                                   return Text('');
                                 });
-                            },*/
+                            },
                              child: Container(
                                decoration: BoxDecoration(
                                  borderRadius: BorderRadius.all(Radius.circular(15)),
@@ -1685,7 +1685,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
               Center(child: _buttonsAgents()),
               SizedBox(height: 10.0),
                 Container(
-                  height: size.height*0.48, 
+                  height: size.height*0.38, 
                   child: ListView.builder(
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
