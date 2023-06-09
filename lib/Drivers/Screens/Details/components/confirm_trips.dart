@@ -413,8 +413,11 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
                                                       Map data =   {
                                                         'agentUser':agentEmployeeId.text, 
-                                                        'tripId':tripId.toString()
+                                                        'tripId':tripId.toString(),
+                                                        'itsManualSearch':"1"
                                                       };
+
+                                                      print(data);
 
                                                       http.Response response = await http
                                                           .post(Uri.parse('https://driver.smtdriver.com/apis/agents/validateCheckIn'), body: data);
