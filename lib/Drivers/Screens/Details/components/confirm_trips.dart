@@ -1725,7 +1725,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                 title: Column(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: <Widget>[
-                                    Row(
+                                    /*Row(
                                       children: [
                                         SizedBox(width: 3.0),
                                         traveledB(abc,index)==true ? RoundCheckBox(
@@ -1765,8 +1765,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                         fontSize: 20.0)),
                             
                                       ],
-                                    ),
-                                    /*Row(
+                                    ),*/
+                                    Row(
                                       children: [
                                         SizedBox(width: 3.0),
                                         RoundCheckBox(
@@ -1798,7 +1798,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                 fontWeight: FontWeight.normal,
                                                 fontSize: 20.0)),
                                       ],
-                                    ),*/
+                                    ),
                                     SizedBox(height: 15,),
                                     Padding(
                                       padding: const EdgeInsets.fromLTRB(0,0,20,0),
