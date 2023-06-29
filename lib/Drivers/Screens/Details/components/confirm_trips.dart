@@ -360,7 +360,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
       future: item,
       builder: (BuildContext context, abc) {
         if (abc.connectionState == ConnectionState.done) {
-          return abc.data!.trips![1].actualTravel!.tripType=='Salida'?Text(''):Column(
+          return Column(
             children: [
               SizedBox(height: 10.0),
               Padding(
@@ -1178,7 +1178,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                 Center(child: _buttonsAgents()),
               SizedBox(height: 10.0),
                 Container(
-                  height: size.height*0.48, 
+                  height: size.height*0.38, 
                   child: ListView.builder(
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
