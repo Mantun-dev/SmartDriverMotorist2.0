@@ -1324,7 +1324,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                             Icon(Icons.access_time,color: thirdColor),
                                             SizedBox(width: 15,),
                                             Flexible(
-                                              child: Text('Entrada: ${abc.data!.trips![0].tripAgent![index].hourIn}',
+                                              child: Text('Salida: ${abc.data!.trips![0].tripAgent![index].hourIn}',
                                                 style: TextStyle(
                                                     color: Colors.white,
                                                     //fontWeight: FontWeight.bold,
