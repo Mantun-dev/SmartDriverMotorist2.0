@@ -1215,10 +1215,10 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                 title: Column(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: <Widget>[
-                                    Row(
+                                   Row(
                                       children: [
                                         SizedBox(width: 3.0),
-                                        RoundCheckBox(
+                                        traveledB(abc,index)==true ? RoundCheckBox(
                                             border: Border.all(
                                                 style: BorderStyle.none),
                                             animationDuration:
@@ -1239,13 +1239,21 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                             isChecked: traveledB(abc,index),
                                             onTap: (bool? isChecked) {
                                               alertaAbordo(abc, index, isChecked);
-                                            }),
+                                            }
+                                          ) 
+                                          :Icon(
+                                            Icons.close,
+                                            color:Colors.red,
+                                            size: 15,
+                                          ),
+                                        
                                         SizedBox(width: 15.0),
                                         Text('Abordó ',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.normal,
-                                                fontSize: 20.0)),
+                                        style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 20.0)),
+                            
                                       ],
                                     ),
                                     SizedBox(height: 15,),
