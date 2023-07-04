@@ -57,6 +57,7 @@ dependencies:
   flutter_neumorphic: ^3.0.3
   upgrader: ^6.4.0
   geolocator: ^7.6.2
+  permission_handler: ^7.0.0
   #permission_handler: ^10.2.0
 
 dev_dependencies:

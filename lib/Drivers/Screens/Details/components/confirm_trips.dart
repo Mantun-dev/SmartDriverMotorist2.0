@@ -20,6 +20,7 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' show json;
 import 'package:flutter_auth/constants.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:roundcheckbox/roundcheckbox.dart';
@@ -54,7 +55,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
   final prefs = new PreferenciasUsuario();
   String ip = "https://driver.smtdriver.com";
   var tripId;
-
+  bool permiso = false;
   List<TextEditingController> check = [];
   List<TextEditingController> comment = new List.empty(growable: true);
   TextEditingController vehicleController = new TextEditingController();
@@ -240,7 +241,9 @@ class _DataTableExample extends State<MyConfirmAgent> {
     check = [];
     driverData = fetchRefres();
     getInfoViaje();
+    checkLocationPermission();
   }
+
 
   void getInfoViaje() async{
     http.Response responseSala = await http.get(Uri.parse('$ip/apis/agentsInTravel/${prefs.tripId}'));
@@ -408,6 +411,15 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                               Container(width: 100,
                                                 child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: backgroundColor,),backgroundColor: Gradiant2,),
                                                   onPressed: () async{
+                                                    if(!permiso){
+                                                      QuickAlert.show(
+                                                        context: context,
+                                                        title: "Advertencia",
+                                                        text: 'Se necesita permiso para guardar ubicacion.',
+                                                        type: QuickAlertType.warning
+                                                      );                           
+                                                      return;
+                                                    }
                                                    
                                                       LoadingIndicatorDialog().show(context);
 
@@ -587,6 +599,16 @@ class _DataTableExample extends State<MyConfirmAgent> {
                               color: backgroundColor,
                               iconSize: 30.0,
                               onPressed: () async{
+
+                                if(!permiso){
+                                  QuickAlert.show(
+                                    context: context,
+                                    title: "Advertencia",
+                                    text: 'Se necesita permiso para guardar ubicacion.',
+                                    type: QuickAlertType.warning
+                                  );                           
+                                  return;
+                                }
                                 
                                 String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);
                       
@@ -2416,5 +2438,15 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
       ],
     );
+  }
+
+  void checkLocationPermission() async {
+    var status = await Permission.location.status;
+    
+    if (status.isGranted) {
+      permiso=true;
+    } else {
+       permiso=false;
+    }
   }
 }
