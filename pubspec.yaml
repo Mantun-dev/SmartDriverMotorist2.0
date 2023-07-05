@@ -58,6 +58,7 @@ dependencies:
   upgrader: ^6.4.0
   geolocator: ^7.6.2
   permission_handler: ^7.0.0
+  app_settings: 4.2.0
   #permission_handler: ^10.2.0
 
 dev_dependencies:

@@ -26,7 +26,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:roundcheckbox/roundcheckbox.dart';
 
 import '../../../components/progress_indicator.dart';
-import 'details_TripProgress.dart';
+
 import 'package:geolocator/geolocator.dart';
 
 //import 'package:shop_app/screens/details/details_screen.dart';
@@ -411,6 +411,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                               Container(width: 100,
                                                 child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: backgroundColor,),backgroundColor: Gradiant2,),
                                                   onPressed: () async{
+                                                    checkLocationPermission();
                                                     if(!permiso){
                                                       QuickAlert.show(
                                                         context: context,
@@ -599,7 +600,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                               color: backgroundColor,
                               iconSize: 30.0,
                               onPressed: () async{
-
+                                checkLocationPermission();
                                 if(!permiso){
                                   QuickAlert.show(
                                     context: context,
@@ -898,7 +899,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
   }
 
   AlertDialog vehiculoE(resp, BuildContext context) {
-    var size = MediaQuery.of(context).size;
+
     return AlertDialog(
       backgroundColor: backgroundColor,
       shape: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
@@ -1081,7 +1082,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
             'actionName':'No salió'
           };
                                       
-        http.Response response = await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
+        await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
         
         LoadingIndicatorDialog().dismiss();
 

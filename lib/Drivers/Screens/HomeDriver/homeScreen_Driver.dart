@@ -20,6 +20,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' show json;
 import 'dart:async';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:app_settings/app_settings.dart';
 //import 'package:showcaseview/showcaseview.dart';
 
 class HomeDriverScreen extends StatefulWidget {
@@ -230,33 +231,32 @@ class _HomeDriverScreenState extends State<HomeDriverScreen>
     );
   }
   
-  Future<bool> checkLocationPermission() async {
+  void checkLocationPermission() async {
     var status = await Permission.location.status;
 
     if (status.isGranted) {
       // Permiso concedido
-      return true;
+
     } else if (status.isDenied) {
       // Permiso denegado anteriormente
       QuickAlert.show(
         context: context,
         title: "Advertencia",
         text: 'Usted negó el acceso a la ubicación. Esto es necesario para poder abordar agentes. Si no da acceso en configuraciones, no podrá abordar agentes.',
-        type: QuickAlertType.warning
+        type: QuickAlertType.warning,
+        onConfirmBtnTap: () async{
+          Navigator.pop(context);
+          try{
+            AppSettings.openLocationSettings();
+          }catch(error){
+            print(error);
+          }
+        },
       );
-      
-      return false;
+
     } else {
       // No se ha solicitado el permiso, solicitarlo al usuario
-      var result = await Permission.location.request();
-
-      if (result.isGranted) {
-        // Permiso concedido por el usuario
-        return true;
-      } else {
-        // Permiso denegado por el usuario
-        return false;
-      }
+      await Permission.location.request();
     }
   }
 
