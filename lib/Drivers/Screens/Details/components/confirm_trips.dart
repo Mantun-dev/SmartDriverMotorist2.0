@@ -1,5 +1,6 @@
 //import 'package:back_button_interceptor/back_button_interceptor.dart';
 
+import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Chat/chatViews.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/trip_In_Process.dart';
@@ -411,14 +412,23 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                               Container(width: 100,
                                                 child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: backgroundColor,),backgroundColor: Gradiant2,),
                                                   onPressed: () async{
+
                                                     checkLocationPermission();
                                                     if(!permiso){
                                                       QuickAlert.show(
                                                         context: context,
                                                         title: "Advertencia",
                                                         text: 'Se necesita permiso para guardar ubicacion.',
-                                                        type: QuickAlertType.warning
-                                                      );                           
+                                                        type: QuickAlertType.warning,
+                                                        onConfirmBtnTap: () async{
+                                                          Navigator.pop(navigatorKey.currentContext!);
+                                                          try{
+                                                            AppSettings.openLocationSettings();
+                                                          }catch(error){
+                                                            print(error);
+                                                          }
+                                                        },
+                                                      );                            
                                                       return;
                                                     }
                                                    
@@ -606,7 +616,15 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                     context: context,
                                     title: "Advertencia",
                                     text: 'Se necesita permiso para guardar ubicacion.',
-                                    type: QuickAlertType.warning
+                                    type: QuickAlertType.warning,
+                                    onConfirmBtnTap: () async{
+                                      Navigator.pop(navigatorKey.currentContext!);
+                                      try{
+                                        AppSettings.openLocationSettings();
+                                      }catch(error){
+                                        print(error);
+                                      }
+                                    },
                                   );                           
                                   return;
                                 }
