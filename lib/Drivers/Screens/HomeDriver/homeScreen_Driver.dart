@@ -237,7 +237,7 @@ class _HomeDriverScreenState extends State<HomeDriverScreen>
     if (status.isGranted) {
       // Permiso concedido
 
-    } else if (status.isDenied) {
+    } else if (status.isDenied || status.isPermanentlyDenied) {
       // Permiso denegado anteriormente
       QuickAlert.show(
         context: context,
