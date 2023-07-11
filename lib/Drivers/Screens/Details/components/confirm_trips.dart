@@ -480,6 +480,12 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                       if(mounted){
                                                         LoadingIndicatorDialog().dismiss();
                                                         if(resp['type']=='error'){
+                                                          QuickAlert.show(
+                                                            context: context,
+                                                            title: '¡Alerta!',
+                                                            text: '${resp['msg']}',
+                                                            type: QuickAlertType.error,
+                                                          ); 
                                                           return;
                                                         } 
 
@@ -521,6 +527,25 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                     await http.post(Uri.parse('$ip/apis/searchAgent'), body: datas);
                                                                 final data1 = Search.fromJson(json.decode(responsed.body));
 
+                                                                print(responsed.body);
+
+                                                                if(data1.agent!.msg!=null){
+                                                                  LoadingIndicatorDialog().dismiss();
+
+                                                                  if(data1.ok==true){
+                                                                    Navigator.pop(context);
+                                                                    Navigator.pop(context);
+                                                                    QuickAlert.show(
+                                                                      context: context,
+                                                                      title: '¡Alerta!',
+                                                                      text: '${data1.agent!.msg!}',
+                                                                      type: QuickAlertType.error,
+                                                                    ); 
+
+                                                                    return;
+                                                                  }
+                                                                }
+
                                                                 Map datas2 = {
                                                                   "agentId": data1.agent!.agentId.toString(),
                                                                   "tripId": abc.data!.trips![1].actualTravel!.tripId.toString(),
@@ -532,8 +557,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                 final dataR = json.decode(sendDatas.body);
 
                                                                 LoadingIndicatorDialog().dismiss();
-                                                                print(datas2);
-                                                                print(sendDatas.body);
 
                                                                 if(dataR['type']=='error'){
                                                                   Navigator.pop(context);
@@ -541,7 +564,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                   QuickAlert.show(
                                                                     context: context,
                                                                     title: '¡Alerta!',
-                                                                    text: 'Ha ocurrido un error.',
+                                                                    text: '${dataR['message']}',
                                                                     type: QuickAlertType.error,
                                                                   ); 
 
@@ -768,12 +791,18 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                   final resp = json.decode(response.body);
 
                                   if(mounted){
-                                    LoadingIndicatorDialog().dismiss();
-                                    if(resp['type']=='error'){
-                                      return;
-                                    } 
+                                                        LoadingIndicatorDialog().dismiss();
+                                                        if(resp['type']=='error'){
+                                                          QuickAlert.show(
+                                                            context: context,
+                                                            title: '¡Alerta!',
+                                                            text: '${resp['msg']}',
+                                                            type: QuickAlertType.error,
+                                                          ); 
+                                                          return;
+                                                        } 
 
-                                    if(resp['allow']==0){
+                                                        if(resp['allow']==0){
                                                           if(abc.data!.trips![1].actualTravel!.tripType!='Salida'){
                                                             
                                                             LoadingIndicatorDialog().dismiss();
@@ -789,7 +818,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                           if(resp['msg']=='Agente no se encuentra registrado en este viaje.'){
                                                             LoadingIndicatorDialog().dismiss();
                                                             QuickAlert.show(
-                                                              context: contextP,
+                                                              context: navigatorKey.currentContext!,
                                                               type: QuickAlertType.warning,
                                                               title: '¡Alerta!',
                                                               text: 'Agente no se encuentra registrado en este viaje. Desea agregarlo al viaje?',
@@ -800,7 +829,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                               cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ),
                                                               onConfirmBtnTap: () async{
 
-                                                                LoadingIndicatorDialog().show(context);
+                                                                LoadingIndicatorDialog().show(navigatorKey.currentContext!);
 
                                                                  Map datas = {
                                                                   "companyId": abc.data!.trips![1].actualTravel!.companyId.toString(),
@@ -810,7 +839,25 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                 http.Response responsed =
                                                                     await http.post(Uri.parse('$ip/apis/searchAgent'), body: datas);
                                                                 final data1 = Search.fromJson(json.decode(responsed.body));
-                                                                
+
+                                                                print(responsed.body);
+
+                                                                if(data1.agent!.msg!=null){
+                                                                  LoadingIndicatorDialog().dismiss();
+
+                                                                  if(data1.ok==true){
+                                                                    Navigator.pop(navigatorKey.currentContext!);
+                                                                    QuickAlert.show(
+                                                                      context: navigatorKey.currentContext!,
+                                                                      title: '¡Alerta!',
+                                                                      text: '${data1.agent!.msg!}',
+                                                                      type: QuickAlertType.error,
+                                                                    ); 
+
+                                                                    return;
+                                                                  }
+                                                                }
+
                                                                 Map datas2 = {
                                                                   "agentId": data1.agent!.agentId.toString(),
                                                                   "tripId": abc.data!.trips![1].actualTravel!.tripId.toString(),
@@ -822,16 +869,14 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                 final dataR = json.decode(sendDatas.body);
 
                                                                 LoadingIndicatorDialog().dismiss();
-                                                                print(datas2);
-                                                                print(sendDatas.body);
 
                                                                 if(dataR['type']=='error'){
-                                                                  Navigator.pop(contextP);
-                                                                  Navigator.pop(contextP);
+                                                                  Navigator.pop(navigatorKey.currentContext!);
+                                                                  Navigator.pop(navigatorKey.currentContext!);
                                                                   QuickAlert.show(
-                                                                    context: context,
+                                                                    context: navigatorKey.currentContext!,
                                                                     title: '¡Alerta!',
-                                                                    text: 'Ha ocurrido un error.',
+                                                                    text: '${dataR['message']}',
                                                                     type: QuickAlertType.error,
                                                                   ); 
 
@@ -839,11 +884,11 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
                                                                 }else{
                                                                   if(mounted){
-                                                                    Navigator.pop(contextP);
-                                                                    Navigator.push(context,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
+                                                                    Navigator.pop(navigatorKey.currentContext!);
+                                                                    Navigator.push(navigatorKey.currentContext!,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
 
                                                                     QuickAlert.show(
-                                                                      context: context,
+                                                                      context: navigatorKey.currentContext!,
                                                                       title: '¡Éxito!',
                                                                       text: 'Se agrego el agente al viaje.',
                                                                       type: QuickAlertType.success,
@@ -854,7 +899,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
                                                               },
                                                               onCancelBtnTap: () {
-                                                                Navigator.pop(contextP);
+                                                                Navigator.pop(navigatorKey.currentContext!);
                                                               },
                                                             );
                                                           return;
