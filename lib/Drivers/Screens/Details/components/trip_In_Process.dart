@@ -6,6 +6,8 @@ import 'package:flutter_auth/Drivers/components/loader.dart';
 import 'package:flutter_auth/Drivers/components/menu_lateralDriver.dart';
 import 'package:flutter_auth/Drivers/models/network.dart';
 import 'package:flutter_auth/Drivers/models/tripsPendin2.dart';
+import 'package:flutter_auth/main.dart';
+import 'package:quickalert/quickalert.dart';
 
 import '../../../../constants.dart';
 import '../../../models/plantillaDriver.dart';
@@ -258,10 +260,17 @@ class _ProcessState extends State<Process> {
                                                     color: firstColor,
                                                     fontSize: 20)),
                                             onPressed: () {
+                                              
                                               fetchAgentsAsigmentChekc(abc
                                                 .data![index].tripId
                                                 .toString());
-                                            },
+                                                
+                                                QuickAlert.show(
+                                                context: navigatorKey.currentContext!,
+                                                title: "Nota",
+                                                text: "Debe marcar el abordaje al momento en que el agente ingrese a la unidad, en caso de no abordar, solo debe llenar la observación.",
+                                                type: QuickAlertType.warning,
+                                              );                                             },
                                           ),
                                         ),                                  
                                         SizedBox(height: 10.0),                                                                   

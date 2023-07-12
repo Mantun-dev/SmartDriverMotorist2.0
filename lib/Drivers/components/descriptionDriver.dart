@@ -215,10 +215,12 @@ class _DriverDescriptionState extends State<DriverDescription>
         final send = Salida.fromJson(json.decode(response1.body));
         prefs.tripId = send.tripId!.tripId.toString();
         for (var i = 0; i < tables.length; i++) {
-          Map datas2 = {"agentId": tables[i]['idsend'].toString(),
-          "tripId": send.tripId!.tripId.toString(),
-          "tripHour": send.tripId!.tripHour,
-          "driverId":data.driverId.toString()};
+          Map datas2 = {
+            "agentId": tables[i]['idsend'].toString(),
+            "tripId": send.tripId!.tripId.toString(),
+            "tripHour": send.tripId!.tripHour,
+            "driverId":data.driverId.toString()
+          };
           var dataResp = await http.post(Uri.parse('$ip/apis/test/registerAgentForOutTrip'),body: datas2);          
           setState(() {            
             statusCodex = dataResp.statusCode;
@@ -1127,6 +1129,9 @@ class _DriverDescriptionState extends State<DriverDescription>
 
   // ignore: missing_return
   fetchAgentsLeftPastToProgresToSolid() async {
+    http.Response responses2 = await http.get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
+    final data = DriverData.fromJson(json.decode(responses2.body));
+
     http.Response responses = await http
         .get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
     final si = DriverData.fromJson(json.decode(responses.body));
@@ -1158,11 +1163,12 @@ class _DriverDescriptionState extends State<DriverDescription>
           Map datas2 = {
             "agentId": tables[i]['idsend'].toString(),
             "tripId": send.trip!.tripId.toString(),
-            "tripHour": send.trip!.tripHour.toString()
+            "tripHour": send.trip!.tripHour.toString(),
+            "driverId":data.driverId.toString()
           };
 
           if (response1.statusCode == 200) {
-            final sendDatas = await http.post(Uri.parse('$ip/apis/registerAgentTripEntryByDriver'),body: datas2);
+            final sendDatas = await http.post(Uri.parse('$ip/apis/registerAgentForOutTrip'),body: datas2);
             print(sendDatas.body);
             Navigator.pop(context);
             Navigator.push(context,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
