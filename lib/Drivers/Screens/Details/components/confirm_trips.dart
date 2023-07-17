@@ -303,77 +303,86 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
   @override
   Widget build(BuildContext context) {
-    
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        backgroundColor: backgroundColor,
+        drawer: DriverMenuLateral(),
+        appBar: AppBar(
           backgroundColor: backgroundColor,
-          drawer: DriverMenuLateral(),
-          appBar: AppBar(
-            backgroundColor: backgroundColor,
-            elevation: 10,
-            actions: <Widget>[
-              IconButton(
-                icon:
-                    Icon(Icons.textsms_rounded, color: thirdColor, size: 30.0),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ChatPage(
-                              tripId: prefs.tripId,
-                            )),
-                  );
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.arrow_circle_left),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return Process();
-                      },
-                    ),
-                  );
-                  SizedBox(width: kDefaultPadding / 2);
-                },
-              ),
-            ],
-          ),
-          body: GestureDetector(
-            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment:CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 10.0),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Text(
-                      ' Viaje en proceso ',
-                      textAlign: TextAlign.start,
-                      style: TextStyle(
-                        color: GradiantV_2,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20.0
-                      )
+          elevation: 10,
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.textsms_rounded, color: thirdColor, size: 30.0),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChatPage(
+                      tripId: prefs.tripId,
                     ),
                   ),
-                  SizedBox(height: 10.0),
-                  ingresarVehiculo(),
-                  SizedBox(height: 10.0),
-                  escanearAgente(context),   
-                  SizedBox(height: 10.0),
-                  _agentToConfirm(),
-                  SizedBox(height: 10.0),
-                ]
+                );
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.arrow_circle_left),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return Process();
+                    },
+                  ),
+                );
+                SizedBox(width: kDefaultPadding / 2);
+              },
+            ),
+          ],
+        ),
+        body: Column(
+          children: [
+            SizedBox(height: 10.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Text(
+                ' Viaje en proceso ',
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                  color: GradiantV_2,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20.0,
+                ),
               ),
             ),
-          )),
+            SizedBox(height: 10.0),
+            _buttonsAgents(),
+            SizedBox(height: 10.0),
+            Expanded(
+              child: ListView.builder(
+                itemCount: 1, // Número de elementos fuera del ListView
+                itemBuilder: (BuildContext context, int index) {
+                  return Column(
+                    children: [
+                      SizedBox(height: 10.0),
+                      ingresarVehiculo(),
+                      SizedBox(height: 10.0),
+                      escanearAgente(context),
+                      SizedBox(height: 10.0),
+                      _agentToConfirm(),
+                      SizedBox(height: 10.0),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
+
 
   Widget escanearAgente(BuildContext contextP) {
 
@@ -1490,8 +1499,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
                   ),
                 ),
                 SizedBox(height: 10.0),
-                Center(child: _buttonsAgents()),
-              SizedBox(height: 10.0),
                 Column(
                   children: List.generate(
                     abc.data!.trips![0].tripAgent!.length,
@@ -1856,8 +1863,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
                     ),
                   ),
                 ),
-              SizedBox(height: 10.0),
-              Center(child: _buttonsAgents()),
               SizedBox(height: 10.0),
                 Column(
                 children: List.generate(
