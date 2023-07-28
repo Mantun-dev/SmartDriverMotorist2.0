@@ -9,12 +9,15 @@ import 'package:flutter_auth/Drivers/models/dataToken.dart';
 import 'package:flutter_auth/Drivers/models/messageDriver.dart';
 
 import 'package:flutter_auth/components/rounded_button.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:gradient_borders/box_borders/gradient_box_border.dart';
 import 'package:lottie/lottie.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' show json;
+import '../../../../components/progress_indicator.dart';
 import '../../../../constants.dart';
+import '../../Welcome/welcome_screen.dart';
 
 class Body extends StatefulWidget {
   const Body({
@@ -53,6 +56,7 @@ class _BodyState extends State<Body> {
       );
 
     } else {
+      LoadingIndicatorDialog().show(context);
       http.Response responses = await http
           .get(Uri.parse('$ip/apis/refreshingAgentData/${data['driverDNI']}'));
       final si = DriverData.fromJson(json.decode(responses.body));
@@ -80,7 +84,11 @@ class _BodyState extends State<Body> {
         prefs.nombreUsuario = si.driverUser!;
         final claro = DataToken.fromJson(json.decode(responseToken.body));
         prefs.tokenIdMobile = claro.data![0].token!;
-        Navigator.of(context).pushAndRemoveUntil(
+        
+        LoadingIndicatorDialog().dismiss();
+        
+        if(mounted){
+          Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
                 builder: (BuildContext context) => HomeDriverScreen()),
             (Route<dynamic> route) => false);
@@ -91,21 +99,28 @@ class _BodyState extends State<Body> {
             text: si.driverFullname,
             );
 
-        return Message.fromJson(json.decode(response.body));
+          return Message.fromJson(json.decode(response.body));
+        }
       } else if (no.ok == false && response.statusCode == 403) {
-         QuickAlert.show(
+        LoadingIndicatorDialog().dismiss();
+         if(mounted){
+          QuickAlert.show(
             context: context,
             type: QuickAlertType.error,
             title:"Acceso no admitido ",
             text: no.message,
             );
+         }
       } else if (no.ok != true) {
-         QuickAlert.show(
+        LoadingIndicatorDialog().dismiss();
+         if(mounted){
+          QuickAlert.show(
             context: context,
             type: QuickAlertType.error,
             title:"Alerta",
             text: no.message,
             );
+         }
       }
     }
   }
@@ -113,111 +128,207 @@ class _BodyState extends State<Body> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Background(
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            SizedBox(height: size.height * 0.04),
-            Text(
-              "INGRESA",
-              style: TextStyle(
-                  fontWeight: FontWeight.bold, fontSize: 30, color: firstColor),
+    return Container(
+      height: size.height,
+      child: Stack(
+
+        children: [
+
+          Positioned(
+            top: 20,
+            child: Container(
+              width: size.width,
+              child: Stack(
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(left: 40, right: 40),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                            transitionDuration: Duration(milliseconds: 200 ), // Adjust the animation duration as needed
+                            pageBuilder: (_, __, ___) => WelcomeScreen(),
+                            transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                              return SlideTransition(
+                                position: Tween<Offset>(
+                                  begin: Offset(-1.0, 0.0),
+                                  end: Offset.zero,
+                                ).animate(animation),
+                                child: child,
+                              );
+                            },
+                          ),
+                        );
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 1.0,
+                          ),
+                          borderRadius: BorderRadius.circular(5.0),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: SvgPicture.asset(
+                            "assets/icons/flecha_atras_oscuro.svg",
+                            color: Colors.white,
+                            width: 5,
+                            height: 10,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+  
+                  Center(child: Text("Iniciar sesión",style: TextStyle(color: Colors.white,fontSize: 27),)),
+                ],
+              ),
             ),
-            Lottie.asset('assets/videos/login.json'),
-            SizedBox(height: size.height * 0.03),
-            _crearUsuario(),
-            SizedBox(height: size.height * 0.01),
-            _crearPassword(),
-            SizedBox(height: size.height * 0.03),
-            RoundedButton(
-              color: thirdColor,
-              text: "INGRESA ",
-              press: () {
-                FocusScope.of(context).unfocus();
-                fetchUserDriver(driverDNI.text, driverPassword.text);
-              },
+          ),
+
+          Positioned(
+            top: 100,
+            right: 0,
+            left: 0,
+            child: Container(
+              constraints: BoxConstraints(
+                maxWidth: 180,
+                maxHeight: 180,
+              ),
+              child: Lottie.asset('assets/videos/100966-login-successful.json')
             ),
-            SizedBox(height: size.height * 0.03),
-          ],
-        ),
+          ),
+
+          Positioned.fill(
+            top: 100,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: size.width,
+                  margin: EdgeInsets.only(left: 40, right: 40),
+                  child: Column(children: [
+                    _crearUsuario(),
+                    SizedBox(height: 10),
+                    _crearPassword(),
+                    SizedBox(height: 20),
+                  ]),
+                ),
+                SizedBox(height: 15),
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  side: BorderSide(color: Colors.white),
+                  fixedSize: Size(size.width-80, 50)
+                  ),
+                  onPressed: () {
+                    FocusScope.of(context).unfocus();
+                    fetchUserDriver(driverDNI.text, driverPassword.text);
+                  },
+                  child: Text(
+                    "Ingresar",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 19,
+                      fontWeight: FontWeight.normal
+                    ),
+                  ),
+                ),
+            
+              ],
+            ),
+          ),
+
+          Positioned(
+            bottom: 10,
+            child: Text('')
+          )
+        ],
       ),
     );
   }
 
   Widget _crearUsuario() {
-    return Container(
-      margin: EdgeInsets.only(left: 35, right: 35),
-      padding: EdgeInsets.only(left: 10, top: 5, bottom: 5, right: 50),
-      decoration: BoxDecoration(
-          border: const GradientBoxBorder(
-            gradient: LinearGradient(colors: [Gradiant1, Gradiant2]),
-            width: 4,
+    return Column(
+      children: [
+        Container(
+          margin: EdgeInsets.only(left: 10, right: 10),
+          child: TextField(
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.normal),
+            controller: driverDNI,
+            cursorColor: firstColor,
+            decoration: InputDecoration(
+              icon: SvgPicture.asset(  
+                  "assets/icons/usuario.svg",
+                  color: Colors.white,
+                  width: 20,
+                  height: 20,
+                ),
+              hintText: "Número de identidad",
+              hintStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.normal),
+              border: InputBorder.none,
+            ),
           ),
-          borderRadius: BorderRadius.circular(50)),
-      child: TextField(
-        style: TextStyle(color: Colors.white),
-        controller: driverDNI,
-        cursorColor: firstColor,
-        decoration: InputDecoration(
-          icon: Icon(
-            Icons.person,
-            color: thirdColor,
-            size: 30,
-          ),
-          hintText: "Usuario",
-          hintStyle: TextStyle(color: Colors.white),
-          border: InputBorder.none,
         ),
-      ),
+        Divider(
+          color: Color.fromRGBO(158, 158, 158, 1),
+          thickness: 1.0,
+        )
+      ],
     );
   }
 
   Widget _crearPassword() {
-    return Container(
-      margin: EdgeInsets.only(left: 35, right: 35),
-      padding: EdgeInsets.only(left: 10, top: 5, bottom: 5, right: 10),
-      decoration: BoxDecoration(
-          border: const GradientBoxBorder(
-            gradient: LinearGradient(colors: [Gradiant1, Gradiant2]),
-            width: 4,
-          ),
-          borderRadius: BorderRadius.circular(50)),
-      child: TextField(
-        style: TextStyle(color: Colors.white),
-        //keyboardType: TextInputType.,
-        controller: driverPassword,
-        obscureText: _passwordVisible!,
-        cursorColor: Colors.white,
-        decoration: InputDecoration(
-          hintText: "Contraseña",
-          hintStyle: TextStyle(color: Colors.white),
-          icon: Icon(
-            Icons.lock,
-            color: thirdColor,
-            size: 30,
-          ),
-          suffixIcon: IconButton(
-            padding: EdgeInsets.only(left: 10),
-            tooltip: 'Ver contraseña',
-            icon: Icon(
-              // Based on passwordVisible state choose the icon
-              _passwordVisible ?? true
-                  ? Icons.visibility_off
-                  : Icons.visibility,
-              color: thirdColor,
-              size: 30,
+    return Column(
+      children: [
+        Container(
+          margin: EdgeInsets.only(left: 10, right: 10),
+          child: TextField(
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.normal),
+            //keyboardType: TextInputType.,
+            controller: driverPassword,
+            obscureText: _passwordVisible!,
+            cursorColor: Colors.white,
+            decoration: InputDecoration(
+              hintText: "Contraseña",
+              hintStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.normal),
+              icon: SvgPicture.asset(  
+                  "assets/icons/candado.svg",
+                  color: Colors.white,
+                  width: 25,
+                  height: 25,
+                ),
+              suffixIcon: IconButton(
+                padding: EdgeInsets.only(left: 10),
+                tooltip: 'Ver contraseña',
+                icon: Icon(
+                  // Based on passwordVisible state choose the icon
+                  _passwordVisible ?? false
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                  color: Colors.white,
+                  size: 30,
+                ),
+                onPressed: () {
+                  // Update the state i.e. toogle the state of passwordVisible variable
+                  setState(() {
+                    _passwordVisible = !_passwordVisible!;
+                  });
+                },
+              ),
+              border: InputBorder.none,
             ),
-            onPressed: () {
-              // Update the state i.e. toogle the state of passwordVisible variable
-              setState(() {
-                _passwordVisible = !_passwordVisible!;
-              });
-            },
           ),
-          border: InputBorder.none,
         ),
-      ),
+        Divider(
+          color: Color.fromRGBO(158, 158, 158, 1),
+          thickness: 1.0,
+        )
+      ],
     );
   }
 }
