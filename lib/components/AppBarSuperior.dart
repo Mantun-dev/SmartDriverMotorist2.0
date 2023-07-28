@@ -640,10 +640,11 @@ class _AppBarSuperior extends State<AppBarSuperior> {
                                             child: Opacity(
                                               opacity: a1.value,
                                               child: AlertDialog(
+                                                backgroundColor: Theme.of(contextP).cardColor,
                                                 shape: OutlineInputBorder(
                                                     borderRadius: BorderRadius.circular(16.0)),
                                                 title: Center(
-                                                    child: Text('Página disponible \n\t\t\t\tpróximamente')),
+                                                    child: Text('Página disponible \n\t\t\t\tpróximamente', style: Theme.of(contextP).textTheme.bodyMedium!.copyWith(fontSize: 16),)),
                                                 actions: [
                                                   Center(
                                                     child: TextButton(
@@ -656,7 +657,7 @@ class _AppBarSuperior extends State<AppBarSuperior> {
                                                       onPressed: () => {
                                                         Navigator.pop(context),
                                                       },
-                                                      child: Text('Cerrar'),
+                                                      child: Text('Cerrar', style: Theme.of(contextP).textTheme.bodyMedium!.copyWith(fontSize: 16, color: Colors.white)),
                                                     ),
                                                   ),
                                                 ],
