@@ -394,28 +394,40 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
             child: Opacity(
               opacity: a1.value,
               child: AlertDialog(
-                                                backgroundColor: Theme.of(context).cardColor,
-                                                shape: OutlineInputBorder(
-                                                    borderRadius: BorderRadius.circular(16.0)),
-                                                title: Center(
-                                                    child: Text('Página disponible \n\t\t\t\tpróximamente', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),)),
-                                                actions: [
-                                                  Center(
-                                                    child: TextButton(
-                                                      style: TextButton.styleFrom(
-                                                        textStyle: TextStyle(
-                                                          color: Colors.white,
-                                                        ),
-                                                        backgroundColor: Colors.red,
-                                                      ),
-                                                      onPressed: () => {
-                                                        Navigator.pop(context),
-                                                      },
-                                                      child: Text('Cerrar', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16, color: Colors.white)),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
+                backgroundColor: Theme.of(context).cardColor,
+                shape: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16.0),
+                  borderSide: BorderSide( // Add this line to specify the border color
+                    color: Theme.of(context).disabledColor, // Change the color to the desired color
+                    width: 2.0, // You can also adjust the border width if needed
+                  ),
+                ),
+                title: Center(
+                  child: Text(
+                    'Página disponible \n\t\t\t\tpróximamente',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
+                  ),
+                ),
+                actions: [
+                  Center(
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        textStyle: TextStyle(
+                          color: Colors.white,
+                        ),
+                        backgroundColor: Colors.red,
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        'Cerrar',
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         },

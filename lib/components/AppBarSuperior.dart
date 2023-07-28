@@ -642,7 +642,12 @@ class _AppBarSuperior extends State<AppBarSuperior> {
                                               child: AlertDialog(
                                                 backgroundColor: Theme.of(contextP).cardColor,
                                                 shape: OutlineInputBorder(
-                                                    borderRadius: BorderRadius.circular(16.0)),
+                                                  borderRadius: BorderRadius.circular(16.0),
+                                                  borderSide: BorderSide( // Add this line to specify the border color
+                                                    color: Theme.of(context).disabledColor, // Change the color to the desired color
+                                                    width: 2.0, // You can also adjust the border width if needed
+                                                  ),
+                                                ),
                                                 title: Center(
                                                     child: Text('Página disponible \n\t\t\t\tpróximamente', style: Theme.of(contextP).textTheme.bodyMedium!.copyWith(fontSize: 16),)),
                                                 actions: [
