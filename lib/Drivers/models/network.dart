@@ -172,7 +172,7 @@ Future<List<CountNotifications>> fetchCountNotify() async {
       await http.get(Uri.parse('$ip/apis/countTripsProgress/${data.driverId}'));
 
   var jsonData = json.decode(responses.body);
-
+  
   List<CountNotifications> trips = [];
 
   for (var u in jsonData) {

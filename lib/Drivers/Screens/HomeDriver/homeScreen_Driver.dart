@@ -16,6 +16,7 @@ import 'package:flutter_auth/components/backgroundH.dart';
 import 'package:flutter_auth/main.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:quickalert/quickalert.dart';
+import '../../../components/AppBarPosterior.dart';
 import '../../../components/AppBarSuperior.dart';
 import '../../../constants.dart';
 import 'package:http/http.dart' as http;
@@ -85,7 +86,12 @@ class _HomeDriverScreenState extends State<HomeDriverScreen>
                     preferredSize: Size.fromHeight(56),
                     child: AppBarSuperior(item: 0,)
                   ),
-          body: Body(),
+          body: Column(
+            children: [
+              Expanded(child: Body()),
+              SafeArea(child: AppBarPosterior(item:0)),
+            ],
+          ),
         ),
       ),
     );
