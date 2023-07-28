@@ -5,11 +5,17 @@ import 'package:flutter_auth/main.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:quickalert/quickalert.dart';
 
+import '../Drivers/Screens/Details/components/detailsDriver_assignHour.dart';
+import '../Drivers/Screens/Details/components/details_HoursOut.dart';
+import '../Drivers/Screens/Details/components/details_TripProgress.dart';
+import '../Drivers/Screens/Details/components/details_history.dart';
 import '../Drivers/Screens/DriverProfile/driverProfile.dart';
+import '../Drivers/Screens/HomeDriver/components/itemDriver_Card.dart';
 import '../Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 import '../Drivers/Screens/Welcome/welcome_screen.dart';
 import '../Drivers/SharePreferences/preferencias_usuario.dart';
 import '../Drivers/models/network.dart';
+import '../Drivers/models/plantillaDriver.dart';
 
 
 
@@ -390,6 +396,25 @@ class _AppBarSuperior extends State<AppBarSuperior> {
                                 child: GestureDetector(
                                   onTap: () {
                                     Navigator.pop(context);
+                                    Navigator.push(
+                                      navigatorKey.currentContext!,
+                                      PageRouteBuilder(
+                                        transitionDuration: Duration(milliseconds: 200),
+                                        pageBuilder: (_, __, ___) => DetailsDriverHour(
+                                                          plantillaDriver:
+                                                              plantillaDriver[0],
+                                                        ),
+                                        transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                          return SlideTransition(
+                                            position: Tween<Offset>(
+                                              begin: Offset(1.0, 0.0), // Cambiar Offset de inicio a (1.0, 0.0)
+                                              end: Offset.zero, // Mantener Offset de final en (0.0, 0.0)
+                                            ).animate(animation),
+                                            child: child,
+                                          );
+                                        },
+                                      ),
+                                    );
                                     
                                   },
                                   child: Row(
@@ -401,7 +426,7 @@ class _AppBarSuperior extends State<AppBarSuperior> {
                                               width: 18,
                                               height: 18,
                                               child: SvgPicture.asset(
-                                                "assets/icons/proximo_viaje.svg",
+                                                "assets/icons/asignar_viajes.svg",
                                                 color: prefs.tema ? Colors.white : const Color.fromRGBO(40, 93, 169, 1),
                                               ),
                                             ),
@@ -430,7 +455,25 @@ class _AppBarSuperior extends State<AppBarSuperior> {
                                 child: GestureDetector(
                                   onTap: () {
                                     Navigator.pop(context);
-
+                                    Navigator.push(
+                                      navigatorKey.currentContext!,
+                                      PageRouteBuilder(
+                                        transitionDuration: Duration(milliseconds: 200),
+                                        pageBuilder: (_, __, ___) => DetailsDriverTripInProgress(
+                                                          plantillaDriver:
+                                                              plantillaDriver[1],
+                                                        ),
+                                        transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                          return SlideTransition(
+                                            position: Tween<Offset>(
+                                              begin: Offset(1.0, 0.0), // Cambiar Offset de inicio a (1.0, 0.0)
+                                              end: Offset.zero, // Mantener Offset de final en (0.0, 0.0)
+                                            ).animate(animation),
+                                            child: child,
+                                          );
+                                        },
+                                      ),
+                                    );
                                   },
                                   child: Row(
                                     children: [
@@ -441,7 +484,7 @@ class _AppBarSuperior extends State<AppBarSuperior> {
                                               width: 18,
                                         height: 18,
                                               child: SvgPicture.asset(
-                                                "assets/icons/historial_de_viaje.svg",
+                                                "assets/icons/viaje_proceso.svg",
                                                 color: prefs.tema ? Colors.white : const Color.fromRGBO(40, 93, 169, 1),
                                               ),
                                             ),
@@ -469,6 +512,25 @@ class _AppBarSuperior extends State<AppBarSuperior> {
                                 child: GestureDetector(
                                   onTap: () {
                                     Navigator.pop(context);
+                                    Navigator.push(
+                                      navigatorKey.currentContext!,
+                                      PageRouteBuilder(
+                                        transitionDuration: Duration(milliseconds: 200),
+                                        pageBuilder: (_, __, ___) => DetailsDriverHoursOut(
+                                                          plantillaDriver:
+                                                              plantillaDriver[2],
+                                                        ),
+                                        transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                          return SlideTransition(
+                                            position: Tween<Offset>(
+                                              begin: Offset(1.0, 0.0), // Cambiar Offset de inicio a (1.0, 0.0)
+                                              end: Offset.zero, // Mantener Offset de final en (0.0, 0.0)
+                                            ).animate(animation),
+                                            child: child,
+                                          );
+                                        },
+                                      ),
+                                    );
 
                                   },
                                   child: Row(
@@ -510,6 +572,25 @@ class _AppBarSuperior extends State<AppBarSuperior> {
                                   child: GestureDetector(
                                     onTap: () {
                                       Navigator.pop(context);
+                                      Navigator.push(
+                                      navigatorKey.currentContext!,
+                                      PageRouteBuilder(
+                                        transitionDuration: Duration(milliseconds: 200),
+                                        pageBuilder: (_, __, ___) => DetailsDriverHistory(
+                                                          plantillaDriver:
+                                                              plantillaDriver[3],
+                                                        ),
+                                        transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                          return SlideTransition(
+                                            position: Tween<Offset>(
+                                              begin: Offset(1.0, 0.0), // Cambiar Offset de inicio a (1.0, 0.0)
+                                              end: Offset.zero, // Mantener Offset de final en (0.0, 0.0)
+                                            ).animate(animation),
+                                            child: child,
+                                          );
+                                        },
+                                      ),
+                                    );
                           
                                     },
                                     child: Row(
@@ -551,7 +632,45 @@ class _AppBarSuperior extends State<AppBarSuperior> {
                                   child: GestureDetector(
                                     onTap: () {
                                       Navigator.pop(context);
-                          
+                                      showGeneralDialog(
+                                        barrierColor: Colors.black.withOpacity(0.5),
+                                        transitionBuilder: (context, a1, a2, widget) {
+                                          return Transform.scale(
+                                            scale: a1.value,
+                                            child: Opacity(
+                                              opacity: a1.value,
+                                              child: AlertDialog(
+                                                shape: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.circular(16.0)),
+                                                title: Center(
+                                                    child: Text('Página disponible \n\t\t\t\tpróximamente')),
+                                                actions: [
+                                                  Center(
+                                                    child: TextButton(
+                                                      style: TextButton.styleFrom(
+                                                        textStyle: TextStyle(
+                                                          color: Colors.white,
+                                                        ),
+                                                        backgroundColor: Colors.red,
+                                                      ),
+                                                      onPressed: () => {
+                                                        Navigator.pop(context),
+                                                      },
+                                                      child: Text('Cerrar'),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        transitionDuration: Duration(milliseconds: 200),
+                                        barrierDismissible: true,
+                                        barrierLabel: '',
+                                        context: context,
+                                        pageBuilder: (context, animation1, animation2) {
+                                          return Text('');
+                                        });
                                     },
                                     child: Row(
                                       children: [
@@ -562,7 +681,7 @@ class _AppBarSuperior extends State<AppBarSuperior> {
                                                 width: 18,
                                           height: 18,
                                                 child: SvgPicture.asset(
-                                                  "assets/icons/historial_de_viaje.svg",
+                                                  "assets/icons/ejecutivo.svg",
                                                   color: prefs.tema ? Colors.white : const Color.fromRGBO(40, 93, 169, 1),
                                                 ),
                                               ),

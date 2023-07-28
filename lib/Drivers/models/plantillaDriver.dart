@@ -27,7 +27,7 @@ List<PlantillaDriver> plantillaDriver = [
       name: 'Carlos',
       size: 20,
       description: dummyText,
-      image: "assets/images/Asignar.png",
+      image: "assets/icons/asignar_viajes.svg",
       imageMain: "assets/images/clipboard.svg",
       color: backgroundColor),
   PlantillaDriver(
@@ -36,7 +36,7 @@ List<PlantillaDriver> plantillaDriver = [
       name: '234',
       size: 20,
       description: dummyText2,
-      image: "assets/images/mapa.png",
+      image: "assets/icons/viaje_proceso.svg",
       imageMain: "assets/images/TripProcess.svg",
       color: backgroundColor),
   PlantillaDriver(
@@ -45,7 +45,7 @@ List<PlantillaDriver> plantillaDriver = [
       name: '234',
       size: 20,
       description: dummyText3,
-      image: "assets/images/QrCode.png",
+      image: "assets/icons/Codigo_QR.svg",
       imageMain: "assets/images/RegisterOut.svg",
       color: backgroundColor),
   PlantillaDriver(
@@ -54,7 +54,7 @@ List<PlantillaDriver> plantillaDriver = [
       name: '234',
       size: 20,
       description: dummyText4,
-      image: "assets/images/historial.png",
+      image: "assets/icons/historial_de_viaje.svg",
       imageMain: "assets/images/history.svg",
       color: backgroundColor),
   PlantillaDriver(
@@ -63,7 +63,7 @@ List<PlantillaDriver> plantillaDriver = [
       name: '234',
       size: 20,
       description: dummyText5,
-      image: "assets/images/ejecutivo.png",
+      image: "assets/icons/ejecutivo.svg",
       imageMain: "assets/images/clipboard.svg",
       color: backgroundColor),
   PlantillaDriver(
@@ -72,7 +72,7 @@ List<PlantillaDriver> plantillaDriver = [
       name: '234',
       size: 20,
       description: dummyText6,
-      image: "assets/images/adduser.png",
+      image: "assets/icons/viaje_proceso.svg",
       imageMain: "assets/images/adduser.svg",
       color: backgroundColor),
 ];

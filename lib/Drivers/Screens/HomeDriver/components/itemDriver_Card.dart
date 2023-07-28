@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
+import 'package:flutter_svg/svg.dart';
 
 class ItemDriverCard extends StatefulWidget {
   final PlantillaDriver? plantillaDriver;
@@ -45,12 +46,10 @@ class _ItemDriverCardState extends State<ItemDriverCard> {
                 height: 60,
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
-                  child: Hero(
-                              tag: "${widget.plantillaDriver!.id}",
-                              child: Image.asset(
-                                widget.plantillaDriver!.image!,
-                              ),
-                            ),
+                  child: SvgPicture.asset(
+                    widget.plantillaDriver!.image!,
+                    color: Theme.of(context).primaryIconTheme.color,
+                  ),
                 ),
               ),
 
