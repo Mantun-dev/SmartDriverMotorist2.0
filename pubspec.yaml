@@ -59,6 +59,7 @@ dependencies:
   geolocator: ^7.6.2
   permission_handler: ^7.0.0
   app_settings: 4.2.0
+  event_bus: ^2.0.0
   #permission_handler: ^10.2.0
 
 dev_dependencies:

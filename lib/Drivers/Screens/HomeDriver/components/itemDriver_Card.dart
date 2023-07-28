@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 
-import '../../../../constants.dart';
-
 class ItemDriverCard extends StatefulWidget {
   final PlantillaDriver? plantillaDriver;
   final VoidCallback? press;
+  final bool? viajeSolido;
   const ItemDriverCard({
     Key? key,
     this.plantillaDriver,
     this.press,
+    this.viajeSolido
   }) : super(key: key);
 
   @override
@@ -19,97 +19,61 @@ class ItemDriverCard extends StatefulWidget {
 class _ItemDriverCardState extends State<ItemDriverCard> {
   @override
   Widget build(BuildContext context) {
+
     return GestureDetector(
       onTap: widget.press,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Expanded(
-            child: Container(
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Column(
-                        children: [
-                          if(widget.plantillaDriver!.id == 2)...{
-                            Hero(
+      child: Container(
+        decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    width: 2,
+                    color: Theme.of(context).disabledColor
+                  )
+                ),
+
+        child: Padding(
+          padding:  widget.viajeSolido != true ? EdgeInsets.symmetric(vertical: 20, horizontal: 10):EdgeInsets.symmetric(vertical: 40, horizontal: 30),
+          child: Column(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).shadowColor,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                width: 60,
+                height: 60,
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Hero(
                               tag: "${widget.plantillaDriver!.id}",
-                              child: Container(
-                                padding:
-                                    EdgeInsets.only(top: 15, left: 10, right: 20),
-                                // padding: EdgeInsets.only(right: 150),
-                                height: 80,
-                                child: Image.asset(
-                                  widget.plantillaDriver!.image!,
-                                ),
+                              child: Image.asset(
+                                widget.plantillaDriver!.image!,
                               ),
                             ),
-                          }else...{
-                            Hero(
-                              tag: "${widget.plantillaDriver!.id}",
-                              child: Container(
-                                padding:EdgeInsets.only(top: 15, left: 15, right: 20),
-                                height: 90,
-                                child: Image.asset(
-                                  widget.plantillaDriver!.image!,
-                                ),
-                              ),
-                            ),
-                          },
-                        ],
-                      ),
-                      Container(
-                        child: Flexible(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start ,
-                            children: [
-                              Text(
-                                widget.plantillaDriver!.title!,
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                    color: GradiantV_2,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w900),
-                              ),
-                              Text(
-                                widget.plantillaDriver!.description,
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ],
+                ),
               ),
-              width: 320,
-              padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                      color: Colors.white38,
-                      blurRadius: 24,
-                      spreadRadius: 1,
-                      offset: Offset(0, 0)),
-                  BoxShadow(
-                      color: Colors.black,
-                      blurRadius: 20,
-                      spreadRadius: 2,
-                      offset: Offset(5, 5)),
-                ],
-                color: widget.plantillaDriver!.color,
-                borderRadius: BorderRadius.circular(20),
+
+              SizedBox(height: 12),
+
+              Text(
+                widget.plantillaDriver!.title!,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(fontSize: 15),
               ),
-            ),
+
+              SizedBox(height: 6),
+
+              Text(
+                widget.plantillaDriver!.description,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 12),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      )
+
     );
   }
 }

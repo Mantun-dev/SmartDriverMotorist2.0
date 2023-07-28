@@ -12,9 +12,11 @@ import 'package:flutter_auth/Drivers/models/DriverData.dart';
 import 'package:flutter_auth/Drivers/models/countNotify.dart';
 import 'package:flutter_auth/Drivers/models/network.dart';
 import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
+import 'package:flutter_auth/components/backgroundH.dart';
 import 'package:flutter_auth/main.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:quickalert/quickalert.dart';
+import '../../../components/AppBarSuperior.dart';
 import '../../../constants.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' show json;
@@ -75,12 +77,16 @@ class _HomeDriverScreenState extends State<HomeDriverScreen>
 
   Widget build(BuildContext context) {
     super.build(context);
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: backgroundColor,
-        appBar: buildAppBar(context),
-        body: Body(),
-        drawer: DriverMenuLateral(),
+    return BackgroundHome(
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: PreferredSize(
+                    preferredSize: Size.fromHeight(56),
+                    child: AppBarSuperior(item: 0,)
+                  ),
+          body: Body(),
+        ),
       ),
     );
   }

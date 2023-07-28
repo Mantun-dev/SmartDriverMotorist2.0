@@ -16,7 +16,14 @@ class PreferenciasUsuario {
     this._prefs = await SharedPreferences.getInstance();
   }
 
+  // GET y SET del tema
+  bool get tema {
+    return _prefs.getBool('tema') ?? false;
+  }
 
+  set tema(bool value) {
+    _prefs.setBool('tema', value);
+  }
 
   // GET y SET del nombreUsuario
   String get nombreUsuario {

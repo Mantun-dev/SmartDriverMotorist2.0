@@ -62,7 +62,7 @@ List<PlantillaDriver> plantillaDriver = [
       title: "Viajes ejecutivos",
       name: '234',
       size: 20,
-      description: dummyText4,
+      description: dummyText5,
       image: "assets/images/ejecutivo.png",
       imageMain: "assets/images/clipboard.svg",
       color: backgroundColor),
@@ -71,18 +71,20 @@ List<PlantillaDriver> plantillaDriver = [
       title: "Registrar viaje sólido",
       name: '234',
       size: 20,
-      description: dummyText3,
+      description: dummyText6,
       image: "assets/images/adduser.png",
       imageMain: "assets/images/adduser.svg",
       color: backgroundColor),
 ];
 
-String dummyText = "Asigna las horas de encuentro a tus viajes disponibles";
+String dummyText = "Programa encuentros en tus viajes";
 
-String dummyText2 = "Revisa los viajes que estas realizando";
+String dummyText2 = "Revisa tus viajes en curso";
 
-String dummyText3 = "Registra un viaje de salida.";
+String dummyText3 = "Registra tus viajes de salida";
 
-String dummyText4 = "Revisa tus viaje realizados";
+String dummyText4 = "Revisa tus viajes realizados";
 
-String dummyText5 = "prueba 5 we";
+String dummyText5 = "Revisa tu programación";
+
+String dummyText6 = "prueba 5 we";

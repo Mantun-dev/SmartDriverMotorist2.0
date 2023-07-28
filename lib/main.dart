@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:event_bus/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/agents_Trip.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
@@ -12,6 +13,7 @@ import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:upgrader/upgrader.dart';
 import 'Drivers/SharePreferences/preferencias_usuario.dart';
+import 'components/Tema.dart';
 
 class MyHttpoverrides extends HttpOverrides {
   @override
@@ -70,6 +72,13 @@ class _MyAppState extends State<MyApp> {
             ?.push(MaterialPageRoute(builder: (_) => MyAgent()));
       }
     });
+
+    eventBus.on<ThemeChangeEvent>().listen((event) {
+      // Actualizar el estado o realizar acciones según el evento recibido
+      setState(() { 
+        prefs.tema = !prefs.tema;
+      });
+    });
   }
 
   @override
@@ -82,10 +91,7 @@ class _MyAppState extends State<MyApp> {
         navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
         title: 'Smart Driver',
-        theme: ThemeData(
-          primaryColor: kPrimaryColor,
-          scaffoldBackgroundColor: Colors.white,
-        ),
+        theme: prefs.tema!=true? appThemeDataLight : appThemeDataDark,
         //home: WelcomeScreen(),
         initialRoute: prefs.nombreUsuario == null || prefs.nombreUsuario == ""
             ? 'login'
@@ -106,4 +112,12 @@ Future<dynamic> showMyDialog() {
     title: "¡Advertencia!",
     text: "El agente seleccionado ya está agregado al viaje",
   );
+}
+
+EventBus eventBus = EventBus();
+
+class ThemeChangeEvent {
+  final bool newTheme;
+
+  ThemeChangeEvent(this.newTheme);
 }

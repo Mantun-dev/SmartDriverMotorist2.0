@@ -28,12 +28,15 @@ class Body extends StatefulWidget {
 
 class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
   Future<DriverData>? itemx;
+  FocusNode _focusNode = FocusNode();
+  bool isMenuOpen = false;
 
   @override
   void initState() {
     super.initState();
     //_initPackageInfo();
     itemx = fetchRefres();
+     _focusNode.addListener(_onFocusChange);
     // SchedulerBinding.instance.addPostFrameCallback((_) {
     //   if (mounted) {
     //     setState(() {
@@ -42,6 +45,17 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
     //     });
     //   }
     // });
+  }
+
+  void _onFocusChange() {
+    if (_focusNode.hasFocus) {
+      // TextField está en foco
+      isMenuOpen=true;
+    } else {
+      // TextField ya no está en foco
+      isMenuOpen=false;
+    }
+    setState(() { });
   }
 
   fetchVersion() async {
@@ -152,176 +166,221 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          SizedBox(
-            height: 20,
-          ),
-          //texto inicial
-          Text(
-            "Smart Driver",
-            style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                fontWeight: FontWeight.bold, fontSize: 28, color: firstColor),
-          ),
-          FutureBuilder<DriverData>(
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  if (snapshot.data!.departmentId != 2) {
-                    return Expanded(
-                      child: GridView.builder(
-                          shrinkWrap: true,
-                          itemCount: plantillaDriver.length - 1,
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 1,
-                            mainAxisExtent: kDefaultPadding * 10,
-                          ),
-                          itemBuilder: (context, index) => Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 20.0, bottom: 20.0),
-                                child: ItemDriverCard(
-                                    plantillaDriver: plantillaDriver[index],
-                                    press: () {
-                                      setPantallaP(0);
-                                      // si.method();
-                                      if (plantillaDriver[index] == plantillaDriver[0]) {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  DetailsDriverHour(
-                                                plantillaDriver:
-                                                    plantillaDriver[index],
-                                              ),
-                                            ));
-                                      } else if (plantillaDriver[index] == plantillaDriver[1]) {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  DetailsDriverTripInProgress(
-                                                plantillaDriver:
-                                                    plantillaDriver[index],
-                                              ),
-                                            ));
-                                      } else if (plantillaDriver[index] == plantillaDriver[2]) {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  DetailsDriverHoursOut(
-                                                plantillaDriver:
-                                                    plantillaDriver[index],
-                                              ),
-                                            ));
-                                      } else if (plantillaDriver[index] == plantillaDriver[3]) {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  DetailsDriverHistory(
-                                                plantillaDriver:
-                                                    plantillaDriver[index],
-                                              ),
-                                            ));
-                                      }else if (plantillaDriver[index].id == 5) {
-                                        _noDisponible(context);
-                                      }
-                                    }),
-                              )),
-                    );
-                  }else{
-                    return Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: kDefaultPadding),
-                        child: GridView.builder(
-                            itemCount: plantillaDriver.length,
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 1,
-                              mainAxisExtent: kDefaultPadding * 10,
-                            ),
-                            itemBuilder: (context, index) => Padding(
-                              padding: const EdgeInsets.only(
-                                    top: 20.0, bottom: 20.0),
-                              child: ItemDriverCard(
-                                  plantillaDriver: plantillaDriver[index],
-                                  press: () {
-                                    setPantallaP(0);
-                                    // si.method();
-                                    if (plantillaDriver[index] == plantillaDriver[0]) {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DetailsDriverHour(
-                                                  plantillaDriver:
-                                                      plantillaDriver[index],
-                                                ),
-                                              ));
-                                        } else if (plantillaDriver[index] == plantillaDriver[1]) {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DetailsDriverTripInProgress(
-                                                  plantillaDriver:
-                                                      plantillaDriver[index],
-                                                ),
-                                              ));
-                                        } else if (plantillaDriver[index] == plantillaDriver[2]) {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DetailsDriverHoursOut(
-                                                  plantillaDriver:
-                                                      plantillaDriver[index],
-                                                ),
-                                              ));
-                                        } else if (plantillaDriver[index] == plantillaDriver[3]) {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DetailsDriverHistory(
-                                                  plantillaDriver:
-                                                      plantillaDriver[index],
-                                                ),
-                                              ));
-                                        }else if (plantillaDriver[index].id == 5) {
-                                          _noDisponible(context);
-                                        }else if (plantillaDriver[index].id == 6) {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DetailsSolidTrip(
-                                                  plantillaDriver:
-                                                      plantillaDriver[index],
-                                                ),
-                                              ));
-                                        }
-                                  }),
-                            )),
-                      ),
-                    );
-                  }
-                } else {
-                  return Container(
-                    height: 200,
-                    child: Center(
-                      child: CircularProgressIndicator(),
+    Size size = MediaQuery.of(context).size;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _focusNode.unfocus();
+        });
+      },
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: 700.0, // Aquí defines el ancho máximo deseado
+        ),
+        child: Container(
+          height: size.height,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+      
+                //texto inicial
+                Padding(
+                  padding: EdgeInsets.only(top: 25.0),
+                  child: Text(
+                    'Hola, ${prefs.nombreUsuarioFull}',
+                    style: Theme.of(context).textTheme.titleLarge,
                     ),
-                  );
-                }
-              },
-              future: itemx),
-          //Positioned(child: Icon(Icons.brightness_1)),
-        ],
+                  ),
+      
+                SizedBox(height: 15),      
+      
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: FutureBuilder<DriverData>(
+                        future: itemx,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          if (snapshot.data!.departmentId != 2) {
+                            return Column(
+                              children: [
+                                GridView.count(
+                                  crossAxisCount: 2,
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                    children: List.generate(4, (index) {
+                                      return Padding(
+                                          padding: const EdgeInsets.only(right: 8.0, left: 8, bottom: 8),
+                                          child: ItemDriverCard(
+                                              plantillaDriver: plantillaDriver[index],
+                                              press: () {
+                                                setPantallaP(0);
+                                                // si.method();
+                                                if (plantillaDriver[index] == plantillaDriver[0]) {
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            DetailsDriverHour(
+                                                          plantillaDriver:
+                                                              plantillaDriver[index],
+                                                        ),
+                                                      ));
+                                                } else if (plantillaDriver[index] == plantillaDriver[1]) {
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            DetailsDriverTripInProgress(
+                                                          plantillaDriver:
+                                                              plantillaDriver[index],
+                                                        ),
+                                                      ));
+                                                } else if (plantillaDriver[index] == plantillaDriver[2]) {
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            DetailsDriverHoursOut(
+                                                          plantillaDriver:
+                                                              plantillaDriver[index],
+                                                        ),
+                                                      ));
+                                                } else if (plantillaDriver[index] == plantillaDriver[3]) {
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            DetailsDriverHistory(
+                                                          plantillaDriver:
+                                                              plantillaDriver[index],
+                                                        ),
+                                                      ));
+                                                }
+                                              }),
+                                        );
+                                    }),
+                                  ),
+                                  Center(
+                                    child: ItemDriverCard(
+                                      plantillaDriver: plantillaDriver[4],
+                                      viajeSolido: true,
+                                      press: () {
+                                        _noDisponible(context);
+                                      },
+                                    ),
+                                  ),
+                              ],
+                            );
+                          }else{
+                            return GridView.count(
+                                  crossAxisCount: 2,
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                children: List.generate(plantillaDriver.length, (index) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(right: 8.0, left: 8, bottom: 8),
+                                    child: ItemDriverCard(
+                                      viajeSolido: false,
+                                        plantillaDriver: plantillaDriver[index],
+                                        press: () {
+                                          setPantallaP(0);
+                                          // si.method();
+                                          if (plantillaDriver[index] == plantillaDriver[0]) {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          DetailsDriverHour(
+                                                        plantillaDriver:
+                                                            plantillaDriver[index],
+                                                      ),
+                                                    ));
+                                              } else if (plantillaDriver[index] == plantillaDriver[1]) {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          DetailsDriverTripInProgress(
+                                                        plantillaDriver:
+                                                            plantillaDriver[index],
+                                                      ),
+                                                    ));
+                                              } else if (plantillaDriver[index] == plantillaDriver[2]) {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          DetailsDriverHoursOut(
+                                                        plantillaDriver:
+                                                            plantillaDriver[index],
+                                                      ),
+                                                    ));
+                                              } else if (plantillaDriver[index] == plantillaDriver[3]) {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          DetailsDriverHistory(
+                                                        plantillaDriver:
+                                                            plantillaDriver[index],
+                                                      ),
+                                                    ));
+                                              }else if (plantillaDriver[index].id == 5) {
+                                                _noDisponible(context);
+                                              }else if (plantillaDriver[index].id == 6) {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          DetailsSolidTrip(
+                                                        plantillaDriver:
+                                                            plantillaDriver[index],
+                                                      ),
+                                                    ));
+                                              }
+                                        }),
+                                  );
+                                })
+                              );
+                          }
+                        } else {
+                          return WillPopScope(
+                            onWillPop: () async => false,
+                            child: SimpleDialog(
+                               elevation: 20,
+                              backgroundColor: Theme.of(context).cardColor,
+                              children: [
+                                Center(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Padding(
+                                        padding: EdgeInsets.only(left: 16, top: 16, right: 16),
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(16),
+                                        child: Text(
+                                          'Cargando menú...', 
+                                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18),
+                                          ),
+                                      )
+                                    ],
+                                  ),
+                                )
+                              ] ,
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                ),
+                //Positioned(child: Icon(Icons.brightness_1)),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
