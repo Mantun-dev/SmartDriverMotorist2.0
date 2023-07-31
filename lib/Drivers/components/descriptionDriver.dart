@@ -161,7 +161,7 @@ class _DriverDescriptionState extends State<DriverDescription>
   }
 
   fetchAgentsLeftPastToProgres( String hourOut, String nameVehicle) async {
-    prefs.vehiculo='ferrari';
+    
     http.Response responses = await http.get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
     final data = DriverData.fromJson(json.decode(responses.body));
     int? statusCodex;
