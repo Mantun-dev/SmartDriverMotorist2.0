@@ -195,6 +195,19 @@ class _DriverDescriptionState extends State<DriverDescription>
         http.Response response1 = await http.post(Uri.parse('https://driver.smtdriver.com/apis/registerDeparture/test'), body: datas);
         final send = Salida.fromJson(json.decode(response1.body));
         prefs.tripId = send.tripId!.tripId.toString();
+
+        DateTime fechaActual = DateTime.now();
+        String fechaFormateada = DateFormat('yyyy-MM-dd').format(fechaActual);
+
+        Map datas3 = {
+          "id": send.tripId!.tripId,
+          "NombreM": prefs.nombreUsuarioFull,
+          "idM": data.driverId,
+          "Company": prefs.companyId,
+          "Fecha": fechaFormateada,
+        };
+
+        await http.post(Uri.parse('https://apichat.smtdriver.com/api/salas'),body: datas3);
         for (var i = 0; i < tables.length; i++) {
           Map datas2 = {
             "agentId": tables[i]['idsend'].toString(),
@@ -1160,13 +1173,15 @@ class _DriverDescriptionState extends State<DriverDescription>
         prefs.tripId = send.trip!.tripId.toString();
 
         if (response1.statusCode == 200) {
+            DateTime fechaActual = DateTime.now();
+            String fechaFormateada = DateFormat('yyyy-MM-dd').format(fechaActual);
 
             Map datas3 = {
               "id": send.trip!.tripId,
-              "NombreM": prefs.nombreUsuario,
-              "idM": 81,
-              "Company": 1,
-              "Fecha": "2023-05-10",
+              "NombreM": prefs.nombreUsuarioFull,
+              "idM": si.driverId,
+              "Company": prefs.companyId,
+              "Fecha": fechaFormateada,
             };
 
             final sendDatas2 = await http.post(Uri.parse('https://apichat.smtdriver.com/api/salas'),body: datas3);
