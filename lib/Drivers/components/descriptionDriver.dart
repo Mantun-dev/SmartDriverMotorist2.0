@@ -195,6 +195,19 @@ class _DriverDescriptionState extends State<DriverDescription>
         http.Response response1 = await http.post(Uri.parse('https://driver.smtdriver.com/apis/registerDeparture/test'), body: datas);
         final send = Salida.fromJson(json.decode(response1.body));
         prefs.tripId = send.tripId!.tripId.toString();
+
+        DateTime fechaActual = DateTime.now();
+        String fechaFormateada = DateFormat('yyyy-MM-dd').format(fechaActual);
+
+        Map datas3 = {
+          "id": send.tripId!.tripId,
+          "NombreM": prefs.nombreUsuarioFull,
+          "idM": data.driverId,
+          "Company": prefs.companyId,
+          "Fecha": fechaFormateada,
+        };
+
+        await http.post(Uri.parse('https://apichat.smtdriver.com/api/salas'),body: datas3);
         for (var i = 0; i < tables.length; i++) {
           Map datas2 = {
             "agentId": tables[i]['idsend'].toString(),
@@ -1159,16 +1172,30 @@ class _DriverDescriptionState extends State<DriverDescription>
         final send = TripsToSolid.fromJson(json.decode(response1.body));
         prefs.tripId = send.trip!.tripId.toString();
 
-        for (var i = 0; i < tables.length; i++) {
-          Map datas2 = {
-            "agentId": tables[i]['idsend'].toString(),
-            "tripId": send.trip!.tripId.toString(),
-            "tripHour": send.trip!.tripHour.toString(),
-            "driverId":data.driverId.toString()
-          };
+        if (response1.statusCode == 200) {
+            DateTime fechaActual = DateTime.now();
+            String fechaFormateada = DateFormat('yyyy-MM-dd').format(fechaActual);
 
-          if (response1.statusCode == 200) {
+            Map datas3 = {
+              "id": send.trip!.tripId,
+              "NombreM": prefs.nombreUsuarioFull,
+              "idM": si.driverId,
+              "Company": prefs.companyId,
+              "Fecha": fechaFormateada,
+            };
+
+            final sendDatas2 = await http.post(Uri.parse('https://apichat.smtdriver.com/api/salas'),body: datas3);
+
+            for (var i = 0; i < tables.length; i++) {
+            Map datas2 = {
+              "agentId": tables[i]['idsend'].toString(),
+              "tripId": send.trip!.tripId.toString(),
+              "tripHour": send.trip!.tripHour.toString(),
+              "driverId":data.driverId.toString()
+            };
+
             final sendDatas = await http.post(Uri.parse('$ip/apis/registerAgentForOutTrip'),body: datas2);
+              
             print(sendDatas.body);
             Navigator.pop(context);
             Navigator.push(context,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
@@ -1180,10 +1207,11 @@ class _DriverDescriptionState extends State<DriverDescription>
               type: QuickAlertType.success,
             );  
             this.handler!.cleanTableAgent();
-          } else {
-            throw Exception('Failed to load Data');
           }
+        } else {
+          throw Exception('Failed to load Data');
         }
+
       } else {
         Map datas = {
           'companyId': prefs.companyId,
