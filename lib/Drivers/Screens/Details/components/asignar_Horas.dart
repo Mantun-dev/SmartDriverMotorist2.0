@@ -42,56 +42,55 @@ class _AsignarHorasState extends State<AsignarHoras> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: FutureBuilder<List<TripsCompanies>>(
-        future: itemx,
-        builder: (BuildContext context, abc) {
-          if (abc.connectionState == ConnectionState.done) {
-            if (abc.data!.length < 1) {
-              return Column(
-                children: [
-        
-                  SizedBox(height: 15),
-                  Center(
-                    child: Text(
-                      'No hay viajes pendientes',
-                      style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 16),
-                    ),
-                  ),
-                  SizedBox(height: 5),
-                  Container(
-                    height: 1,
-                    color: Theme.of(context).dividerColor,
-                  ),
-                  
-                ],
-              );
-            } else {
-              return ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  physics: ClampingScrollPhysics(),
-                  itemCount: abc.data!.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(left: 12, right: 12, top: 30, bottom: 20),
-                      child: InkWell(
-                        onTap: () {
-                          fetchTravelInTrip(
-                              abc.data![index].companyId.toString());
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15.0),
-                            border: Border.all(
-                              color: Theme.of(context).dividerColor, // Color del borde
-                              width: 1.0,         // Ancho del borde
-                            ),
-                          ),
-                          child: Column(
-                            children: [
+    return Column(
+      children: [
+        SizedBox(height: 30),
+        Container(
+          child: FutureBuilder<List<TripsCompanies>>(
+            future: itemx,
+            builder: (BuildContext context, abc) {
+              if (abc.connectionState == ConnectionState.done) {
+                if (abc.data!.length < 1) {
+                  return Column(
+                    children: [
 
-                              Padding(
+                      Center(
+                        child: Text(
+                          'No hay viajes pendientes',
+                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 16),
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      Container(
+                        height: 1,
+                        color: Theme.of(context).dividerColor,
+                      ),
+                      
+                    ],
+                  );
+                } else {
+                  return ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      physics: ClampingScrollPhysics(),
+                      itemCount: abc.data!.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.only(left: 15, right: 15,bottom: 18),
+                          child: InkWell(
+                            onTap: () {
+                              fetchTravelInTrip(
+                                  abc.data![index].companyId.toString());
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15.0),
+                                border: Border.all(
+                                  color: Theme.of(context).dividerColor, // Color del borde
+                                  width: 1.0,         // Ancho del borde
+                                ),
+                              ),
+                              child: Padding(
                                 padding: const EdgeInsets.all(10.0),
                                 child: Row(
                                   crossAxisAlignment : CrossAxisAlignment.end,
@@ -182,44 +181,44 @@ class _AsignarHorasState extends State<AsignarHoras> {
                                   ],
                                 ),
                               ),
-                            ],
+                            ),
                           ),
-                        ),
-                      ),
-                    );
-                  });
-            }
-          } else {
-            return WillPopScope(
-                    onWillPop: () async => false,
-                    child: SimpleDialog(
-                      elevation: 20,
-                      backgroundColor: Theme.of(context).cardColor,
-                      children: [
-                        Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Padding(
-                                padding: EdgeInsets.only(left: 16, top: 16, right: 16),
-                                child: CircularProgressIndicator(),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(16),
-                                child: Text(
-                                  'Cargando...', 
-                                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18),
+                        );
+                      });
+                }
+              } else {
+                return WillPopScope(
+                        onWillPop: () async => false,
+                        child: SimpleDialog(
+                          elevation: 20,
+                          backgroundColor: Theme.of(context).cardColor,
+                          children: [
+                            Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.only(left: 16, top: 16, right: 16),
+                                    child: CircularProgressIndicator(),
                                   ),
-                              )
-                            ],
-                          ),
-                        )
-                      ] ,
-                    ),
-                  );
-          }
-        },
-      ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Text(
+                                      'Cargando...', 
+                                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18),
+                                      ),
+                                  )
+                                ],
+                              ),
+                            )
+                          ] ,
+                        ),
+                      );
+              }
+            },
+          ),
+        ),
+      ],
     );
   }
 }
