@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert' show json;
 
 import '../Drivers/Screens/Details/components/detailsDriver_assignHour.dart';
 import '../Drivers/Screens/Details/components/details_TripProgress.dart';

@@ -10,7 +10,6 @@ import '../Drivers/Screens/Details/components/details_HoursOut.dart';
 import '../Drivers/Screens/Details/components/details_TripProgress.dart';
 import '../Drivers/Screens/Details/components/details_history.dart';
 import '../Drivers/Screens/DriverProfile/driverProfile.dart';
-import '../Drivers/Screens/HomeDriver/components/itemDriver_Card.dart';
 import '../Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 import '../Drivers/Screens/Welcome/welcome_screen.dart';
 import '../Drivers/SharePreferences/preferencias_usuario.dart';
@@ -105,7 +104,35 @@ class _AppBarSuperior extends State<AppBarSuperior> {
             ),
           ),
 
-        if(item==6)
+          if(item==1)
+            Expanded(
+              child: Center(
+                child: Text(
+                  "Compañías",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.normal,
+                    fontSize: 21
+                  ),
+                ),
+              ),
+            ),
+
+          if(item==11)
+            Expanded(
+              child: Center(
+                child: Text(
+                  "Horas de encuentro",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.normal,
+                    fontSize: 21
+                  ),
+                ),
+              ),
+            ),
+
+        if(item==7)
           Expanded(
             child: Center(
               child: Text(

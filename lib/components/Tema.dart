@@ -18,7 +18,7 @@ final ThemeData appThemeDataLight = ThemeData(
   highlightColor: Colors.transparent,
 
   disabledColor: Color.fromRGBO(238, 238, 238, 1),
-  dividerColor: Color.fromRGBO(158, 158, 158, 1),
+  dividerColor: Color.fromRGBO(214, 214, 214, 1),
   splashColor: Color.fromRGBO(158, 158, 158, 1),
 
   shadowColor: Color.fromRGBO(158, 158, 158, 0.18),

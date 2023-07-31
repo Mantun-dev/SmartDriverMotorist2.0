@@ -6,7 +6,11 @@ import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart'
 import 'package:flutter_auth/Drivers/components/menu_lateralDriver.dart';
 
 import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
+import 'package:flutter_auth/components/AppBarPosterior.dart';
+import 'package:flutter_auth/components/AppBarSuperior.dart';
 import 'package:flutter_auth/constants.dart';
+
+import '../../../../components/backgroundB.dart';
 //import 'package:flutter/scheduler.dart';
 
 class DetailsDriverHour extends StatefulWidget {
@@ -23,45 +27,28 @@ class _DetailsDriverHourState extends State<DetailsDriverHour> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // each product have a color
-
-      drawer: DriverMenuLateral(),
-      appBar: buildAppBar(context),
-      body: Container(
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-          begin: Alignment.topRight,
-          end: Alignment.topLeft,
-          colors: [Gradiant2, GradiantV1],
-        )),
-        child: GestureDetector(
-            onTap: () {
-              FocusScope.of(context).requestFocus(new FocusNode());
-            },
-            child: Body(plantillaDriver: widget.plantillaDriver)),
+    return BackgroundBody(
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+                  appBar: PreferredSize(
+                    preferredSize: Size.fromHeight(56),
+                    child: AppBarSuperior(item: 1,)
+                  ),
+                  body: Column(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                        onTap: () {
+                          FocusScope.of(context).requestFocus(new FocusNode());
+                        },
+                        child: Body(plantillaDriver: widget.plantillaDriver)),
+                      ),
+                      SafeArea(child: AppBarPosterior(item:-1)),
+                    ],
+                  ),
+                ),
       ),
-
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-    );
-  }
-
-  AppBar buildAppBar(BuildContext context) {
-    return AppBar(
-      backgroundColor: backgroundColor,
-      elevation: 10,
-      actions: <Widget>[
-        IconButton(
-          icon: Icon(Icons.arrow_circle_left),
-          onPressed: () {
-            Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => HomeDriverScreen()),
-                (Route<dynamic> route) => false);
-          },
-        ),
-        SizedBox(width: kDefaultPadding / 2)
-      ],
     );
   }
 }
