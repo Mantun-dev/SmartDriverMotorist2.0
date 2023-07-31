@@ -7,8 +7,8 @@ import 'package:flutter_auth/Drivers/Screens/HomeDriver/components/itemDriver_Ca
 import 'package:flutter_auth/Drivers/models/DriverData.dart';
 import 'package:flutter_auth/Drivers/models/network.dart';
 import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../../../constants.dart';
 import 'package:package_info/package_info.dart';
 
 import '../../../../main.dart';
@@ -16,6 +16,7 @@ import '../../Details/components/detailsDriver_assignHour.dart';
 import '../../Details/components/details_HoursOut.dart';
 import '../../Details/components/details_TripProgress.dart';
 import '../../Details/components/details_history.dart';
+import '../../DriverProfile/driverProfile.dart';
 //import 'package:new_version/new_version.dart';
 
 class Body extends StatefulWidget {
@@ -30,6 +31,9 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
   Future<DriverData>? itemx;
   FocusNode _focusNode = FocusNode();
   bool isMenuOpen = false;
+  List<dynamic>? ventanas;
+  List<dynamic>? ventanas2;
+  TextEditingController buscarText = TextEditingController();
 
   @override
   void initState() {
@@ -45,6 +49,46 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
     //     });
     //   }
     // });
+
+
+    ventanas=[
+        {
+          'nombre': 'Asignar horas de encuentro',
+          'icono': 'assets/icons/asignar_viajes.svg',
+          'ruta': 0,
+        },
+        {
+          'nombre': 'Viajes en proceso',
+          'icono': 'assets/icons/viaje_proceso.svg',
+          'ruta': 1,
+        },
+        {
+          'nombre': 'Registrar salidas',
+          'icono': 'assets/icons/QR.svg',
+          'ruta': 2,
+        },
+        {
+          'nombre': 'Historial de viajes',
+          'icono': 'assets/icons/historial_de_viaje.svg',
+          'ruta': 3,
+        },
+        {
+          'nombre': 'Viajes ejecutivos',
+          'icono': 'assets/icons/ejecutivo.svg',
+          'ruta': 4,
+        },
+        {
+          'nombre': 'Chats',
+          'icono': 'assets/icons/chats.svg',
+          'ruta': 5,
+        },
+        {
+          'nombre': 'Perfil',
+          'icono': 'assets/icons/usuario2.svg',
+          'ruta': 6,
+        },
+    ];
+    ventanas2=ventanas;
   }
 
   void _onFocusChange() {
@@ -192,6 +236,59 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                     style: Theme.of(context).textTheme.titleLarge,
                     ),
                   ),
+
+                  SizedBox(height: 25),      
+          
+                ventanas2!=null?
+                Padding(
+                  padding: const EdgeInsets.only(right: 12, left: 12),
+                  child: Stack(
+                    children: [
+                      if(isMenuOpen==true && ventanas2!.length>0)
+                        Padding(
+                          padding: const EdgeInsets.only(top:40.0),
+                          child: menu(size, context),
+                        ),
+    
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).cardColor,
+                          borderRadius: BorderRadius.circular(10.0),
+                          border: Border.all(
+                            width: 2,
+                            color: Theme.of(context).disabledColor
+                          )
+                        ),
+                        child: TextField(
+                          style: Theme.of(context).textTheme.bodyMedium,
+                          controller: buscarText,
+                          onChanged: (value) {
+
+                            if(value.isEmpty)
+                              ventanas2=ventanas;
+                            else
+                              ventanas2=ventanas!.where((ventana) {
+                                String nombre = ventana['nombre'].toString().toLowerCase();
+                                return nombre.contains(value.toLowerCase());
+                              }).toList();
+
+                            setState(() {});
+                          },
+                          focusNode: _focusNode,
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(Icons.search, color: Theme.of(context).primaryIconTheme.color),
+                            hintText: 'Buscar',
+                            hintStyle: TextStyle(
+                              color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto'
+                            ),
+                            border: InputBorder.none,
+                          ),
+                        ),
+                      ),
+                      
+                    ],
+                  ),
+                ):Text(''),
       
                 SizedBox(height: 15),      
       
@@ -438,6 +535,169 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
         pageBuilder: (context, animation1, animation2) {
           return Text('');
         });
+  }
+
+  Container menu(size, contextP) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(30.0),
+          bottomRight: Radius.circular(30.0),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 30),
+        child: Padding(
+          padding: const EdgeInsets.only(top: 20.0),
+          child: Column(
+            children: ventanas2!.asMap().entries.map((entry) {
+              dynamic ventana = entry.value;
+              String nombre = ventana['nombre'];
+              String icono = ventana['icono'];
+              int index = ventana['ruta'];
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 2),
+                child: GestureDetector(
+                  onTap: () {
+                    rutas(index);
+                  },
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            width: 25,
+                            height: 25,
+                            child: SvgPicture.asset(
+                              icono,
+                              color: Theme.of(context).primaryIconTheme.color,
+                            ),
+                          ),
+                          SizedBox(width: 5),
+                          Text(
+                            nombre,
+                            style: Theme.of(context).textTheme.titleMedium!.copyWith(fontSize: 15, fontWeight: FontWeight.normal),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 12)
+                    ],
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void rutas(int i){
+    switch(i){
+      case 0:
+        Navigator.push(
+          context,
+          PageRouteBuilder(
+            transitionDuration: Duration(milliseconds: 200 ), // Adjust the animation duration as needed
+            pageBuilder: (_, __, ___) => DetailsDriverHour(plantillaDriver: plantillaDriver[0]),
+            transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+              return SlideTransition(
+                position: Tween<Offset>(
+                  begin: Offset(1.0, 0.0),
+                  end: Offset.zero,
+                ).animate(animation),
+                child: child,
+              );
+            },
+          ),
+        ); 
+      break;
+        
+      case 1:
+        Navigator.push(
+          context,
+          PageRouteBuilder(
+            transitionDuration: Duration(milliseconds: 200 ), // Adjust the animation duration as needed
+            pageBuilder: (_, __, ___) => DetailsDriverTripInProgress(plantillaDriver: plantillaDriver[1]),
+            transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+              return SlideTransition(
+                position: Tween<Offset>(
+                  begin: Offset(1.0, 0.0),
+                  end: Offset.zero,
+                ).animate(animation),
+                child: child,
+              );
+            },
+          ),
+        ); 
+      break;
+
+      case 2:
+        Navigator.push(
+          context,
+          PageRouteBuilder(
+            transitionDuration: Duration(milliseconds: 200 ), // Adjust the animation duration as needed
+            pageBuilder: (_, __, ___) => DetailsDriverHoursOut(plantillaDriver: plantillaDriver[2]),
+            transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+              return SlideTransition(
+                position: Tween<Offset>(
+                  begin: Offset(1.0, 0.0),
+                  end: Offset.zero,
+                ).animate(animation),
+                child: child,
+              );
+            },
+          ),
+        );
+      break;
+
+      case 3:
+        Navigator.push(
+          context,
+          PageRouteBuilder(
+            transitionDuration: Duration(milliseconds: 200 ), // Adjust the animation duration as needed
+            pageBuilder: (_, __, ___) => DetailsDriverHistory(plantillaDriver: plantillaDriver[3]),
+            transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+              return SlideTransition(
+                position: Tween<Offset>(
+                  begin: Offset(1.0, 0.0),
+                  end: Offset.zero,
+                ).animate(animation),
+                child: child,
+              );
+            },
+          ),
+        );
+      break;
+
+      case 4:
+        _noDisponible(context);
+      break;
+
+      case 5:
+      
+      break;
+        
+      case 6:
+        Navigator.push(
+          context,
+          PageRouteBuilder(
+            transitionDuration: Duration(milliseconds: 200 ), // Adjust the animation duration as needed
+            pageBuilder: (_, __, ___) => DriverProfilePage(),
+            transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+              return SlideTransition(
+                position: Tween<Offset>(
+                  begin: Offset(1.0, 0.0),
+                  end: Offset.zero,
+                ).animate(animation),
+                child: child,
+              );
+            },
+          ),
+        );
+      break;
+    }
   }
 
   @override

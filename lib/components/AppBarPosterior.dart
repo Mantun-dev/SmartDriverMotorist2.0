@@ -231,7 +231,7 @@ class _AppBarPosterior extends State<AppBarPosterior> {
                                                           ),
                                                         ),
                                                       ),
-                                                      SizedBox(width: 15),
+                                                      SizedBox(width: 20),
                                                       Container(
                                                         width: 18,
                                                         height: 18,
@@ -288,7 +288,7 @@ class _AppBarPosterior extends State<AppBarPosterior> {
                                                           ),
                                                         ),
                                                       ),
-                                                      SizedBox(width: 15),
+                                                      SizedBox(width: 20),
                                                       Container(
                                                         width: 18,
                                                         height: 18,

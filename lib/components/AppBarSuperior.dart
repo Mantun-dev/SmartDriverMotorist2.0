@@ -105,109 +105,11 @@ class _AppBarSuperior extends State<AppBarSuperior> {
             ),
           ),
 
-        if(item==1)
+        if(item==6)
           Expanded(
             child: Center(
               child: Text(
                 "Datos personales",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.normal,
-                  fontSize: 21
-                ),
-              ),
-            ),
-          ),
-
-          if(item==2)
-          Expanded(
-            child: Center(
-              child: Text(
-                "Próximos viajes",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.normal,
-                  fontSize: 21
-                ),
-              ),
-            ),
-          ),
-
-          if(item==3)
-          Expanded(
-            child: Center(
-              child: Text(
-                "Historial de viajes",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.normal,
-                  fontSize: 21
-                ),
-              ),
-            ),
-          ),
-
-          if(item==4)
-          Expanded(
-            child: Center(
-              child: Text(
-                "Código QR",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.normal,
-                  fontSize: 21
-                ),
-              ),
-            ),
-          ),
-
-          if(item==5)
-          Expanded(
-            child: Center(
-              child: Text(
-                "Solicitud de cambios",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.normal,
-                  fontSize: 21
-                ),
-              ),
-            ),
-          ),
-
-          if(item==6)
-          Expanded(
-            child: Center(
-              child: Text(
-                "Salas",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.normal,
-                  fontSize: 21
-                ),
-              ),
-            ),
-          ),
-
-          if(item==7)
-          Expanded(
-            child: Center(
-              child: Text(
-                "Solicitudes Enviadas",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.normal,
-                  fontSize: 21
-                ),
-              ),
-            ),
-          ),
-
-          if(item==8)
-          Expanded(
-            child: Center(
-              child: Text(
-                "Notificaciones",
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.normal,
