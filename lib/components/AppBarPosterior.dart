@@ -209,8 +209,8 @@ class _AppBarPosterior extends State<AppBarPosterior> {
                                                   ),
                                                 ),
                                                 SizedBox(width: 20),
-                                                Text("Asignar horas de encuentro", style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20)),
-
+                                                Flexible(child: Text("Asignar horas de encuentro", style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18))),
+                                            
                                                 Expanded( // This widget will take up all the available space between the text and the right edge of the Row
                                                   child: Row(
                                                     mainAxisAlignment: MainAxisAlignment.end, // Align the red circle and the arrow to the right
@@ -255,50 +255,52 @@ class _AppBarPosterior extends State<AppBarPosterior> {
                                           },
                                           child: Padding(
                                             padding: const EdgeInsets.all(8.0),
-                                            child: Row(
-                                              children: [
-                                                Container(
-                                                  width: 18,
-                                                  height: 18,
-                                                  child: SvgPicture.asset(
-                                                    "assets/icons/viaje_proceso.svg",
-                                                    color: Theme.of(context).primaryIconTheme.color,
+                                            child: Flexible(
+                                              child: Row(
+                                                children: [
+                                                  Container(
+                                                    width: 18,
+                                                    height: 18,
+                                                    child: SvgPicture.asset(
+                                                      "assets/icons/viaje_proceso.svg",
+                                                      color: Theme.of(context).primaryIconTheme.color,
+                                                    ),
                                                   ),
-                                                ),
-                                                SizedBox(width: 20),
-                                                Text("Viajes en proceso", style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20)),
-
-                                                Expanded(
-                                                  child: Row(
-                                                    mainAxisAlignment: MainAxisAlignment.end,
-                                                    children: [
-                                                      Container(
-                                                        padding: EdgeInsets.symmetric(horizontal: 3, vertical: 0),
-                                                        decoration: BoxDecoration(
-                                                          shape: BoxShape.circle,
-                                                          color: Color.fromRGBO(178, 13, 13, 1),
-                                                        ),
-                                                        child: Padding(
-                                                          padding: const EdgeInsets.all(2.5),
-                                                          child: Text(
-                                                            '${abc.data![0].tripsInProgress}',
-                                                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, color: Colors.white),
+                                                  SizedBox(width: 20),
+                                                  Flexible(child: Text("Viajes en proceso", style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18))),
+                                            
+                                                  Expanded(
+                                                    child: Row(
+                                                      mainAxisAlignment: MainAxisAlignment.end,
+                                                      children: [
+                                                        Container(
+                                                          padding: EdgeInsets.symmetric(horizontal: 3, vertical: 0),
+                                                          decoration: BoxDecoration(
+                                                            shape: BoxShape.circle,
+                                                            color: Color.fromRGBO(178, 13, 13, 1),
+                                                          ),
+                                                          child: Padding(
+                                                            padding: const EdgeInsets.all(2.5),
+                                                            child: Text(
+                                                              '${abc.data![0].tripsInProgress}',
+                                                              style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, color: Colors.white),
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
-                                                      SizedBox(width: 20),
-                                                      Container(
-                                                        width: 18,
-                                                        height: 18,
-                                                        child: SvgPicture.asset(
-                                                          "assets/icons/flechader.svg",
-                                                          color: Theme.of(context).primaryIconTheme.color,
+                                                        SizedBox(width: 20),
+                                                        Container(
+                                                          width: 18,
+                                                          height: 18,
+                                                          child: SvgPicture.asset(
+                                                            "assets/icons/flechader.svg",
+                                                            color: Theme.of(context).primaryIconTheme.color,
+                                                          ),
                                                         ),
-                                                      ),
-                                                    ],
+                                                      ],
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
+                                                ],
+                                              ),
                                             ),
 
                                           ),

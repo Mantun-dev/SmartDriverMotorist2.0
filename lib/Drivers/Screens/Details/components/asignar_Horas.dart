@@ -93,91 +93,101 @@ class _AsignarHorasState extends State<AsignarHoras> {
                               child: Padding(
                                 padding: const EdgeInsets.all(10.0),
                                 child: Row(
-                                  crossAxisAlignment : CrossAxisAlignment.end,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Container(
-                                      height: 80,
-                                      width: 170,
-                                      child: Column(
-                                        children: [
-                                          if (abc.data![index].companyId == 1) ...{
-                                            Container(
-                                              height: 80,
-                                              width: 170,
-                                              child: SvgPicture.asset(
-                                                  "assets/images/Grupo11.svg"),
-                                            ),
-                                          },
-                                          if (abc.data![index].companyId ==
-                                                  2 ||
-                                              abc.data![index].companyId ==
-                                                  3) ...{
-                                            Container(
-                                              height: 80,
-                                              width: 170,
-                                              child: Image.asset(
-                                                  'assets/images/startek.webp'),
-                                            ),
-                                          },
-                                          if (abc.data![index].companyId ==
-                                              6) ...{
-                                            Container(
-                                              height: 80,
-                                              width: 170,
-                                              child: Image.asset(
-                                                  'assets/images/Alorica_Logo.png'),
-                                            ),
-                                          },
-                                          if (abc.data![index].companyId == 7) ...{
-                                            Container(
-                                              height: 80,
-                                              width: 170,
-                                              child: Image.asset(
-                                                  'assets/images/zero.png'),
-                                            ),
-                                          },
-                                          if (abc.data![index].companyId == 8) ...{
-                                            Container(
-                                              height: 80,
-                                              width: 170,
-                                              child: Image.asset(
-                                                  'assets/images/emerge-bpo-largex5-logo.png'),
-                                            ),
-                                          },
-                                          if (abc.data![index].companyId == 9) ...{
-                                            Container(
-                                              height: 80,
-                                              width: 170,
-                                              child: Image.asset(
-                                                  'assets/images/ibex-logo.jpg'),
-                                            ),
-                                          },
-                                          if (abc.data![index].companyId == 10) ...{
-                                            Container(
-                                              height: 80,
-                                              width: 170,
-                                              child: Image.asset(
-                                                  'assets/images/itel.jpg'),
-                                            ),
-                                          }
-                                        ],
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(left: 15),
+                                        child: Column(
+                                          children: [
+                                            if (abc.data![index].companyId == 1) ...{
+                                              Container(
+                                                height: 50,
+                                                child: SvgPicture.asset("assets/images/Grupo11.svg"),
+                                              ),
+                                            },
+                                            if (abc.data![index].companyId ==
+                                                    2 ||
+                                                abc.data![index].companyId ==
+                                                    3) ...{
+                                              Container(
+                                                height: 50,
+                                                child: Image.asset(
+                                                    'assets/images/startek.webp'
+                                                ),
+                                              ),
+                                            },
+                                            if (abc.data![index].companyId ==
+                                                6) ...{
+                                              Container(
+                                                height: 50,
+                                                child: Image.asset(
+                                                    'assets/images/Alorica_Logo.png'),
+                                              ),
+                                            },
+                                            if (abc.data![index].companyId == 7) ...{
+                                              Container(
+                                                height: 50,
+                                                child: Image.asset(
+                                                    'assets/images/zero.png'),
+                                              ),
+                                            },
+                                            if (abc.data![index].companyId == 8) ...{
+                                              Container(
+                                                height: 50,
+                                                child: Image.asset(
+                                                    'assets/images/emerge-bpo-largex5-logo.png'),
+                                              ),
+                                            },
+                                            if (abc.data![index].companyId == 9) ...{
+                                              Container(
+                                                height: 50,
+                                                child: Image.asset(
+                                                    'assets/images/ibex-logo.jpg'),
+                                              ),
+                                            },
+                                            if (abc.data![index].companyId == 10) ...{
+                                              Container(
+                                                height: 50,
+                                                child: Image.asset(
+                                                    'assets/images/itel.jpg'),
+                                              ),
+                                            }
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                    Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 10, vertical: 5),
-                                        margin: EdgeInsets.only(bottom: 25),
-                                        decoration: BoxDecoration(
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Container(
+                                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                          margin: EdgeInsets.only(bottom: 25),
+                                          decoration: BoxDecoration(
                                             shape: BoxShape.circle,
-                                            color: Colors.red),
-                                        child: Text(
-                                          '${abc.data![index].trips}',
-                                          style: TextStyle(
+                                            color: Color.fromRGBO(178, 13, 13, 1),
+                                          ),
+                                          child: Text(
+                                            '${abc.data![index].trips}',
+                                            style: TextStyle(
                                               color: Colors.white,
-                                              fontSize: 13),
-                                        )),
+                                              fontSize: 18,
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(width: 25),
+                                        Container(
+                                          width: 30,
+                                          height: 30,
+                                          child: SvgPicture.asset(
+                                            "assets/icons/flechader.svg",
+                                            color: Theme.of(context).primaryIconTheme.color,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ],
                                 ),
                               ),
