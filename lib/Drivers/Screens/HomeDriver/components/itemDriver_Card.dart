@@ -24,8 +24,9 @@ class _ItemDriverCardState extends State<ItemDriverCard> {
     return GestureDetector(
       onTap: widget.press,
       child: Padding(
-        padding: const EdgeInsets.only(bottom: 10, right: 12, left: 12),
+        padding: const EdgeInsets.only(right: 6, left: 6, bottom: 6),
         child: Container(
+
           decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(20),
@@ -38,14 +39,14 @@ class _ItemDriverCardState extends State<ItemDriverCard> {
             padding: const EdgeInsets.all(5),
             child: Column(
               children: [
-                 SizedBox(height: 12),
+      
                 Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).shadowColor,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  width: 60,
-                  height: 60,
+                  width: 70,
+                  height: 70,
                   child: Padding(
                     padding: const EdgeInsets.all(12.0),
                     child: SvgPicture.asset(
@@ -68,10 +69,9 @@ class _ItemDriverCardState extends State<ItemDriverCard> {
                 Text(
                   widget.plantillaDriver!.description,
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 12),
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 11),
                 ),
-                
-                 
+              
               ],
             ),
           ),

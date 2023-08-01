@@ -90,7 +90,7 @@ class _DriverMenuLateralState extends State<DriverMenuLateral> {
                   children: [
                     Icon(Icons.airport_shuttle, color: Colors.white),
                     SizedBox(width: 15,),
-                    Flexible(child: Text('Asignar horas de viaje',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
+                    Flexible(child: Text('Horas de encuentro',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
                   ],
                   ),
                 ),                       

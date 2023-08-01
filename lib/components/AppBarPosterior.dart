@@ -209,7 +209,7 @@ class _AppBarPosterior extends State<AppBarPosterior> {
                                                   ),
                                                 ),
                                                 SizedBox(width: 20),
-                                                Flexible(child: Text("Asignar horas de encuentro", style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18))),
+                                                Flexible(child: Text("Horas de encuentro", style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18))),
                                             
                                                 Expanded( // This widget will take up all the available space between the text and the right edge of the Row
                                                   child: Row(

@@ -53,7 +53,7 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
 
     ventanas=[
         {
-          'nombre': 'Asignar horas de encuentro',
+          'nombre': 'Horas de encuentro',
           'icono': 'assets/icons/asignar_viajes.svg',
           'ruta': 0,
         },
@@ -292,93 +292,26 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
       
                 SizedBox(height: 15),      
       
-                FutureBuilder<DriverData>(
-                      future: itemx,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        if (snapshot.data!.departmentId != 2) {
-                          return Column(
-                            children: [
-                              GridView.count(
-                                crossAxisCount: 2,
-                                shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
-                                  children: List.generate(4, (index) {
-                                    return ItemDriverCard(
-                                        plantillaDriver: plantillaDriver[index],
-                                        press: () {
-                                          setPantallaP(0);
-                                          // si.method();
-                                          if (plantillaDriver[index] == plantillaDriver[0]) {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      DetailsDriverHour(
-                                                    plantillaDriver:
-                                                        plantillaDriver[index],
-                                                  ),
-                                                ));
-                                          } else if (plantillaDriver[index] == plantillaDriver[1]) {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      DetailsDriverTripInProgress(
-                                                    plantillaDriver:
-                                                        plantillaDriver[index],
-                                                  ),
-                                                ));
-                                          } else if (plantillaDriver[index] == plantillaDriver[2]) {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      DetailsDriverHoursOut(
-                                                    plantillaDriver:
-                                                        plantillaDriver[index],
-                                                  ),
-                                                ));
-                                          } else if (plantillaDriver[index] == plantillaDriver[3]) {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      DetailsDriverHistory(
-                                                    plantillaDriver:
-                                                        plantillaDriver[index],
-                                                  ),
-                                                ));
-                                          }
-                                        });
-                                  }),
-                                ),
-                                Center(
-                                  child: ItemDriverCard(
-                                    plantillaDriver: plantillaDriver[4],
-                                    viajeSolido: true,
-                                    press: () {
-                                      _noDisponible(context);
-                                    },
-                                  ),
-                                ),
-                            ],
-                          );
-                        }else{
-                          return GridView.count(
-                                crossAxisCount: 2,
-                                shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
-                              children: List.generate(plantillaDriver.length, (index) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(right: 8.0, left: 8, bottom: 8),
-                                  child: ItemDriverCard(
-                                    viajeSolido: false,
-                                      plantillaDriver: plantillaDriver[index],
-                                      press: () {
-                                        setPantallaP(0);
-                                        // si.method();
-                                        if (plantillaDriver[index] == plantillaDriver[0]) {
+                Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: FutureBuilder<DriverData>(
+                        future: itemx,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          if (snapshot.data!.departmentId != 2) {
+                            return Column(
+                              children: [
+                                GridView.count(
+                                  crossAxisCount: 2,
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                    children: List.generate(5, (index) {
+                                      return ItemDriverCard(
+                                          plantillaDriver: plantillaDriver[index],
+                                          press: () {
+                                            setPantallaP(0);
+                                            // si.method();
+                                            if (plantillaDriver[index] == plantillaDriver[0]) {
                                               Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
@@ -418,55 +351,116 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                                                           plantillaDriver[index],
                                                     ),
                                                   ));
-                                            }else if (plantillaDriver[index].id == 5) {
-                                              _noDisponible(context);
-                                            }else if (plantillaDriver[index].id == 6) {
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        DetailsSolidTrip(
-                                                      plantillaDriver:
-                                                          plantillaDriver[index],
-                                                    ),
-                                                  ));
                                             }
-                                      }),
-                                );
-                              })
+                                          });
+                                    }),
+                                  ),
+                              ],
                             );
+                          }else{
+                            return GridView.count(
+                                  crossAxisCount: 2,
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                children: List.generate(plantillaDriver.length, (index) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(right: 8.0, left: 8, bottom: 8),
+                                    child: ItemDriverCard(
+                                      viajeSolido: false,
+                                        plantillaDriver: plantillaDriver[index],
+                                        press: () {
+                                          setPantallaP(0);
+                                          // si.method();
+                                          if (plantillaDriver[index] == plantillaDriver[0]) {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          DetailsDriverHour(
+                                                        plantillaDriver:
+                                                            plantillaDriver[index],
+                                                      ),
+                                                    ));
+                                              } else if (plantillaDriver[index] == plantillaDriver[1]) {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          DetailsDriverTripInProgress(
+                                                        plantillaDriver:
+                                                            plantillaDriver[index],
+                                                      ),
+                                                    ));
+                                              } else if (plantillaDriver[index] == plantillaDriver[2]) {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          DetailsDriverHoursOut(
+                                                        plantillaDriver:
+                                                            plantillaDriver[index],
+                                                      ),
+                                                    ));
+                                              } else if (plantillaDriver[index] == plantillaDriver[3]) {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          DetailsDriverHistory(
+                                                        plantillaDriver:
+                                                            plantillaDriver[index],
+                                                      ),
+                                                    ));
+                                              }else if (plantillaDriver[index].id == 5) {
+                                                _noDisponible(context);
+                                              }else if (plantillaDriver[index].id == 6) {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          DetailsSolidTrip(
+                                                        plantillaDriver:
+                                                            plantillaDriver[index],
+                                                      ),
+                                                    ));
+                                              }
+                                        }),
+                                  );
+                                })
+                              );
+                          }
+                        } else {
+                          return WillPopScope(
+                            onWillPop: () async => false,
+                            child: SimpleDialog(
+                               elevation: 20,
+                              backgroundColor: Theme.of(context).cardColor,
+                              children: [
+                                Center(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Padding(
+                                        padding: EdgeInsets.only(left: 16, top: 16, right: 16),
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(16),
+                                        child: Text(
+                                          'Cargando menú...', 
+                                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18),
+                                          ),
+                                      )
+                                    ],
+                                  ),
+                                )
+                              ] ,
+                            ),
+                          );
                         }
-                      } else {
-                        return WillPopScope(
-                          onWillPop: () async => false,
-                          child: SimpleDialog(
-                             elevation: 20,
-                            backgroundColor: Theme.of(context).cardColor,
-                            children: [
-                              Center(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const Padding(
-                                      padding: EdgeInsets.only(left: 16, top: 16, right: 16),
-                                      child: CircularProgressIndicator(),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(16),
-                                      child: Text(
-                                        'Cargando menú...', 
-                                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18),
-                                        ),
-                                    )
-                                  ],
-                                ),
-                              )
-                            ] ,
-                          ),
-                        );
-                      }
-                    },
-                  ),
+                      },
+                    ),
+                ),
                 //Positioned(child: Icon(Icons.brightness_1)),
               ],
             ),

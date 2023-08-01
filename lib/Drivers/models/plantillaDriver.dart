@@ -23,7 +23,7 @@ class PlantillaDriver {
 List<PlantillaDriver> plantillaDriver = [
   PlantillaDriver(
       id: 1,
-      title: "Asignar horas de encuentro",
+      title: "Horas de encuentro",
       name: 'Carlos',
       size: 20,
       description: dummyText,

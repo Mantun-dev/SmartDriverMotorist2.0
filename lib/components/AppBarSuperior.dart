@@ -359,7 +359,7 @@ class _AppBarSuperior extends State<AppBarSuperior> {
                                                 color: prefs.tema ? Colors.white : const Color.fromRGBO(40, 93, 169, 1),
                                               ),
                                             ),
-                                            Text(' Asignar horas de encuentro', 
+                                            Text(' Horas de encuentro', 
                                               style: Theme.of(contextP).textTheme.bodyMedium!.copyWith(fontSize: 16, color: prefs.tema ? Colors.white : Colors.black),
                                             ),
                                           ],
