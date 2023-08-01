@@ -184,125 +184,121 @@ class _AppBarPosterior extends State<AppBarPosterior> {
                                         Center(child: Text('Pendientes',style: Theme.of(context).textTheme.labelMedium!.copyWith(fontSize: 20, fontWeight: FontWeight.w500))),
                                         SizedBox(height: 15),
 
-                                        TextButton(
-                                          style: TextButton.styleFrom(
-                                            backgroundColor: Colors.transparent,
-                                          ),
-                                          onPressed: () => {
-                                            Navigator.pop(context),
-                                            Navigator.push(context,
-                                                MaterialPageRoute(builder: (context) {
-                                              return DetailsDriverHour(
-                                                  plantillaDriver: plantillaDriver[0]);
-                                            })),
-                                          },
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 10, right: 10),
+                                          child: TextButton(
+                                            style: TextButton.styleFrom(
+                                              backgroundColor: Colors.transparent,
+                                            ),
+                                            onPressed: () => {
+                                              Navigator.pop(context),
+                                              Navigator.push(context,
+                                                  MaterialPageRoute(builder: (context) {
+                                                return DetailsDriverHour(
+                                                    plantillaDriver: plantillaDriver[0]);
+                                              })),
+                                            },
                                             child: Row(
                                               children: [
-                                                Container(
-                                                  width: 18,
-                                                  height: 18,
-                                                  child: SvgPicture.asset(
-                                                    "assets/icons/asignar_viajes.svg",
-                                                    color: Theme.of(context).primaryIconTheme.color,
-                                                  ),
-                                                ),
-                                                SizedBox(width: 20),
-                                                Flexible(child: Text("Horas de encuentro", style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18))),
-                                            
-                                                Expanded( // This widget will take up all the available space between the text and the right edge of the Row
+                                                Expanded(
                                                   child: Row(
-                                                    mainAxisAlignment: MainAxisAlignment.end, // Align the red circle and the arrow to the right
                                                     children: [
-                                                      Container(
-                                                        padding: EdgeInsets.symmetric(horizontal: 3, vertical: 0),
-                                                        decoration: BoxDecoration(
-                                                          shape: BoxShape.circle,
-                                                          color: Color.fromRGBO(178, 13, 13, 1),
-                                                        ),
-                                                        child: Padding(
-                                                          padding: const EdgeInsets.all(2.5),
-                                                          child: Text(
-                                                            '${abc.data![0].tripsCreated}',
-                                                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, color: Colors.white),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      SizedBox(width: 20),
                                                       Container(
                                                         width: 18,
                                                         height: 18,
                                                         child: SvgPicture.asset(
-                                                          "assets/icons/flechader.svg",
+                                                          "assets/icons/asignar_viajes.svg",
                                                           color: Theme.of(context).primaryIconTheme.color,
                                                         ),
                                                       ),
+                                                      
+                                                      Text("  Horas de encuentro", style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18)),
                                                     ],
+                                                  ),
+                                                ),
+                                            
+                                                Container(
+                                                  padding: EdgeInsets.symmetric(horizontal: 3, vertical: 0),
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: Color.fromRGBO(178, 13, 13, 1),
+                                                  ),
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.all(2.5),
+                                                    child: Text(
+                                                      '${abc.data![0].tripsCreated}',
+                                                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, color: Colors.white),
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(width: 20),
+                                                Container(
+                                                  width: 18,
+                                                  height: 18,
+                                                  child: SvgPicture.asset(
+                                                    "assets/icons/flechader.svg",
+                                                    color: Theme.of(context).primaryIconTheme.color,
                                                   ),
                                                 ),
                                               ],
                                             ),
-
                                           ),
                                         ),
-                                        // ignore: deprecated_member_use
-                                        TextButton(style: TextButton.styleFrom(backgroundColor: Colors.transparent,),
-                                          onPressed: () => {
-                                            Navigator.pop(context),
-                                            Navigator.push(context,
-                                              MaterialPageRoute(builder: (context) {return DetailsDriverTripInProgress(plantillaDriver: plantillaDriver[1]);})),
-                                          },
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Flexible(
-                                              child: Row(
-                                                children: [
-                                                  Container(
-                                                    width: 18,
-                                                    height: 18,
-                                                    child: SvgPicture.asset(
-                                                      "assets/icons/viaje_proceso.svg",
-                                                      color: Theme.of(context).primaryIconTheme.color,
-                                                    ),
-                                                  ),
-                                                  SizedBox(width: 20),
-                                                  Flexible(child: Text("Viajes en proceso", style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18))),
-                                            
-                                                  Expanded(
-                                                    child: Row(
-                                                      mainAxisAlignment: MainAxisAlignment.end,
-                                                      children: [
-                                                        Container(
-                                                          padding: EdgeInsets.symmetric(horizontal: 3, vertical: 0),
-                                                          decoration: BoxDecoration(
-                                                            shape: BoxShape.circle,
-                                                            color: Color.fromRGBO(178, 13, 13, 1),
-                                                          ),
-                                                          child: Padding(
-                                                            padding: const EdgeInsets.all(2.5),
-                                                            child: Text(
-                                                              '${abc.data![0].tripsInProgress}',
-                                                              style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, color: Colors.white),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        SizedBox(width: 20),
-                                                        Container(
-                                                          width: 18,
-                                                          height: 18,
-                                                          child: SvgPicture.asset(
-                                                            "assets/icons/flechader.svg",
-                                                            color: Theme.of(context).primaryIconTheme.color,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
+                                       
+                                        //********************************************************************************* */
 
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 10, right: 10),
+                                          child: TextButton(style: TextButton.styleFrom(backgroundColor: Colors.transparent,),
+                                            onPressed: () => {
+                                              Navigator.pop(context),
+                                              Navigator.push(context,
+                                                MaterialPageRoute(builder: (context) {return DetailsDriverTripInProgress(plantillaDriver: plantillaDriver[1]);})),
+                                            },
+                                            child: Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Row(
+                                                    children: [
+                                                      Container(
+                                                        width: 18,
+                                                        height: 18,
+                                                        child: SvgPicture.asset(
+                                                          "assets/icons/viaje_proceso.svg",
+                                                          color: Theme.of(context).primaryIconTheme.color,
+                                                        ),
+                                                      ),
+                                                      
+                                                      Text("  Viajes en proceso", style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18)),
+                                                    ],
+                                                  ),
+                                                ),
+                                            
+                                                Container(
+                                                  padding: EdgeInsets.symmetric(horizontal: 3, vertical: 0),
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: Color.fromRGBO(178, 13, 13, 1),
+                                                  ),
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.all(2.5),
+                                                    child: Text(
+                                                      '${abc.data![0].tripsInProgress}',
+                                                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, color: Colors.white),
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(width: 20),
+                                                Container(
+                                                  width: 18,
+                                                  height: 18,
+                                                  child: SvgPicture.asset(
+                                                    "assets/icons/flechader.svg",
+                                                    color: Theme.of(context).primaryIconTheme.color,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
                                         SizedBox(height: 60)

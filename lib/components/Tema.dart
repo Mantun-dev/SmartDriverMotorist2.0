@@ -17,7 +17,7 @@ final ThemeData appThemeDataLight = ThemeData(
   hoverColor: Color(0xffc32c37),
   highlightColor: Colors.transparent,
 
-  disabledColor: Color.fromRGBO(238, 238, 238, 1),
+  disabledColor: Color.fromRGBO(222, 218, 218, 1),
   dividerColor: Color.fromRGBO(214, 214, 214, 1),
   splashColor: Color.fromRGBO(158, 158, 158, 1),
 

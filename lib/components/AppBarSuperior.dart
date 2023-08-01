@@ -9,6 +9,7 @@ import '../Drivers/Screens/Details/components/detailsDriver_assignHour.dart';
 import '../Drivers/Screens/Details/components/details_HoursOut.dart';
 import '../Drivers/Screens/Details/components/details_TripProgress.dart';
 import '../Drivers/Screens/Details/components/details_history.dart';
+import '../Drivers/Screens/Details/components/travel_In_Trips.dart';
 import '../Drivers/Screens/DriverProfile/driverProfile.dart';
 import '../Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 import '../Drivers/Screens/Welcome/welcome_screen.dart';
@@ -47,6 +48,25 @@ class _AppBarSuperior extends State<AppBarSuperior> {
         PageRouteBuilder(
           transitionDuration: Duration(milliseconds: 200),
           pageBuilder: (_, __, ___) => DetailsDriverHour(plantillaDriver: plantillaDriver[0],),
+          transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+            return SlideTransition(
+              position: Tween<Offset>(
+                begin: Offset(-1.0, 0.0),
+                end: Offset.zero,
+              ).animate(animation),
+            child: child,
+           );
+          },
+        ),
+      );
+      break;
+
+      case 111:
+        Navigator.push(
+        context,
+        PageRouteBuilder(
+          transitionDuration: Duration(milliseconds: 200),
+          pageBuilder: (_, __, ___) => Trips(),
           transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
             return SlideTransition(
               position: Tween<Offset>(
@@ -159,6 +179,20 @@ class _AppBarSuperior extends State<AppBarSuperior> {
                 ),
               ),
             ),
+
+            if(item==111)
+              Expanded(
+                child: Center(
+                  child: Text(
+                    "Asignación de horas",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.normal,
+                      fontSize: 21
+                    ),
+                  ),
+                ),
+              ),
 
         if(item==7)
           Expanded(

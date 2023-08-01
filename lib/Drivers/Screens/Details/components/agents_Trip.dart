@@ -17,6 +17,9 @@ import 'package:flutter_auth/main.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:intl/intl.dart';
 import 'package:quickalert/quickalert.dart';
+import '../../../../components/AppBarPosterior.dart';
+import '../../../../components/AppBarSuperior.dart';
+import '../../../../components/backgroundB.dart';
 import '../../../../constants.dart';
 import '../../../components/progress_indicator.dart';
 import '../../../models/agentsInTravelModel.dart';
@@ -301,105 +304,92 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
   BuildContext? contextP;
 
   static DateTime _eventdDate = DateTime.now();
-  static var now =
-      TimeOfDay.fromDateTime(DateTime.parse(_eventdDate.toString()));
+  static var now = TimeOfDay.fromDateTime(DateTime.parse(_eventdDate.toString()));
   final format = DateFormat('HH:mm');
+  
   @override
   Widget build(BuildContext context) {
     contextP = context;
-    return MaterialApp(
-      color: backgroundColor,
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-          backgroundColor: backgroundColor,
-          drawer: DriverMenuLateral(),
-          appBar: AppBar(
-            backgroundColor: backgroundColor,
-            elevation: 15,
-            actions: <Widget>[
-              IconButton(
-                icon:
-                    Icon(Icons.textsms_rounded, color: thirdColor, size: 30.0),
-                onPressed: () {
-                  setRecargar(-1);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ChatPage(
-                              tripId: prefs.tripId,
-                            )),
-                  );
-                },
-              ),
-              IconButton(
-                icon:
-                    Icon(Icons.arrow_circle_left, color: secondColor, size: 30),
-                onPressed: () {
-                  setRecargar(-1);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Trips()),
-                  );
-                },
-              ),
-              SizedBox(width: kDefaultPadding / 2)
-            ],
-          ),
-          body: GestureDetector(
-            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-            child: RefreshIndicator(
-              onRefresh: _refresh,
-              child: ListView(children: <Widget>[
-                SizedBox(height: 25.0),
-                Center(
-                    child: Text('Asignación de Horas',
-                        style: TextStyle(
-                            color: firstColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 25.0))),
-                SizedBox(height: 20.0),
-                ingresarVehiculo(),
-                SizedBox(height: 20.0),
-                Padding(
-                  padding: const EdgeInsets.only(left: 15.0),
-                  child: Text('Agentes confirmados',
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                          color: GradiantV_2,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18.0)),
+    return BackgroundBody(
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+                  appBar: PreferredSize(
+                    preferredSize: Size.fromHeight(56),
+                    child: AppBarSuperior(item: 111,)
+                  ),
+                  body: Column(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                        onTap: () {
+                          FocusScope.of(context).requestFocus(new FocusNode());
+                        },
+                        child: body()),
+                      ),
+                      SafeArea(child: AppBarPosterior(item:-1)),
+                    ],
+                  ),
                 ),
-                SizedBox(height: 10.0),
-                _agentToConfirm(),
-                SizedBox(height: 20.0),
-                Padding(
-                    padding: const EdgeInsets.only(left: 15.0),
-                    child: Text('Agentes no confirmados',
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                            color: GradiantV_2,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18.0))),
-                _agentoNoConfirm(),
-                SizedBox(height: 20.0),
-                Padding(
-                  padding: const EdgeInsets.only(left: 15.0),
-                  child: Text('Agentes que han cancelado',
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                          color: GradiantV_2,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18.0)),
-                ),
-                SizedBox(height: 10.0),
-                _agentToCancel(),
-                SizedBox(height: 20.0),
-                _buttonsAgents(),
-                SizedBox(height: 30.0),
-              ]),
-            ),
-          )),
+      ),
     );
+  }
+
+  GestureDetector body() {
+    return GestureDetector(
+          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+          child: RefreshIndicator(
+            onRefresh: _refresh,
+            child: ListView(children: <Widget>[
+              SizedBox(height: 25.0),
+              Center(
+                  child: Text('Asignación de Horas',
+                      style: TextStyle(
+                          color: firstColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 25.0))),
+              SizedBox(height: 20.0),
+              ingresarVehiculo(),
+              SizedBox(height: 20.0),
+              Padding(
+                padding: const EdgeInsets.only(left: 15.0),
+                child: Text('Agentes confirmados',
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                        color: GradiantV_2,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18.0)),
+              ),
+              SizedBox(height: 10.0),
+              _agentToConfirm(),
+              SizedBox(height: 20.0),
+              Padding(
+                  padding: const EdgeInsets.only(left: 15.0),
+                  child: Text('Agentes no confirmados',
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                          color: GradiantV_2,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18.0))),
+              _agentoNoConfirm(),
+              SizedBox(height: 20.0),
+              Padding(
+                padding: const EdgeInsets.only(left: 15.0),
+                child: Text('Agentes que han cancelado',
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                        color: GradiantV_2,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18.0)),
+              ),
+              SizedBox(height: 10.0),
+              _agentToCancel(),
+              SizedBox(height: 20.0),
+              _buttonsAgents(),
+              SizedBox(height: 30.0),
+            ]),
+          ),
+        );
   }
 
   Widget ingresarVehiculo() {
