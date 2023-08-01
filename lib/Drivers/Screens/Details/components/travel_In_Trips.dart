@@ -43,10 +43,21 @@ class _TripsState extends State<Trips> {
     prefs.tripId = tripId;
     if (tripId == tripId) {
       Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MyAgent(),
-          ));
+        context,
+        PageRouteBuilder(
+          transitionDuration: Duration(milliseconds: 200),
+          pageBuilder: (_, __, ___) => MyAgent(),
+          transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+            return SlideTransition(
+              position: Tween<Offset>(
+                begin: Offset(1.0, 0.0),
+                end: Offset.zero,
+              ).animate(animation),
+              child: child,
+            );
+          },
+        ),
+      );
     }
   }
 

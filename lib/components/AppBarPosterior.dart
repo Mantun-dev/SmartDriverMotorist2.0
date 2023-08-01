@@ -192,11 +192,22 @@ class _AppBarPosterior extends State<AppBarPosterior> {
                                             ),
                                             onPressed: () => {
                                               Navigator.pop(context),
-                                              Navigator.push(context,
-                                                  MaterialPageRoute(builder: (context) {
-                                                return DetailsDriverHour(
-                                                    plantillaDriver: plantillaDriver[0]);
-                                              })),
+                                              Navigator.push(
+                                                context,
+                                                PageRouteBuilder(
+                                                  transitionDuration: Duration(milliseconds: 200),
+                                                  pageBuilder: (_, __, ___) => DetailsDriverHour(plantillaDriver: plantillaDriver[0]),                                  
+                                                  transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                                    return SlideTransition(
+                                                      position: Tween<Offset>(
+                                                        begin: Offset(1.0, 0.0),
+                                                        end: Offset.zero,
+                                                      ).animate(animation),
+                                                      child: child,
+                                                    );
+                                                  },
+                                                ),
+                                              )
                                             },
                                             child: Row(
                                               children: [
@@ -252,8 +263,22 @@ class _AppBarPosterior extends State<AppBarPosterior> {
                                           child: TextButton(style: TextButton.styleFrom(backgroundColor: Colors.transparent,),
                                             onPressed: () => {
                                               Navigator.pop(context),
-                                              Navigator.push(context,
-                                                MaterialPageRoute(builder: (context) {return DetailsDriverTripInProgress(plantillaDriver: plantillaDriver[1]);})),
+                                              Navigator.push(
+                                                context,
+                                                PageRouteBuilder(
+                                                  transitionDuration: Duration(milliseconds: 200),
+                                                  pageBuilder: (_, __, ___) => DetailsDriverTripInProgress(plantillaDriver: plantillaDriver[1]),                                  
+                                                  transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                                    return SlideTransition(
+                                                      position: Tween<Offset>(
+                                                        begin: Offset(1.0, 0.0),
+                                                        end: Offset.zero,
+                                                      ).animate(animation),
+                                                      child: child,
+                                                    );
+                                                  },
+                                                ),
+                                              )
                                             },
                                             child: Row(
                                               children: [

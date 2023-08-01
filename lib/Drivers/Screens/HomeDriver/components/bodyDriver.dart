@@ -313,44 +313,74 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                                             // si.method();
                                             if (plantillaDriver[index] == plantillaDriver[0]) {
                                               Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        DetailsDriverHour(
-                                                      plantillaDriver:
-                                                          plantillaDriver[index],
-                                                    ),
-                                                  ));
+                                                context,
+                                                PageRouteBuilder(
+                                                  transitionDuration: Duration(milliseconds: 200),
+                                                  pageBuilder: (_, __, ___) => DetailsDriverHour(plantillaDriver: plantillaDriver[index]),                                  
+                                                  transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                                    return SlideTransition(
+                                                      position: Tween<Offset>(
+                                                        begin: Offset(1.0, 0.0),
+                                                        end: Offset.zero,
+                                                      ).animate(animation),
+                                                      child: child,
+                                                    );
+                                                  },
+                                                ),
+                                              );
                                             } else if (plantillaDriver[index] == plantillaDriver[1]) {
                                               Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        DetailsDriverTripInProgress(
-                                                      plantillaDriver:
-                                                          plantillaDriver[index],
-                                                    ),
-                                                  ));
+                                                context,
+                                                PageRouteBuilder(
+                                                  transitionDuration: Duration(milliseconds: 200),
+                                                  pageBuilder: (_, __, ___) => DetailsDriverTripInProgress(plantillaDriver: plantillaDriver[index]),                                  
+                                                  transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                                    return SlideTransition(
+                                                      position: Tween<Offset>(
+                                                        begin: Offset(1.0, 0.0),
+                                                        end: Offset.zero,
+                                                      ).animate(animation),
+                                                      child: child,
+                                                    );
+                                                  },
+                                                ),
+                                              );
                                             } else if (plantillaDriver[index] == plantillaDriver[2]) {
                                               Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        DetailsDriverHoursOut(
-                                                      plantillaDriver:
-                                                          plantillaDriver[index],
-                                                    ),
-                                                  ));
+                                                context,
+                                                PageRouteBuilder(
+                                                  transitionDuration: Duration(milliseconds: 200),
+                                                  pageBuilder: (_, __, ___) => DetailsDriverHoursOut(plantillaDriver: plantillaDriver[index]),                                  
+                                                  transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                                    return SlideTransition(
+                                                      position: Tween<Offset>(
+                                                        begin: Offset(1.0, 0.0),
+                                                        end: Offset.zero,
+                                                      ).animate(animation),
+                                                      child: child,
+                                                    );
+                                                  },
+                                                ),
+                                              );
                                             } else if (plantillaDriver[index] == plantillaDriver[3]) {
                                               Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        DetailsDriverHistory(
-                                                      plantillaDriver:
-                                                          plantillaDriver[index],
-                                                    ),
-                                                  ));
+                                                context,
+                                                PageRouteBuilder(
+                                                  transitionDuration: Duration(milliseconds: 200),
+                                                  pageBuilder: (_, __, ___) => DetailsDriverHistory(plantillaDriver: plantillaDriver[index]),                                  
+                                                  transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                                    return SlideTransition(
+                                                      position: Tween<Offset>(
+                                                        begin: Offset(1.0, 0.0),
+                                                        end: Offset.zero,
+                                                      ).animate(animation),
+                                                      child: child,
+                                                    );
+                                                  },
+                                                ),
+                                              );
+                                            } else if (plantillaDriver[index] == plantillaDriver[4]) {
+                                              _noDisponible(context);
                                             }
                                           });
                                     }),
@@ -373,56 +403,91 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                                           // si.method();
                                           if (plantillaDriver[index] == plantillaDriver[0]) {
                                                 Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          DetailsDriverHour(
-                                                        plantillaDriver:
-                                                            plantillaDriver[index],
-                                                      ),
-                                                    ));
+                                                  context,
+                                                  PageRouteBuilder(
+                                                    transitionDuration: Duration(milliseconds: 200),
+                                                    pageBuilder: (_, __, ___) => DetailsDriverHour(plantillaDriver: plantillaDriver[index]),                                  
+                                                    transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                                      return SlideTransition(
+                                                        position: Tween<Offset>(
+                                                          begin: Offset(1.0, 0.0),
+                                                          end: Offset.zero,
+                                                        ).animate(animation),
+                                                        child: child,
+                                                      );
+                                                    },
+                                                  ),
+                                                );
                                               } else if (plantillaDriver[index] == plantillaDriver[1]) {
                                                 Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          DetailsDriverTripInProgress(
-                                                        plantillaDriver:
-                                                            plantillaDriver[index],
-                                                      ),
-                                                    ));
+                                                  context,
+                                                  PageRouteBuilder(
+                                                    transitionDuration: Duration(milliseconds: 200),
+                                                    pageBuilder: (_, __, ___) => DetailsDriverTripInProgress(plantillaDriver: plantillaDriver[index]),                                  
+                                                    transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                                      return SlideTransition(
+                                                        position: Tween<Offset>(
+                                                          begin: Offset(1.0, 0.0),
+                                                          end: Offset.zero,
+                                                        ).animate(animation),
+                                                        child: child,
+                                                      );
+                                                    },
+                                                  ),
+                                                );
                                               } else if (plantillaDriver[index] == plantillaDriver[2]) {
                                                 Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          DetailsDriverHoursOut(
-                                                        plantillaDriver:
-                                                            plantillaDriver[index],
-                                                      ),
-                                                    ));
+                                                  context,
+                                                  PageRouteBuilder(
+                                                    transitionDuration: Duration(milliseconds: 200),
+                                                    pageBuilder: (_, __, ___) => DetailsDriverHoursOut(plantillaDriver: plantillaDriver[index]),                                  
+                                                    transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                                      return SlideTransition(
+                                                        position: Tween<Offset>(
+                                                          begin: Offset(1.0, 0.0),
+                                                          end: Offset.zero,
+                                                        ).animate(animation),
+                                                        child: child,
+                                                      );
+                                                    },
+                                                  ),
+                                                );
                                               } else if (plantillaDriver[index] == plantillaDriver[3]) {
                                                 Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          DetailsDriverHistory(
-                                                        plantillaDriver:
-                                                            plantillaDriver[index],
-                                                      ),
-                                                    ));
+                                                  context,
+                                                  PageRouteBuilder(
+                                                    transitionDuration: Duration(milliseconds: 200),
+                                                    pageBuilder: (_, __, ___) => DetailsDriverHistory(plantillaDriver: plantillaDriver[index]),                                  
+                                                    transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                                      return SlideTransition(
+                                                        position: Tween<Offset>(
+                                                          begin: Offset(1.0, 0.0),
+                                                          end: Offset.zero,
+                                                        ).animate(animation),
+                                                        child: child,
+                                                      );
+                                                    },
+                                                  ),
+                                                );
                                               }else if (plantillaDriver[index].id == 5) {
                                                 _noDisponible(context);
                                               }else if (plantillaDriver[index].id == 6) {
                                                 Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          DetailsSolidTrip(
-                                                        plantillaDriver:
-                                                            plantillaDriver[index],
-                                                      ),
-                                                    ));
+                                                  context,
+                                                  PageRouteBuilder(
+                                                    transitionDuration: Duration(milliseconds: 200),
+                                                    pageBuilder: (_, __, ___) => DetailsSolidTrip(plantillaDriver: plantillaDriver[index]),                                  
+                                                    transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                                      return SlideTransition(
+                                                        position: Tween<Offset>(
+                                                          begin: Offset(1.0, 0.0),
+                                                          end: Offset.zero,
+                                                        ).animate(animation),
+                                                        child: child,
+                                                      );
+                                                    },
+                                                  ),
+                                                );
                                               }
                                         }),
                                   );
