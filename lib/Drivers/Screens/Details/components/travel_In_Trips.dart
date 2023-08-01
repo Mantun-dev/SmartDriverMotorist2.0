@@ -7,7 +7,10 @@ import 'package:flutter_auth/Drivers/components/loader.dart';
 import 'package:flutter_auth/Drivers/components/menu_lateralDriver.dart';
 import 'package:flutter_auth/Drivers/models/network.dart';
 import 'package:flutter_auth/Drivers/models/tripsPendin2.dart';
+import 'package:flutter_auth/components/AppBarSuperior.dart';
 
+import '../../../../components/AppBarPosterior.dart';
+import '../../../../components/backgroundB.dart';
 import '../../../../constants.dart';
 import '../../../models/plantillaDriver.dart';
 import 'detailsDriver_assignHour.dart';
@@ -49,156 +52,218 @@ class _TripsState extends State<Trips> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          elevation: 10,
-          backgroundColor: backgroundColor,
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.arrow_circle_left),
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) {return DetailsDriverHour(plantillaDriver: plantillaDriver[0]);},),);
-              },
-            ),
-            SizedBox(width: kDefaultPadding / 2)
-          ],
-        ),
-        drawer: DriverMenuLateral(),
-        body: Container(width: size.width,height: size.height,color: backgroundColor,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                FutureBuilder<List<TripsPending2>>(future: item,
-                  builder: (BuildContext context, abc) {
-                    if (abc.connectionState == ConnectionState.done) {
-                      if (abc.data!.length < 1) {
-                        return Card(color: backgroundColor,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),margin: EdgeInsets.symmetric(vertical: 15),
-                          child: Column(mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              ListTile(
-                                leading: Icon(Icons.bus_alert),
-                                title: Text('Agentes',style: TextStyle(color: Colors.black,fontWeight: FontWeight.normal,fontSize: 26.0)),
-                                subtitle: Text('No hay viajes pendientes',style: TextStyle(color: Colors.red,fontWeight: FontWeight.normal,fontSize: 18.0)),
-                              ),
-                            ],
-                          ),
-                        );
-                      } else {
-                        return ListView.builder(scrollDirection: Axis.vertical,shrinkWrap: true,physics: ClampingScrollPhysics(),itemCount: abc.data!.length,
-                            itemBuilder: (context, index) {
-                              return Container(decoration: BoxDecoration(
-                                boxShadow: [
-                                  BoxShadow(blurStyle: BlurStyle.normal,color: Colors.white.withOpacity(0.2),blurRadius: 30,spreadRadius: -8,offset: Offset(-15, -6)),
-                                  BoxShadow(blurStyle: BlurStyle.normal,color: Colors.black.withOpacity(0.6),blurRadius: 30,spreadRadius: -15,offset: Offset(18, 5)),
-                                ]),
-                                child: Card(color: backgroundColor,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),margin: EdgeInsets.all(15),elevation: 10,
-                                  child: Container(margin: EdgeInsets.only(right: 15),
-                                    child: Column(children: <Widget>[
-                                      Padding(padding: const EdgeInsets.all(5.0),
-                                        child: Theme(data: ThemeData().copyWith(dividerColor: Colors.transparent),
-                                        child: ExpansionTile(initiallyExpanded: true,collapsedIconColor: Colors.white,
-                                        title: ListTile(contentPadding:EdgeInsets.fromLTRB(15, 5, 10, 0),
-                                        title: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
-                                        children: <Widget>[
-                                          Padding(
-                                            padding: const EdgeInsets.fromLTRB(0,0,20,0),
-                                            child: Row(
+    return BackgroundBody(
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+                  appBar: PreferredSize(
+                    preferredSize: Size.fromHeight(56),
+                    child: AppBarSuperior(item: 11,)
+                  ),
+                  body: Column(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                        onTap: () {
+                          FocusScope.of(context).requestFocus(new FocusNode());
+                        },
+                        child: body(size)),
+                      ),
+                      SafeArea(child: AppBarPosterior(item:-1)),
+                    ],
+                  ),
+                ),
+      ),
+    );
+  }
+
+  Widget body(Size size) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          SizedBox(height: 30),
+          FutureBuilder<List<TripsPending2>>(future: item,
+            builder: (BuildContext context, abc) {
+              if (abc.connectionState == ConnectionState.done) {
+                if (abc.data!.length < 1) {
+                  return Column(
+                    children: [
+                      SizedBox(height: 5),
+                      Center(
+                        child: Text(
+                          'No hay viajes pendientes',
+                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 16),
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      Container(
+                        height: 1,
+                        color: Theme.of(context).dividerColor,
+                      ),
+                      
+                    ],
+                  );
+                } else {
+                  return ListView.builder(
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,physics: ClampingScrollPhysics(),
+                    itemCount: abc.data!.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8.0),
+                              border: Border.all(color: Theme.of(context).dividerColor,),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 2, left: 2),
+                              child: Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.tag,color: thirdColor),
+                                        SizedBox(width: 15,),
+                                        Flexible(
+                                          child: RichText(
+                                            text: TextSpan(
+                                              style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 14),
                                               children: [
-                                                Icon(Icons.tag,color: thirdColor),
-                                                SizedBox(width: 15,),
-                                                Flexible(
-                                                  child: Text('Viaje: ${abc.data![index].tripId}',style: TextStyle(color: Colors.white,fontSize: 18.0)),
+                                                TextSpan(
+                                                  text: 'Viaje: ',
+                                                  style: TextStyle(fontWeight: FontWeight.normal),
+                                                ),
+                                                TextSpan(
+                                                  text: '${abc.data![index].tripId}',
+                                                  style: TextStyle(fontWeight: FontWeight.normal),
                                                 ),
                                               ],
                                             ),
-                                          ),                       
-                                        ],
-                                        ),    
-                                        //trailing: SizedBox(),                                    
-                                        ), 
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(left: 32),
-                                              child: Row(
-                                                children: [
-                                                  Icon(Icons.calendar_today,color: thirdColor),
-                                                  SizedBox(width: 15,),
-                                                  Text('Fecha: ${abc.data![index].fecha}',style: TextStyle(color: Colors.white, fontSize: 18.0)),
-                                                  ],
-                                              ),
-                                            ),
-                                            SizedBox(height: 13),
-                                            Padding(
-                                              padding: const EdgeInsets.only(left: 32),
-                                              child: Row(
-                                                children: [
-                                                  Icon(Icons.location_city_rounded,color: thirdColor),
-                                                  SizedBox(width: 15,),
-                                                  Text('Empresa: ${abc.data![index].empresa}',style: TextStyle(color: Colors.white, fontSize: 18.0)),
-                                                  ],
-                                              ),
-                                            ),
-                                            SizedBox(height: 13),
-                                            Padding(
-                                              padding: const EdgeInsets.only(left: 32),
-                                              child: Row(
-                                                children: [
-                                                  Icon(Icons.access_time,color: thirdColor),
-                                                  SizedBox(width: 15,),
-                                                  Text('Hora: ${abc.data![index].hora}',style: TextStyle(color: Colors.white, fontSize: 18.0)),
-                                                  ],
-                                              ),
-                                            ),
-                                            SizedBox(height: 13),
-                                            Padding(
-                                              padding: const EdgeInsets.only(left: 32),
-                                              child: Row(
-                                                children: [
-                                                  Icon(Icons.supervised_user_circle,color: thirdColor),
-                                                  SizedBox(width: 15,),
-                                                  Text('Agentes: ${abc.data![index].agentes}',style: TextStyle(color: Colors.white, fontSize: 18.0)),
-                                                  ],
-                                              ),
-                                            ),
-                                            SizedBox(height: 13),
-                                          ],
-                                      ),
-                                    ),
-                                  ),
-                                  Container(decoration: BoxDecoration(boxShadow: [
-                                    BoxShadow(blurStyle: BlurStyle.normal,color: Colors.white.withOpacity(0.2),blurRadius: 10,spreadRadius: -8,offset: Offset(-15, -6)),
-                                    BoxShadow(blurStyle: BlurStyle.normal,color: Colors.black.withOpacity(0.5),blurRadius: 10,spreadRadius: -15,offset: Offset(18, 5)),
-                                    ]),
-                                    child: TextButton(style: TextButton.styleFrom(fixedSize: Size(200, 50),elevation: 10,backgroundColor: backgroundColor,textStyle: TextStyle(color: Colors.white,),
-                                      shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20)),),
-                                        child: Text('Ver viaje',style: TextStyle(color: firstColor,fontSize: 20)),
-                                          onPressed: () {
-                                            fetchAgentsInTravel2(abc.data![index].tripId.toString());
-                                          },
-                                        ),
-                                      ),
-                                      SizedBox(height: 20.0),                                      
+                                          ),
+                                        )
                                       ],
                                     ),
                                   ),
-                                ),
-                              );
-                            });
-                      }
-                    } else {
-                      return Center(child: ColorLoader3());
-                    }
-                  },
-                )
-              ],
-            ),
-          ),
-        ),
+                                  Container(
+                                    height: 1,
+                                    color: Theme.of(context).dividerColor,
+                                  ),
+
+                                  SizedBox(height: 20),
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.calendar_today,color: thirdColor),
+                                        SizedBox(width: 15,),
+                                        Flexible(
+                                          child: RichText(
+                                            text: TextSpan(
+                                              style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 14),
+                                              children: [
+                                                TextSpan(
+                                                  text: 'Fecha: ',
+                                                  style: TextStyle(fontWeight: FontWeight.normal),
+                                                ),
+                                                TextSpan(
+                                                  text: '${abc.data![index].fecha}',
+                                                  style: TextStyle(fontWeight: FontWeight.normal),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    height: 1,
+                                    color: Theme.of(context).dividerColor,
+                                  ),
+
+                                  SizedBox(height: 20),
+                                  Row(
+                                    children: [
+                                      Icon(Icons.location_city_rounded,color: thirdColor),
+                                      SizedBox(width: 15,),
+                                      Text('Empresa: ${abc.data![index].empresa}',style: TextStyle(color: Colors.white, fontSize: 18.0)),
+                                      ],
+                                  ),
+
+                                  SizedBox(height: 20),
+                                  Row(
+                                    children: [
+                                      Icon(Icons.access_time,color: thirdColor),
+                                      SizedBox(width: 15,),
+                                      Text('Hora: ${abc.data![index].hora}',style: TextStyle(color: Colors.white, fontSize: 18.0)),
+                                      ],
+                                  ),
+                                  SizedBox(height: 13),
+                                  Row(
+                                    children: [
+                                      Icon(Icons.supervised_user_circle,color: thirdColor),
+                                      SizedBox(width: 15,),
+                                      Text('Agentes: ${abc.data![index].agentes}',style: TextStyle(color: Colors.white, fontSize: 18.0)),
+                                      ],
+                                  ),
+                                  SizedBox(height: 13),
+                                  Container(
+                                    child: TextButton(
+                                      style: TextButton.styleFrom(
+                                        fixedSize: Size(200, 50),
+                                        elevation: 10,
+                                        backgroundColor: backgroundColor,
+                                        textStyle: TextStyle(color: Colors.white,),
+                                        shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20)),
+                                      ),
+                                      child: Text('Ver viaje',style: TextStyle(color: firstColor,fontSize: 20)),
+                                        onPressed: () {
+                                          fetchAgentsInTravel2(abc.data![index].tripId.toString());
+                                        },
+                                      ),
+                                    ),
+                                    SizedBox(height: 20.0),                                      
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      });
+                }
+              } else {
+                return WillPopScope(
+                        onWillPop: () async => false,
+                        child: SimpleDialog(
+                          elevation: 20,
+                          backgroundColor: Theme.of(context).cardColor,
+                          children: [
+                            Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.only(left: 16, top: 16, right: 16),
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Text(
+                                      'Cargando...', 
+                                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18),
+                                      ),
+                                  )
+                                ],
+                              ),
+                            )
+                          ] ,
+                        ),
+                      );
+              }
+            },
+          )
+        ],
       ),
     );
   }

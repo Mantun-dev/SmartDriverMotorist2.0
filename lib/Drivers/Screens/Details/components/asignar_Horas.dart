@@ -33,10 +33,21 @@ class _AsignarHorasState extends State<AsignarHoras> {
     prefs.companyId = companyId;
     if (companyId == companyId) {
       Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Trips(),
-          ));
+                      context,
+                      PageRouteBuilder(
+                        transitionDuration: Duration(milliseconds: 200),
+                        pageBuilder: (_, __, ___) => Trips(),
+                        transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                          return SlideTransition(
+                            position: Tween<Offset>(
+                              begin: Offset(1.0, 0.0), // Cambiar Offset de inicio a (1.0, 0.0)
+                              end: Offset.zero, // Mantener Offset de final en (0.0, 0.0)
+                            ).animate(animation),
+                            child: child,
+                          );
+                        },
+                      ),
+                    );
     }
   }
 

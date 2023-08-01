@@ -37,7 +37,50 @@ class _AppBarSuperior extends State<AppBarSuperior> {
   void initState() {
     super.initState();
   }
+  
+  void ruta(){
+    switch (item){
 
+      case 11:
+        Navigator.push(
+        context,
+        PageRouteBuilder(
+          transitionDuration: Duration(milliseconds: 200),
+          pageBuilder: (_, __, ___) => DetailsDriverHour(plantillaDriver: plantillaDriver[0],),
+          transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+            return SlideTransition(
+              position: Tween<Offset>(
+                begin: Offset(-1.0, 0.0),
+                end: Offset.zero,
+              ).animate(animation),
+            child: child,
+           );
+          },
+        ),
+      );
+      break;
+
+      default:
+      Navigator.push(
+        context,
+        PageRouteBuilder(
+          transitionDuration: Duration(milliseconds: 200),
+          pageBuilder: (_, __, ___) => HomeDriverScreen(),
+          transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+            return SlideTransition(
+              position: Tween<Offset>(
+                begin: Offset(-1.0, 0.0),
+                end: Offset.zero,
+              ).animate(animation),
+            child: child,
+           );
+          },
+        ),
+      );
+      break;
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -52,22 +95,7 @@ class _AppBarSuperior extends State<AppBarSuperior> {
           padding: const EdgeInsets.all(8.0),
           child: GestureDetector(
             onTap: () {
-              Navigator.push(
-                  context,
-                  PageRouteBuilder(
-                    transitionDuration: Duration(milliseconds: 200),
-                    pageBuilder: (_, __, ___) => HomeDriverScreen(),
-                    transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-                      return SlideTransition(
-                        position: Tween<Offset>(
-                          begin: Offset(-1.0, 0.0), // Cambiar Offset de inicio a (1.0, 0.0)
-                          end: Offset.zero, // Mantener Offset de final en (0.0, 0.0)
-                        ).animate(animation),
-                        child: child,
-                      );
-                    },
-                  ),
-                );
+              ruta();
             },
             child: Container(
               width: 45,
