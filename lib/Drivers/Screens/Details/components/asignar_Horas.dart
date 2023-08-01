@@ -160,11 +160,10 @@ class _AsignarHorasState extends State<AsignarHoras> {
                                       ),
                                     ),
                                     Row(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         Container(
                                           padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                          margin: EdgeInsets.only(bottom: 25),
                                           decoration: BoxDecoration(
                                             shape: BoxShape.circle,
                                             color: Color.fromRGBO(178, 13, 13, 1),
