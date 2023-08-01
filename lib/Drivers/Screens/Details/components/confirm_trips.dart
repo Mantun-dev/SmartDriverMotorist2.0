@@ -75,7 +75,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
       'tripId': prefs.tripId,
       'traveled': flag.toString()
     };
-    print(datas);
 
     http.Response response =
         await http.post(Uri.parse('$ip/apis/agentCheckIn'), body: datas);
@@ -83,7 +82,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
     final resp = Message.fromJson(json.decode(response.body));
 
     if (response.statusCode == 200 && resp.ok == true) {
-      print('enviado');
+      
     } else if (response.statusCode == 500) {
       QuickAlert.show(
         context: context,
@@ -159,7 +158,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
             'https://apichat.smtdriver.com/api/salas/Viaje_Estado/${prefs.tripId}'),
         body: sendData2,
         headers: {"Content-Type": "application/json"});
-    print(response2.body);
+    //print(response2.body);
     return Driver2.fromJson(json.decode(responses.body));
     //throw Exception('Failed to load Data');
   }
@@ -178,8 +177,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
     final si = Driver.fromJson(json.decode(responses.body));
     http.Response response = await http
         .post(Uri.parse('$ip/apis/agentTripSetComment'), body: datas2);
-    print(responses.body);
-    print(response.body);
+
     if (responses.statusCode == 200 &&
         si.ok == true &&
         responses.statusCode == 200) {
@@ -210,7 +208,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
         await http.post(Uri.parse('$ip/apis/agentDidntGetOut'), body: datas);
     final si = Driver.fromJson(json.decode(responses.body));
 
-    print(responses.body);
     if (responses.statusCode == 200 && si.ok!) {
       QuickAlert.show(
         context: context,
@@ -463,13 +460,10 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                         'itsManualSearch':"1"
                                                       };
 
-                                                      print(data);
-
                                                       http.Response response = await http
                                                           .post(Uri.parse('https://driver.smtdriver.com/apis/agents/validateCheckIn'), body: data);
 
                                                       final resp = json.decode(response.body);
-                                                      print(response.body);
 
                                                       if(mounted){
                                                         LoadingIndicatorDialog().dismiss();
@@ -521,7 +515,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                     await http.post(Uri.parse('$ip/apis/searchAgent'), body: datas);
                                                                 final data1 = Search.fromJson(json.decode(responsed.body));
 
-                                                                print(responsed.body);
 
                                                                 if(data1.agent!.msg!=null){
                                                                   LoadingIndicatorDialog().dismiss();
@@ -550,21 +543,61 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
                                                                 final dataR = json.decode(sendDatas.body);
 
-                                                                LoadingIndicatorDialog().dismiss();
 
                                                                 if(dataR['type']=='error'){
-                                                                  Navigator.pop(context);
-                                                                  Navigator.pop(context);
-                                                                  QuickAlert.show(
-                                                                    context: context,
-                                                                    title: '¡Alerta!',
-                                                                    text: '${dataR['message']}',
-                                                                    type: QuickAlertType.error,
-                                                                  ); 
+
+                                                                  LoadingIndicatorDialog().dismiss();
+
+                                                                  if(mounted){
+                                                                    Navigator.pop(context);
+                                                                    Navigator.pop(context);
+                                                                    QuickAlert.show(
+                                                                      context: context,
+                                                                      title: '¡Alerta!',
+                                                                      text: '${dataR['message']}',
+                                                                      type: QuickAlertType.error,
+                                                                    ); 
+                                                                  }
 
                                                                 return;
 
                                                                 }else{
+
+                                                                  int index = 0;
+                                                                  for (int i = 0; i < abc.data!.trips![0].tripAgent!.length; i++) {  
+                                                                    if(abc.data!.trips![0].tripAgent![i].agentId==resp['agentId']){
+
+                                                                      if(abc.data!.trips![0].tripAgent![i].traveled == 1){
+                                                                        traveled = true;
+                                                                      }else{
+                                                                        traveled = false;
+                                                                      }
+                                                                      index = i;
+                                                                    }
+                                                                  }
+
+                                                                  fetchRegisterCommentAgent(
+                                                                    abc.data!.trips![0].tripAgent![index].agentId.toString(),
+                                                                    prefs.tripId,
+                                                                    ''
+                                                                  );  
+
+                                                                  Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+  
+                                                                  traveled = !traveled;
+                                                                  abc.data!.trips![0].tripAgent![index].traveled = traveled;
+                                                                  
+                                                                  Map data =   {
+                                                                    'agentId':data1.agent!.agentId.toString(), 
+                                                                    'tripId':abc.data!.trips![1].actualTravel!.tripId.toString(),
+                                                                    'latitude':position.latitude.toString(),
+                                                                    'longitude':position.longitude.toString(),
+                                                                    'actionName':'Abordaje'
+                                                                  };
+                                                                
+                                                                  await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
+                                                                  
+                                                                  LoadingIndicatorDialog().dismiss();
                                                                   if(mounted){
                                                                     Navigator.push(context,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
 
@@ -778,7 +811,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                     'tripId':tripId.toString()
                                   };
 
-                                  print(data);
                                   http.Response response = await http
                                       .post(Uri.parse('https://driver.smtdriver.com/apis/agents/validateCheckIn'), body: data);
 
@@ -834,7 +866,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                     await http.post(Uri.parse('$ip/apis/searchAgent'), body: datas);
                                                                 final data1 = Search.fromJson(json.decode(responsed.body));
 
-                                                                print(responsed.body);
 
                                                                 if(data1.agent!.msg!=null){
                                                                   LoadingIndicatorDialog().dismiss();
@@ -862,21 +893,59 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
                                                                 final dataR = json.decode(sendDatas.body);
 
-                                                                LoadingIndicatorDialog().dismiss();
-
                                                                 if(dataR['type']=='error'){
-                                                                  Navigator.pop(navigatorKey.currentContext!);
-                                                                  Navigator.pop(navigatorKey.currentContext!);
-                                                                  QuickAlert.show(
-                                                                    context: navigatorKey.currentContext!,
-                                                                    title: '¡Alerta!',
-                                                                    text: '${dataR['message']}',
-                                                                    type: QuickAlertType.error,
-                                                                  ); 
+                                                                  LoadingIndicatorDialog().dismiss();
+                                                                  
+                                                                  if(mounted){
+                                                                    Navigator.pop(navigatorKey.currentContext!);
+                                                                    Navigator.pop(navigatorKey.currentContext!);
+                                                                    QuickAlert.show(
+                                                                      context: navigatorKey.currentContext!,
+                                                                      title: '¡Alerta!',
+                                                                      text: '${dataR['message']}',
+                                                                      type: QuickAlertType.error,
+                                                                    ); 
+                                                                  }
 
                                                                 return;
 
                                                                 }else{
+
+                                                                  int index = 0;
+                                                                  for (int i = 0; i < abc.data!.trips![0].tripAgent!.length; i++) {  
+                                                                    if(abc.data!.trips![0].tripAgent![i].agentId==resp['agentId']){
+
+                                                                      if(abc.data!.trips![0].tripAgent![i].traveled == 1){
+                                                                        traveled = true;
+                                                                      }else{
+                                                                        traveled = false;
+                                                                      }
+                                                                      index = i;
+                                                                    }
+                                                                  }
+
+                                                                  fetchRegisterCommentAgent(
+                                                                    abc.data!.trips![0].tripAgent![index].agentId.toString(),
+                                                                    prefs.tripId,
+                                                                    ''
+                                                                  );  
+
+                                                                  Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+  
+                                                                  traveled = !traveled;
+                                                                  abc.data!.trips![0].tripAgent![index].traveled = traveled;
+                                                                  
+                                                                  Map data =   {
+                                                                    'agentId':data1.agent!.agentId.toString(), 
+                                                                    'tripId':abc.data!.trips![1].actualTravel!.tripId.toString(),
+                                                                    'latitude':position.latitude.toString(),
+                                                                    'longitude':position.longitude.toString(),
+                                                                    'actionName':'Abordaje'
+                                                                  };
+                                                                
+                                                                  await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
+                                                                    
+                                                                  LoadingIndicatorDialog().dismiss();
                                                                   if(mounted){
                                                                     Navigator.pop(navigatorKey.currentContext!);
                                                                     Navigator.push(navigatorKey.currentContext!,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
@@ -1213,9 +1282,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                               json.decode(responseSala.body);
                                           LoadingIndicatorDialog().dismiss();
                                           if (resp['type'] == 'success') {
-                                            print(responseSala.body);
-                                            print(
-                                                '###########################');
+
                                             if (mounted) {
                                               showDialog(
                                                 context: context,
@@ -1432,15 +1499,15 @@ class _DataTableExample extends State<MyConfirmAgent> {
           traveled = isChecked!;
           abc.data!.trips![0].tripAgent![index].traveled = traveled;
           if (isChecked == true) {
-            print('subio');
+            //print('subio');
             abc.data!.trips![0].tripAgent![index].commentDriver='';
             fetchCheckAgentTrip(abc.data!.trips![0].tripAgent![index].agentId.toString());
             totalAbordado++;
-            print('////////');
+            //print('////////');
           } else if (isChecked == false) {
-            print('bajo');
+            //print('bajo');
             fetchCheckAgentTrip(abc.data!.trips![0].tripAgent![index].agentId.toString());
-            print('////////');
+            //print('////////');
             abc.data!.trips![0].tripAgent![index].commentDriver='No abordó';
             totalAbordado--;
             fetchRegisterCommentAgent(
@@ -1921,9 +1988,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                 'traveled': '0',
                                               };
                   
-                                              var re = await http.post(Uri.parse('$ip/apis/agentCheckIn'), body: datas);
-                  
-                                              print(re.body);
+                                              var re = await http.post(Uri.parse('$ip/apis/agentCheckIn'), body: datas);                
                   
                                               setState(() {
                                                 if (traveledB(abc, index)) {
