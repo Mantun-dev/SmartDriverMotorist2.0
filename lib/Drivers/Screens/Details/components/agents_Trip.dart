@@ -324,6 +324,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                         child: GestureDetector(
                         onTap: () {
                           FocusScope.of(context).requestFocus(new FocusNode());
+                          FocusManager.instance.primaryFocus?.unfocus();
                         },
                         child: body()),
                       ),
@@ -335,61 +336,51 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
     );
   }
 
-  GestureDetector body() {
-    return GestureDetector(
-          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-          child: RefreshIndicator(
-            onRefresh: _refresh,
-            child: ListView(children: <Widget>[
-              SizedBox(height: 25.0),
-              Center(
-                  child: Text('Asignación de Horas',
-                      style: TextStyle(
-                          color: firstColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 25.0))),
-              SizedBox(height: 20.0),
-              ingresarVehiculo(),
-              SizedBox(height: 20.0),
-              Padding(
-                padding: const EdgeInsets.only(left: 15.0),
-                child: Text('Agentes confirmados',
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                        color: GradiantV_2,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18.0)),
-              ),
-              SizedBox(height: 10.0),
-              _agentToConfirm(),
-              SizedBox(height: 20.0),
-              Padding(
-                  padding: const EdgeInsets.only(left: 15.0),
-                  child: Text('Agentes no confirmados',
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                          color: GradiantV_2,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18.0))),
-              _agentoNoConfirm(),
-              SizedBox(height: 20.0),
-              Padding(
-                padding: const EdgeInsets.only(left: 15.0),
-                child: Text('Agentes que han cancelado',
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                        color: GradiantV_2,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18.0)),
-              ),
-              SizedBox(height: 10.0),
-              _agentToCancel(),
-              SizedBox(height: 20.0),
-              _buttonsAgents(),
-              SizedBox(height: 30.0),
-            ]),
-          ),
-        );
+  Widget body() {
+    return Padding(
+      padding: const EdgeInsets.all(15.0),
+      child: ListView(
+        children: [
+        ingresarVehiculo(),
+        SizedBox(height: 20.0),
+        Padding(
+          padding: const EdgeInsets.only(left: 15.0),
+          child: Text('Agentes confirmados',
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                  color: GradiantV_2,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18.0)),
+        ),
+        SizedBox(height: 10.0),
+        _agentToConfirm(),
+        SizedBox(height: 20.0),
+        Padding(
+            padding: const EdgeInsets.only(left: 15.0),
+            child: Text('Agentes no confirmados',
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                    color: GradiantV_2,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18.0))),
+        _agentoNoConfirm(),
+        SizedBox(height: 20.0),
+        Padding(
+          padding: const EdgeInsets.only(left: 15.0),
+          child: Text('Agentes que han cancelado',
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                  color: GradiantV_2,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18.0)),
+        ),
+        SizedBox(height: 10.0),
+        _agentToCancel(),
+        SizedBox(height: 20.0),
+        _buttonsAgents(),
+        SizedBox(height: 30.0),
+      ]),
+    );
   }
 
   Widget ingresarVehiculo() {

@@ -221,35 +221,35 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
         constraints: BoxConstraints(
           maxWidth: 700.0, // Aquí defines el ancho máximo deseado
         ),
-        child: Container(
-          height: size.height,
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-      
-                //texto inicial
-                Padding(
-                  padding: EdgeInsets.only(top: 25.0),
-                  child: Text(
-                    'Hola, ${prefs.nombreUsuarioFull}',
-                    style: Theme.of(context).textTheme.titleLarge,
+        child: Padding(
+          padding: const EdgeInsets.only(right: 12, left: 12),
+          child: Container(
+            height: size.height,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+              
+                  //texto inicial
+                  Padding(
+                    padding: EdgeInsets.only(top: 25.0),
+                    child: Text(
+                      'Hola, ${prefs.nombreUsuarioFull}',
+                      style: Theme.of(context).textTheme.titleLarge,
+                      ),
                     ),
-                  ),
-
-                  SizedBox(height: 25),      
-          
-                ventanas2!=null?
-                Padding(
-                  padding: const EdgeInsets.only(right: 12, left: 12),
-                  child: Stack(
+        
+                    SizedBox(height: 25),      
+            
+                  ventanas2!=null?
+                  Stack(
                     children: [
                       if(isMenuOpen==true && ventanas2!.length>0)
                         Padding(
                           padding: const EdgeInsets.only(top:40.0),
                           child: menu(size, context),
                         ),
-    
+            
                       Container(
                         decoration: BoxDecoration(
                           color: Theme.of(context).cardColor,
@@ -263,7 +263,7 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                           style: Theme.of(context).textTheme.bodyMedium,
                           controller: buscarText,
                           onChanged: (value) {
-
+        
                             if(value.isEmpty)
                               ventanas2=ventanas;
                             else
@@ -271,7 +271,7 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                                 String nombre = ventana['nombre'].toString().toLowerCase();
                                 return nombre.contains(value.toLowerCase());
                               }).toList();
-
+        
                             setState(() {});
                           },
                           focusNode: _focusNode,
@@ -287,14 +287,11 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                       ),
                       
                     ],
-                  ),
-                ):Text(''),
-      
-                SizedBox(height: 15),      
-      
-                Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: FutureBuilder<DriverData>(
+                  ):Text(''),
+              
+                  SizedBox(height: 15),      
+              
+                  FutureBuilder<DriverData>(
                         future: itemx,
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
@@ -393,104 +390,101 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                                   shrinkWrap: true,
                                   physics: NeverScrollableScrollPhysics(),
                                 children: List.generate(plantillaDriver.length, (index) {
-                                  return Padding(
-                                    padding: const EdgeInsets.only(right: 8.0, left: 8, bottom: 8),
-                                    child: ItemDriverCard(
-                                      viajeSolido: false,
-                                        plantillaDriver: plantillaDriver[index],
-                                        press: () {
-                                          setPantallaP(0);
-                                          // si.method();
-                                          if (plantillaDriver[index] == plantillaDriver[0]) {
-                                                Navigator.push(
-                                                  context,
-                                                  PageRouteBuilder(
-                                                    transitionDuration: Duration(milliseconds: 200),
-                                                    pageBuilder: (_, __, ___) => DetailsDriverHour(plantillaDriver: plantillaDriver[index]),                                  
-                                                    transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-                                                      return SlideTransition(
-                                                        position: Tween<Offset>(
-                                                          begin: Offset(1.0, 0.0),
-                                                          end: Offset.zero,
-                                                        ).animate(animation),
-                                                        child: child,
-                                                      );
-                                                    },
-                                                  ),
-                                                );
-                                              } else if (plantillaDriver[index] == plantillaDriver[1]) {
-                                                Navigator.push(
-                                                  context,
-                                                  PageRouteBuilder(
-                                                    transitionDuration: Duration(milliseconds: 200),
-                                                    pageBuilder: (_, __, ___) => DetailsDriverTripInProgress(plantillaDriver: plantillaDriver[index]),                                  
-                                                    transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-                                                      return SlideTransition(
-                                                        position: Tween<Offset>(
-                                                          begin: Offset(1.0, 0.0),
-                                                          end: Offset.zero,
-                                                        ).animate(animation),
-                                                        child: child,
-                                                      );
-                                                    },
-                                                  ),
-                                                );
-                                              } else if (plantillaDriver[index] == plantillaDriver[2]) {
-                                                Navigator.push(
-                                                  context,
-                                                  PageRouteBuilder(
-                                                    transitionDuration: Duration(milliseconds: 200),
-                                                    pageBuilder: (_, __, ___) => DetailsDriverHoursOut(plantillaDriver: plantillaDriver[index]),                                  
-                                                    transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-                                                      return SlideTransition(
-                                                        position: Tween<Offset>(
-                                                          begin: Offset(1.0, 0.0),
-                                                          end: Offset.zero,
-                                                        ).animate(animation),
-                                                        child: child,
-                                                      );
-                                                    },
-                                                  ),
-                                                );
-                                              } else if (plantillaDriver[index] == plantillaDriver[3]) {
-                                                Navigator.push(
-                                                  context,
-                                                  PageRouteBuilder(
-                                                    transitionDuration: Duration(milliseconds: 200),
-                                                    pageBuilder: (_, __, ___) => DetailsDriverHistory(plantillaDriver: plantillaDriver[index]),                                  
-                                                    transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-                                                      return SlideTransition(
-                                                        position: Tween<Offset>(
-                                                          begin: Offset(1.0, 0.0),
-                                                          end: Offset.zero,
-                                                        ).animate(animation),
-                                                        child: child,
-                                                      );
-                                                    },
-                                                  ),
-                                                );
-                                              }else if (plantillaDriver[index].id == 5) {
-                                                _noDisponible(context);
-                                              }else if (plantillaDriver[index].id == 6) {
-                                                Navigator.push(
-                                                  context,
-                                                  PageRouteBuilder(
-                                                    transitionDuration: Duration(milliseconds: 200),
-                                                    pageBuilder: (_, __, ___) => DetailsSolidTrip(plantillaDriver: plantillaDriver[index]),                                  
-                                                    transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-                                                      return SlideTransition(
-                                                        position: Tween<Offset>(
-                                                          begin: Offset(1.0, 0.0),
-                                                          end: Offset.zero,
-                                                        ).animate(animation),
-                                                        child: child,
-                                                      );
-                                                    },
-                                                  ),
-                                                );
-                                              }
-                                        }),
-                                  );
+                                  return ItemDriverCard(
+                                    viajeSolido: false,
+                                      plantillaDriver: plantillaDriver[index],
+                                      press: () {
+                                        setPantallaP(0);
+                                        // si.method();
+                                        if (plantillaDriver[index] == plantillaDriver[0]) {
+                                              Navigator.push(
+                                                context,
+                                                PageRouteBuilder(
+                                                  transitionDuration: Duration(milliseconds: 200),
+                                                  pageBuilder: (_, __, ___) => DetailsDriverHour(plantillaDriver: plantillaDriver[index]),                                  
+                                                  transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                                    return SlideTransition(
+                                                      position: Tween<Offset>(
+                                                        begin: Offset(1.0, 0.0),
+                                                        end: Offset.zero,
+                                                      ).animate(animation),
+                                                      child: child,
+                                                    );
+                                                  },
+                                                ),
+                                              );
+                                            } else if (plantillaDriver[index] == plantillaDriver[1]) {
+                                              Navigator.push(
+                                                context,
+                                                PageRouteBuilder(
+                                                  transitionDuration: Duration(milliseconds: 200),
+                                                  pageBuilder: (_, __, ___) => DetailsDriverTripInProgress(plantillaDriver: plantillaDriver[index]),                                  
+                                                  transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                                    return SlideTransition(
+                                                      position: Tween<Offset>(
+                                                        begin: Offset(1.0, 0.0),
+                                                        end: Offset.zero,
+                                                      ).animate(animation),
+                                                      child: child,
+                                                    );
+                                                  },
+                                                ),
+                                              );
+                                            } else if (plantillaDriver[index] == plantillaDriver[2]) {
+                                              Navigator.push(
+                                                context,
+                                                PageRouteBuilder(
+                                                  transitionDuration: Duration(milliseconds: 200),
+                                                  pageBuilder: (_, __, ___) => DetailsDriverHoursOut(plantillaDriver: plantillaDriver[index]),                                  
+                                                  transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                                    return SlideTransition(
+                                                      position: Tween<Offset>(
+                                                        begin: Offset(1.0, 0.0),
+                                                        end: Offset.zero,
+                                                      ).animate(animation),
+                                                      child: child,
+                                                    );
+                                                  },
+                                                ),
+                                              );
+                                            } else if (plantillaDriver[index] == plantillaDriver[3]) {
+                                              Navigator.push(
+                                                context,
+                                                PageRouteBuilder(
+                                                  transitionDuration: Duration(milliseconds: 200),
+                                                  pageBuilder: (_, __, ___) => DetailsDriverHistory(plantillaDriver: plantillaDriver[index]),                                  
+                                                  transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                                    return SlideTransition(
+                                                      position: Tween<Offset>(
+                                                        begin: Offset(1.0, 0.0),
+                                                        end: Offset.zero,
+                                                      ).animate(animation),
+                                                      child: child,
+                                                    );
+                                                  },
+                                                ),
+                                              );
+                                            }else if (plantillaDriver[index].id == 5) {
+                                              _noDisponible(context);
+                                            }else if (plantillaDriver[index].id == 6) {
+                                              Navigator.push(
+                                                context,
+                                                PageRouteBuilder(
+                                                  transitionDuration: Duration(milliseconds: 200),
+                                                  pageBuilder: (_, __, ___) => DetailsSolidTrip(plantillaDriver: plantillaDriver[index]),                                  
+                                                  transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                                    return SlideTransition(
+                                                      position: Tween<Offset>(
+                                                        begin: Offset(1.0, 0.0),
+                                                        end: Offset.zero,
+                                                      ).animate(animation),
+                                                      child: child,
+                                                    );
+                                                  },
+                                                ),
+                                              );
+                                            }
+                                      });
                                 })
                               );
                           }
@@ -525,9 +519,10 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                         }
                       },
                     ),
-                ),
-                //Positioned(child: Icon(Icons.brightness_1)),
-              ],
+                  
+                  SizedBox(height: 15),  
+                ],
+              ),
             ),
           ),
         ),
