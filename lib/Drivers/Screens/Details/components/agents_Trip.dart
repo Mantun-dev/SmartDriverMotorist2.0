@@ -325,6 +325,10 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                   ),
                   body: Column(
                     children: [
+                      Padding(
+                        padding:const EdgeInsets.only(left: 20, right: 20, top: 10),
+                        child: _buttonsAgents(),
+                      ),
                       Expanded(
                         child: GestureDetector(
                         onTap: () {
@@ -344,27 +348,20 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
   Widget body() {
     return Padding(
       padding: const EdgeInsets.all(20.0),
-      child: ListView(
-        children: [
-        ingresarVehiculo(),
-
-        SizedBox(height: 30.0),
-        opcionesBotones(),
-        SizedBox(height: 30.0),
-        _buttonsAgents(),
-        SizedBox(height: 30.0),
-        
-        if(confirmados==true)
-          _agentToConfirm(),
-        
-        if(no_confirmados==true)
-          _agentoNoConfirm(),
-        
-        if(cancelados==true)
-          _agentToCancel(),
-
-        SizedBox(height: 30.0),
-      ]),
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            ingresarVehiculo(),
+            SizedBox(height: 30.0),
+            opcionesBotones(),
+            SizedBox(height: 30.0),
+            if(confirmados == true) _agentToConfirm(),
+            if(no_confirmados == true) _agentoNoConfirm(),
+            if(cancelados == true) _agentToCancel(),
+            SizedBox(height: 30.0),
+          ],
+        ),
+      )
     );
   }
 
@@ -760,43 +757,34 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
         if (abc.connectionState == ConnectionState.done) {
           if (abc.data!.trips![0].agentes!.length == 0) {
             return Container(
-              decoration: BoxDecoration(boxShadow: [
-                BoxShadow(
-                    blurStyle: BlurStyle.normal,
-                    color: Colors.white.withOpacity(0.2),
-                    blurRadius: 15,
-                    spreadRadius: -10,
-                    offset: Offset(-15, -6)),
-                BoxShadow(
-                    blurStyle: BlurStyle.normal,
-                    color: Colors.black.withOpacity(0.6),
-                    blurRadius: 30,
-                    spreadRadius: -15,
-                    offset: Offset(18, 5)),
-              ]),
-              margin: EdgeInsets.only(right: 15.0, left: 15),
-              child: Card(
-                color: backgroundColor,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-                margin: EdgeInsets.symmetric(vertical: 15),
-                child: Column(
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardTheme.color,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Theme.of(context).dividerColor,
+                  width: 1
+                ) // Radio de la esquina
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    ListTile(
-                      leading: Icon(Icons.supervised_user_circle,
-                          color: thirdColor),
-                      title: Text('Agentes',
+                  children: [
+                    SvgPicture.asset( 
+                      "assets/icons/advertencia.svg",
+                      color: Theme.of(context).primaryIconTheme.color,
+                      width: 18,
+                      height: 18,
+                    ),
+                    Flexible(
+                      child: Text(
+                          '  No hay agentes confirmados para este viaje',
                           style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.normal,
-                              fontSize: 20.0)),
-                      subtitle: Text(
-                          'No hay agentes confirmados para este viaje',
-                          style: TextStyle(
-                              color: Colors.red,
-                              fontWeight: FontWeight.normal,
-                              fontSize: 15.0)),
+                            color: Color.fromRGBO(213, 0, 0, 1),
+                            fontWeight: FontWeight.normal,
+                            fontSize: 15.0
+                          )
+                        ),
                     ),
                   ],
                 ),
@@ -1146,50 +1134,37 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
         
         if (abc.connectionState == ConnectionState.done) {
           if (abc.data!.trips![1].noConfirmados!.length == 0) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15.0),
-              child: Container(
-                decoration: BoxDecoration(boxShadow: [
-                  BoxShadow(
-                      blurStyle: BlurStyle.normal,
-                      color: Colors.white.withOpacity(0.2),
-                      blurRadius: 15,
-                      spreadRadius: -10,
-                      offset: Offset(-15, -6)),
-                  BoxShadow(
-                      blurStyle: BlurStyle.normal,
-                      color: Colors.black.withOpacity(0.6),
-                      blurRadius: 30,
-                      spreadRadius: -15,
-                      offset: Offset(18, 5)),
-                ]),
-                child: Card(
-                  elevation: 10,
-                  color: backgroundColor,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                  margin: EdgeInsets.symmetric(vertical: 15),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      ListTile(
-                        leading:
-                            Icon(Icons.person,color: thirdColor),
-                        title: Text('Agentes',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20.0,
-                            )),
-                        subtitle: Text(
-                            'No hay agentes no confirmados para este viaje',
-                            style: TextStyle(
-                                color: Colors.red,
-                                fontWeight: FontWeight.normal,
-                                fontSize: 15.0)),
-                      ),
-                    ],
-                  ),
+            return Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardTheme.color,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Theme.of(context).dividerColor,
+                  width: 1
+                ) // Radio de la esquina
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SvgPicture.asset( 
+                      "assets/icons/advertencia.svg",
+                      color: Theme.of(context).primaryIconTheme.color,
+                      width: 18,
+                      height: 18,
+                    ),
+                    Flexible(
+                      child: Text(
+                          '  No hay agentes no confirmados para este viaje',
+                          style: TextStyle(
+                            color: Color.fromRGBO(213, 0, 0, 1),
+                            fontWeight: FontWeight.normal,
+                            fontSize: 15.0
+                          )
+                        ),
+                    ),
+                  ],
                 ),
               ),
             );
@@ -1204,284 +1179,309 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                     physics: ClampingScrollPhysics(),
                     itemCount: abc.data!.trips![1].noConfirmados!.length,
                     itemBuilder: (context, index) {
-                      Size size = MediaQuery.of(context).size;
-                      return Container(
-                        margin:
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                        decoration: BoxDecoration(boxShadow: [
-                          BoxShadow(
-                              blurStyle: BlurStyle.normal,
-                              color: Colors.white.withOpacity(0.2),
-                              blurRadius: 15,
-                              spreadRadius: -10,
-                              offset: Offset(-15, -6)),
-                          BoxShadow(
-                              blurStyle: BlurStyle.normal,
-                              color: Colors.black.withOpacity(0.6),
-                              blurRadius: 30,
-                              spreadRadius: -15,
-                              offset: Offset(18, 5)),
-                        ]),
-                        width: size.width,
-                        child: Column(
-                          children: [
-                            Container(
-                              child: Card(
-                                color: backgroundColor,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10)),
-                                margin: EdgeInsets.all(0.0),
-                                elevation: 10,
-                                child: Column(
-                                  children: <Widget>[
-                                    Padding(
-                                      padding: const EdgeInsets.all(1.0),
-                                      child: ExpansionTile(
-                                        backgroundColor: backgroundColor,
-                                        title: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.end,
-                                          children: <Widget>[
-                                            Padding(
-                                              padding: const EdgeInsets.fromLTRB(14,0,20,0),
-                                              child: Row(
-                                                children: [
-                                                  Icon(Icons.person,color: thirdColor),
-                                                  SizedBox(width: 15,),
-                                                  Flexible(
-                                                    child: Text('Nombre: ${abc.data!.trips![1].noConfirmados![index].agentFullname}',
-                                                      style: TextStyle(
-                                                          color: Colors.white,
-                                                          //fontWeight: FontWeight.bold,
-                                                          fontSize: 18.0)),
-                                                  ),
-                                                ],
+                      
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 10.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8.0),
+                            border: Border.all(color: Theme.of(context).dividerColor,),
+                          ),
+                          child: ExpansionTile(
+                            iconColor: Theme.of(context).primaryIconTheme.color,
+                            tilePadding: const EdgeInsets.only(right: 10, left: 10),
+                            title: Column(
+                              children: [
+
+                                SizedBox(height: 20),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 10, left: 10),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                                width: 18,
+                                                height: 18,
+                                                child: SvgPicture.asset(
+                                                  "assets/icons/usuario.svg",
+                                                  color: Color.fromRGBO(213, 0, 0, 1),
+                                                ),
                                               ),
-                                            ),                       
+                                              SizedBox(width: 10),
+                                              Flexible(
+                                                child: RichText(
+                                                  text: TextSpan(
+                                                    style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                    children: [
+                                                      TextSpan(
+                                                        text: 'Nombre: ',
+                                                        style: TextStyle(fontWeight: FontWeight.w500),
+                                                      ),
+                                                      TextSpan(
+                                                        text: '${abc.data!.trips![1].noConfirmados![index].agentFullname}',
+                                                        style: TextStyle(fontWeight: FontWeight.normal),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              )                   
+                                    ],
+                                  ),
+                                ),
+
+                                SizedBox(height: 20),
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                                      width: 18,
+                                                      height: 18,
+                                                      child: SvgPicture.asset(
+                                                        "assets/icons/hora.svg",
+                                                        color: Theme.of(context).primaryIconTheme.color,
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 10),
+                                                    Flexible(
+                                                      child: RichText(
+                                                        text: TextSpan(
+                                                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                          children: [
+                                                            TextSpan(
+                                                              text: 'Entrada: ',
+                                                              style: TextStyle(fontWeight: FontWeight.w500),
+                                                            ),
+                                                            TextSpan(
+                                                              text: '${abc.data!.trips![1].noConfirmados![index].hourIn}',
+                                                              style: TextStyle(fontWeight: FontWeight.w700, color: Color.fromRGBO(40, 169, 83, 1)),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    )                   
                                           ],
                                         ),
-                                        trailing: SizedBox(),
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.only(left: 30),
-                                            child: Row(
-                                              children: [
-                                                Icon(Icons.location_city,color: thirdColor),
-                                                SizedBox(width: 15,),
-                                                Text('Empresa: ${abc.data!.trips![1].noConfirmados![index].companyName}',
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      //fontWeight: FontWeight.bold,
-                                                      fontSize: 18.0)),
-                                              ],
-                                            ),
-                                          ),
-                                          SizedBox(height: 8,),
-                                          Padding(
-                                            padding: const EdgeInsets.only(left: 30),
-                                            child: Row(
-                                              children: [
-                                                Icon(Icons.phone,
-                                                color: thirdColor),
-                                                SizedBox(width: 8,),
-                                                TextButton(
-                                                onPressed: () =>
-                                                    launchUrl(Uri.parse(
-                                                      'tel://${abc.data!.trips![1].noConfirmados![index].agentPhone}',
-                                                    )),
-                                                child: Container(
-                                                    padding: EdgeInsets.only(
-                                                        right: 128),
-                                                    child: Text(
-                                                        'Teléfono: ${abc.data!.trips![1].noConfirmados![index].agentPhone}',
-                                                        textAlign:
-                                                            TextAlign.left,
-                                                        style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontSize: 18)))),
-                                              ],
-                                            ),
-                                          ),
-                                          SizedBox(height: 8,),
-                                          Padding(
-                                            padding: const EdgeInsets.only(left: 30),
-                                            child: Row(
-                                              children: [
-                                                Icon(Icons.access_time,color: thirdColor),
-                                                SizedBox(width: 15,),
-                                                Text('Entrada: ${abc.data!.trips![1].noConfirmados![index].hourIn}',
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      //fontWeight: FontWeight.bold,
-                                                      fontSize: 18.0)),
-                                              ],
-                                            ),
-                                          ),
-                                          SizedBox(height: 18),
-                                          Padding(
-                                            padding: const EdgeInsets.fromLTRB(30,0,20,0),
-                                            child: Row(
-                                              children: [
-                                                Icon(Icons.location_pin,color: thirdColor),
-                                                SizedBox(width: 15,),
-                                                Flexible(
-                                                  child: Text(abc.data!.trips![1].noConfirmados![index].agentReferencePoint==null || abc.data!.trips![1].noConfirmados![index].agentReferencePoint==""
-                                                          ?"Dirección: ${abc.data!.trips![1].noConfirmados![index].neighborhoodName}, ${abc.data!.trips![1].noConfirmados![index].townName}":'Dirección: ${abc.data!.trips![1].noConfirmados![index].agentReferencePoint}, ${abc.data!.trips![1].noConfirmados![index].neighborhoodName}, ${abc.data!.trips![1].noConfirmados![index].townName},',
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        //fontWeight: FontWeight.bold,
-                                                        fontSize: 18.0)),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          if (abc.data!.trips![1].noConfirmados![index].neighborhoodReferencePoint != null)... {
-                                            SizedBox(height: 18),
-                                            Padding(
-                                              padding: const EdgeInsets.only(left: 30),
-                                              child: Row(
-                                                children: [
-                                                  Icon(Icons.warning_amber_outlined,color: thirdColor),
-                                                  SizedBox(width: 15,),
-                                                  Flexible(
-                                                    child: Text('Acceso autorizado: ${abc.data!.trips![1].noConfirmados![index].neighborhoodReferencePoint}',
-                                                      style: TextStyle(
-                                                          color: Colors.white,
-                                                          //fontWeight: FontWeight.bold,
-                                                          fontSize: 18.0)),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          },
-                                          //aqui lo demás
-                                          /*SizedBox(height: 30.0),
-                                          Text('Hora de encuentro: ',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 18.0)),
-                                          SizedBox(height: 10.0),
-                                          Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(15)),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.black
-                                                      .withOpacity(0.2),
-                                                  spreadRadius: 0,
-                                                  blurStyle: BlurStyle.solid,
-                                                  blurRadius: 10,
-                                                  offset: Offset(0,
-                                                      0), // changes position of shadow
-                                                ),
-                                                BoxShadow(
-                                                  color: Colors.white
-                                                      .withOpacity(0.1),
-                                                  spreadRadius: 0,
-                                                  blurRadius: 5,
-                                                  blurStyle: BlurStyle.inner,
-                                                  offset: Offset(0,
-                                                      0), // changes position of shadow
-                                                ),
-                                              ],
-                                            ),
-                                            margin: EdgeInsets.symmetric(
-                                                horizontal: 40.0),
-                                            child: Column(
-                                              children: [
-                                                DateTimeField(
-                                                  decoration: InputDecoration(
-                                                    border: InputBorder.none,
-                                                  ),
-                                                  keyboardType:
-                                                      TextInputType.datetime,
-                                                  format: format,
-                                                  onShowPicker: (context,currentValue) async {
-                                                    var time =await showTimePicker(context: context,initialTime:TimeOfDay.now(),);                                                        
-                                                    validateHour(abc.data!.trips![1].noConfirmados![index].agentId.toString(),abc.data!.trips![1].noConfirmados![index].tripId.toString(), time );                                                    
-                                                    return DateTimeField.convert(flagalert);
-                                                  },
-                                                ),
-                                              ],
-                                            ),
-                                          ),*/
-                                          SizedBox(height: 20.0),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceAround,
-                                            children: [
-                                              Container(
-                                                width: 150,
-                                                height: 45,
-                                                child: TextButton(
-                                                  style: TextButton.styleFrom(
-                                                    textStyle: TextStyle(
-                                                      color: Colors
-                                                          .white, // foreground
-                                                    ),
-                                                    backgroundColor: Colors.red,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                            side: BorderSide(
-                                                                color: Colors
-                                                                    .red,
-                                                                width: 2,
-                                                                style:
-                                                                    BorderStyle
-                                                                        .solid),
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        10)),
-                                                  ),
-                                                  onPressed: () {
-                                                    QuickAlert.show(
-                                                    context: context,
-                                                    type: QuickAlertType.confirm,
-                                                    title: "...",          
-                                                    text: "¿Está seguro que desea marcar como no \nconfirmado al agente?",
-                                                      confirmBtnText: "Confirmar",
-                                                      cancelBtnText: "Cancelar",
-                                                      showCancelBtn: true,  
-                                                      confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
-                                                      cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
-                                                      onConfirmBtnTap: () {
-                                                        Navigator.pop(contextP!);
-                                                        fetchNoConfirm(abc.data!.trips![1].noConfirmados![index].agentId.toString(),abc.data!.trips![1].noConfirmados![index].tripId.toString());                                        
-                                                        _refresh();
-                                                      },
-                                                      onCancelBtnTap: () {
-                                                        Navigator.pop(contextP!);
-                                                        QuickAlert.show(
-                                                        context: context,
-                                                        type: QuickAlertType.success,
-                                                        title: "...",
-                                                        text: "¡Cancelado!",                                                        
-                                                        );
-                                                      },
-                                                    );                                                  
-                                                  },
-                                                  child: Text('No confirmó',
-                                                      style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontSize: 17)),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          SizedBox(height: 30.0),
-                                          // Usamos una fila para ordenar los botones del card
-                                        ],
                                       ),
-                                    ),
-                                  
-                                  ],
+                                      Container(
+                                        height: 1,
+                                        color: Theme.of(context).dividerColor,
+                                      ),
+
+                                      SizedBox(height: 20),
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                                      width: 18,
+                                                      height: 18,
+                                                      child: SvgPicture.asset(
+                                                        "assets/icons/Casa.svg",
+                                                        color: Theme.of(context).primaryIconTheme.color,
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 10),
+                                                    Flexible(
+                                                      child: RichText(
+                                                        text: TextSpan(
+                                                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                          children: [
+                                                            TextSpan(
+                                                              text: 'Dirección: ',
+                                                              style: TextStyle(fontWeight: FontWeight.w500),
+                                                            ),
+                                                            TextSpan(
+                                                              text: abc.data!.trips![1].noConfirmados![index].agentReferencePoint==null || abc.data!.trips![1].noConfirmados![index].agentReferencePoint==""
+                                                                    ?"${abc.data!.trips![1].noConfirmados![index].neighborhoodName}, ${abc.data!.trips![1].noConfirmados![index].townName}":'${abc.data!.trips![1].noConfirmados![index].agentReferencePoint}, ${abc.data!.trips![1].noConfirmados![index].neighborhoodName}, ${abc.data!.trips![1].noConfirmados![index].townName},',
+                                                              style: TextStyle(fontWeight: FontWeight.normal),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    )                   
+                                          ],
+                                        ),
+                                      ),
+
+                                      if (abc.data!.trips![1].noConfirmados![index].neighborhoodReferencePoint != null)... {
+                                      Container(
+                                        height: 1,
+                                        color: Theme.of(context).dividerColor,
+                                      ),
+                                      SizedBox(height: 20),
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                                      width: 18,
+                                                      height: 18,
+                                                      child: SvgPicture.asset(
+                                                        "assets/icons/warning.svg",
+                                                        color: Theme.of(context).primaryIconTheme.color,
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 10),
+                                                    Flexible(
+                                                      child: RichText(
+                                                        text: TextSpan(
+                                                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                          children: [
+                                                            TextSpan(
+                                                              text: 'Acceso autorizado: ',
+                                                              style: TextStyle(fontWeight: FontWeight.w500),
+                                                            ),
+                                                            TextSpan(
+                                                              text: '${abc.data!.trips![1].noConfirmados![index].neighborhoodReferencePoint}',
+                                                              style: TextStyle(fontWeight: FontWeight.normal),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    )                   
+                                          ],
+                                        ),
+                                      ),
+                                      
+                                      },
+                              ],
+                            ),
+                            
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(right: 10, left: 10),
+                                child: Container(
+                                  height: 1,
+                                  color: Theme.of(context).dividerColor,
                                 ),
                               ),
-                            ),
-                          ],
+                              SizedBox(height: 20),
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 15, left: 20, bottom: 4),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                                      width: 18,
+                                                      height: 18,
+                                                      child: SvgPicture.asset(
+                                                        "assets/icons/telefono_num.svg",
+                                                        color: Theme.of(context).primaryIconTheme.color,
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 10),
+                                                    Flexible(
+                                                      child: GestureDetector(
+                                                        onTap: () {
+                                                          launchUrl(Uri.parse(
+                                                            'tel://${abc.data!.trips![1].noConfirmados![index].agentPhone}',
+                                                          ));
+                                                        },
+                                                        child: RichText(
+                                                          text: TextSpan(
+                                                            style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                            children: [
+                                                              TextSpan(
+                                                                text: 'Teléfono: ',
+                                                                style: TextStyle(fontWeight: FontWeight.w500),
+                                                              ),
+                                                              TextSpan(
+                                                                text: '${abc.data!.trips![1].noConfirmados![index].agentPhone}',
+                                                                style: TextStyle(fontWeight: FontWeight.normal),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    )                   
+                                          ],
+                                        ),
+                                      ),
+                                      Padding(
+                                padding: const EdgeInsets.only(right: 10, left: 10),
+                                child: Container(
+                                  height: 1,
+                                  color: Theme.of(context).dividerColor,
+                                ),
+                              ),
+
+                                      SizedBox(height: 20),
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 15, left: 20, bottom: 4),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                                      width: 18,
+                                                      height: 18,
+                                                      child: SvgPicture.asset(
+                                                        "assets/icons/compania.svg",
+                                                        color: Theme.of(context).primaryIconTheme.color,
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 10),
+                                                    Flexible(
+                                                      child: RichText(
+                                                        text: TextSpan(
+                                                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                          children: [
+                                                            TextSpan(
+                                                              text: 'Empresa: ',
+                                                              style: TextStyle(fontWeight: FontWeight.w500),
+                                                            ),
+                                                            TextSpan(
+                                                              text: '${abc.data!.trips![1].noConfirmados![index].companyName}',
+                                                              style: TextStyle(fontWeight: FontWeight.normal),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    )                   
+                                          ],
+                                        ),
+                                      ),
+                                      Padding(
+                                padding: const EdgeInsets.only(right: 10, left: 10),
+                                child: Container(
+                                  height: 1,
+                                  color: Theme.of(context).dividerColor,
+                                ),
+                              ), 
+                                      SizedBox(height: 20.0),
+                                      TextButton(
+                                        style: TextButton.styleFrom(
+                                          side: BorderSide(width: 1, color: Theme.of(context).primaryColorDark),
+                                          fixedSize: Size(150, 25),
+                                          elevation: 0,
+                                          backgroundColor: Colors.transparent,
+                                          shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
+                                        ),
+                                        onPressed: () {
+                                          QuickAlert.show(
+                                          context: context,
+                                          type: QuickAlertType.confirm,
+                                          title: "...",          
+                                          text: "¿Está seguro que desea marcar como no \nconfirmado al agente?",
+                                            confirmBtnText: "Confirmar",
+                                            cancelBtnText: "Cancelar",
+                                            showCancelBtn: true,  
+                                            confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
+                                            cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
+                                            onConfirmBtnTap: () {
+                                              Navigator.pop(contextP!);
+                                              fetchNoConfirm(abc.data!.trips![1].noConfirmados![index].agentId.toString(),abc.data!.trips![1].noConfirmados![index].tripId.toString());                                        
+                                              _refresh();
+                                            },
+                                            onCancelBtnTap: () {
+                                              Navigator.pop(contextP!);
+                                            },
+                                          );                                                  
+                                        },
+                                        child: Text('No confirmó',
+                                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold)),
+                                      ),
+                                      SizedBox(height: 10.0),
+                                      // Usamos una fila para ordenar los botones del card
+                              ],
+                          ),
                         ),
                       );
                     });
@@ -1596,45 +1596,34 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
         if (abc.connectionState == ConnectionState.done) {
           if (abc.data!.trips![2].cancelados!.length == 0) {
             return Container(
-              margin: EdgeInsets.symmetric(
-                horizontal: 20,
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardTheme.color,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Theme.of(context).dividerColor,
+                  width: 1
+                ) // Radio de la esquina
               ),
-              decoration: BoxDecoration(boxShadow: [
-                BoxShadow(
-                    blurStyle: BlurStyle.normal,
-                    color: Colors.white.withOpacity(0.2),
-                    blurRadius: 15,
-                    spreadRadius: -10,
-                    offset: Offset(-15, -6)),
-                BoxShadow(
-                    blurStyle: BlurStyle.normal,
-                    color: Colors.black.withOpacity(0.6),
-                    blurRadius: 30,
-                    spreadRadius: -15,
-                    offset: Offset(18, 5)),
-              ]),
-              child: Card(
-                color: backgroundColor,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-                margin: EdgeInsets.symmetric(vertical: 15),
-                child: Column(
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    ListTile(                      
-                      leading: Icon(Icons.directions_car, color: thirdColor),
-                      title: Text('Agentes',
+                  children: [
+                    SvgPicture.asset( 
+                      "assets/icons/advertencia.svg",
+                      color: Theme.of(context).primaryIconTheme.color,
+                      width: 18,
+                      height: 18,
+                    ),
+                    Flexible(
+                      child: Text(
+                          '  No hay agentes que hayan cancelado este viaje',
                           style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20.0,
-                          )),
-                      subtitle: Text(
-                          'No hay agentes que hayan cancelado este viaje',
-                          style: TextStyle(
-                              color: Colors.red,
-                              fontWeight: FontWeight.normal,
-                              fontSize: 15.0)),
+                            color: Color.fromRGBO(213, 0, 0, 1),
+                            fontWeight: FontWeight.normal,
+                            fontSize: 15.0
+                          )
+                        ),
                     ),
                   ],
                 ),
@@ -1833,100 +1822,45 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
 
 //Buttons
   Widget _buttonsAgents() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          ElevatedButton(
-            style: TextButton.styleFrom(
-              textStyle: TextStyle(
-                color: Colors.white, // foreground
-              ),
-              backgroundColor: Colors.green,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-            ),
-            child: Text(" Pasar viaje en proceso"),
-            onPressed: () {
-              QuickAlert.show(
-              context: context,
-              type: QuickAlertType.success,
-              title: "...",
-              text: "¿Está seguro que desea pasar el viaje en proceso?",
-              confirmBtnText: "Confirmar",
-              cancelBtnText: "Cancelar",
-              showCancelBtn: true,  
-              confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
-              cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ),         
-              onConfirmBtnTap: () {
-                Navigator.pop(context);
-                LoadingIndicatorDialog().show(context);
-                new Future.delayed(new Duration(seconds: 2), () {
-                    fetchPastInProgress();
-                  });
-                
-                  
-              },
-              onCancelBtnTap: () {
-                Navigator.pop(context);
-                QuickAlert.show(
-                context: context,
-                title: "...",
-                type: QuickAlertType.success,
-                text: "¡Cancelado!",                                
-                );
-              },
-              );
-            },
-          ),
-          SizedBox(width: 5),
-          ElevatedButton(
-            style: TextButton.styleFrom(
-              textStyle: TextStyle(
-                color: Colors.white, // foreground
-              ),
-              // foreground
-              backgroundColor: Colors.orangeAccent,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-            ),
-            child: Text('Marcar agentes como "Cancelados"'),
-            onPressed: () {
-              QuickAlert.show(
-                context: context,
-                type: QuickAlertType.success,
-                title: "Marcar como cancelados",
-                text: "¿Está seguro que desea marcarlos como cancelados?",
-                confirmBtnText: "Confirmar",
-                cancelBtnText: "Cancelar",
-                showCancelBtn: true,  
-                confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
-                cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
-                onConfirmBtnTap: () {
-                  Navigator.pop(context);
-                  QuickAlert.show(
-                  title: 'Completado',
-                  context: context,
-                  type: QuickAlertType.success,
-                  text: "Han sido marcado como cancelados",                
-                  );
-                  new Future.delayed(new Duration(seconds: 2), () {
-                      fetchTripAgentsNotConfirm();
-                    });
-                },
-                onCancelBtnTap: () {
-                  Navigator.pop(context);
-                  QuickAlert.show(
-                  context: context,
-                  title: "...",
-                  type: QuickAlertType.success,
-                  text: "¡Entendido!",                
-                  );
-                },
-              );
-            },
-          ),     
-        ],
+    return Align(
+      alignment: Alignment.topRight,
+      child: TextButton(
+        style: TextButton.styleFrom(
+          textStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white, fontSize: 12),
+          backgroundColor: Theme.of(context).primaryColor,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.only(right: 12, left: 12),
+          child: Text("Pasar viaje a proceso", style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white, fontSize: 12),),
+        ),
+        onPressed: () {
+          QuickAlert.show(
+          context: context,
+          type: QuickAlertType.success,
+          title: "...",
+          text: "¿Está seguro que desea pasar el viaje en proceso?",
+          confirmBtnText: "Confirmar",
+          cancelBtnText: "Cancelar",
+          showCancelBtn: true,  
+          confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
+          cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ),         
+          onConfirmBtnTap: () {
+    
+            Navigator.pop(context);
+            LoadingIndicatorDialog().show(context);
+            new Future.delayed(new Duration(seconds: 2), () {
+                fetchPastInProgress();
+              });
+            
+              
+          },
+          onCancelBtnTap: () {
+            Navigator.pop(context);
+          },
+          );
+        },
       ),
     );
   }
