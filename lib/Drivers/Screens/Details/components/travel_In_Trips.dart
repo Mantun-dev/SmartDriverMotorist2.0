@@ -91,7 +91,7 @@ class _TripsState extends State<Trips> {
 
   Widget body(Size size) {
     return Padding(
-      padding: const EdgeInsets.all(15.0),
+      padding: const EdgeInsets.all(20.0),
       child: Column(
         children: [
           FutureBuilder<List<TripsPending2>>(future: item,
@@ -112,7 +112,6 @@ class _TripsState extends State<Trips> {
                         height: 1,
                         color: Theme.of(context).dividerColor,
                       ),
-                      
                     ],
                   );
                 } else {

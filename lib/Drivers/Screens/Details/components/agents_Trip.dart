@@ -15,6 +15,7 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter_auth/Drivers/models/registerTripAsCompleted.dart';
 import 'package:flutter_auth/main.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:quickalert/quickalert.dart';
 import '../../../../components/AppBarPosterior.dart';
@@ -63,6 +64,10 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
   final prefs = new PreferenciasUsuario();
   String ip = "https://driver.smtdriver.com";
   dynamic flagalert;
+
+  bool confirmados = true;
+  bool no_confirmados = false;
+  bool cancelados = false;
   
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if(AppLifecycleState.resumed==state){
@@ -338,49 +343,96 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
 
   Widget body() {
     return Padding(
-      padding: const EdgeInsets.all(15.0),
+      padding: const EdgeInsets.all(20.0),
       child: ListView(
         children: [
         ingresarVehiculo(),
-        SizedBox(height: 20.0),
-        Padding(
-          padding: const EdgeInsets.only(left: 15.0),
-          child: Text('Agentes confirmados',
-              textAlign: TextAlign.left,
-              style: TextStyle(
-                  color: GradiantV_2,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18.0)),
-        ),
-        SizedBox(height: 10.0),
-        _agentToConfirm(),
-        SizedBox(height: 20.0),
-        Padding(
-            padding: const EdgeInsets.only(left: 15.0),
-            child: Text('Agentes no confirmados',
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                    color: GradiantV_2,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18.0))),
-        _agentoNoConfirm(),
-        SizedBox(height: 20.0),
-        Padding(
-          padding: const EdgeInsets.only(left: 15.0),
-          child: Text('Agentes que han cancelado',
-              textAlign: TextAlign.left,
-              style: TextStyle(
-                  color: GradiantV_2,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18.0)),
-        ),
-        SizedBox(height: 10.0),
-        _agentToCancel(),
-        SizedBox(height: 20.0),
+
+        SizedBox(height: 30.0),
+        opcionesBotones(),
+        SizedBox(height: 30.0),
         _buttonsAgents(),
+        SizedBox(height: 30.0),
+        
+        if(confirmados==true)
+          _agentToConfirm(),
+        
+        if(no_confirmados==true)
+          _agentoNoConfirm(),
+        
+        if(cancelados==true)
+          _agentToCancel(),
+
         SizedBox(height: 30.0),
       ]),
     );
+  }
+
+  Row opcionesBotones() {
+    return Row(
+        children: [
+          Expanded(
+            child: TextButton(
+              style: TextButton.styleFrom(
+                side: BorderSide(width: 1, color: Theme.of(context).primaryColorDark),
+                fixedSize: Size(150, 25),
+                elevation: 0,
+                backgroundColor: confirmados!=true?Colors.transparent:Theme.of(context).primaryColorDark,
+                shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
+              ),
+              child: Text('Confirmados',style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold, color: confirmados==true?Theme.of(context).primaryColorLight:Theme.of(context).primaryColorDark)),
+              onPressed: confirmados==true?null:() {
+                setState(() {
+                  confirmados = true;
+                  no_confirmados = false;
+                  cancelados = false;
+                });
+              },
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.only(right: 10, left: 10),
+            child: TextButton(
+              style: TextButton.styleFrom(
+                side: BorderSide(width: 1, color: Theme.of(context).primaryColorDark),
+                fixedSize: Size(150, 25),
+                elevation: 0,
+                backgroundColor: no_confirmados!=true?Colors.transparent:Theme.of(context).primaryColorDark,
+                shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
+              ),
+              child: Text('No confirmados',style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold, color: no_confirmados==true?Theme.of(context).primaryColorLight:Theme.of(context).primaryColorDark)),
+              onPressed: no_confirmados==true?null:() {
+                setState(() {
+                  confirmados = false;
+                  no_confirmados = true;
+                  cancelados = false;
+                });
+              },
+            ),
+          ),
+
+          Expanded(
+            child: TextButton(
+              style: TextButton.styleFrom(
+                side: BorderSide(width: 1, color: Theme.of(context).primaryColorDark),
+                fixedSize: Size(150, 25),
+                elevation: 0,
+                backgroundColor: cancelados!=true?Colors.transparent:Theme.of(context).primaryColorDark,
+                shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
+              ),
+              child: Text('Cancelados',style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold, color: cancelados==true?Theme.of(context).primaryColorLight:Theme.of(context).primaryColorDark)),
+              onPressed: cancelados==true?null:() {
+                setState(() {
+                  confirmados = false;
+                  no_confirmados = false;
+                  cancelados = true;
+                });
+              },
+            ),
+          ),
+        ],
+      );
   }
 
   Widget ingresarVehiculo() {
@@ -388,149 +440,222 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
       future: item,
       builder: (BuildContext context, abc) {
         if (abc.connectionState == ConnectionState.done) {
-          return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: FutureBuilder<DriverData>(
-              future: driverData,
-              builder: (BuildContext context, abc) {
-                if (abc.connectionState == ConnectionState.done) {
-                  DriverData? data = abc.data;
-                  return Column(
-                    crossAxisAlignment:CrossAxisAlignment.start,
+          return FutureBuilder<DriverData>(
+          future: driverData,
+          builder: (BuildContext context, abc) {
+            if (abc.connectionState == ConnectionState.done) {
+              DriverData? data = abc.data;
+              return Column(
+                crossAxisAlignment:CrossAxisAlignment.start,
+                children: [
+
+                  if(data?.driverType=='Motorista')
+                    Center(child: Text('Escanee el código QR del vehículo', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 12),)),
+                  if(data?.driverType=='Motorista')
+                    SizedBox(height: 6,),
+
+                  Row(
                     children: [
-                      if(data?.driverType=='Motorista')
-                        Text('Escanee el codigo qr del vehículo', style: TextStyle(color: Colors.white.withOpacity(0.5)),),
-                      if(data?.driverType=='Motorista')
-                        SizedBox(height: 5,),
-                      Row(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(Radius.circular(15)),
-                              boxShadow: [
-                                BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0, 0), ),
-                                BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0, 0), ),
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).cardTheme.color,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: Theme.of(context).dividerColor,
+                              width: 1
+                            ) // Radio de la esquina
+                          ),
+                      
+                          child: Padding(
+                            padding: const EdgeInsets.only(left:20.0, right: 10),
+                            child: Row(
+                              children: [
+                                SvgPicture.asset(  
+                                    "assets/icons/vehiculo.svg",
+                                    color: Theme.of(context).primaryIconTheme.color,
+                                    width: 15,
+                                    height: 15,
+                                  ),
+                                  SizedBox(width: 6),
+                                Flexible(
+                                  child: TextField(
+                                    enabled: data?.driverType=='Motorista'?false:true,
+                                    style: TextStyle(
+                                      color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal
+                                    ),
+                                    controller: vehicleController,
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      hintText: 'Vehículo',
+                                      hintStyle: TextStyle(
+                                        color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal
+                                      ),
+                                    ),
+                                    onChanged: (value) => tripVehicle,
+                                  ),
+                                ),
                               ],
                             ),
-                            width: 200,
-                            child: Padding(
-                              padding: const EdgeInsets.only(left:10.0, right: 10),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.emoji_transportation,color: thirdColor,size: 30.0,),
-                                  SizedBox(width: 10.0),
-                                  Flexible(
-                                    child: TextField(
-                                      enabled: data?.driverType=='Motorista'?false:true,
-                                      style: TextStyle(color: Colors.white),
-                                      controller: vehicleController,
-                                      decoration: InputDecoration(
-                                        border: InputBorder.none,
-                                        hintText: 'Vehículo',
-                                        hintStyle: TextStyle(color: Colors.white.withOpacity(0.5),
-                                        fontSize: 15.0)
-                                      ),
-                                      onChanged: (value) => tripVehicle,
-                                    ),
+                          ),
+                        ),
+                      ),
+                              
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(10.0),
+                          border: Border.all(
+                            color: Theme.of(context).primaryColorDark,
+                            width: 1
+                          )
+                        ),
+                        child: IconButton(
+                          icon: SvgPicture.asset(  
+                                    "assets/icons/QR.svg",
+                                    color: Theme.of(context).primaryColorDark,
                                   ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          if(data?.driverType!='Motorista')
-                            SizedBox(width: 10,),
-
-                          if(data?.driverType!='Motorista')
-                            Container(
-                            decoration: BoxDecoration(
-                              color: firstColor,
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            child: IconButton(
-                              icon: Icon(Icons.save_outlined),
-                              color: backgroundColor,
-                              iconSize: 30.0,
-                              onPressed: vehicleL==false?null:() async{
-                                LoadingIndicatorDialog().show(context);
-                                http.Response responses = await http.get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
-                                final data2 = DriverData.fromJson(json.decode(responses.body));
-                                Map data = {
-                                  "driverId": data2.driverId.toString(),
-                                  "tripId": prefs.tripId.toString(),
-                                  "vehicleId": "",
-                                  "tripVehicle": vehicleController.text
-                                };
-                                http.Response responsed = await http.post(Uri.parse('https://driver.smtdriver.com/apis/editTripVehicle'), body: data);
-
-                                final resp2 = json.decode(responsed.body);
-                                LoadingIndicatorDialog().dismiss();
-                                if(resp2['type']=='success'){
-                                  if(mounted){
-                                    QuickAlert.show(context: context,title: "Exito",text: resp2['message'],type: QuickAlertType.success,);
-                                    setState(() {
-                                      tripVehicle = vehicleController.text;
-                                    });
-                                  }      
-
-                                }else{
-                                  QuickAlert.show(context: context,title: "Alerta",text: resp2['message'],type: QuickAlertType.error,);
+                          onPressed: vehicleL==false?null:() async{
+                            setRecargar(-1);
+                            String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);
+                  
+                            if (codigoQR == "-1") {
+                              setRecargar(0);
+                              return;
+                            } else {
+                              LoadingIndicatorDialog().show(context);
+                              http.Response responseSala = await http.get(Uri.parse('https://app.mantungps.com/3rd/vehicles/$codigoQR'),headers: {"Content-Type": "application/json", "x-api-key": 'a10xhq0p21h3fb9y86hh1oxp66c03f'});
+                              final resp = json.decode(responseSala.body);
+                              LoadingIndicatorDialog().dismiss();
+                              if(resp['type']=='success'){
+                                print(responseSala.body);
+                                print('###########################');
+                                if(mounted){
+                                  showDialog(
+                                          context: context,
+                                          builder: (context) => vehiculoE(resp, context),);
+                                }
+                              }else{
+                                if(mounted){
+                                  QuickAlert.show(context: context,title: "Alerta",text: "Vehículo no valido",type: QuickAlertType.error,); 
                                 }
                               }
-                            ),
-                          ),
+                              setRecargar(0);
+                            }
+                          }
+                        ),
+                      ),
 
-                          SizedBox(width: 10,),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: firstColor,
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            child: IconButton(
-                              icon: Icon(Icons.qr_code),
-                              color: backgroundColor,
-                              iconSize: 30.0,
-                              onPressed: vehicleL==false?null:() async{
-                                setRecargar(-1);
-                                String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);
-                      
-                                if (codigoQR == "-1") {
-                                  setRecargar(0);
-                                  return;
-                                } else {
-                                  LoadingIndicatorDialog().show(context);
-                                  http.Response responseSala = await http.get(Uri.parse('https://app.mantungps.com/3rd/vehicles/$codigoQR'),headers: {"Content-Type": "application/json", "x-api-key": 'a10xhq0p21h3fb9y86hh1oxp66c03f'});
-                                  final resp = json.decode(responseSala.body);
-                                  LoadingIndicatorDialog().dismiss();
-                                  if(resp['type']=='success'){
-                                    print(responseSala.body);
-                                    print('###########################');
-                                    if(mounted){
-                                      showDialog(
-                                              context: context,
-                                              builder: (context) => vehiculoE(resp, context),);
-                                    }
-                                  }else{
-                                    if(mounted){
-                                      QuickAlert.show(context: context,title: "Alerta",text: "Vehículo no valido",type: QuickAlertType.error,); 
-                                    }
-                                  }
-                                  setRecargar(0);
-                                }
-                              }
-                            ),
-                          ),
-                        ],
+
+                        if(data?.driverType!='Motorista')
+                        SizedBox(width: 6),
+
+                        if(data?.driverType!='Motorista')
+                        Container(
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(10.0),
+                          border: Border.all(
+                            color: Theme.of(context).primaryColorDark,
+                            width: 1
+                          )
+                        ),
+                        child: IconButton(
+                          icon: SvgPicture.asset(  
+                                    "assets/icons/Guardar.svg",
+                                    color: Theme.of(context).primaryColorDark,
+                                  ),
+                          onPressed: vehicleL==false?null:() async{
+                            LoadingIndicatorDialog().show(context);
+                            http.Response responses = await http.get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
+                            final data2 = DriverData.fromJson(json.decode(responses.body));
+                            Map data = {
+                              "driverId": data2.driverId.toString(),
+                              "tripId": prefs.tripId.toString(),
+                              "vehicleId": "",
+                              "tripVehicle": vehicleController.text
+                            };
+                            http.Response responsed = await http.post(Uri.parse('https://driver.smtdriver.com/apis/editTripVehicle'), body: data);
+                          
+                            final resp2 = json.decode(responsed.body);
+                            LoadingIndicatorDialog().dismiss();
+                            if(resp2['type']=='success'){
+                              if(mounted){
+                                QuickAlert.show(context: context,title: "Exito",text: resp2['message'],type: QuickAlertType.success,);
+                                setState(() {
+                                  tripVehicle = vehicleController.text;
+                                });
+                              }      
+                          
+                            }else{
+                              QuickAlert.show(context: context,title: "Alerta",text: resp2['message'],type: QuickAlertType.error,);
+                            }
+                          }
+                        ),
                       ),
                     ],
-                  );
-                } else {
-                  return ColorLoader3();
-                }
-              },
-                ),
+                  ),
+                ],
+              );
+            } else {
+              return WillPopScope(
+                        onWillPop: () async => false,
+                        child: SimpleDialog(
+                          elevation: 20,
+                          backgroundColor: Theme.of(context).cardColor,
+                          children: [
+                            Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.only(left: 16, top: 16, right: 16),
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Text(
+                                      'Cargando...', 
+                                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18),
+                                      ),
+                                  )
+                                ],
+                              ),
+                            )
+                          ] ,
+                        ),
+                      );
+            }
+          },
             );
         } else {
-          return ColorLoader3();
+          return WillPopScope(
+                        onWillPop: () async => false,
+                        child: SimpleDialog(
+                          elevation: 20,
+                          backgroundColor: Theme.of(context).cardColor,
+                          children: [
+                            Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.only(left: 16, top: 16, right: 16),
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Text(
+                                      'Cargando...', 
+                                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18),
+                                      ),
+                                  )
+                                ],
+                              ),
+                            )
+                          ] ,
+                        ),
+                      );
         }
       },
     );
@@ -949,13 +1074,65 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                         );
                       });
                 } else {
-                  return ColorLoader3();
+                  return WillPopScope(
+                        onWillPop: () async => false,
+                        child: SimpleDialog(
+                          elevation: 20,
+                          backgroundColor: Theme.of(context).cardColor,
+                          children: [
+                            Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.only(left: 16, top: 16, right: 16),
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Text(
+                                      'Cargando...', 
+                                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18),
+                                      ),
+                                  )
+                                ],
+                              ),
+                            )
+                          ] ,
+                        ),
+                      );
                 }
               },
             );
           }
         } else {
-          return ColorLoader3();
+          return WillPopScope(
+                        onWillPop: () async => false,
+                        child: SimpleDialog(
+                          elevation: 20,
+                          backgroundColor: Theme.of(context).cardColor,
+                          children: [
+                            Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.only(left: 16, top: 16, right: 16),
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Text(
+                                      'Cargando...', 
+                                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18),
+                                      ),
+                                  )
+                                ],
+                              ),
+                            )
+                          ] ,
+                        ),
+                      );
         }
       },
     );
@@ -1312,7 +1489,33 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
             );
           }
         } else {
-          return ColorLoader3();
+          return WillPopScope(
+                        onWillPop: () async => false,
+                        child: SimpleDialog(
+                          elevation: 20,
+                          backgroundColor: Theme.of(context).cardColor,
+                          children: [
+                            Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.only(left: 16, top: 16, right: 16),
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Text(
+                                      'Cargando...', 
+                                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18),
+                                      ),
+                                  )
+                                ],
+                              ),
+                            )
+                          ] ,
+                        ),
+                      );
         }
       },
     );
@@ -1596,7 +1799,33 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
           }
           return SizedBox();
         } else {
-          return ColorLoader3();
+          return WillPopScope(
+                        onWillPop: () async => false,
+                        child: SimpleDialog(
+                          elevation: 20,
+                          backgroundColor: Theme.of(context).cardColor,
+                          children: [
+                            Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.only(left: 16, top: 16, right: 16),
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Text(
+                                      'Cargando...', 
+                                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18),
+                                      ),
+                                  )
+                                ],
+                              ),
+                            )
+                          ] ,
+                        ),
+                      );
         }
       },
     );
