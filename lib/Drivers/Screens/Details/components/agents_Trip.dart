@@ -969,7 +969,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                                             TextSpan(
                                                               text: abc.data!.trips![0].agentes![index].agentReferencePoint==null
                                                               ||abc.data!.trips![0].agentes![index].agentReferencePoint==""
-                                                              ?"${abc.data!.trips![0].agentes![index].neighborhoodName}, ${abc.data!.trips![0].agentes![index].townName}":'Dirección: ${abc.data!.trips![0].agentes![index].agentReferencePoint}, ${abc.data!.trips![0].agentes![index].neighborhoodName}, ${abc.data!.trips![0].agentes![index].townName},',
+                                                              ?"${abc.data!.trips![0].agentes![index].neighborhoodName}, ${abc.data!.trips![0].agentes![index].townName}":'${abc.data!.trips![0].agentes![index].agentReferencePoint}, ${abc.data!.trips![0].agentes![index].neighborhoodName}, ${abc.data!.trips![0].agentes![index].townName},',
                                                               style: TextStyle(fontWeight: FontWeight.normal),
                                                             ),
                                                           ],
@@ -1777,146 +1777,271 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                     physics: ClampingScrollPhysics(),
                     itemCount: abc.data!.trips![2].cancelados!.length,
                     itemBuilder: (context, index) {
-                      print(abc.data!.trips![2].cancelados![index].agentPhone);
-                      Size size = MediaQuery.of(context).size;
+                      
                       return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        padding: const EdgeInsets.only(bottom: 10.0),
                         child: Container(
-                          width: size.width,
-                          child: Column(
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(boxShadow: [
-                                  BoxShadow(
-                                      blurStyle: BlurStyle.normal,
-                                      color: Colors.white.withOpacity(0.2),
-                                      blurRadius: 15,
-                                      spreadRadius: -10,
-                                      offset: Offset(-15, -6)),
-                                  BoxShadow(
-                                      blurStyle: BlurStyle.normal,
-                                      color: Colors.black.withOpacity(0.6),
-                                      blurRadius: 30,
-                                      spreadRadius: -15,
-                                      offset: Offset(18, 5)),
-                                ]),
-                                child: Card(
-                                  color: backgroundColor,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10)),
-                                  margin: EdgeInsets.all(5.0),
-                                  elevation: 2,
-                                  child: Column(
-                                    children: <Widget>[
-                                        Padding(
-                                      padding: const EdgeInsets.all(1.0),
-                                      child: ExpansionTile(
-                                        backgroundColor: backgroundColor,
-                                        title: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.end,
-                                          children: <Widget>[
-                                            Padding(
-                                              padding: const EdgeInsets.fromLTRB(14,0,20,0),
-                                              child: Row(
-                                                children: [
-                                                  Icon(Icons.person,color: thirdColor),
-                                                  SizedBox(width: 15,),
-                                                  Flexible(
-                                                    child: Text('Nombre: ${abc.data!.trips![2].cancelados![index].agentFullname}',
-                                                      style: TextStyle(
-                                                          color: Colors.white,
-                                                          //fontWeight: FontWeight.bold,
-                                                          fontSize: 18.0)),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),                       
-                                          ],
-                                        ),
-                                        trailing: SizedBox(),
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.only(left: 30),
-                                            child: Row(
-                                              children: [
-                                                Icon(Icons.location_city,color: thirdColor),
-                                                SizedBox(width: 15,),
-                                                Text('Empresa: ${abc.data!.trips![2].cancelados![index].companyName}',
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      //fontWeight: FontWeight.bold,
-                                                      fontSize: 18.0)),
-                                              ],
-                                            ),
-                                          ),
-                                          SizedBox(height: 8,),
-                                          Padding(
-                                            padding: const EdgeInsets.only(left: 30),
-                                            child: Row(
-                                              children: [
-                                                Icon(Icons.phone,
-                                                color: thirdColor),
-                                                SizedBox(width: 8,),
-                                                TextButton(
-                                                onPressed: () =>
-                                                    launchUrl(Uri.parse(
-                                                      'tel://${abc.data!.trips![2].cancelados![index].agentPhone}',
-                                                    )),
-                                                child: Container(
-                                                    padding: EdgeInsets.only(
-                                                        right: 140),
-                                                    child: Text(
-                                                        'Teléfono: ${abc.data!.trips![2].cancelados![index].agentPhone}',
-                                                        textAlign:
-                                                            TextAlign.left,
-                                                        style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontSize: 18)))),
-                                              ],
-                                            ),
-                                          ),
-                                          SizedBox(height: 8,),
-                                          Padding(
-                                            padding: const EdgeInsets.only(left: 30),
-                                            child: Row(
-                                              children: [
-                                                Icon(Icons.access_time,color: thirdColor),
-                                                SizedBox(width: 15,),
-                                                Text('Entrada: ${abc.data!.trips![2].cancelados![index].hourIn}',
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      //fontWeight: FontWeight.bold,
-                                                      fontSize: 18.0)),
-                                              ],
-                                            ),
-                                          ),
-                                          SizedBox(height: 18),
-                                          Padding(
-                                            padding: const EdgeInsets.fromLTRB(30,0,20,0),
-                                            child: Row(
-                                              children: [
-                                                Icon(Icons.location_pin,color: thirdColor),
-                                                SizedBox(width: 15,),
-                                                Flexible(
-                                                  child: Text('Dirección: ${abc.data!.trips![2].cancelados![index].agentReferencePoint} ${abc.data!.trips![2].cancelados![index].neighborhoodName} ${abc.data!.trips![2].cancelados![index].districtName}',
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        //fontWeight: FontWeight.bold,
-                                                        fontSize: 18.0)),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8.0),
+                            border: Border.all(color: Theme.of(context).dividerColor,),
+                          ),
+                          child: ExpansionTile(
+                            iconColor: Theme.of(context).primaryIconTheme.color,
+                            tilePadding: const EdgeInsets.only(right: 10, left: 10),
+                            title: Column(
+                              children: [
+
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 10, left: 10),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                                width: 18,
+                                                height: 18,
+                                                child: SvgPicture.asset(
+                                                  "assets/icons/usuario.svg",
+                                                  color: Theme.of(context).primaryIconTheme.color,
                                                 ),
-                                              ],
-                                            ),
-                                          ),
-                                          SizedBox(height: 20.0),                                  
-                                        ],
-                                      ),
-                                    ),                                  
+                                              ),
+                                              SizedBox(width: 10),
+                                              Flexible(
+                                                child: RichText(
+                                                  text: TextSpan(
+                                                    style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                    children: [
+                                                      TextSpan(
+                                                        text: 'Nombre: ',
+                                                        style: TextStyle(fontWeight: FontWeight.w500),
+                                                      ),
+                                                      TextSpan(
+                                                        text: '${abc.data!.trips![2].cancelados![index].agentFullname}',
+                                                        style: TextStyle(fontWeight: FontWeight.normal),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              )                   
                                     ],
                                   ),
                                 ),
+
+                              ],
+                            ),
+                            
+                            children: [
+
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 15, left: 20, bottom: 4),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                                      width: 18,
+                                                      height: 18,
+                                                      child: SvgPicture.asset(
+                                                        "assets/icons/compania.svg",
+                                                        color: Theme.of(context).primaryIconTheme.color,
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 10),
+                                                    Flexible(
+                                                      child: RichText(
+                                                        text: TextSpan(
+                                                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                          children: [
+                                                            TextSpan(
+                                                              text: 'Empresa: ',
+                                                              style: TextStyle(fontWeight: FontWeight.w500),
+                                                            ),
+                                                            TextSpan(
+                                                              text: '${abc.data!.trips![2].cancelados![index].companyName}',
+                                                              style: TextStyle(fontWeight: FontWeight.normal),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    )                   
+                                          ],
+                                        ),
+                                      ),
+                                      Padding(
+                                padding: const EdgeInsets.only(right: 10, left: 10),
+                                child: Container(
+                                  height: 1,
+                                  color: Theme.of(context).dividerColor,
+                                ),
                               ),
-                            ],
+
+                              SizedBox(height: 20),
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 15, left: 20, bottom: 4),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                                      width: 18,
+                                                      height: 18,
+                                                      child: SvgPicture.asset(
+                                                        "assets/icons/telefono_num.svg",
+                                                        color: Theme.of(context).primaryIconTheme.color,
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 10),
+                                                    Flexible(
+                                                      child: GestureDetector(
+                                                        onTap: () {
+                                                          launchUrl(Uri.parse(
+                                                            'tel://${abc.data!.trips![1].noConfirmados![index].agentPhone}',
+                                                          ));
+                                                        },
+                                                        child: RichText(
+                                                          text: TextSpan(
+                                                            style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                            children: [
+                                                              TextSpan(
+                                                                text: 'Teléfono: ',
+                                                                style: TextStyle(fontWeight: FontWeight.w500),
+                                                              ),
+                                                              TextSpan(
+                                                                text: '${abc.data!.trips![2].cancelados![index].agentPhone}',
+                                                                style: TextStyle(fontWeight: FontWeight.normal),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    )                   
+                                          ],
+                                        ),
+                                      ),
+                                      Padding(
+                                padding: const EdgeInsets.only(right: 10, left: 10),
+                                child: Container(
+                                  height: 1,
+                                  color: Theme.of(context).dividerColor,
+                                ),
+                              ),
+
+                              SizedBox(height: 20),
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 15, left: 20, bottom: 4),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                                      width: 18,
+                                                      height: 18,
+                                                      child: SvgPicture.asset(
+                                                        "assets/icons/telefono_num.svg",
+                                                        color: Theme.of(context).primaryIconTheme.color,
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 10),
+                                                    Flexible(
+                                                      child: RichText(
+                                                        text: TextSpan(
+                                                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                          children: [
+                                                            TextSpan(
+                                                              text: 'Entrada: ',
+                                                              style: TextStyle(fontWeight: FontWeight.w500),
+                                                            ),
+                                                            TextSpan(
+                                                              text: '${abc.data!.trips![2].cancelados![index].hourIn}',
+                                                              style: TextStyle(fontWeight: FontWeight.w700, color: Color.fromRGBO(40, 169, 83, 1)),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    )                    
+                                          ],
+                                        ),
+                                      ),
+                                      Padding(
+                                padding: const EdgeInsets.only(right: 10, left: 10),
+                                child: Container(
+                                  height: 1,
+                                  color: Theme.of(context).dividerColor,
+                                ),
+                              ),
+
+                              SizedBox(height: 20),
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 15, left: 20, bottom: 4),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                                      width: 18,
+                                                      height: 18,
+                                                      child: SvgPicture.asset(
+                                                        "assets/icons/Casa.svg",
+                                                        color: Theme.of(context).primaryIconTheme.color,
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 10),
+                                                    Flexible(
+                                                      child: RichText(
+                                                        text: TextSpan(
+                                                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                          children: [
+                                                            TextSpan(
+                                                              text: 'Dirección: ',
+                                                              style: TextStyle(fontWeight: FontWeight.w500),
+                                                            ),
+                                                            TextSpan(
+                                                              text: '${abc.data!.trips![2].cancelados![index].agentReferencePoint} ${abc.data!.trips![2].cancelados![index].neighborhoodName} ${abc.data!.trips![2].cancelados![index].districtName}',
+                                                              style: TextStyle(fontWeight: FontWeight.normal),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    )                   
+                                          ],
+                                        ),
+                                      ),
+
+                                      if (abc.data!.trips![2].cancelados![index].neighborhoodReferencePoint != null)... {
+                                      Container(
+                                        height: 1,
+                                        color: Theme.of(context).dividerColor,
+                                      ),
+                                      SizedBox(height: 20),
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 15, left: 20, bottom: 4),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                                      width: 18,
+                                                      height: 18,
+                                                      child: SvgPicture.asset(
+                                                        "assets/icons/warning.svg",
+                                                        color: Theme.of(context).primaryIconTheme.color,
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 10),
+                                                    Flexible(
+                                                      child: RichText(
+                                                        text: TextSpan(
+                                                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                          children: [
+                                                            TextSpan(
+                                                              text: 'Acceso autorizado: ',
+                                                              style: TextStyle(fontWeight: FontWeight.w500),
+                                                            ),
+                                                            TextSpan(
+                                                              text: '${abc.data!.trips![2].cancelados![index].neighborhoodReferencePoint}',
+                                                              style: TextStyle(fontWeight: FontWeight.normal),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    )                   
+                                          ],
+                                        ),
+                                      ),
+                                      
+                                      },
+
+                              SizedBox(height: 20.0),
+  
+                              ],
                           ),
                         ),
                       );
