@@ -130,36 +130,47 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
   }
 
   Future<Driver> fetchNoConfirm(String agentId, String tripId) async {
+    LoadingIndicatorDialog().show(context);  
     Map data = {'agentId': agentId, 'tripId': tripId};
     //print(data);
     http.Response response = await http
         .post(Uri.parse('$ip/apis/markAgentAsNotConfirmed'), body: data);
     if (mounted) {
-      setState(() {
+      
         final resp = Driver.fromJson(json.decode(response.body));
 
+        Map data2 = {"idU": agentId.toString(), "Estado": 'RECHAZADO'};
+        String sendData2 = json.encode(data2);
+        await http.put(Uri.parse('https://apichat.smtdriver.com/api/salas/$tripId'), body: sendData2, headers: {"Content-Type": "application/json"});
+
         if (response.statusCode == 200 && resp.ok == true) {
+          LoadingIndicatorDialog().dismiss();
           //print(response.body);
-              QuickAlert.show(
-          context: context,
-          type: QuickAlertType.success,
-          title: '¡Hecho!',
-          text: resp.message,
-          confirmBtnText: 'OK'
-          );
+          if(mounted){
+            QuickAlert.show(
+              context: context,
+              type: QuickAlertType.success,
+              title: '¡Hecho!',
+              text: resp.message,
+              confirmBtnText: 'OK'
+            );
+          }
+
+          _refresh();
+
         } else if (response.statusCode == 500) {
-          QuickAlert.show(
-          context: context,
-          type: QuickAlertType.error,
-          title: resp.title,
-          text: resp.message,
-          );
+          LoadingIndicatorDialog().dismiss();
+          if(mounted){
+            QuickAlert.show(
+              context: context,
+              type: QuickAlertType.error,
+              title: resp.title,
+              text: resp.message,
+            );
+          }
         }
-      });
+      
     }
-    Map data2 = {"idU": agentId.toString(), "Estado": 'RECHAZADO'};
-    String sendData2 = json.encode(data2);
-    await http.put(Uri.parse('https://apichat.smtdriver.com/api/salas/$tripId'), body: sendData2, headers: {"Content-Type": "application/json"});
 
     return Driver.fromJson(json.decode(response.body));
   }
@@ -1597,8 +1608,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                             cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
                                             onConfirmBtnTap: () {
                                               Navigator.pop(contextP!);
-                                              fetchNoConfirm(abc.data!.trips![1].noConfirmados![index].agentId.toString(),abc.data!.trips![1].noConfirmados![index].tripId.toString());                                        
-                                              _refresh();
+                                              fetchNoConfirm(abc.data!.trips![1].noConfirmados![index].agentId.toString(),abc.data!.trips![1].noConfirmados![index].tripId.toString());                                            
                                             },
                                             onCancelBtnTap: () {
                                               Navigator.pop(contextP!);
