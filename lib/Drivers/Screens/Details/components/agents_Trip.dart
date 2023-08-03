@@ -84,6 +84,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
 
   Future<Driver> fetchHours(
       String agentId, String agentTripHour, String tripId) async {
+        LoadingIndicatorDialog().show(context);      
     Map data = {
       'agentId': agentId,
       'agentTripHour': agentTripHour,
@@ -96,26 +97,32 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
 
     final resp = Driver.fromJson(json.decode(response.body));
 
-    if (response.statusCode == 200 && resp.ok == true && agentTripHour != "") {
-      //print(response.body);
-      QuickAlert.show(
-      context: context,
-      type: QuickAlertType.success,
-      title: '¡Hecho!',
-      text: resp.message,
-      );
-    } else if (response.statusCode == 200 && resp.ok != true) {
-      QuickAlert.show(
-      context: context,
-      type: QuickAlertType.error,
-      title: resp.title,
-      text: resp.message,
-      );
-    }
-
     Map data2 = {"idU": agentId.toString(), "Estado": 'CONFIRMADO'};
     String sendData2 = json.encode(data2);
     await http.put(Uri.parse('https://apichat.smtdriver.com/api/salas/$tripId'), body: sendData2, headers: {"Content-Type": "application/json"});
+
+    if (response.statusCode == 200 && resp.ok == true && agentTripHour != "") {
+      //print(response.body);
+      LoadingIndicatorDialog().dismiss();      
+      if(mounted){
+        QuickAlert.show(
+          context: context,
+          type: QuickAlertType.success,
+          title: '¡Hecho!',
+          text: resp.message,
+        );
+      }
+    } else if (response.statusCode == 200 && resp.ok != true) {
+      LoadingIndicatorDialog().dismiss();     
+      if(mounted){
+        QuickAlert.show(
+          context: context,
+          type: QuickAlertType.error,
+          title: resp.title,
+          text: resp.message,
+        );
+      }
+    }
 
     return Driver.fromJson(json.decode(response.body));
   }
@@ -1155,12 +1162,25 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                           shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
                                         ),
                                         onPressed: () async{
-                                          var time =await showTimePicker(context: context,initialTime:TimeOfDay.now(),);                                                            
-                                            validateHour(abc.data!.trips![0].agentes![index].agentId.toString(), abc.data!.trips![0].agentes![index].tripId.toString(), time);
-                                            DateTimeField.convert(flagalert);                                              
+                                          var time =await showTimePicker(context: context,initialTime:TimeOfDay.now(),);                                                 
+                                          validateHour(abc.data!.trips![0].agentes![index].agentId.toString(), abc.data!.trips![0].agentes![index].tripId.toString(), time);
+                                          DateTimeField.convert(flagalert);                                           
                                         },
-                                        child: Text('Cambiar hora',
-                                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold)),
+                                        child: Row(
+                                          children: [
+                                            SvgPicture.asset( 
+                                              "assets/icons/cambia_hora.svg",
+                                              color: Theme.of(context).primaryIconTheme.color,
+                                              width: 20,
+                                              height: 20,
+                                            ),
+                                            SizedBox(width: 5),
+                                            Flexible(
+                                              child: Text('Cambiar hora',
+                                                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold)),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                       SizedBox(height: 10.0),
                                       // Usamos una fila para ordenar los botones del card
@@ -1666,7 +1686,6 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
             setState(() {            
               flagalert = time;                                            
             });
-            _refresh();
           },);                                                         
     }                                                                                                  
   }
