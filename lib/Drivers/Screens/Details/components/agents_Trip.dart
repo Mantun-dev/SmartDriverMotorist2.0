@@ -1172,7 +1172,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                           children: [
                                             SvgPicture.asset( 
                                               "assets/icons/cambia_hora.svg",
-                                              color: Theme.of(context).primaryIconTheme.color,
+                                              color: Theme.of(context).primaryColorDark,
                                               width: 20,
                                               height: 20,
                                             ),
