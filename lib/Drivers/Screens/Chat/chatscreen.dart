@@ -251,7 +251,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    deleteAllTempAudioFiles();
     super.dispose();
     _messageInputController.dispose();
 
@@ -343,6 +342,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
             streamSocket.socket!.disconnect();
             streamSocket.socket!.close();
             streamSocket.socket!.dispose();
+            deleteAllTempAudioFiles();
             recargar=-1;
             Navigator.pushReplacement(
             context,
