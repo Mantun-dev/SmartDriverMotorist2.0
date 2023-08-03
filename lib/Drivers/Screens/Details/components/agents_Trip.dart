@@ -111,6 +111,8 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
           title: '¡Hecho!',
           text: resp.message,
         );
+
+        _refresh();
       }
     } else if (response.statusCode == 200 && resp.ok != true) {
       LoadingIndicatorDialog().dismiss();     
@@ -1672,7 +1674,6 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
               setState(() {                              
                 //print(_eventTime);
                 fetchHours(agentId,_eventTime,tripId);
-                _refresh();
                 //Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => MyAgent())).then((_) => MyAgent());
                 //Navigator.of(context).popUntil((route) =>  route.);
                 //Navigator.push(context,MaterialPageRoute(builder: (_) => MyAgent()));              
