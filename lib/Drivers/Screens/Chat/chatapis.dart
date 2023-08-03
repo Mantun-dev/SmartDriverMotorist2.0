@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter_auth/Drivers/Screens/Chat/socketChat.dart';
 import 'package:http/http.dart' as http;
 
@@ -87,6 +88,66 @@ class ChatApis {
       "receiverId": idR,
       "receiverRole": "agente",
       "textMessage": message,
+      "hourMessage": formattedHour,
+      "nameSender": nameDriver
+    };
+
+    await BaseClient().post(
+        'https://admin.smtdriver.com/sendMessageNotification',
+        sendNotification,
+        {"Content-Type": "application/json"});
+
+
+    
+  }
+
+  void sendAudio(File audioFile, String sala, String nombre, String idDriver, String nameDriver, String idDb, String idR,
+  ) async {
+    DateTime now = DateTime.now();
+    String formattedHour = DateFormat('hh:mm a').format(now);
+    var formatter = new DateFormat('dd');
+    String dia = formatter.format(now);
+    var formatter2 = new DateFormat('MM');
+    String mes = formatter2.format(now);
+    var formatter3 = new DateFormat('yy');
+    String anio = formatter3.format(now);
+
+    final audioBytes = audioFile.readAsBytesSync();
+    final encodedAudio = base64.encode(audioBytes);
+
+    Map sendMessage = {
+          "id_emisor": idDriver,
+          "id_receptor": idR,
+          "Nombre_emisor": nameDriver,
+          "Mensaje": encodedAudio,
+          "Sala": sala,
+          "Nombre_receptor": nombre,
+          "Tipo": "AUDIO",
+          "Dia": dia,
+          "Mes": mes,
+          "Año": anio,
+          "Hora": formattedHour
+        };
+
+    // Map str = json.decode(sendMessage);
+    await BaseClient().post(
+        RestApis.messages, sendMessage, {"Content-Type": "application/json"});
+    streamSocket.socket!.emit('enviar-mensaje2', {
+      'mensaje': encodedAudio,
+      'sala': sala,
+      'user': nameDriver,
+      'id': idDriver,
+      'hora': formattedHour,
+      'tipo': 'AUDIO',
+      'dia': dia,
+      'mes': mes,
+      'año': anio,
+      "leido": false
+    });
+    Map sendNotification = {
+      "receiverId": idR,
+      "receiverRole": "agente",
+      "textMessage": 'Mensaje de voz',
       "hourMessage": formattedHour,
       "nameSender": nameDriver
     };

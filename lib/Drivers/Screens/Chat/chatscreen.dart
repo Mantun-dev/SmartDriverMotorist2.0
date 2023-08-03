@@ -1,5 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:app_settings/app_settings.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:flutter_auth/Drivers/Screens/Chat/chatViews.dart';
 
@@ -8,8 +11,12 @@ import 'package:flutter_auth/Drivers/Screens/Chat/chatapis.dart';
 import 'package:flutter_auth/constants.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:record/record.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import '../../../components/warning_dialog.dart';
 import '../../../helpers/base_client.dart';
 import '../../../helpers/res_apis.dart';
 import '../../../providers/chat.dart';
@@ -19,6 +26,7 @@ import '../../models/message_chat.dart';
 import '../DriverProfile/driverProfile.dart';
 //import 'package:intl/intl.dart';
 
+import 'component/audio.dart';
 import 'socketChat.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -56,6 +64,11 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   ScrollController _scrollController = new ScrollController();
   final arrayTemp = [];
   final StreamSocket streamSocket = StreamSocket(host: 'wschat.smtdriver.com');
+  bool activateMic = false;
+  late AudioPlayer _audioPlayer;
+  late Record _audioRecord;
+  List<String> _audioList = [];
+  String filePathP = '';
 
   _sendMessage() {    
     ChatApis().sendMessage(_messageInputController.text.trim(), sala.toString(),
@@ -85,6 +98,22 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     _messageInputController.clear();
   }
 
+  void _sendAudio(String audioPath) async {
+    if (await File(audioPath).exists()) {
+      try {
+
+        ChatApis().sendAudio(File(audioPath), sala.toString(),
+        nameAgent!, widget.id!, nameDriver!, idDb!, widget.idAgent!);
+      } catch (e) {
+        // Handle any error during compression or sending
+        print('Error al enviar el audio: $e');
+      }
+      // Resto del código
+    } else {
+      print('El archivo de audio no existe en la ruta especificada: $audioPath');
+    }
+  }
+
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if(AppLifecycleState.resumed==state){
       if(mounted){
@@ -100,6 +129,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    _audioPlayer = AudioPlayer();
+    _audioRecord = Record();
     recargar=0;
     WidgetsBinding.instance.addObserver(this);
     ChatApis().dataLogin(widget.id!, widget.rol!, widget.nombre!, prefs.tripId,
@@ -220,6 +251,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    deleteAllTempAudioFiles();
     super.dispose();
     _messageInputController.dispose();
 
@@ -386,6 +418,12 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                                             : CrossAxisAlignment.start,
                                     children: [
                                       if (message.mensaje != null) ...{
+                                        message.tipo=='AUDIO'?
+                                        AudioContainer(
+                                          base64Audio: message.mensaje!,
+                                          colorIcono: Colors.white
+                                          )
+                                        :
                                         Text(
                                           message.mensaje!,
                                           style: TextStyle(
@@ -587,7 +625,45 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                             }
                           },
                           icon: const Icon(Icons.send),
-                        )
+                        ),
+
+                        Padding(
+                            padding: const EdgeInsets.only(left: 10),
+                            child: Container(
+                              width: 48,
+                              height: 48,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Color.fromRGBO(40, 93, 169, 1),
+                              ),
+                              child: IconButton(
+                                onPressed: () async {
+                                  bool permiso= await checkAudioPermission();
+                          
+                                  if(permiso){
+                                    if(!activateMic){
+                                      startRecording();
+                                    }else{
+                                      stopRecording();
+                                    }
+                                  }else{
+                                    WarningDialog().show(
+                                      context,
+                                      title: 'No dio permiso del uso del microfono',
+                                      onOkay: () {
+                                        try{
+                                          AppSettings.openAppSettings();
+                                        }catch(error){
+                                          print(error);
+                                        }
+                                      },
+                                    );
+                                  }
+                                },
+                                icon: !activateMic ? Icon(Icons.mic, color: Colors.white) : Icon(Icons.mic_off, color: Colors.red),
+                              ),
+                            ),
+                          )
                       ],
                     ),
                   ),
@@ -603,4 +679,67 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   void changeSeen() {
     setState(() {});
   }
+
+Future<bool> checkAudioPermission() async {
+    // Verificar si se tiene el permiso de grabación de audio
+    var status = await Permission.microphone.status;
+    
+    if (status.isGranted) {
+      // Permiso concedido
+      return true;
+    } else {
+      // No se ha solicitado el permiso, solicitarlo al usuario
+      return false;
+    }
+  }
+
+  void startRecording() async {
+    try {
+      final cacheDir = await getTemporaryDirectory();
+      String filePath = '${cacheDir.path}/recording${_audioList.length + 1}.wav';
+      await _audioRecord.start(path: filePath);
+
+      setState(() {
+        filePathP = filePath;
+        activateMic = true;
+      });
+
+    } catch (e) {
+      // Handle any error during recording
+      print('Error al iniciar la grabación: $e');
+    }
+  }
+
+  void stopRecording() async {
+    try {
+      await _audioRecord.stop();
+
+      String recordedFilePath = filePathP;
+
+      // Verificar si el archivo existe
+      File audioFile = File(recordedFilePath);
+      if (await audioFile.exists()) {
+        _sendAudio(recordedFilePath);
+        print(filePathP);
+        setState(() {
+          activateMic = false;
+          _audioList.add('audio');
+        });
+
+      } else {
+        print('El archivo de audio no existe');
+      }
+    } catch (e) {
+      // Manejo más detallado de errores
+      print('Error al detener la grabación o enviar el audio: $e');
+    }
+  }
+
+}
+
+class AudioData {
+  final String filePath;
+  bool isPlaying = false;
+
+  AudioData(this.filePath);
 }

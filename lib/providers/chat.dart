@@ -6,7 +6,7 @@ class ChatProvider extends ChangeNotifier {
   List<MessageDriver> get mensaje => mensaje2;
 
   addNewMessage(MessageDriver mensaje) {
-    //print(mensaje.user);
+    //print(mensaje);
     mensaje2.add(mensaje);
     notifyListeners();
   }
