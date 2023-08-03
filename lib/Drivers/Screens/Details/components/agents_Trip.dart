@@ -1929,7 +1929,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                                       width: 18,
                                                       height: 18,
                                                       child: SvgPicture.asset(
-                                                        "assets/icons/telefono_num.svg",
+                                                        "assets/icons/hora.svg",
                                                         color: Theme.of(context).primaryIconTheme.color,
                                                       ),
                                                     ),
