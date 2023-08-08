@@ -21,6 +21,7 @@ class _AudioContainerState extends State<AudioContainer> {
   late AudioPlayer _audioPlayer;
   bool audioPlaying = false;
   Map<String, File> tempFiles = {};
+  Duration? audioDuration;
 
   _AudioContainerState({required this.base64Audio, required this.colorIcono});
 
@@ -37,10 +38,11 @@ class _AudioContainerState extends State<AudioContainer> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.transparent,
-      child: IconButton(
+Widget build(BuildContext context) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      IconButton(
         onPressed: () {
           setState(() {
             if (!audioPlaying) {
@@ -54,30 +56,49 @@ class _AudioContainerState extends State<AudioContainer> {
             ? Icon(Icons.play_arrow, color: colorIcono)
             : Icon(Icons.stop, color: Colors.red),
       ),
-    );
-  }
+      if (audioDuration != null)
+        Row(
+          children: [
+            Text(
+              '${audioDuration!.inMinutes}:${(audioDuration!.inSeconds % 60).toString().padLeft(2, '0')}',
+              style: TextStyle(fontSize: 10, color: colorIcono),
+            ),
+            Icon(
+              Icons.done,
+              size: 16,
+              color: Colors.transparent,
+            )
+          ],
+        ),
+    ],
+  );
+}
+
+
 
   void playAudio() async {
-    try {
-      if (!tempFiles.containsKey(base64Audio)) {
-        List<int> audioBytes = base64.decode(base64Audio);
-        File newTempFile = await _writeTempFile(audioBytes);
-        if (newTempFile.existsSync()) {
-          tempFiles[base64Audio] = newTempFile;
-        } else {
-          print('Error al crear el archivo temporal');
-          return;
-        }
+  try {
+    if (!tempFiles.containsKey(base64Audio)) {
+      List<int> audioBytes = base64.decode(base64Audio);
+      File newTempFile = await _writeTempFile(audioBytes);
+      if (newTempFile.existsSync()) {
+        tempFiles[base64Audio] = newTempFile;
+      } else {
+        print('Error al crear el archivo temporal');
+        return;
       }
-
-      await _audioPlayer.play(UrlSource(tempFiles[base64Audio]!.path));
-      setState(() {
-        audioPlaying = true;
-      });
-    } catch (e) {
-      print('Error al reproducir el audio: $e');
     }
+
+    await _audioPlayer.play(UrlSource(tempFiles[base64Audio]!.path));// Specify that the audio source is local
+    final duration = await _audioPlayer.getDuration(); // Get the audio duration
+    setState(() {
+      audioPlaying = true;
+      audioDuration = duration;
+    });
+  } catch (e) {
+    print('Error al reproducir el audio: $e');
   }
+}
 
   void stopAudio() async {
     await _audioPlayer.stop();

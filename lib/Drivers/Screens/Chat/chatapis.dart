@@ -130,8 +130,9 @@ class ChatApis {
         };
 
     // Map str = json.decode(sendMessage);
-    await BaseClient().post(
-        RestApis.messages, sendMessage, {"Content-Type": "application/json"});
+    String sendDataM = json.encode(sendMessage);
+    await http.post(Uri.parse(RestApis.messages),body: sendDataM, headers: {"Content-Type": "application/json"});
+
     streamSocket.socket!.emit('enviar-mensaje2', {
       'mensaje': encodedAudio,
       'sala': sala,
@@ -156,8 +157,6 @@ class ChatApis {
         'https://admin.smtdriver.com/sendMessageNotification',
         sendNotification,
         {"Content-Type": "application/json"});
-
-
     
   }
 
