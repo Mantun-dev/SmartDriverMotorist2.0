@@ -33,13 +33,14 @@ class _ProcessState extends State<Process> {
     tripId = new TextEditingController(text: prefs.tripId);
   }
 
-  fetchAgentsAsigmentChekc(String tripId) async {
+  fetchAgentsAsigmentChekc(String tripId, int departamentoId, departamentoNombre) async {
     prefs.tripId = tripId;
+
     if (tripId == tripId) {
       Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => MyConfirmAgent(),
+            builder: (context) => MyConfirmAgent(departmentId: departamentoId, departmentName: departamentoNombre,),
           ));
     }
   }
@@ -263,7 +264,10 @@ class _ProcessState extends State<Process> {
                                               
                                               fetchAgentsAsigmentChekc(abc
                                                 .data![index].tripId
-                                                .toString());
+                                                .toString(),
+                                                abc.data![index].departmentId,
+                                                abc.data![index].departamento
+                                                );
                                                 
                                                 QuickAlert.show(
                                                 context: navigatorKey.currentContext!,
