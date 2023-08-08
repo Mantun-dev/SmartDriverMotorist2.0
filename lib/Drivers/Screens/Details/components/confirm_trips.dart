@@ -41,8 +41,10 @@ void main() {
 
 class MyConfirmAgent extends StatefulWidget {
   final PlantillaDriver? plantillaDriver;
+  final departmentId;
+  final departmentName;
 
-  const MyConfirmAgent({Key? key, this.plantillaDriver}) : super(key: key);
+  const MyConfirmAgent({Key? key, this.plantillaDriver, this.departmentId, this.departmentName}) : super(key: key);
   @override
   _DataTableExample createState() => _DataTableExample();
 }
@@ -58,6 +60,22 @@ class _DataTableExample extends State<MyConfirmAgent> {
   String ip = "https://driver.smtdriver.com";
   var tripId;
   bool? permiso;
+  final int comp = 1;
+  final int startekSPS = 2;
+  final int starteTGU = 3;
+  final int comp2 = 5;
+  final int ibexTgu = 9;
+  final int resultTgu = 11;
+  final int partner = 12;
+  final int aloricaSPS = 6;
+  final int zerovarianceSPS = 7;
+  final int aloricaCeiba = 13;
+  final int itelSPS = 10;
+
+  String apiKey = 'AIzaSyB43u0sNf5Zm7aaB4mH_J2wQUgl-Ypa8EU';
+  var latidudeInicial;
+  var longitudInicial;
+  List<String> waypoints = [];  
 
   List<TextEditingController> check = [];
   List<TextEditingController> comment = new List.empty(growable: true);
@@ -265,12 +283,137 @@ class _DataTableExample extends State<MyConfirmAgent> {
     super.initState();
     setUb(2);
     item = fetchAgentsTripInProgress();
-
+    getLocation();
     comment = new List<TextEditingController>.empty(growable: true);
     check = [];
     driverData = fetchRefres();
     gettotalAbordado();
     getInfoViaje();
+  }
+
+  void getLocation() async{
+
+    var lat = '';
+    var long = '';
+
+    print(this.widget.departmentId);
+    print(this.widget.departmentName);
+    //15.561147, -88.020942 san pedro
+    //15.773001, -86.792570 ceiba
+    //14.046092, -87.174631 tegus
+    if(prefs.companyId==comp.toString()){
+      lat = '15.561147';
+      long = '-88.020942';
+    }
+    if(prefs.companyId==comp2.toString()){
+      lat = '15.561147';
+      long = '-88.020942';
+    }
+    if(prefs.companyId==starteTGU.toString()){
+      lat = '14.046092';
+      long = '-87.174631';
+    }
+    if(prefs.companyId==startekSPS.toString()){
+      lat = '15.561147';
+      long = '-88.020942';
+    }
+    if(prefs.companyId==aloricaSPS.toString()){
+      lat = '15.561147';
+      long = '-88.020942';
+    }
+    if(prefs.companyId==resultTgu.toString()){
+      //14.083637, -87.185030
+      lat = '14.083637';
+      long = '-87.185030';
+    }
+    if(prefs.companyId==itelSPS.toString()){
+      lat = '15.561147';
+      long = '-88.020942';
+    }
+    if(prefs.companyId == zerovarianceSPS.toString()){
+      lat = '15.561147';
+      long = '-88.020942';
+    }
+    if(prefs.companyId == aloricaCeiba.toString()){
+      lat = '15.773001';
+      long = '-86.792570';
+    }
+
+    await fetchAgentsTripInProgress().then((value) => {
+
+      print(value.trips![1].actualTravel!.tripType),
+
+      if(value.trips![1].actualTravel!.tripType=='Entrada'){
+
+        for(var i = 0; i < value.trips![0].tripAgent!.length; i++){
+
+          if(i==0){
+            latidudeInicial = value.trips![0].tripAgent![i].latitude,
+            longitudInicial = value.trips![0].tripAgent![i].longitude,
+          },
+
+          waypoints.add('${value.trips![0].tripAgent![i].latitude},${value.trips![0].tripAgent![i].longitude}')
+        },
+
+        waypoints.add('$lat,$long'),
+        setState(() {})
+      }else{
+        latidudeInicial = lat,
+        longitudInicial = long,
+
+        waypoints.add('$latidudeInicial,$longitudInicial'),
+
+        for(var i = 0; i < value.trips![0].tripAgent!.length; i++){
+          waypoints.add('${value.trips![0].tripAgent![i].latitude},${value.trips![0].tripAgent![i].longitude}')
+        },
+        setState(() {})
+      },
+      
+    });
+
+    print(waypoints);
+  }
+
+   //Función para generar la ruta y lanzarlo a la app de google maps
+  Future<void> launchGoogleMapsx(String apiKey, String startLat,
+    String startLng, List<String> waypoints) async {
+    String baseUrl = 'https://maps.googleapis.com/maps/api/directions/json';
+    String origin = '$startLat,$startLng';
+    String destination = waypoints.last;
+    String waypointsString = waypoints.join('|');
+      
+    String url = '$baseUrl?origin=$origin&destination=$destination&waypoints=optimize:true|$waypointsString&key=$apiKey';
+    // ignore: avoid_print
+    print(url);
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+
+      List<dynamic> sortedWaypoints = data['routes'][0]['waypoint_order']
+        .map((index) => waypoints[index])
+        .toList();
+      // ignore: avoid_print
+      print(data['routes'][0]);
+      // ignore: avoid_print
+      print('Waypoints en el orden de la API: $sortedWaypoints');
+
+      String url = 'google.navigation:q=$origin';
+
+      if (sortedWaypoints.isNotEmpty) {
+        String sortedWaypointsString = sortedWaypoints.join('|');
+        url += '&waypoints=$sortedWaypointsString';
+      }
+
+      if (await canLaunchUrl(Uri.parse(url))) {
+        await launchUrl(Uri.parse(url));
+      } else {
+        throw 'No se pudo abrir la URL: $url';
+      }
+    } else {
+      // ignore: avoid_print
+      print('Error al obtener la ruta');
+    }
   }
 
   void getInfoViaje() async {
@@ -1690,7 +1833,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                   ),
                 ),
                 SizedBox(height: 10.0),
-                Center(child: _buttonsAgents()),
+
               SizedBox(height: 10.0),
                 Column(
                   children: List.generate(
@@ -2055,7 +2198,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                   ),
                 ),
               SizedBox(height: 10.0),
-              Center(child: _buttonsAgents()),
+
               SizedBox(height: 10.0),
                 Column(
                 children: List.generate(
@@ -2096,7 +2239,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                       traveledB(abc,index)==true ? RoundCheckBox(
                                           border: Border.all(
                                               style: BorderStyle.none),
-                                          animationDuration:
+                                          animationDurate:ion:
                                               Duration(seconds: 1),
                                           uncheckedColor: Colors.red,
                                           uncheckedWidget: Icon(

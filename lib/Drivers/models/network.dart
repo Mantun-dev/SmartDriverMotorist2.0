@@ -73,7 +73,7 @@ Future<TripsList3> fetchAgentsCompleted() async {
       await http.get(Uri.parse('$ip/apis/agentsTripCompleted/${prefs.tripId}'));
   final data1 = TripsList3.fromJson(json.decode(responsed.body));
   if (responsed.statusCode == 200) {
-    print(data1.trips!.length);
+    //print(data1.trips!.length);
     return TripsList3.fromJson(json.decode(responsed.body));
   } else {
     throw Exception('Failed to load Data');
@@ -101,14 +101,14 @@ Future<List<TripsInProgress>> fetchTripsInProgress() async {
   final data = DriverData.fromJson(json.decode(response.body));
   http.Response responses = await http.get(Uri.parse(
       '$ip/apis/travelInProgressTripsNumberTwo/${data.driverId}/${prefs.companyId}'));
-
+  //print(responses.body);
   var jsonData = json.decode(responses.body);
 
   List<TripsInProgress> trips = [];
 
   for (var u in jsonData) {
     TripsInProgress trip = TripsInProgress(u["tripId"], u["Fecha"], u["Hora"],
-        u["Empresa"], u["Agentes"], u['Tipo'], u['conductor']);
+        u["Empresa"], u["Agentes"], u['Tipo'], u['conductor'], u['departmentId'], u['Departamento']);
     trips.add(trip);
   }
   return trips;
@@ -211,7 +211,7 @@ Future<List<TripsCompanies>> fetchProgressTripGet() async {
   final data = DriverData.fromJson(json.decode(response.body));
   http.Response responses = await http
       .get(Uri.parse('$ip/apis/travelInProgressTrips/${data.driverId}'));
-
+  //print(responses.body);
   var jsonData = json.decode(responses.body);
 
   List<TripsCompanies> trips = [];
