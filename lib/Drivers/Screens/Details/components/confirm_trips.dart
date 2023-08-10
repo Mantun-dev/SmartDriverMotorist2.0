@@ -71,6 +71,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
   final int zerovarianceSPS = 7;
   final int aloricaCeiba = 13;
   final int itelSPS = 10;
+  bool cargarCoordenadas = false;
 
   String apiKey = 'AIzaSyB43u0sNf5Zm7aaB4mH_J2wQUgl-Ypa8EU';
   var latidudeInicial;
@@ -342,52 +343,34 @@ class _DataTableExample extends State<MyConfirmAgent> {
       long = '-86.792570';
     }
 
-    await fetchAgentsTripInProgress().then((value) => {
+    await fetchAgentsTripInProgress().then((value) async {
 
-      print(value.trips![1].actualTravel!.tripType),
+      print(value.trips![1].actualTravel!.tripType);
 
       if(value.trips![1].actualTravel!.tripType=='Entrada'){
 
         for(var i = 0; i < value.trips![0].tripAgent!.length; i++){
+          waypoints.add('${value.trips![0].tripAgent![i].latitude},${value.trips![0].tripAgent![i].longitude}');
+        }
 
-          if(i==0){
-            latidudeInicial = value.trips![0].tripAgent![i].latitude,
-            longitudInicial = value.trips![0].tripAgent![i].longitude,
-          },
-
-          waypoints.add('${value.trips![0].tripAgent![i].latitude},${value.trips![0].tripAgent![i].longitude}')
-        },
-
-        waypoints.add('$lat,$long'),
-        setState(() {})
+        waypoints.add('$lat,$long');
+        cargarCoordenadas = true;
+        setState(() {});
       }else{
-        latidudeInicial = lat,
-        longitudInicial = long,
-        
         //waypoints.add('$latidudeInicial,$longitudInicial'),
+        latidudeInicial = lat;
+        longitudInicial = long;
 
         for(var i = 0; i < value.trips![0].tripAgent!.length; i++){
-          
-          waypoints.add('${value.trips![0].tripAgent![i].latitude},${value.trips![0].tripAgent![i].longitude}')
-        },
-        setState(() {})
-      },
+          waypoints.add('${value.trips![0].tripAgent![i].latitude},${value.trips![0].tripAgent![i].longitude}');
+        }
+        cargarCoordenadas = true;
+        setState(() {});
+      }
       
     });
 
     print(waypoints);
-  }
-
-  void obtenerUbicacion() async{
-     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-
-     var latitudM = position.latitude;
-     var longitudM = position.longitude;
-
-      latidudeInicial = latitudM;
-      longitudInicial = longitudM;
-     print(latitudM);
-     print(longitudM);
   }
 
    //Función para generar la ruta y lanzarlo a la app de google maps
@@ -397,10 +380,10 @@ class _DataTableExample extends State<MyConfirmAgent> {
     String origin = '$startLat,$startLng';
     String destination = waypoints.last;
     String waypointsString = waypoints.join('|');
-      
+
     String url = '$baseUrl?origin=$origin&destination=$destination&waypoints=optimize:true|$waypointsString&key=$apiKey';
     // ignore: avoid_print
-    print(url);
+
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
@@ -422,11 +405,11 @@ class _DataTableExample extends State<MyConfirmAgent> {
       }
 
       LoadingIndicatorDialog().dismiss();
-      if (await canLaunchUrl(Uri.parse(url))) {
+      //if (await canLaunchUrl(Uri.parse(url))) {
         await launchUrl(Uri.parse(url));
-      } else {
-        throw 'No se pudo abrir la URL: $url';
-      }
+      //} else {
+        //throw 'No se pudo abrir la URL: $url';
+      //}
     } else {
       // ignore: avoid_print
       print('Error al obtener la ruta');
@@ -2893,7 +2876,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
   }
 
   Widget _buttonsRuta() {
-    return Column(
+    return cargarCoordenadas == false?ColorLoader3() : Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
         Container(
@@ -2913,6 +2896,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                     fontWeight: FontWeight.bold,
                     fontSize: 15)),
             onPressed: () async{
+
               permiso = await checkLocationPermission();
               if (!permiso!) {
                 QuickAlert.show(
@@ -2934,11 +2918,10 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
               
               LoadingIndicatorDialog().show(context);
-              obtenerUbicacion();
 
               llenarArreglo();
             
-              Future.delayed(const Duration(milliseconds: 500), () {
+              Future.delayed(const Duration(seconds: 2), () {
                 launchGoogleMapsx(apiKey,latidudeInicial.toString(), longitudInicial.toString(), waypoints);
               });
               
@@ -2951,21 +2934,26 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
   void llenarArreglo() async{
     var verificarAbordado;
-    await fetchAgentsTripInProgress().then((value) => {
+    await fetchAgentsTripInProgress().then((value) async{
 
 
               if(value.trips![1].actualTravel!.tripType!='Entrada'){
-                waypoints.clear(),
+                waypoints.clear();
                 
                 for(var i = 0; i < value.trips![0].tripAgent!.length; i++){
                   
-                  verificarAbordado = waypointsAbordados.where((element) => element == value.trips![0].tripAgent![i].agentId.toString()),
+                  verificarAbordado = waypointsAbordados.where((element) => element == value.trips![0].tripAgent![i].agentId.toString());
 
                   if(verificarAbordado.isNotEmpty)
-                    waypoints.add('${value.trips![0].tripAgent![i].latitude},${value.trips![0].tripAgent![i].longitude}')
-                },
-                setState(() {}),
-              },
+                    waypoints.add('${value.trips![0].tripAgent![i].latitude},${value.trips![0].tripAgent![i].longitude}');
+                }
+                setState(() {});
+              }else{
+                Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+                latidudeInicial = position.latitude;
+                longitudInicial = position.longitude;
+
+              }
               
             });
             
