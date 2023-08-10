@@ -699,7 +699,7 @@ Future<bool> checkAudioPermission() async {
   void startRecording() async {
     try {
       final cacheDir = await getTemporaryDirectory();
-      String filePath = '${cacheDir.path}/recording${_audioList.length + 1}.wav';
+      String filePath = '${cacheDir.path}/${sala}_recording${_audioList.length + 1}.wav';
       await _audioRecord.start(path: filePath);
 
       setState(() {
@@ -722,7 +722,7 @@ Future<bool> checkAudioPermission() async {
       // Verificar si el archivo existe
       File audioFile = File(recordedFilePath);
       if (await audioFile.exists()) {
-        _sendAudio(recordedFilePath, 'recording${_audioList.length + 1}');
+        _sendAudio(recordedFilePath, '${sala}_recording${_audioList.length + 1}');
         print(filePathP);
         setState(() {
           activateMic = false;
