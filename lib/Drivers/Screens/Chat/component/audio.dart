@@ -3,32 +3,39 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:convert';
 import 'dart:io';
+import 'package:http/http.dart' as http;
 
 class AudioContainer extends StatefulWidget {
-  final String base64Audio;
+  final String audioName;
+  final int idSala;
   final Color colorIcono;
 
-  const AudioContainer({required this.base64Audio, required this.colorIcono});
+  const AudioContainer({required this.audioName, required this.colorIcono, required this.idSala});
 
   @override
   _AudioContainerState createState() =>
-      _AudioContainerState(base64Audio: base64Audio, colorIcono: colorIcono);
+      _AudioContainerState(audioName: audioName, colorIcono: colorIcono, idSala: idSala);
 }
 
 class _AudioContainerState extends State<AudioContainer> {
-  final String base64Audio;
+  final String audioName;
   final Color colorIcono;
+  final int idSala;
   late AudioPlayer _audioPlayer;
   bool audioPlaying = false;
   Map<String, File> tempFiles = {};
   Duration? audioDuration;
+  String base64Audio = '';
+  bool cargarAudio = false;
+  String audioPath = '';
 
-  _AudioContainerState({required this.base64Audio, required this.colorIcono});
+  _AudioContainerState({required this.audioName, required this.colorIcono, required this.idSala});
 
   @override
   void initState() {
     super.initState();
     _audioPlayer = AudioPlayer();
+    getAudio();
   }
 
   @override
@@ -42,7 +49,8 @@ Widget build(BuildContext context) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
-      IconButton(
+      cargarAudio == false? CircularProgressIndicator()
+      :IconButton(
         onPressed: () {
           setState(() {
             if (!audioPlaying) {
@@ -74,31 +82,37 @@ Widget build(BuildContext context) {
   );
 }
 
-
+  void getAudio() async {
+    try {
+      final tempDir = await getTemporaryDirectory();
+      final audioFile = File('${tempDir.path}/$audioName.wav'); // Construct the file path
+      
+      if (await audioFile.exists()) {
+        setState(() {
+          cargarAudio = true;
+          audioPath = '${tempDir.path}/$audioName.wav';
+        });
+        print(audioPath);
+      } else {
+        print('audio no existe...');
+      }
+    } catch (e) {
+      print('Error al verificar la existencia del audio: $e');
+    }
+  }
 
   void playAudio() async {
-  try {
-    if (!tempFiles.containsKey(base64Audio)) {
-      List<int> audioBytes = base64.decode(base64Audio);
-      File newTempFile = await _writeTempFile(audioBytes);
-      if (newTempFile.existsSync()) {
-        tempFiles[base64Audio] = newTempFile;
-      } else {
-        print('Error al crear el archivo temporal');
-        return;
-      }
+    try {
+      await _audioPlayer.play(UrlSource(audioPath));// Specify that the audio source is local
+      final duration = await _audioPlayer.getDuration(); // Get the audio duration
+      setState(() {
+        audioPlaying = true;
+        audioDuration = duration;
+      });
+    } catch (e) {
+      print('Error al reproducir el audio: $e');
     }
-
-    await _audioPlayer.play(UrlSource(tempFiles[base64Audio]!.path));// Specify that the audio source is local
-    final duration = await _audioPlayer.getDuration(); // Get the audio duration
-    setState(() {
-      audioPlaying = true;
-      audioDuration = duration;
-    });
-  } catch (e) {
-    print('Error al reproducir el audio: $e');
   }
-}
 
   void stopAudio() async {
     await _audioPlayer.stop();
@@ -108,11 +122,6 @@ Widget build(BuildContext context) {
     });
   }
 
-  Future<File> _writeTempFile(List<int> audioBytes) async {
-    final tempDir = await getTemporaryDirectory();
-    final tempPath = '${tempDir.path}/temp_audio.wav'; // Mantener la extensión como wav
-    return File(tempPath).writeAsBytes(audioBytes);
-  }
 }
 
 void deleteAllTempAudioFiles() async {

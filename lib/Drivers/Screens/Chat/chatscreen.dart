@@ -98,11 +98,11 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     _messageInputController.clear();
   }
 
-  void _sendAudio(String audioPath) async {
+  void _sendAudio(String audioPath, String audioName) async {
     if (await File(audioPath).exists()) {
       try {
 
-        ChatApis().sendAudio(File(audioPath), sala.toString(),
+        ChatApis().sendAudio(File(audioPath), audioName, sala.toString(),
         nameAgent!, widget.id!, nameDriver!, idDb!, widget.idAgent!);
       } catch (e) {
         // Handle any error during compression or sending
@@ -420,9 +420,12 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                                       if (message.mensaje != null) ...{
                                         message.tipo=='AUDIO'?
                                         AudioContainer(
-                                          base64Audio: message.mensaje!,
-                                          colorIcono: Colors.white
-                                          )
+                                                audioName: message.mensaje!,
+                                                colorIcono: message.id == widget.id
+                                                    ? Colors.white
+                                                    : Theme.of(context).primaryColorDark,
+                                                    idSala: int.parse(message.sala),
+                                              )
                                         :
                                         Text(
                                           message.mensaje!,
@@ -719,7 +722,7 @@ Future<bool> checkAudioPermission() async {
       // Verificar si el archivo existe
       File audioFile = File(recordedFilePath);
       if (await audioFile.exists()) {
-        _sendAudio(recordedFilePath);
+        _sendAudio(recordedFilePath, 'recording${_audioList.length + 1}');
         print(filePathP);
         setState(() {
           activateMic = false;

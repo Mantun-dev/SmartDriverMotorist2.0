@@ -101,7 +101,7 @@ class ChatApis {
     
   }
 
-  void sendAudio(File audioFile, String sala, String nombre, String idDriver, String nameDriver, String idDb, String idR,
+  void sendAudio(File audioFile, String audioName, String sala, String nombre, String idDriver, String nameDriver, String idDb, String idR,
   ) async {
     DateTime now = DateTime.now();
     String formattedHour = DateFormat('hh:mm a').format(now);
@@ -112,14 +112,11 @@ class ChatApis {
     var formatter3 = new DateFormat('yy');
     String anio = formatter3.format(now);
 
-    final audioBytes = audioFile.readAsBytesSync();
-    final encodedAudio = base64.encode(audioBytes);
-
     Map sendMessage = {
           "id_emisor": idDriver,
           "id_receptor": idR,
           "Nombre_emisor": nameDriver,
-          "Mensaje": encodedAudio,
+          "Mensaje": audioName,
           "Sala": sala,
           "Nombre_receptor": nombre,
           "Tipo": "AUDIO",
@@ -134,7 +131,7 @@ class ChatApis {
     await http.post(Uri.parse(RestApis.messages),body: sendDataM, headers: {"Content-Type": "application/json"});
 
     streamSocket.socket!.emit('enviar-mensaje2', {
-      'mensaje': encodedAudio,
+      'mensaje': audioName,
       'sala': sala,
       'user': nameDriver,
       'id': idDriver,
