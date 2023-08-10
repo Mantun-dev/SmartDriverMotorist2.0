@@ -2947,6 +2947,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                   if(verificarAbordado.isNotEmpty)
                     waypoints.add('${value.trips![0].tripAgent![i].latitude},${value.trips![0].tripAgent![i].longitude}');
                 }
+                waypoints.add('$latidudeInicial,$longitudInicial');
                 setState(() {});
               }else{
                 Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
