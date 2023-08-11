@@ -98,11 +98,11 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     _messageInputController.clear();
   }
 
-  void _sendAudio(String audioPath, String audioName) async {
+  void _sendAudio(String audioPath) async {
     if (await File(audioPath).exists()) {
       try {
 
-        ChatApis().sendAudio(File(audioPath), audioName, sala.toString(),
+        ChatApis().sendAudio(audioPath, sala.toString(),
         nameAgent!, widget.id!, nameDriver!, idDb!, widget.idAgent!);
       } catch (e) {
         // Handle any error during compression or sending
@@ -722,7 +722,7 @@ Future<bool> checkAudioPermission() async {
       // Verificar si el archivo existe
       File audioFile = File(recordedFilePath);
       if (await audioFile.exists()) {
-        _sendAudio(recordedFilePath, '${sala}_recording${_audioList.length + 1}');
+        _sendAudio(recordedFilePath);
         print(filePathP);
         setState(() {
           activateMic = false;

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:path_provider/path_provider.dart';
-import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 
@@ -85,16 +84,31 @@ Widget build(BuildContext context) {
   void getAudio() async {
     try {
       final tempDir = await getTemporaryDirectory();
-      final audioFile = File('${tempDir.path}/$audioName.wav'); // Construct the file path
-      
+      final audioFile = File('${tempDir.path}/$audioName'); // Construct the file path
+
       if (await audioFile.exists()) {
         setState(() {
           cargarAudio = true;
-          audioPath = '${tempDir.path}/$audioName.wav';
+          audioPath = audioFile.path;
         });
-        print(audioPath);
+        print('Audio encontrado en el dispositivo: $audioPath');
       } else {
-        print('audio no existe...');
+        // El archivo no existe en el dispositivo, intenta descargarlo del servidor
+        final response = await http.get(Uri.parse('https://apichat.smtdriver.com/api/audios/$audioName'));
+        print('https://apichat.smtdriver.com/api/audios/$audioName');
+        if (response.statusCode == 200) {
+          // Guardar el archivo descargado en el dispositivo
+          await audioFile.writeAsBytes(response.bodyBytes);
+
+          setState(() {
+            cargarAudio = true;
+            audioPath = audioFile.path;
+          });
+
+          print('Audio descargado desde el servidor y encontrado en el dispositivo: $audioPath');
+        } else {
+          print('El archivo de audio no existe en el servidor ni en el dispositivo');
+        }
       }
     } catch (e) {
       print('Error al verificar la existencia del audio: $e');
