@@ -5,7 +5,7 @@ class TripsPending2 {
         this.hora,
         this.empresa,
         this.agentes,
-        this.conductor
+        this.conductor,
     );
 
     int tripId;
@@ -14,7 +14,6 @@ class TripsPending2 {
     String empresa;
     int agentes;
     String conductor;
-
 }
 
 class TripsHistory {
@@ -45,7 +44,9 @@ class TripsInProgress {
         this.empresa,
         this.agentes,
         this.tipo,
-        this.conductor
+        this.conductor,
+        this.departmentId,
+        this.departamento
     );
 
     int tripId;
@@ -55,6 +56,8 @@ class TripsInProgress {
     int agentes;
     String tipo;
     String conductor;
+    int departmentId;
+    String departamento;
 
 }
 
