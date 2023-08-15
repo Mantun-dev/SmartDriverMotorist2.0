@@ -27,6 +27,7 @@ class _AudioContainerState extends State<AudioContainer> {
   String base64Audio = '';
   bool cargarAudio = false;
   String audioPath = '';
+  Duration? audioPosition;
 
   _AudioContainerState({required this.audioName, required this.colorIcono, required this.idSala});
 
@@ -44,42 +45,50 @@ class _AudioContainerState extends State<AudioContainer> {
   }
 
   @override
-Widget build(BuildContext context) {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      cargarAudio == false? CircularProgressIndicator()
-      :IconButton(
-        onPressed: () {
-          setState(() {
-            if (!audioPlaying) {
-              playAudio();
-            } else {
-              stopAudio();
-            }
-          });
-        },
-        icon: !audioPlaying
-            ? Icon(Icons.play_arrow, color: colorIcono)
-            : Icon(Icons.stop, color: Colors.red),
-      ),
-      if (audioDuration != null)
-        Row(
-          children: [
-            Text(
-              '${audioDuration!.inMinutes}:${(audioDuration!.inSeconds % 60).toString().padLeft(2, '0')}',
-              style: TextStyle(fontSize: 10, color: colorIcono),
-            ),
-            Icon(
-              Icons.done,
-              size: 16,
-              color: Colors.transparent,
-            )
-          ],
-        ),
-    ],
-  );
-}
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        cargarAudio == false ? CircularProgressIndicator()
+          : IconButton(
+            onPressed: () {
+              setState(() {
+                if (!audioPlaying) {
+                  playAudio();
+                } else {
+                  stopAudio();
+                }
+              });
+            },
+            icon: !audioPlaying
+              ? Icon(Icons.play_arrow, color: colorIcono)
+              : Icon(Icons.stop, color: Colors.red),
+          ),
+        if (audioDuration != null)
+          Row(
+            children: [
+              Text(
+                '${audioPosition?.inMinutes ?? 0}:${(audioPosition?.inSeconds ?? 0).toString().padLeft(2, '0')}',
+                style: TextStyle(fontSize: 10, color: colorIcono),
+              ),
+              Text(
+                ' / ',
+                style: TextStyle(fontSize: 10, color: colorIcono),
+              ),
+              Text(
+                '${audioDuration!.inMinutes}:${(audioDuration!.inSeconds % 60).toString().padLeft(2, '0')}',
+                style: TextStyle(fontSize: 10, color: colorIcono),
+              ),
+              Icon(
+                Icons.done,
+                size: 16,
+                color: Colors.transparent,
+              )
+            ],
+          ),
+      ],
+    );
+  }
 
   void getAudio() async {
     try {
@@ -118,10 +127,17 @@ Widget build(BuildContext context) {
   void playAudio() async {
     try {
       await _audioPlayer.play(UrlSource(audioPath));// Specify that the audio source is local
-      final duration = await _audioPlayer.getDuration(); // Get the audio duration
+      final duration = await _audioPlayer.getDuration();
+
       setState(() {
         audioPlaying = true;
         audioDuration = duration;
+      });
+
+      _audioPlayer.onPositionChanged.listen((position) {
+        setState(() {
+          audioPosition = position;
+        });
       });
 
       await Future.delayed(audioDuration!, () {
