@@ -46,47 +46,50 @@ class _AudioContainerState extends State<AudioContainer> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        cargarAudio == false ? CircularProgressIndicator()
-          : IconButton(
-            onPressed: () {
-              setState(() {
-                if (!audioPlaying) {
-                  playAudio();
-                } else {
-                  stopAudio();
-                }
-              });
-            },
-            icon: !audioPlaying
-              ? Icon(Icons.play_arrow, color: colorIcono)
-              : Icon(Icons.stop, color: Colors.red),
-          ),
-        if (audioDuration != null)
-          Row(
-            children: [
-              Text(
-                '${audioPosition?.inMinutes ?? 0}:${(audioPosition?.inSeconds ?? 0).toString().padLeft(2, '0')}',
-                style: TextStyle(fontSize: 10, color: colorIcono),
-              ),
-              Text(
-                ' / ',
-                style: TextStyle(fontSize: 10, color: colorIcono),
-              ),
-              Text(
-                '${audioDuration!.inMinutes}:${(audioDuration!.inSeconds % 60).toString().padLeft(2, '0')}',
-                style: TextStyle(fontSize: 10, color: colorIcono),
-              ),
-              Icon(
-                Icons.done,
-                size: 16,
-                color: Colors.transparent,
-              )
-            ],
-          ),
-      ],
+    return Container(
+      width: 150,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          cargarAudio == false ? CircularProgressIndicator()
+            : IconButton(
+              onPressed: () {
+                setState(() {
+                  if (!audioPlaying) {
+                    playAudio();
+                  } else {
+                    stopAudio();
+                  }
+                });
+              },
+              icon: !audioPlaying
+                ? Icon(Icons.play_arrow, color: colorIcono)
+                : Icon(Icons.stop, color: Colors.red),
+            ),
+          if (audioDuration != null)
+            Row(
+              children: [
+                Text(
+                  '${audioPosition?.inMinutes ?? 0}:${(audioPosition?.inSeconds ?? 0).toString().padLeft(2, '0')}',
+                  style: TextStyle(fontSize: 10, color: colorIcono),
+                ),
+                Text(
+                  ' / ',
+                  style: TextStyle(fontSize: 10, color: colorIcono),
+                ),
+                Text(
+                  '${audioDuration!.inMinutes}:${(audioDuration!.inSeconds % 60).toString().padLeft(2, '0')}',
+                  style: TextStyle(fontSize: 10, color: colorIcono),
+                ),
+                Icon(
+                  Icons.done,
+                  size: 16,
+                  color: Colors.transparent,
+                )
+              ],
+            ),
+        ],
+      ),
     );
   }
 
@@ -126,7 +129,7 @@ class _AudioContainerState extends State<AudioContainer> {
 
   void playAudio() async {
     try {
-      await _audioPlayer.play(UrlSource(audioPath));// Specify that the audio source is local
+      await _audioPlayer.play(UrlSource(audioPath), position: audioPosition);// Specify that the audio source is local
       final duration = await _audioPlayer.getDuration();
 
       setState(() {
@@ -140,9 +143,9 @@ class _AudioContainerState extends State<AudioContainer> {
         });
       });
 
-      await Future.delayed(audioDuration!, () {
+      _audioPlayer.onPlayerComplete.listen((position) {
         if (audioPlaying) {
-          stopAudio();
+          stopAudio2();
         }
       });
     } catch (e) {
@@ -155,6 +158,15 @@ class _AudioContainerState extends State<AudioContainer> {
 
     setState(() {
       audioPlaying = false;
+    });
+  }
+
+  void stopAudio2() async {
+    await _audioPlayer.stop();
+
+    setState(() {
+      audioPlaying = false;
+      audioPosition = Duration(seconds: 0);
     });
   }
 
