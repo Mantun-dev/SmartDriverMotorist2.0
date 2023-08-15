@@ -123,6 +123,12 @@ Widget build(BuildContext context) {
         audioPlaying = true;
         audioDuration = duration;
       });
+
+      await Future.delayed(audioDuration!, () {
+        if (audioPlaying) {
+          stopAudio();
+        }
+      });
     } catch (e) {
       print('Error al reproducir el audio: $e');
     }
