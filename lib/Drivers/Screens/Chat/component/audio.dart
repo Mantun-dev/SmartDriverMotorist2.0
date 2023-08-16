@@ -178,7 +178,7 @@ void deleteAllTempAudioFiles() async {
     final tempFiles = tempDir.listSync();
 
     for (final file in tempFiles) {
-      if (file is File && file.path.endsWith('.wav')) { // Cambiar la extensión a wav
+      if (file is File && file.path.endsWith('.m4a')) { // Cambiar la extensión a wav
         await file.delete();
       }
     }
