@@ -9,11 +9,14 @@ class AudioContainer extends StatefulWidget {
   final int idSala;
   final Color colorIcono;
 
-  const AudioContainer({required this.audioName, required this.colorIcono, required this.idSala});
+  const AudioContainer(
+      {required this.audioName,
+      required this.colorIcono,
+      required this.idSala});
 
   @override
-  _AudioContainerState createState() =>
-      _AudioContainerState(audioName: audioName, colorIcono: colorIcono, idSala: idSala);
+  _AudioContainerState createState() => _AudioContainerState(
+      audioName: audioName, colorIcono: colorIcono, idSala: idSala);
 }
 
 class _AudioContainerState extends State<AudioContainer> {
@@ -29,7 +32,10 @@ class _AudioContainerState extends State<AudioContainer> {
   String audioPath = '';
   Duration? audioPosition;
 
-  _AudioContainerState({required this.audioName, required this.colorIcono, required this.idSala});
+  _AudioContainerState(
+      {required this.audioName,
+      required this.colorIcono,
+      required this.idSala});
 
   @override
   void initState() {
@@ -51,21 +57,22 @@ class _AudioContainerState extends State<AudioContainer> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          cargarAudio == false ? CircularProgressIndicator()
-            : IconButton(
-              onPressed: () {
-                setState(() {
-                  if (!audioPlaying) {
-                    playAudio();
-                  } else {
-                    stopAudio();
-                  }
-                });
-              },
-              icon: !audioPlaying
-                ? Icon(Icons.play_arrow, color: colorIcono)
-                : Icon(Icons.stop, color: Colors.red),
-            ),
+          cargarAudio == false
+              ? CircularProgressIndicator()
+              : IconButton(
+                  onPressed: () {
+                    setState(() {
+                      if (!audioPlaying) {
+                        playAudio();
+                      } else {
+                        stopAudio();
+                      }
+                    });
+                  },
+                  icon: !audioPlaying
+                      ? Icon(Icons.play_arrow, color: colorIcono)
+                      : Icon(Icons.stop, color: Colors.red),
+                ),
           if (audioDuration != null)
             Row(
               children: [
@@ -96,7 +103,8 @@ class _AudioContainerState extends State<AudioContainer> {
   void getAudio() async {
     try {
       final tempDir = await getTemporaryDirectory();
-      final audioFile = File('${tempDir.path}/$audioName'); // Construct the file path
+      final audioFile =
+          File('${tempDir.path}/$audioName'); // Construct the file path
 
       if (await audioFile.exists()) {
         setState(() {
@@ -106,7 +114,8 @@ class _AudioContainerState extends State<AudioContainer> {
         print('Audio encontrado en el dispositivo: $audioPath');
       } else {
         // El archivo no existe en el dispositivo, intenta descargarlo del servidor
-        final response = await http.get(Uri.parse('https://apichat.smtdriver.com/api/audios/$audioName'));
+        final response = await http.get(
+            Uri.parse('https://apichat.smtdriver.com/api/audios/$audioName'));
         print('https://apichat.smtdriver.com/api/audios/$audioName');
         if (response.statusCode == 200) {
           // Guardar el archivo descargado en el dispositivo
@@ -117,9 +126,11 @@ class _AudioContainerState extends State<AudioContainer> {
             audioPath = audioFile.path;
           });
 
-          print('Audio descargado desde el servidor y encontrado en el dispositivo: $audioPath');
+          print(
+              'Audio descargado desde el servidor y encontrado en el dispositivo: $audioPath');
         } else {
-          print('El archivo de audio no existe en el servidor ni en el dispositivo');
+          print(
+              'El archivo de audio no existe en el servidor ni en el dispositivo');
         }
       }
     } catch (e) {
@@ -129,7 +140,9 @@ class _AudioContainerState extends State<AudioContainer> {
 
   void playAudio() async {
     try {
-      await _audioPlayer.play(UrlSource(audioPath), position: audioPosition);// Specify that the audio source is local
+      await _audioPlayer.setSourceDeviceFile(audioPath);
+      await _audioPlayer.play(UrlSource(audioPath),
+          position: audioPosition); // Specify that the audio source is local
       final duration = await _audioPlayer.getDuration();
 
       setState(() {
@@ -169,7 +182,6 @@ class _AudioContainerState extends State<AudioContainer> {
       audioPosition = Duration(seconds: 0);
     });
   }
-
 }
 
 void deleteAllTempAudioFiles() async {
@@ -178,7 +190,7 @@ void deleteAllTempAudioFiles() async {
     final tempFiles = tempDir.listSync();
 
     for (final file in tempFiles) {
-      if (file is File && file.path.endsWith('.m4a')) { // Cambiar la extensión a wav
+      if (file is File && file.path.endsWith('.m4a')) {
         await file.delete();
       }
     }
