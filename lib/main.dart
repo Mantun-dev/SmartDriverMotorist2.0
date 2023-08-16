@@ -8,6 +8,7 @@ import 'package:flutter_auth/Drivers/SharePreferences/services.dart';
 import 'package:flutter_auth/components/splashView.dart';
 import 'package:flutter_auth/constants.dart';
 import 'package:flutter_auth/providers/chat.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:upgrader/upgrader.dart';
@@ -61,6 +62,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    checkAudioPermission();
     PushNotificationServices.messageStream.listen((event) {
 
       if (event != "MESSAGE_NOTIFICATION" && pantallaP  ==1) {
@@ -107,3 +109,16 @@ Future<dynamic> showMyDialog() {
     text: "El agente seleccionado ya está agregado al viaje",
   );
 }
+
+void checkAudioPermission() async {
+    // Verificar si se tiene el permiso de grabación de audio
+    var status = await Permission.microphone.status;
+    
+    if (status.isGranted) {
+      // Permiso concedido
+
+    } else {
+      // No se ha solicitado el permiso, solicitarlo al usuario
+      await Permission.microphone.request();
+    }
+  }
