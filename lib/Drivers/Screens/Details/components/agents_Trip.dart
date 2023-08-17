@@ -1,13 +1,8 @@
 //import 'package:back_button_interceptor/back_button_interceptor.dart';
 //import 'package:flutter/material.dart';
-import 'package:flutter_auth/Drivers/Screens/Chat/chatViews.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_auth/Drivers/Screens/Details/components/travel_In_Trips.dart';
-import 'package:flutter_auth/Drivers/Screens/Details/detailsDriver_Screen.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
-import 'package:flutter_auth/Drivers/components/loader.dart';
-import 'package:flutter_auth/Drivers/components/menu_lateralDriver.dart';
 import 'package:flutter_auth/Drivers/models/DriverData.dart';
 import 'package:flutter_auth/Drivers/models/network.dart';
 import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
@@ -66,7 +61,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
   dynamic flagalert;
 
   bool confirmados = true;
-  bool no_confirmados = false;
+  bool noconfirmados = false;
   bool cancelados = false;
   
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -376,7 +371,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
             opcionesBotones(),
             SizedBox(height: 30.0),
             if(confirmados == true) _agentToConfirm(),
-            if(no_confirmados == true) _agentoNoConfirm(),
+            if(noconfirmados == true) _agentoNoConfirm(),
             if(cancelados == true) _agentToCancel(),
             SizedBox(height: 30.0),
           ],
@@ -401,7 +396,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
               onPressed: confirmados==true?null:() {
                 setState(() {
                   confirmados = true;
-                  no_confirmados = false;
+                  noconfirmados = false;
                   cancelados = false;
                 });
               },
@@ -415,14 +410,14 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                 side: BorderSide(width: 1, color: Theme.of(context).primaryColorDark),
                 fixedSize: Size(150, 25),
                 elevation: 0,
-                backgroundColor: no_confirmados!=true?Colors.transparent:Theme.of(context).primaryColorDark,
+                backgroundColor: noconfirmados!=true?Colors.transparent:Theme.of(context).primaryColorDark,
                 shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
               ),
-              child: Text('No confirmados',style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold, color: no_confirmados==true?Theme.of(context).primaryColorLight:Theme.of(context).primaryColorDark)),
-              onPressed: no_confirmados==true?null:() {
+              child: Text('No confirmados',style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold, color: noconfirmados==true?Theme.of(context).primaryColorLight:Theme.of(context).primaryColorDark)),
+              onPressed: noconfirmados==true?null:() {
                 setState(() {
                   confirmados = false;
-                  no_confirmados = true;
+                  noconfirmados = true;
                   cancelados = false;
                 });
               },
@@ -442,7 +437,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
               onPressed: cancelados==true?null:() {
                 setState(() {
                   confirmados = false;
-                  no_confirmados = false;
+                  noconfirmados = false;
                   cancelados = true;
                 });
               },
@@ -679,7 +674,6 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
   }
 
   AlertDialog vehiculoE(resp, BuildContext context) {
-    var size = MediaQuery.of(context).size;
     return AlertDialog(
       backgroundColor: backgroundColor,
       shape: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
@@ -815,7 +809,6 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
               future: item,
               builder: (BuildContext context, abc) {
                 if (abc.connectionState == ConnectionState.done) {
-                  Size size = MediaQuery.of(context).size;
                   return ListView.builder(
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,

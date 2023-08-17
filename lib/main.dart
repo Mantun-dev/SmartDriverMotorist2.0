@@ -7,7 +7,6 @@ import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 
 import 'package:flutter_auth/Drivers/SharePreferences/services.dart';
 import 'package:flutter_auth/components/splashView.dart';
-import 'package:flutter_auth/constants.dart';
 import 'package:flutter_auth/providers/chat.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -95,7 +94,7 @@ class _MyAppState extends State<MyApp> {
         title: 'Smart Driver',
         theme: prefs.tema!=true? appThemeDataLight : appThemeDataDark,
         //home: WelcomeScreen(),
-        initialRoute: prefs.nombreUsuario == null || prefs.nombreUsuario == ""
+        initialRoute: prefs.nombreUsuario == ""
             ? 'login'
             : 'home',
         routes: {

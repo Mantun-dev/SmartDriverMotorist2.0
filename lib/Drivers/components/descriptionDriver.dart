@@ -391,7 +391,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                               onPressed: () => {
                                 setState(() {
                                   if (tables.length <= 13) {
-                                    if (prefs.nameSalida != tables2) {
+                                    if (prefs.nameSalida != tables2.toString()) {
                                       noemp.insert(0, '${data1.agent!.agentEmployeeId}');
                                       names.insert(0, '${data1.agent!.agentFullname}');
                                       hourout.insert(0, '${data1.agent!.hourOut}');
@@ -583,7 +583,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                                 onPressed: () => {
                                   setState(() {
                                     if (tables.length <= 13) {
-                                      if (prefs.nameSalida != tables2) {
+                                      if (prefs.nameSalida != tables2.toString()) {
                                         noemp.insert(0,
                                             '${data1.agent!.agentEmployeeId}');
                                         names.insert(
@@ -844,7 +844,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                                 onPressed: () => {
                                   setState(() {
                                     if (tables.length <= 13) {
-                                      if (prefs.nameSalida != tables2) {
+                                      if (prefs.nameSalida != tables2.toString()) {
                                         noemp.insert(0,'${data1.agent!.agentEmployeeId}');
                                         names.insert(0, '${data1.agent!.agentFullname}');
                                         hourout.insert(0, '${data1.agent!.hourOut}');
@@ -937,7 +937,7 @@ class _DriverDescriptionState extends State<DriverDescription>
       "agentEmployeeId": agentEmployeeId,
       "destinationId": prefs.destinationId,
     };
-    if (agentEmployeeId != "" && prefs.destinationId != null) {
+    if (agentEmployeeId != "") {
       final Database db = await handler!.initializeDB();
 
       final tables = await db.rawQuery('SELECT * FROM agentInsertSolid ;');
@@ -1056,7 +1056,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                                     onPressed: () => {
                                       setState(() {
                                         if (tables.length <= 13) {
-                                          if (prefs.nameSalida != tables2) {
+                                          if (prefs.nameSalida != tables2.toString()) {
                                             noemp.insert(0,
                                                 '${data1.agent!.agentEmployeeId}');
                                             names.insert(0,
@@ -1761,7 +1761,7 @@ class _DriverDescriptionState extends State<DriverDescription>
   }
 
   AlertDialog vehiculoE(resp, BuildContext context, codigoQR) {
-    var size = MediaQuery.of(context).size;
+
     return AlertDialog(
       backgroundColor: backgroundColor,
       shape: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
@@ -1875,7 +1875,7 @@ class _DriverDescriptionState extends State<DriverDescription>
       ),
       child: Theme(
         data: ThemeData(
-          textTheme: TextTheme(subtitle1: TextStyle(color: Colors.white)),
+          textTheme: TextTheme(titleMedium: TextStyle(color: Colors.white)),
         ),
         child: Padding(
           padding: const EdgeInsets.all(5.0),

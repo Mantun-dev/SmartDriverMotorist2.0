@@ -7,7 +7,6 @@ import 'package:flutter_auth/Drivers/Screens/DriverProfile/driverProfile.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/components/bodyDriver.dart';
 import 'package:flutter_auth/Drivers/Screens/Welcome/welcome_screen.dart';
 import 'package:flutter_auth/Drivers/components/loader.dart';
-import 'package:flutter_auth/Drivers/components/menu_lateralDriver.dart';
 import 'package:flutter_auth/Drivers/models/DriverData.dart';
 import 'package:flutter_auth/Drivers/models/countNotify.dart';
 import 'package:flutter_auth/Drivers/models/network.dart';

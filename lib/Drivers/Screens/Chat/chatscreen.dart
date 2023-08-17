@@ -252,6 +252,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   @override
   void dispose() {
     super.dispose();
+    _audioPlayer.dispose();
+    _audioRecord.dispose();
     _messageInputController.dispose();
 
     //creación del dispose para removerlo después del evento

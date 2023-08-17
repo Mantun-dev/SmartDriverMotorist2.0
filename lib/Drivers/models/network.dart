@@ -71,7 +71,7 @@ Future<List<TripsHistory>> fetchTripsHistory() async {
 Future<TripsList3> fetchAgentsCompleted() async {
   http.Response responsed =
       await http.get(Uri.parse('$ip/apis/agentsTripCompleted/${prefs.tripId}'));
-  final data1 = TripsList3.fromJson(json.decode(responsed.body));
+  
   if (responsed.statusCode == 200) {
     //print(data1.trips!.length);
     return TripsList3.fromJson(json.decode(responsed.body));

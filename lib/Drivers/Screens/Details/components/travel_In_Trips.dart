@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/agents_Trip.dart';
 
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
-import 'package:flutter_auth/Drivers/components/loader.dart';
-import 'package:flutter_auth/Drivers/components/menu_lateralDriver.dart';
 import 'package:flutter_auth/Drivers/models/network.dart';
 import 'package:flutter_auth/Drivers/models/tripsPendin2.dart';
 import 'package:flutter_auth/components/AppBarSuperior.dart';
@@ -12,9 +10,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../components/AppBarPosterior.dart';
 import '../../../../components/backgroundB.dart';
-import '../../../../constants.dart';
-import '../../../models/plantillaDriver.dart';
-import 'detailsDriver_assignHour.dart';
 
 void main() => runApp(Trips());
 

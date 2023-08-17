@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
-import 'package:flutter_auth/Drivers/Screens/Login/components/background.dart';
 
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/services.dart';
@@ -8,9 +7,7 @@ import 'package:flutter_auth/Drivers/models/DriverData.dart';
 import 'package:flutter_auth/Drivers/models/dataToken.dart';
 import 'package:flutter_auth/Drivers/models/messageDriver.dart';
 
-import 'package:flutter_auth/components/rounded_button.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:gradient_borders/box_borders/gradient_box_border.dart';
 import 'package:lottie/lottie.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:http/http.dart' as http;

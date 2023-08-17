@@ -29,7 +29,6 @@ import 'package:roundcheckbox/roundcheckbox.dart';
 
 import '../../../components/progress_indicator.dart';
 import '../../../models/search.dart';
-import 'details_TripProgress.dart';
 
 //import 'package:shop_app/screens/details/details_screen.dart';
 
@@ -175,7 +174,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
     }
     Map data2 = {"Estado": 'FINALIZADO'};
     String sendData2 = json.encode(data2);
-    http.Response response2 = await http.put(
+    await http.put(
         Uri.parse(
             'https://apichat.smtdriver.com/api/salas/Viaje_Estado/${prefs.tripId}'),
         body: sendData2,
@@ -197,7 +196,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
     http.Response responses =
         await http.post(Uri.parse('$ip/apis/getDriverComment'), body: datas);
     final si = Driver.fromJson(json.decode(responses.body));
-    http.Response response = await http
+    await http
         .post(Uri.parse('$ip/apis/agentTripSetComment'), body: datas2);
 
     if (responses.statusCode == 200 &&
@@ -273,7 +272,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
     Map data2 = {"Estado": 'FINALIZADO'};
     String sendData2 = json.encode(data2);
-    http.Response response2 = await http.put(
+    await http.put(
         Uri.parse(
             'https://apichat.smtdriver.com/api/salas/Viaje_Estado/${prefs.tripId}'),
         body: sendData2,
@@ -1466,7 +1465,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
   }
 
   AlertDialog vehiculoE(resp, BuildContext context) {
-    var size = MediaQuery.of(context).size;
     return AlertDialog(
       backgroundColor: backgroundColor,
       shape: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
@@ -1699,7 +1697,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
             'actionName': 'No salió'
           };
 
-          http.Response response = await http.post(
+          await http.post(
               Uri.parse(
                   'https://driver.smtdriver.com/apis/agents/registerTripAction'),
               body: data);
@@ -1770,7 +1768,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
       setState(() {});
     }
 
-    Size size = MediaQuery.of(context).size;
     return FutureBuilder<TripsList4>(
       future: item,
       builder: (BuildContext context, abc) {
@@ -2135,7 +2132,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                 'traveled': '0',
                                               };
                   
-                                              var re = await http.post(Uri.parse('$ip/apis/agentCheckIn'), body: datas);                
+                                              await http.post(Uri.parse('$ip/apis/agentCheckIn'), body: datas);                
                   
                                               setState(() {
                                                 if (traveledB(abc, index)) {
