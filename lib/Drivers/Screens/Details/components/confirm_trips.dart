@@ -295,6 +295,21 @@ class _DataTableExample extends State<MyConfirmAgent> {
     getInfoViaje();
   }
 
+  Future<int> addAgente(var idAgente, var lista) async {
+
+    for (int i = 0; i < lista.trips![0].tripAgent!.length; i++) { 
+      if(lista.trips![0].tripAgent![i].agentId==idAgente){
+        if(lista.trips![0].tripAgent![i].traveled == 1){
+          traveled = true;
+        }else{
+          traveled = false;
+        }
+        return i;
+      }
+    }
+    return 0;
+  }
+
   void getLocation() async{
 
     var lat = '';
@@ -705,30 +720,21 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                 return;
 
                                                                 }else{
+                                                                  var itemAbordaje = await fetchAgentsTripInProgress();
 
-                                                                  int index = 0;
-                                                                  for (int i = 0; i < abc.data!.trips![0].tripAgent!.length; i++) {  
-                                                                    if(abc.data!.trips![0].tripAgent![i].agentId==resp['agentId']){
-
-                                                                      if(abc.data!.trips![0].tripAgent![i].traveled == 1){
-                                                                        traveled = true;
-                                                                      }else{
-                                                                        traveled = false;
-                                                                      }
-                                                                      index = i;
-                                                                    }
-                                                                  }
+                                                                  int indexP = await addAgente(resp['agentId'], itemAbordaje);
+                                                                  abc.data!.trips![0].tripAgent=itemAbordaje.trips![0].tripAgent;
 
                                                                   fetchRegisterCommentAgent(
-                                                                    abc.data!.trips![0].tripAgent![index].agentId.toString(),
+                                                                    abc.data!.trips![0].tripAgent![indexP].agentId.toString(),
                                                                     prefs.tripId,
                                                                     ''
-                                                                  );  
+                                                                  ); 
 
                                                                   Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
   
                                                                   traveled = !traveled;
-                                                                  abc.data!.trips![0].tripAgent![index].traveled = traveled;
+                                                                  abc.data!.trips![0].tripAgent![indexP].traveled = traveled;
                                                                   
                                                                   Map data =   {
                                                                     'agentId':data1.agent!.agentId.toString(), 
@@ -747,7 +753,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                     QuickAlert.show(
                                                                       context: context,
                                                                       title: '¡Éxito!',
-                                                                      text: 'Se agrego el agente al viaje.',
+                                                                      text: 'Se agrego el agente ${itemAbordaje.trips![0].tripAgent![indexP].agentFullname} al viaje.',
                                                                       type: QuickAlertType.success,
                                                                     ); 
                                                                     
@@ -1056,29 +1062,22 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
                                                                 }else{
 
-                                                                  int index = 0;
-                                                                  for (int i = 0; i < abc.data!.trips![0].tripAgent!.length; i++) {  
-                                                                    if(abc.data!.trips![0].tripAgent![i].agentId==resp['agentId']){
+                                                                  var itemAbordaje = await fetchAgentsTripInProgress();
 
-                                                                      if(abc.data!.trips![0].tripAgent![i].traveled == 1){
-                                                                        traveled = true;
-                                                                      }else{
-                                                                        traveled = false;
-                                                                      }
-                                                                      index = i;
-                                                                    }
-                                                                  }
+                                                                  int indexP = await addAgente(resp['agentId'], itemAbordaje);
+                                                                  abc.data!.trips![0].tripAgent=itemAbordaje.trips![0].tripAgent;
 
                                                                   fetchRegisterCommentAgent(
-                                                                    abc.data!.trips![0].tripAgent![index].agentId.toString(),
+                                                                    abc.data!.trips![0].tripAgent![indexP].agentId.toString(),
                                                                     prefs.tripId,
                                                                     ''
-                                                                  );  
+                                                                  ); 
+
 
                                                                   Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
   
                                                                   traveled = !traveled;
-                                                                  abc.data!.trips![0].tripAgent![index].traveled = traveled;
+                                                                  abc.data!.trips![0].tripAgent![indexP].traveled = traveled;
                                                                   
                                                                   Map data =   {
                                                                     'agentId':data1.agent!.agentId.toString(), 
@@ -1098,7 +1097,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                     QuickAlert.show(
                                                                       context: navigatorKey.currentContext!,
                                                                       title: '¡Éxito!',
-                                                                      text: 'Se agrego el agente al viaje.',
+                                                                      text: 'Se agrego el agente ${itemAbordaje.trips![0].tripAgent![indexP].agentFullname} al viaje.',
                                                                       type: QuickAlertType.success,
                                                                     ); 
                                                                     
@@ -1838,7 +1837,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                   ),
                 ),
                 SizedBox(height: 10.0),
-              _buttonsRuta(),
+              //_buttonsRuta(),
               SizedBox(height: 10.0),
                 Column(
                   children: List.generate(
@@ -2204,7 +2203,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                   ),
                 ),
               SizedBox(height: 10.0),
-              _buttonsRuta(),
+              //_buttonsRuta(),
               SizedBox(height: 10.0),
                 Column(
                 children: List.generate(
