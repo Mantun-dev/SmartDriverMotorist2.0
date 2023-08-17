@@ -71,11 +71,13 @@ class _DataTableExample extends State<MyConfirmAgent> {
   final int zerovarianceSPS = 7;
   final int aloricaCeiba = 13;
   final int itelSPS = 10;
+  bool cargarCoordenadas = false;
 
   String apiKey = 'AIzaSyB43u0sNf5Zm7aaB4mH_J2wQUgl-Ypa8EU';
   var latidudeInicial;
   var longitudInicial;
   List<String> waypoints = [];  
+  List<String> waypointsAbordados= [];  
 
   List<TextEditingController> check = [];
   List<TextEditingController> comment = new List.empty(growable: true);
@@ -118,9 +120,11 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
     for (int i = 0; i < lista!.trips![0].tripAgent!.length; i++) {
       if (traveledB(lista, i)) {
+        waypointsAbordados.add( lista.trips![0].tripAgent![i].agentId.toString());
         totalAbordado++;
       }
     }
+
   }
 
   bool traveledB(lista, index) {
@@ -291,6 +295,21 @@ class _DataTableExample extends State<MyConfirmAgent> {
     getInfoViaje();
   }
 
+  Future<int> addAgente(var idAgente, var lista) async {
+
+    for (int i = 0; i < lista.trips![0].tripAgent!.length; i++) { 
+      if(lista.trips![0].tripAgent![i].agentId==idAgente){
+        if(lista.trips![0].tripAgent![i].traveled == 1){
+          traveled = true;
+        }else{
+          traveled = false;
+        }
+        return i;
+      }
+    }
+    return 0;
+  }
+
   void getLocation() async{
 
     var lat = '';
@@ -339,35 +358,30 @@ class _DataTableExample extends State<MyConfirmAgent> {
       long = '-86.792570';
     }
 
-    await fetchAgentsTripInProgress().then((value) => {
+    await fetchAgentsTripInProgress().then((value) async {
 
-      print(value.trips![1].actualTravel!.tripType),
+      print(value.trips![1].actualTravel!.tripType);
 
       if(value.trips![1].actualTravel!.tripType=='Entrada'){
 
         for(var i = 0; i < value.trips![0].tripAgent!.length; i++){
+          waypoints.add('${value.trips![0].tripAgent![i].latitude},${value.trips![0].tripAgent![i].longitude}');
+        }
 
-          if(i==0){
-            latidudeInicial = value.trips![0].tripAgent![i].latitude,
-            longitudInicial = value.trips![0].tripAgent![i].longitude,
-          },
-
-          waypoints.add('${value.trips![0].tripAgent![i].latitude},${value.trips![0].tripAgent![i].longitude}')
-        },
-
-        waypoints.add('$lat,$long'),
-        setState(() {})
+        waypoints.add('$lat,$long');
+        cargarCoordenadas = true;
+        setState(() {});
       }else{
-        latidudeInicial = lat,
-        longitudInicial = long,
-
-        waypoints.add('$latidudeInicial,$longitudInicial'),
+        //waypoints.add('$latidudeInicial,$longitudInicial'),
+        latidudeInicial = lat;
+        longitudInicial = long;
 
         for(var i = 0; i < value.trips![0].tripAgent!.length; i++){
-          waypoints.add('${value.trips![0].tripAgent![i].latitude},${value.trips![0].tripAgent![i].longitude}')
-        },
-        setState(() {})
-      },
+          waypoints.add('${value.trips![0].tripAgent![i].latitude},${value.trips![0].tripAgent![i].longitude}');
+        }
+        cargarCoordenadas = true;
+        setState(() {});
+      }
       
     });
 
@@ -381,10 +395,10 @@ class _DataTableExample extends State<MyConfirmAgent> {
     String origin = '$startLat,$startLng';
     String destination = waypoints.last;
     String waypointsString = waypoints.join('|');
-      
+
     String url = '$baseUrl?origin=$origin&destination=$destination&waypoints=optimize:true|$waypointsString&key=$apiKey';
     // ignore: avoid_print
-    print(url);
+
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
@@ -405,11 +419,12 @@ class _DataTableExample extends State<MyConfirmAgent> {
         url += '&waypoints=$sortedWaypointsString';
       }
 
-      if (await canLaunchUrl(Uri.parse(url))) {
+      LoadingIndicatorDialog().dismiss();
+      //if (await canLaunchUrl(Uri.parse(url))) {
         await launchUrl(Uri.parse(url));
-      } else {
-        throw 'No se pudo abrir la URL: $url';
-      }
+      //} else {
+        //throw 'No se pudo abrir la URL: $url';
+      //}
     } else {
       // ignore: avoid_print
       print('Error al obtener la ruta');
@@ -705,30 +720,21 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                 return;
 
                                                                 }else{
+                                                                  var itemAbordaje = await fetchAgentsTripInProgress();
 
-                                                                  int index = 0;
-                                                                  for (int i = 0; i < abc.data!.trips![0].tripAgent!.length; i++) {  
-                                                                    if(abc.data!.trips![0].tripAgent![i].agentId==resp['agentId']){
-
-                                                                      if(abc.data!.trips![0].tripAgent![i].traveled == 1){
-                                                                        traveled = true;
-                                                                      }else{
-                                                                        traveled = false;
-                                                                      }
-                                                                      index = i;
-                                                                    }
-                                                                  }
+                                                                  int indexP = await addAgente(resp['agentId'], itemAbordaje);
+                                                                  abc.data!.trips![0].tripAgent=itemAbordaje.trips![0].tripAgent;
 
                                                                   fetchRegisterCommentAgent(
-                                                                    abc.data!.trips![0].tripAgent![index].agentId.toString(),
+                                                                    abc.data!.trips![0].tripAgent![indexP].agentId.toString(),
                                                                     prefs.tripId,
                                                                     ''
-                                                                  );  
+                                                                  ); 
 
                                                                   Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
   
                                                                   traveled = !traveled;
-                                                                  abc.data!.trips![0].tripAgent![index].traveled = traveled;
+                                                                  abc.data!.trips![0].tripAgent![indexP].traveled = traveled;
                                                                   
                                                                   Map data =   {
                                                                     'agentId':data1.agent!.agentId.toString(), 
@@ -747,7 +753,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                     QuickAlert.show(
                                                                       context: context,
                                                                       title: '¡Éxito!',
-                                                                      text: 'Se agrego el agente al viaje.',
+                                                                      text: 'Se agrego el agente ${itemAbordaje.trips![0].tripAgent![indexP].agentFullname} al viaje.',
                                                                       type: QuickAlertType.success,
                                                                     ); 
                                                                     
@@ -810,6 +816,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                 prefs.tripId,
                                                                 'No abordó'
                                                               );  
+                                                              waypointsAbordados.removeWhere((element) => element == abc.data!.trips![0].tripAgent![index].agentId.toString());
                                                               totalAbordado--;
                                                             }
 
@@ -835,7 +842,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                               'longitude':position.longitude.toString(),
                                                               'actionName':'Abordaje'
                                                             };
-                                                          
+                                                            
                                                             http.Response response2 = await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
                                                             final resp2 = json.decode(response2.body);
                                                             Navigator.pop(context);
@@ -851,6 +858,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                           agentEmployeeId.text='';
                                                           abc.data!.trips![0].tripAgent![index].commentDriver='';
                                                           totalAbordado++;
+                                                          waypointsAbordados.add(abc.data!.trips![0].tripAgent![index].agentId.toString());
                                                           setState(() { });
                                                           },
                                                           onCancelBtnTap: () {
@@ -1054,29 +1062,22 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
                                                                 }else{
 
-                                                                  int index = 0;
-                                                                  for (int i = 0; i < abc.data!.trips![0].tripAgent!.length; i++) {  
-                                                                    if(abc.data!.trips![0].tripAgent![i].agentId==resp['agentId']){
+                                                                  var itemAbordaje = await fetchAgentsTripInProgress();
 
-                                                                      if(abc.data!.trips![0].tripAgent![i].traveled == 1){
-                                                                        traveled = true;
-                                                                      }else{
-                                                                        traveled = false;
-                                                                      }
-                                                                      index = i;
-                                                                    }
-                                                                  }
+                                                                  int indexP = await addAgente(resp['agentId'], itemAbordaje);
+                                                                  abc.data!.trips![0].tripAgent=itemAbordaje.trips![0].tripAgent;
 
                                                                   fetchRegisterCommentAgent(
-                                                                    abc.data!.trips![0].tripAgent![index].agentId.toString(),
+                                                                    abc.data!.trips![0].tripAgent![indexP].agentId.toString(),
                                                                     prefs.tripId,
                                                                     ''
-                                                                  );  
+                                                                  ); 
+
 
                                                                   Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
   
                                                                   traveled = !traveled;
-                                                                  abc.data!.trips![0].tripAgent![index].traveled = traveled;
+                                                                  abc.data!.trips![0].tripAgent![indexP].traveled = traveled;
                                                                   
                                                                   Map data =   {
                                                                     'agentId':data1.agent!.agentId.toString(), 
@@ -1096,7 +1097,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                     QuickAlert.show(
                                                                       context: navigatorKey.currentContext!,
                                                                       title: '¡Éxito!',
-                                                                      text: 'Se agrego el agente al viaje.',
+                                                                      text: 'Se agrego el agente ${itemAbordaje.trips![0].tripAgent![indexP].agentFullname} al viaje.',
                                                                       type: QuickAlertType.success,
                                                                     ); 
                                                                     
@@ -1160,7 +1161,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                           prefs.tripId,
                                           'No abordó'
                                         );  
-
+                                        waypointsAbordados.removeWhere((element) => element == abc.data!.trips![0].tripAgent![index].agentId.toString());
                                         totalAbordado--;
                                         }
 
@@ -1185,7 +1186,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                           'longitude':position.longitude.toString(),
                                           'actionName':'Abordaje'
                                         };
-                                      
+
                                         http.Response response2 = await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
                                         final resp2 = json.decode(response2.body);
 
@@ -1200,6 +1201,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                       ); 
                                       abc.data!.trips![0].tripAgent![index].commentDriver='';
                                       totalAbordado++;
+                                      waypointsAbordados.add(abc.data!.trips![0].tripAgent![index].agentId.toString());
                                       setState(() { });
                                       },
                                       onCancelBtnTap: () {
@@ -1646,12 +1648,14 @@ class _DataTableExample extends State<MyConfirmAgent> {
             abc.data!.trips![0].tripAgent![index].commentDriver='';
             fetchCheckAgentTrip(abc.data!.trips![0].tripAgent![index].agentId.toString());
             totalAbordado++;
+            waypointsAbordados.add(abc.data!.trips![0].tripAgent![index].agentId.toString());
             //print('////////');
           } else if (isChecked == false) {
             //print('bajo');
             fetchCheckAgentTrip(abc.data!.trips![0].tripAgent![index].agentId.toString());
             //print('////////');
             abc.data!.trips![0].tripAgent![index].commentDriver='No abordó';
+            waypointsAbordados.removeWhere((element) => element == abc.data!.trips![0].tripAgent![index].agentId.toString());
             totalAbordado--;
             fetchRegisterCommentAgent(
               abc.data!.trips![0].tripAgent![index].agentId.toString(),
@@ -1833,7 +1837,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                   ),
                 ),
                 SizedBox(height: 10.0),
-
+              //_buttonsRuta(),
               SizedBox(height: 10.0),
                 Column(
                   children: List.generate(
@@ -2135,6 +2139,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                   
                                               setState(() {
                                                 if (traveledB(abc, index)) {
+                                                  waypointsAbordados.removeWhere((element) => element == abc.data!.trips![0].tripAgent![index].agentId.toString());
                                                   totalAbordado--;
                                                 }
                                                 abc.data!.trips![0].tripAgent![index].commentDriver = 'No abordó';
@@ -2198,7 +2203,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                   ),
                 ),
               SizedBox(height: 10.0),
-
+              //_buttonsRuta(),
               SizedBox(height: 10.0),
                 Column(
                 children: List.generate(
@@ -2867,6 +2872,91 @@ class _DataTableExample extends State<MyConfirmAgent> {
         }
       },
     );
+  }
+
+  Widget _buttonsRuta() {
+    return cargarCoordenadas == false?ColorLoader3() : Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: <Widget>[
+        Container(
+          width: 200,
+          height: 40,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                elevation: 10,
+                textStyle: TextStyle(color: backgroundColor),
+                backgroundColor: firstColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                )),
+            child: Text("Generar ruta",
+                style: TextStyle(
+                    color: backgroundColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15)),
+            onPressed: () async{
+
+              permiso = await checkLocationPermission();
+              if (!permiso!) {
+                QuickAlert.show(
+                  context: context,
+                   title: "Advertencia",
+                   text: 'Usted negó el acceso a la ubicación. Esto es necesario para poder abordar agentes. Si no da acceso en configuraciones, no podrá abordar agentes.',
+                   type: QuickAlertType.warning,
+                   onConfirmBtnTap: () async {
+                    Navigator.pop(context);
+                    try {
+                      AppSettings.openLocationSettings();
+                    } catch (error) {  
+                      print(error);
+                    }
+                  },
+                );
+                return;
+              }
+
+              
+              LoadingIndicatorDialog().show(context);
+
+              llenarArreglo();
+            
+              Future.delayed(const Duration(seconds: 2), () {
+                launchGoogleMapsx(apiKey,latidudeInicial.toString(), longitudInicial.toString(), waypoints);
+              });
+              
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  void llenarArreglo() async{
+    var verificarAbordado;
+    await fetchAgentsTripInProgress().then((value) async{
+
+
+              if(value.trips![1].actualTravel!.tripType!='Entrada'){
+                waypoints.clear();
+                
+                for(var i = 0; i < value.trips![0].tripAgent!.length; i++){
+                  
+                  verificarAbordado = waypointsAbordados.where((element) => element == value.trips![0].tripAgent![i].agentId.toString());
+
+                  if(verificarAbordado.isNotEmpty)
+                    waypoints.add('${value.trips![0].tripAgent![i].latitude},${value.trips![0].tripAgent![i].longitude}');
+                }
+
+                setState(() {});
+              }else{
+                Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+                latidudeInicial = position.latitude;
+                longitudInicial = position.longitude;
+
+              }
+              
+            });
+            
   }
 
   Widget _buttonsAgents() {

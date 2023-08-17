@@ -62,7 +62,6 @@ dependencies:
   record: ^4.4.4
   path_provider: ^2.0.15
   audioplayers: ^4.1.0
-  flutter_ffmpeg: ^0.4.2
   #permission_handler: ^10.2.0
 
 dev_dependencies:
