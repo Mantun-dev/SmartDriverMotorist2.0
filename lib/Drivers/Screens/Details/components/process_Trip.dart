@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_auth/Drivers/Screens/Details/components/trip_In_Process.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
-import 'package:flutter_auth/Drivers/components/loader.dart';
 
 import 'package:flutter_auth/Drivers/models/network.dart';
 import 'package:flutter_auth/Drivers/models/tripsPendin2.dart';
-import 'package:flutter_auth/constants.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class ProcessTrip extends StatefulWidget {
@@ -58,23 +56,41 @@ class _ProcessTripState extends State<ProcessTrip> {
         builder: (BuildContext context, abc) {
           if (abc.connectionState == ConnectionState.done) {
             if (abc.data!.length < 1) {
-              return Column(
-                  children: [
-
-                    Center(
-                      child: Text(
-                        'No hay viajes progreso',
-                        style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 16),
+              return Padding(
+                padding: const EdgeInsets.only(left: 15, right: 15,bottom: 18),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardTheme.color,
+                    borderRadius: BorderRadius.circular(10.0),
+                    border: Border.all(
+                      color: Theme.of(context).dividerColor,
+                      width: 1.0,  
+                    ),
+                  ),
+                  child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SvgPicture.asset( 
+                            "assets/icons/advertencia.svg",
+                            color: Theme.of(context).primaryIconTheme.color,
+                            width: 18,
+                            height: 18,
+                          ),
+                          Flexible(
+                            child: Text(
+                              '  No hay viajes pendientes',
+                              style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15, color: Color.fromRGBO(213, 0, 0, 1), fontWeight: FontWeight.normal),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    SizedBox(height: 5),
-                    Container(
-                      height: 1,
-                      color: Theme.of(context).dividerColor,
-                    ),
-                    
-                  ],
-                );
+                  ),
+                ),
+              );
             } else {
               return ListView.builder(
                   scrollDirection: Axis.vertical,
@@ -213,7 +229,33 @@ class _ProcessTripState extends State<ProcessTrip> {
                   });
             }
           } else {
-            return ColorLoader3();
+            return WillPopScope(
+                      onWillPop: () async => false,
+                      child: SimpleDialog(
+                        elevation: 20,
+                        backgroundColor: Theme.of(context).cardColor,
+                        children: [
+                          Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.only(left: 16, top: 16, right: 16),
+                                  child: CircularProgressIndicator(),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Text(
+                                    'Cargando...', 
+                                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18),
+                                    ),
+                                )
+                              ],
+                            ),
+                          )
+                        ] ,
+                      ),
+                    );
           }
         },
       );

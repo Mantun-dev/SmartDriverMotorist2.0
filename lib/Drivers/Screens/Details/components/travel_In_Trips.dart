@@ -93,21 +93,40 @@ class _TripsState extends State<Trips> {
             builder: (BuildContext context, abc) {
               if (abc.connectionState == ConnectionState.done) {
                 if (abc.data!.length < 1) {
-                  return Column(
-                    children: [
-                      SizedBox(height: 5),
-                      Center(
-                        child: Text(
-                          'No hay viajes pendientes',
-                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 16),
+                  return Padding(
+                    padding: const EdgeInsets.only(left: 15, right: 15,bottom: 18),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).cardTheme.color,
+                        borderRadius: BorderRadius.circular(10.0),
+                        border: Border.all(
+                          color: Theme.of(context).dividerColor,
+                          width: 1.0,  
                         ),
                       ),
-                      SizedBox(height: 5),
-                      Container(
-                        height: 1,
-                        color: Theme.of(context).dividerColor,
+                      child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                        child: Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset( 
+                                "assets/icons/advertencia.svg",
+                                color: Theme.of(context).primaryIconTheme.color,
+                                width: 18,
+                                height: 18,
+                              ),
+                              Flexible(
+                                child: Text(
+                                  '  No hay viajes pendientes',
+                                  style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15, color: Color.fromRGBO(213, 0, 0, 1), fontWeight: FontWeight.normal),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                    ],
+                    ),
                   );
                 } else {
                   return ListView.builder(

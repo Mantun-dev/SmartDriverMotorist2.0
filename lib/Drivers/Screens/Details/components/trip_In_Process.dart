@@ -1,20 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/confirm_trips.dart';
-import 'package:flutter_auth/Drivers/Screens/Details/components/details_TripProgress.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
-import 'package:flutter_auth/Drivers/components/loader.dart';
-import 'package:flutter_auth/Drivers/components/menu_lateralDriver.dart';
 import 'package:flutter_auth/Drivers/models/network.dart';
 import 'package:flutter_auth/Drivers/models/tripsPendin2.dart';
-import 'package:flutter_auth/main.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:quickalert/quickalert.dart';
 
 import '../../../../components/AppBarPosterior.dart';
 import '../../../../components/AppBarSuperior.dart';
 import '../../../../components/backgroundB.dart';
-import '../../../../constants.dart';
-import '../../../models/plantillaDriver.dart';
 
 void main() => runApp(Process());
 
@@ -87,21 +80,40 @@ class _ProcessState extends State<Process> {
             builder: (BuildContext context, abc) {
               if (abc.connectionState == ConnectionState.done) {
                 if (abc.data!.length < 1) {
-                  return Column(
-                    children: [
-                      SizedBox(height: 5),
-                      Center(
-                        child: Text(
-                          'No hay viajes en progreso',
-                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 16),
+                  return Padding(
+                    padding: const EdgeInsets.only(left: 15, right: 15,bottom: 18),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).cardTheme.color,
+                        borderRadius: BorderRadius.circular(10.0),
+                        border: Border.all(
+                          color: Theme.of(context).dividerColor,
+                          width: 1.0,  
                         ),
                       ),
-                      SizedBox(height: 5),
-                      Container(
-                        height: 1,
-                        color: Theme.of(context).dividerColor,
+                      child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                        child: Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset( 
+                                "assets/icons/advertencia.svg",
+                                color: Theme.of(context).primaryIconTheme.color,
+                                width: 18,
+                                height: 18,
+                              ),
+                              Flexible(
+                                child: Text(
+                                  '  No hay viajes pendientes',
+                                  style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15, color: Color.fromRGBO(213, 0, 0, 1), fontWeight: FontWeight.normal),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                    ],
+                    ),
                   );
                 } else {
                   return ListView.builder(
@@ -377,7 +389,33 @@ class _ProcessState extends State<Process> {
                       });
                 }
               } else {
-                return ColorLoader3();
+                return WillPopScope(
+                      onWillPop: () async => false,
+                      child: SimpleDialog(
+                        elevation: 20,
+                        backgroundColor: Theme.of(context).cardColor,
+                        children: [
+                          Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.only(left: 16, top: 16, right: 16),
+                                  child: CircularProgressIndicator(),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Text(
+                                    'Cargando...', 
+                                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18),
+                                    ),
+                                )
+                              ],
+                            ),
+                          )
+                        ] ,
+                      ),
+                    );
               }
             },
           )
