@@ -1994,6 +1994,37 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                       ],
                                     ),
                                   ),
+                                  SizedBox(height: 15),
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.access_time, color: thirdColor),
+                                            SizedBox(width: 15),
+                                            Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'Hora de encuentro: ',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 18.0,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  '${abc.data!.trips![0].tripAgent![index].hourForTrip}',
+                                                  style: TextStyle(
+                                                    color: firstColor,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                   if (abc.data!.trips![0].tripAgent![index].neighborhoodReferencePoint != null)
                                     ...{
                                       SizedBox(height: 15),
@@ -2109,37 +2140,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                           ],
                                         ),
                                       ),
-                                      SizedBox(height: 15),
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.access_time, color: thirdColor),
-                                            SizedBox(width: 15),
-                                            Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              mainAxisAlignment: MainAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  'Hora de encuentro: ',
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 18.0,
-                                                  ),
-                                                ),
-                                                Text(
-                                                  '${abc.data!.trips![0].tripAgent![index].hourForTrip}',
-                                                  style: TextStyle(
-                                                    color: firstColor,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 16,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ),
+                                      
                                       SizedBox(height: 15),
                                     ],
                                   ),
@@ -2386,6 +2387,27 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                       ],
                                     ),
                                   ),
+                                  SizedBox(height: 15,),
+                                      Padding(
+                                      padding: const EdgeInsets.fromLTRB(0,0,20,0),
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.access_time,color: thirdColor),
+                                          SizedBox(width: 15,),
+                                          Column(
+                                            crossAxisAlignment :CrossAxisAlignment.start,
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            children: [
+                                              Text('Hora de encuentro: ',style: TextStyle(color: Colors.white,fontSize: 18.0)),
+                                              Text(textAlign:TextAlign.start,'${abc.data!.trips![0].tripAgent![index].hourForTrip}',style: TextStyle(
+                                                color: firstColor,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16)),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
     
                                   if (abc.data!.trips![0].tripAgent![index].neighborhoodReferencePoint != null)... {
                                     SizedBox(height: 15,),
@@ -2493,27 +2515,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                       ),
                                     ), 
     
-                                  SizedBox(height: 15,),
-                                      Padding(
-                                      padding: const EdgeInsets.fromLTRB(0,0,20,0),
-                                      child: Row(
-                                        children: [
-                                          Icon(Icons.access_time,color: thirdColor),
-                                          SizedBox(width: 15,),
-                                          Column(
-                                            crossAxisAlignment :CrossAxisAlignment.start,
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            children: [
-                                              Text('Hora de encuentro: ',style: TextStyle(color: Colors.white,fontSize: 18.0)),
-                                              Text(textAlign:TextAlign.start,'${abc.data!.trips![0].tripAgent![index].hourForTrip}',style: TextStyle(
-                                                color: firstColor,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16)),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                                  
                                     SizedBox(height: 15.0),
                                     ],
                                   ),
