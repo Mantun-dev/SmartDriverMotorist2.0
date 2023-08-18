@@ -112,7 +112,8 @@ class _TripsState extends State<Trips> {
                 } else {
                   return ListView.builder(
                     scrollDirection: Axis.vertical,
-                    shrinkWrap: true,physics: ClampingScrollPhysics(),
+                    shrinkWrap: true,
+                    physics: ClampingScrollPhysics(),
                     itemCount: abc.data!.length,
                       itemBuilder: (context, index) {
                         return Padding(

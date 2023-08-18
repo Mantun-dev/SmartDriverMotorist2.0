@@ -193,6 +193,20 @@ class _AppBarSuperior extends State<AppBarSuperior> {
                   ),
                 ),
               ),
+          
+          if(item==22)
+            Expanded(
+              child: Center(
+                child: Text(
+                  "Viajes en proceso",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.normal,
+                    fontSize: 21
+                  ),
+                ),
+              ),
+            ),
 
         if(item==7)
           Expanded(
