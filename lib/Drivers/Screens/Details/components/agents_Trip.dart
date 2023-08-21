@@ -144,6 +144,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
 
         if (response.statusCode == 200 && resp.ok == true) {
           LoadingIndicatorDialog().dismiss();
+          confirmationDialog.dismiss();
           //print(response.body);
           if(mounted){
             QuickAlert.show(
@@ -159,6 +160,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
 
         } else if (response.statusCode == 500) {
           LoadingIndicatorDialog().dismiss();
+          confirmationDialog.dismiss();
           if(mounted){
             QuickAlert.show(
               context: context,
@@ -1598,7 +1600,8 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                                       title: '¿Está seguro que desea marcar como no confirmado al agente?',
                                                       type: "0",
                                                       onConfirm: () async {
-                    
+                                                    
+                                            fetchNoConfirm(abc.data!.trips![1].noConfirmados![index].agentId.toString(),abc.data!.trips![1].noConfirmados![index].tripId.toString());                                                               
                                             
                                           },
                                         onCancel: () {},
