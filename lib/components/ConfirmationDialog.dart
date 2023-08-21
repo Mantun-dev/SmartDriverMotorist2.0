@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
+import '../main.dart';
+
 class ConfirmationLoadingDialog {
   static final ConfirmationLoadingDialog _singleton = ConfirmationLoadingDialog._internal();
   late BuildContext _context;
@@ -142,7 +144,7 @@ class ConfirmationDialog {
                         bottomLeft: Radius.circular(10.0),
                         bottomRight: Radius.circular(10.0),
                       ),
-                      color: Colors.white, 
+                      color: Theme.of(navigatorKey.currentContext!).cardColor, 
                     ),
                     child: Column(children: [
                       Padding(
@@ -150,10 +152,7 @@ class ConfirmationDialog {
                         child: Text(
                           title,
                           textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black,
-                          ),
+                          style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 16, fontWeight: FontWeight.w500)
                         ),
                       ),
                       Padding(
@@ -177,10 +176,7 @@ class ConfirmationDialog {
                               },
                               child: Text(
                                 'No',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 16, fontWeight: FontWeight.bold)
                               ),
                             ),
                             SizedBox(width: 20),
@@ -202,6 +198,7 @@ class ConfirmationDialog {
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
+                                  fontSize: 16
                                 ),
                               ),
                             ),
