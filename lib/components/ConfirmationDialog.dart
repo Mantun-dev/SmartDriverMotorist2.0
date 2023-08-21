@@ -87,7 +87,7 @@ class ConfirmationDialog {
       containerC = Color.fromRGBO(40, 93, 169, 1);
       iconAsset = "assets/icons/pregunta.svg";
     } else {
-      containerC = Color.fromRGBO(172, 33, 33, 1);
+      containerC = Color.fromRGBO(40, 93, 169, 1);
       iconAsset = "assets/icons/cancelar.svg";
     }
     showDialog<void>(

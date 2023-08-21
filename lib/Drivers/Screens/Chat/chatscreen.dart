@@ -652,9 +652,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                                       stopRecording();
                                     }
                                   }else{
-                                    WarningDialog().show(
+                                    Warning_SuccessDialog().show(
                                       context,
                                       title: 'No dio permiso del uso del microfono',
+                                      tipo: 1,
                                       onOkay: () {
                                         try{
                                           AppSettings.openAppSettings();

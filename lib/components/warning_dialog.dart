@@ -6,26 +6,27 @@ enum QuickAlertType {
   // Otros tipos de alerta
 }
 
-class WarningDialog {
-  static final WarningDialog _singleton = WarningDialog._internal();
+class Warning_SuccessDialog {
+  static final Warning_SuccessDialog _singleton = Warning_SuccessDialog._internal();
   late BuildContext _context;
   bool isDisplayed = false;
 
-  factory WarningDialog() {
+  factory Warning_SuccessDialog() {
     return _singleton;
   }
 
-  WarningDialog._internal();
+  Warning_SuccessDialog._internal();
 
   show(BuildContext context, {
     required String title,
+    required int tipo,
     required VoidCallback onOkay,
   }) {
     if (isDisplayed) {
       return;
     }
     Color containerC = Color.fromRGBO(40, 93, 169, 1);
-    String iconAsset = "assets/icons/advertencia.svg";
+    String iconAsset = tipo == 1 ?"assets/icons/advertencia.svg": "assets/icons/check.svg";
     Size size = MediaQuery.of(context).size;
 
     showDialog<void>(
@@ -52,12 +53,30 @@ class WarningDialog {
                       ),
                       color: containerC,
                     ),
-                    child: Container(
+                    child: tipo == 1? Container(
                       padding: EdgeInsets.only(top:30, bottom: 30),
                       child: SvgPicture.asset(
                         iconAsset,
                         height: 100,
                         color: Colors.white,
+                      ),
+                    ): 
+                    Padding(
+                      padding: const EdgeInsets.only(right: 100.0, left: 100, bottom: 30, top: 30),
+                      child: CircleAvatar(
+                        backgroundColor: Colors.transparent,
+                        radius: 40.0, // Cambiado a 40.0 para mantener el radio original
+                        child: Container(
+                          padding: EdgeInsets.all(15.0),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 4.0), // Borde blanco
+                          ),
+                          child: SvgPicture.asset(
+                            iconAsset,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -98,6 +117,7 @@ class WarningDialog {
                           ),
                           onPressed: () {
                             onOkay();
+                            dismiss();
                           },
                           child: Text(
                             'Ok',
