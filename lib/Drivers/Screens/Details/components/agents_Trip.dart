@@ -15,6 +15,7 @@ import 'package:intl/intl.dart';
 import 'package:quickalert/quickalert.dart';
 import '../../../../components/AppBarPosterior.dart';
 import '../../../../components/AppBarSuperior.dart';
+import '../../../../components/ConfirmationDialog.dart';
 import '../../../../components/backgroundB.dart';
 import '../../../../constants.dart';
 import '../../../components/progress_indicator.dart';
@@ -63,6 +64,9 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
   bool confirmados = true;
   bool noconfirmados = false;
   bool cancelados = false;
+
+  ConfirmationLoadingDialog loadingDialog = ConfirmationLoadingDialog();
+  ConfirmationDialog confirmationDialog = ConfirmationDialog();
   
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if(AppLifecycleState.resumed==state){
@@ -1589,24 +1593,16 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                           shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
                                         ),
                                         onPressed: () {
-                                          QuickAlert.show(
-                                          context: context,
-                                          type: QuickAlertType.confirm,
-                                          title: "...",          
-                                          text: "¿Está seguro que desea marcar como no \nconfirmado al agente?",
-                                            confirmBtnText: "Confirmar",
-                                            cancelBtnText: "Cancelar",
-                                            showCancelBtn: true,  
-                                            confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
-                                            cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
-                                            onConfirmBtnTap: () {
-                                              Navigator.pop(contextP!);
-                                              fetchNoConfirm(abc.data!.trips![1].noConfirmados![index].agentId.toString(),abc.data!.trips![1].noConfirmados![index].tripId.toString());                                            
-                                            },
-                                            onCancelBtnTap: () {
-                                              Navigator.pop(contextP!);
-                                            },
-                                          );                                                  
+                                          confirmationDialog.show(
+                                                      context,
+                                                      title: '¿Está seguro que desea marcar como no confirmado al agente?',
+                                                      type: "0",
+                                                      onConfirm: () async {
+                    
+                                            
+                                          },
+                                        onCancel: () {},
+                                        );                                                
                                         },
                                         child: Text('No confirmó',
                                             style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold)),

@@ -7,16 +7,16 @@ enum QuickAlertType {
   // Otros tipos de alerta
 }
 
-class Warning_SuccessDialog {
-  static final Warning_SuccessDialog _singleton = Warning_SuccessDialog._internal();
+class WarningSuccessDialog {
+  static final WarningSuccessDialog _singleton = WarningSuccessDialog._internal();
   late BuildContext _context;
   bool isDisplayed = false;
 
-  factory Warning_SuccessDialog() {
+  factory WarningSuccessDialog() {
     return _singleton;
   }
 
-  Warning_SuccessDialog._internal();
+  WarningSuccessDialog._internal();
 
   show(BuildContext context, {
     required String title,

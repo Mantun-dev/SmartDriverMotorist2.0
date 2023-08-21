@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/components/progress_indicator.dart';
+import 'package:flutter_auth/components/warning_dialog.dart';
 import 'package:flutter_auth/main.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:quickalert/quickalert.dart';
@@ -16,6 +17,7 @@ import '../Drivers/Screens/Welcome/welcome_screen.dart';
 import '../Drivers/SharePreferences/preferencias_usuario.dart';
 import '../Drivers/models/network.dart';
 import '../Drivers/models/plantillaDriver.dart';
+import 'ConfirmationDialog.dart';
 
 
 
@@ -31,6 +33,8 @@ class AppBarSuperior extends StatefulWidget {
 class _AppBarSuperior extends State<AppBarSuperior> {
   int? item;
   final prefs = new PreferenciasUsuario();
+  ConfirmationLoadingDialog loadingDialog = ConfirmationLoadingDialog();
+  ConfirmationDialog confirmationDialog = ConfirmationDialog();
 
   _AppBarSuperior({this.item});
 
@@ -871,48 +875,35 @@ class _AppBarSuperior extends State<AppBarSuperior> {
                                 padding: const EdgeInsets.symmetric(vertical: 2),
                                 child: GestureDetector(
                                   onTap: () {
-                                              QuickAlert.show(
-                                                context: context,
-                                                title: "¿Estás seguro que deseas salir?",          
-                                                type: QuickAlertType.success,
-                                                confirmBtnText: 'Confirmar',
-                                                cancelBtnText: 'Cancelar',
-                                                showCancelBtn: true,  
-                                                confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
-                                                cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
-                                                onConfirmBtnTap:() {
-                                                  LoadingIndicatorDialog().show(context);
+                                    
+                                    confirmationDialog.show(
+                                      context,
+                                      title: '¿Estás seguro que deseas salir?',
+                                      type: "0",
+                                      onConfirm: () async {
+                                        loadingDialog.show(context);
                         
-                                                  fetchDeleteSession();
+                                        fetchDeleteSession();
                                                   prefs.remove();
                                                   
                                                   new Future.delayed(new Duration(seconds: 2), () {
-                                                    LoadingIndicatorDialog().dismiss();
-                                                    Navigator.pop(context);
-                                                    Navigator.pop(context);
+                                                    loadingDialog.dismiss();
+                                                    confirmationDialog.dismiss();
                                                     Navigator.of(contextP).pushAndRemoveUntil(
                                                         MaterialPageRoute(
                                                             builder: (BuildContext contextP) => WelcomeScreen()),
                                                         (Route<dynamic> route) => false);
-                                                        QuickAlert.show(
-                                                          context: context,
-                                                          type: QuickAlertType.success,
-                                                          title: "¡Hecho!",
-                                                          text: "¡Gracias por usar Smart Driver!",
-                                                          confirmBtnText: "Ok"
+                                                        WarningSuccessDialog().show(
+                                                          context,
+                                                          title: '¡Gracias por usar Smart Driver!',
+                                                          tipo: 2,
+                                                          onOkay: () {},
                                                         );
                                                   });
-                                                },
-                                                onCancelBtnTap: (() {
-                                                  Navigator.pop(context);
-                                                  Navigator.pop(context);
-                                                  /*QuickAlert.show(
-                                                    context: context,
-                                                    type: QuickAlertType.success,
-                                                    text: "Cancelado",
-                                                  );*/
-                                                })
-                                              );
+                            
+                          },
+                          onCancel: () {},
+                        );
                                   },
                                   child: Row(
                                     children: [

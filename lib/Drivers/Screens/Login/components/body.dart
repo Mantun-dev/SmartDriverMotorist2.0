@@ -13,6 +13,7 @@ import 'package:quickalert/quickalert.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' show json;
 import '../../../../components/progress_indicator.dart';
+import '../../../../components/warning_dialog.dart';
 import '../../../../constants.dart';
 import '../../Welcome/welcome_screen.dart';
 
@@ -45,12 +46,12 @@ class _BodyState extends State<Body> {
     Map data = {'driverDNI': driverDNI, 'driverPassword': driverPassword};
     String device = "mobile";
     if (driverDNI == "" && driverPassword == "") {
-      QuickAlert.show(
-      context: context,
-      type: QuickAlertType.error,
-      title: "Alerta",
-      text: "Campos vacios",
-      );
+      WarningSuccessDialog().show(
+              context,
+              title: 'Campos vacios',
+              tipo: 1,
+              onOkay: () {},
+            );
 
     } else {
       LoadingIndicatorDialog().show(context);
@@ -89,11 +90,11 @@ class _BodyState extends State<Body> {
             MaterialPageRoute(
                 builder: (BuildContext context) => HomeDriverScreen()),
             (Route<dynamic> route) => false);
-            QuickAlert.show(
-            context: context,
-            type: QuickAlertType.success,
-            title:"Bienvenido(a)",
-            text: si.driverFullname,
+            WarningSuccessDialog().show(
+              context,
+              title: 'Bienvenido(a) ${si.driverFullname}',
+              tipo: 2,
+              onOkay: () {},
             );
 
           return Message.fromJson(json.decode(response.body));
@@ -101,21 +102,21 @@ class _BodyState extends State<Body> {
       } else if (no.ok == false && response.statusCode == 403) {
         LoadingIndicatorDialog().dismiss();
          if(mounted){
-          QuickAlert.show(
-            context: context,
-            type: QuickAlertType.error,
-            title:"Acceso no admitido ",
-            text: no.message,
+          WarningSuccessDialog().show(
+              context,
+              title: 'Acceso no admitido',
+              tipo: 1,
+              onOkay: () {},
             );
          }
       } else if (no.ok != true) {
         LoadingIndicatorDialog().dismiss();
          if(mounted){
-          QuickAlert.show(
-            context: context,
-            type: QuickAlertType.error,
-            title:"Alerta",
-            text: no.message,
+           WarningSuccessDialog().show(
+              context,
+              title: '${no.message}',
+              tipo: 1,
+              onOkay: () {},
             );
          }
       }

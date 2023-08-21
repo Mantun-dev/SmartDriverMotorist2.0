@@ -10,10 +10,10 @@ import 'package:flutter_auth/components/splashView.dart';
 import 'package:flutter_auth/providers/chat.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:quickalert/quickalert.dart';
 import 'package:upgrader/upgrader.dart';
 import 'Drivers/SharePreferences/preferencias_usuario.dart';
 import 'components/Tema.dart';
+import 'components/warning_dialog.dart';
 
 class MyHttpoverrides extends HttpOverrides {
   @override
@@ -121,11 +121,11 @@ class _MyAppState extends State<MyApp> {
 }
 
 Future<dynamic> showMyDialog() {
-  return QuickAlert.show(
-    context: navigatorKey.currentContext!,
-    type: QuickAlertType.error,
-    title: "¡Advertencia!",
-    text: "El agente seleccionado ya está agregado al viaje",
+  return WarningSuccessDialog().show(
+    navigatorKey.currentContext!,
+    title: 'El agente seleccionado ya está agregado al viaje',
+    tipo: 2,
+    onOkay: () {},
   );
 }
 
