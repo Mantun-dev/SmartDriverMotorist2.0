@@ -17,6 +17,7 @@ import '../../../../components/AppBarPosterior.dart';
 import '../../../../components/AppBarSuperior.dart';
 import '../../../../components/ConfirmationDialog.dart';
 import '../../../../components/backgroundB.dart';
+import '../../../../components/warning_dialog.dart';
 import '../../../../constants.dart';
 import '../../../components/progress_indicator.dart';
 import '../../../models/agentsInTravelModel.dart';
@@ -102,25 +103,27 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
 
     if (response.statusCode == 200 && resp.ok == true && agentTripHour != "") {
       //print(response.body);
-      LoadingIndicatorDialog().dismiss();      
+      LoadingIndicatorDialog().dismiss();    
+      confirmationDialog.dismiss();  
       if(mounted){
-        QuickAlert.show(
-          context: context,
-          type: QuickAlertType.success,
-          title: '¡Hecho!',
-          text: resp.message,
+        WarningSuccessDialog().show(
+          navigatorKey.currentContext!,
+          title: '${resp.message}',
+          tipo: 2,
+          onOkay: () {},
         );
 
         _refresh();
       }
     } else if (response.statusCode == 200 && resp.ok != true) {
-      LoadingIndicatorDialog().dismiss();     
+      LoadingIndicatorDialog().dismiss();    
+      confirmationDialog.dismiss();   
       if(mounted){
-        QuickAlert.show(
-          context: context,
-          type: QuickAlertType.error,
-          title: resp.title,
-          text: resp.message,
+        WarningSuccessDialog().show(
+          navigatorKey.currentContext!,
+          title: '${resp.message}',
+          tipo: 1,
+          onOkay: () {},
         );
       }
     }
@@ -147,13 +150,12 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
           confirmationDialog.dismiss();
           //print(response.body);
           if(mounted){
-            QuickAlert.show(
-              context: context,
-              type: QuickAlertType.success,
-              title: '¡Hecho!',
-              text: resp.message,
-              confirmBtnText: 'OK'
-            );
+            WarningSuccessDialog().show(
+          navigatorKey.currentContext!,
+          title: '${resp.message}',
+          tipo: 2,
+          onOkay: () {},
+        );
           }
 
           _refresh();
@@ -162,12 +164,12 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
           LoadingIndicatorDialog().dismiss();
           confirmationDialog.dismiss();
           if(mounted){
-            QuickAlert.show(
-              context: context,
-              type: QuickAlertType.error,
-              title: resp.title,
-              text: resp.message,
-            );
+            WarningSuccessDialog().show(
+          navigatorKey.currentContext!,
+          title: '${resp.message}',
+          tipo: 1,
+          onOkay: () {},
+        );
           }
         }
       
@@ -182,6 +184,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
         .get(Uri.parse('$ip/apis/passTripToProgress/${prefs.tripId}'));
     final resp = Driver.fromJson(json.decode(response.body));
     LoadingIndicatorDialog().dismiss();
+    confirmationDialog.dismiss();
     //print(response.body);
     if (response.statusCode == 200 && resp.ok == true) {
       //print(response.body);
@@ -190,12 +193,12 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
               builder: (BuildContext context) => HomeDriverScreen()),
           (Route<dynamic> route) => false);
 
-          QuickAlert.show(
-                context: context,
-                type: QuickAlertType.success,
-                text: 'Su viaje está en proceso',
-                title: 'Confirmado'
-                );
+          WarningSuccessDialog().show(
+          navigatorKey.currentContext!,
+          title: 'Su viaje está en proceso',
+          tipo: 2,
+          onOkay: () {},
+        );
       //   SweetAlert.show(context,
       //   title: resp.title,
       //   subtitle: resp.message,
@@ -205,19 +208,19 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
       String sendData2 = json.encode(data2);
       await http.put(Uri.parse('https://apichat.smtdriver.com/api/salas/Viaje_Estado/${prefs.tripId}'), body: sendData2, headers: {"Content-Type": "application/json"});
     } else if (response.statusCode == 200 && resp.ok == false) {
-      QuickAlert.show(
-          context: context,
-          type: QuickAlertType.error,
-          title: resp.title,
-          text: resp.message,
-          );
+      WarningSuccessDialog().show(
+          navigatorKey.currentContext!,
+          title: '${resp.message}',
+          tipo: 1,
+          onOkay: () {},
+        );
     } else if (response.statusCode == 500) {
-      QuickAlert.show(
-          context: context,
-          type: QuickAlertType.error,
-          title: resp.title,
-          text: resp.message,
-          );
+      WarningSuccessDialog().show(
+          navigatorKey.currentContext!,
+          title: '${resp.message}',
+          tipo: 1,
+          onOkay: () {},
+        );
     }
    
     return Driver.fromJson(json.decode(response.body));
@@ -245,12 +248,12 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
       // style: SweetAlertStyle.success
       // );
     } else if (response.statusCode == 500) {
-      QuickAlert.show(
-          context: context,
-          type: QuickAlertType.error,
-          title: 'ok',
-          text: resp.message,
-          );
+      WarningSuccessDialog().show(
+          navigatorKey.currentContext!,
+          title: '${resp.message}',
+          tipo: 1,
+          onOkay: () {},
+        );
     }
 
     return Driver.fromJson(json.decode(response.body));
@@ -269,12 +272,12 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
               context, MaterialPageRoute(builder: (_) => MyAgent()))
           .then((_) => MyAgent());
     } else if (response.statusCode == 500) {
-      QuickAlert.show(
-          context: context,
-          type: QuickAlertType.error,
-          title: 'ok',
-          text: resp.message,
-          );
+      WarningSuccessDialog().show(
+          navigatorKey.currentContext!,
+          title: '${resp.message}',
+          tipo: 1,
+          onOkay: () {},
+        );
     }
       
     http.Response responseSala = await http.get(Uri.parse('https://apichat.smtdriver.com/api/salas/Tripid/${prefs.tripId}'));
@@ -555,7 +558,12 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                 }
                               }else{
                                 if(mounted){
-                                  QuickAlert.show(context: context,title: "Alerta",text: "Vehículo no valido",type: QuickAlertType.error,); 
+                                  WarningSuccessDialog().show(
+                                    navigatorKey.currentContext!,
+                                    title: "Vehículo no valido",
+                                    tipo: 1,
+                                    onOkay: () {},
+                                  );
                                 }
                               }
                               setRecargar(0);
@@ -599,14 +607,24 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                             LoadingIndicatorDialog().dismiss();
                             if(resp2['type']=='success'){
                               if(mounted){
-                                QuickAlert.show(context: context,title: "Exito",text: resp2['message'],type: QuickAlertType.success,);
+                                WarningSuccessDialog().show(
+                                    navigatorKey.currentContext!,
+                                    title: resp2['message'],
+                                    tipo: 1,
+                                    onOkay: () {},
+                                  );
                                 setState(() {
                                   tripVehicle = vehicleController.text;
                                 });
                               }      
                           
                             }else{
-                              QuickAlert.show(context: context,title: "Alerta",text: resp2['message'],type: QuickAlertType.error,);
+                              WarningSuccessDialog().show(
+                                    navigatorKey.currentContext!,
+                                    title: resp2['message'],
+                                    tipo: 1,
+                                    onOkay: () {},
+                                  );
                             }
                           }
                         ),
@@ -741,14 +759,24 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                                                         if(resp2['type']=='success'){
                                                                           if(mounted){
                                                                             Navigator.pop(context);
-                                                                            QuickAlert.show(context: context,title: "Exito",text: resp2['message'],type: QuickAlertType.success,);
+                                                                            WarningSuccessDialog().show(
+                                                                              navigatorKey.currentContext!,
+                                                                              title: resp2['message'],
+                                                                              tipo: 2,
+                                                                              onOkay: () {},
+                                                                            );
                                                                             setState(() {
                                                                               tripVehicle = "${resp['vehicle']['name']} [${resp['vehicle']['registrationNumber']}]";
                                                                               vehicleController.text=tripVehicle;  
                                                                             });
                                                                           }
                                                                         }else{
-                                                                          QuickAlert.show(context: context,title: "Alerta",text: resp2['message'],type: QuickAlertType.error,);
+                                                                          WarningSuccessDialog().show(
+                                                                              navigatorKey.currentContext!,
+                                                                              title: resp2['message'],
+                                                                              tipo: 1,
+                                                                              onOkay: () {},
+                                                                            );
                                                                         }
                                                                       },
                                                                       child: Text('Agregar',style: TextStyle(color: backgroundColor,fontSize: 15.0)),
@@ -1662,34 +1690,22 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
     String _eventTime = now.toString().substring(10, 15);
     _eventTime = time.toString().substring(10, 15);
     if (time!= null) {      
-      QuickAlert.show(context: context,
-          type: QuickAlertType.confirm,
-          title: "Agregando hora",          
-          text: "¿Es correcta la hora\n$_eventTime del agente?",
-          confirmBtnText: "Confirmar",
-          cancelBtnText: "Cancelar",
-          showCancelBtn: true,  
-          confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
-          cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
-          onConfirmBtnTap: () async{ 
-            Navigator.pop(contextP!);           
-              setState(() {                              
-                //print(_eventTime);
-                fetchHours(agentId,_eventTime,tripId);
-                //Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => MyAgent())).then((_) => MyAgent());
-                //Navigator.of(context).popUntil((route) =>  route.);
-                //Navigator.push(context,MaterialPageRoute(builder: (_) => MyAgent()));              
-              }); 
-              // await Future.delayed(Duration(seconds: 2), () {
-              //   cancelHour();
-              // },);                                                                                                                                                                               
-          },
-          onCancelBtnTap: () {  
-            Navigator.pop(contextP!);
-            setState(() {            
-              flagalert = time;                                            
-            });
-          },);                                                         
+      confirmationDialog.show(
+        context,
+        title: '¿Es correcta la hora $_eventTime del agente?',
+        type: "0",
+        onConfirm: () async {
+          setState(() {   
+            fetchHours(agentId,_eventTime,tripId);
+          });                                                
+                                            
+        },
+        onCancel: () {
+          setState(() {            
+            flagalert = time;                                            
+          });
+        },
+      );                                                         
     }                                                                                                  
   }
 
@@ -2091,29 +2107,17 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
           child: Text("Pasar viaje a proceso", style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white, fontSize: 12),),
         ),
         onPressed: () {
-          QuickAlert.show(
-          context: context,
-          type: QuickAlertType.success,
-          title: "...",
-          text: "¿Está seguro que desea pasar el viaje en proceso?",
-          confirmBtnText: "Confirmar",
-          cancelBtnText: "Cancelar",
-          showCancelBtn: true,  
-          confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
-          cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ),         
-          onConfirmBtnTap: () {
-    
-            Navigator.pop(context);
-            LoadingIndicatorDialog().show(context);
-            new Future.delayed(new Duration(seconds: 2), () {
-                fetchPastInProgress();
-              });
-            
-              
-          },
-          onCancelBtnTap: () {
-            Navigator.pop(context);
-          },
+          confirmationDialog.show(
+            context,
+            title: '¿Estás seguro que deseas salir?',
+            type: "0",
+            onConfirm: () async {
+              LoadingIndicatorDialog().show(context);
+              new Future.delayed(new Duration(seconds: 2), () {
+                  fetchPastInProgress();
+                });
+            },
+            onCancel: () {},
           );
         },
       ),
