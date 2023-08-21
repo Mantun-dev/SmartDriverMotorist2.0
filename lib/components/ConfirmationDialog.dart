@@ -82,6 +82,7 @@ class ConfirmationDialog {
     }
     Color containerC;
     String iconAsset;
+    Size size = MediaQuery.of(context).size;
     if (type == '0') {
       containerC = Color.fromRGBO(40, 93, 169, 1);
       iconAsset = "assets/icons/pregunta.svg";
@@ -105,6 +106,7 @@ class ConfirmationDialog {
 
                 children: [
                   Container(
+                    width: size.width*0.9,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(10.0),
@@ -134,6 +136,7 @@ class ConfirmationDialog {
 
 
                   Container(
+                    width: size.width*0.9,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.only(
                         bottomLeft: Radius.circular(10.0),
@@ -143,7 +146,7 @@ class ConfirmationDialog {
                     ),
                     child: Column(children: [
                       Padding(
-                        padding: const EdgeInsets.only(top: 20),
+                        padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
                         child: Text(
                           title,
                           textAlign: TextAlign.center,
