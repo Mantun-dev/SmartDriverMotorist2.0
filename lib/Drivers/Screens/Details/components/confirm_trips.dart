@@ -1862,7 +1862,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
             
             return abc.data!.trips![1].actualTravel!.tripType=='Salida' ?Column(
               children: [
-               Align(
+                Align(
                   alignment: Alignment.centerLeft,
                   child: Container(
                     margin: EdgeInsets.only(left: 18),
@@ -1969,7 +1969,16 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                       SizedBox(width: 70),
                                       InkWell(
                                         onTap: () {
-                                          launchSalidasMaps(abc.data!.trips![0].tripAgent![index].latitude,abc.data!.trips![0].tripAgent![index].longitude);                                          
+                                          if (abc.data!.trips![0].tripAgent![index].latitude==null) {
+                                            QuickAlert.show(
+                                              context: context,
+                                              title: "Alerta",
+                                              text: 'Este agente no cuenta con ubicación',
+                                              type: QuickAlertType.error,
+                                            );
+                                          }else{
+                                            launchSalidasMaps(abc.data!.trips![0].tripAgent![index].latitude,abc.data!.trips![0].tripAgent![index].longitude);                                          
+                                          }
                                           //print('Dirección we');
                                         },
                                         child: Column(
@@ -1977,8 +1986,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                             Row(
                                               mainAxisAlignment: MainAxisAlignment.end,
                                               children: [
-                                              Icon(Icons.location_on_outlined, color:firstColor, size: 30,),
-                                              Text('Ubicación ',style: TextStyle(color: Colors.white,fontWeight: FontWeight.normal,fontSize: 16.0)),                                      
+                                              Icon(Icons.location_on_outlined, color:abc.data!.trips![0].tripAgent![index].latitude==null? Colors.red :firstColor, size: 30,),
+                                              Text('Ubicación ',style: TextStyle(color:Colors.white,fontWeight: FontWeight.normal,fontSize: 16.0)),                                      
                                             ],)
                                           ],
                                         ),
@@ -2381,9 +2390,18 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                       SizedBox(width: 70),
                                       InkWell(
                                         onTap: () {
-                                          waypoints.clear();
-                                          waypoints.add('${abc.data!.trips![0].tripAgent![index].latitude},${abc.data!.trips![0].tripAgent![index].longitude}');
-                                          launchGoogleMapsx(apiKey, latidudeInicial.toString(), longitudInicial.toString(), waypoints);
+                                          if (abc.data!.trips![0].tripAgent![index].latitude==null) {
+                                            QuickAlert.show(
+                                              context: context,
+                                              title: "Alerta",
+                                              text: 'Este agente no cuenta con ubicación',
+                                              type: QuickAlertType.error,
+                                            );
+                                          }else{
+                                            waypoints.clear();
+                                            waypoints.add('${abc.data!.trips![0].tripAgent![index].latitude},${abc.data!.trips![0].tripAgent![index].longitude}');
+                                            launchGoogleMapsx(apiKey, latidudeInicial.toString(), longitudInicial.toString(), waypoints);
+                                          }
                                           //print('Dirección we');
                                         },
                                         child: Column(
@@ -2391,7 +2409,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                             Row(
                                               mainAxisAlignment: MainAxisAlignment.end,
                                               children: [
-                                              Icon(Icons.location_on_outlined, color:firstColor, size: 30,),
+                                              Icon(Icons.location_on_outlined, color: abc.data!.trips![0].tripAgent![index].latitude==null? Colors.red : firstColor, size: 30,),
                                               Text('Ubicación ',style: TextStyle(color: Colors.white,fontWeight: FontWeight.normal,fontSize: 16.0)),                                      
                                             ],)
                                           ],
