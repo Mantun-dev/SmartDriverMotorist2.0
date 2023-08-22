@@ -21,6 +21,7 @@ import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 import 'package:flutter_auth/Drivers/models/tripToSolid.dart';
 import 'package:flutter_auth/Drivers/models/tripsPendin2.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:flutter_svg/svg.dart';
 //import 'package:geolocator/geolocator.dart';
 //import 'package:localstorage/localstorage.dart';
 //import 'package:searchable_dropdown/searchable_dropdown.dart';
@@ -1326,436 +1327,438 @@ class _DriverDescriptionState extends State<DriverDescription>
   Widget _mostrarTerceraVentana(BuildContext context) {
 
     return SingleChildScrollView(
-      child: Column(
-        //crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text('Seleccione una Compañía',key: dataKey,style: TextStyle(color: GradiantV_2,fontWeight: FontWeight.normal,fontSize: 20.0)),
-          SizedBox(height: 20.0),
-          _crearDropdown(context),
-          SizedBox(height: 20.0),
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: 40.0),
-            child: FutureBuilder<DriverData>(
-              future: itemx,
-              builder: (BuildContext context, abc) {
-                if (abc.connectionState == ConnectionState.done) {
-                  DriverData? driverData = abc.data;
-                  return Column(
-                    crossAxisAlignment:CrossAxisAlignment.start,
-                    children: [
-                      if(driverData?.driverType=='Motorista')
-                        Text('Escanee el codigo qr del vehículo', style: TextStyle(color: Colors.white.withOpacity(0.5)),),
-                      if(driverData?.driverType=='Motorista')
-                        SizedBox(height: 5,),
-                      Row(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(Radius.circular(15)),
-                              boxShadow: [
-                                BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0, 0), ),
-                                BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0, 0), ),
-                              ],
-                            ),
-                            width: 220,
-                            child: Padding(
-                              padding: const EdgeInsets.only(left:10.0, right: 10),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.emoji_transportation,color: thirdColor,size: 30.0,),
-                                  SizedBox(width: 10.0),
-                                  Flexible(
-                                    child: TextField(
-                                      enabled: driverData?.driverType=='Motorista'?false:true,
-                                                  style: TextStyle(color: Colors.white),
-                                                  controller: vehicleController,
-                                                  decoration: InputDecoration(
-                                                    border: InputBorder.none,
-                                                    hintText: 'Vehículo',
-                                                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.5),
-                                                    fontSize: 15.0)
-                                                  ),
-                                                  onChanged: (value) => {
-                                                    prefs.vehiculo=value,
-                                                    prefs.vehiculoId='',
-                                                  },
-                                                ),
-                                  ),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          //crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+
+            _crearDropdown(context),
+            SizedBox(height: 20.0),
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 40.0),
+              child: FutureBuilder<DriverData>(
+                future: itemx,
+                builder: (BuildContext context, abc) {
+                  if (abc.connectionState == ConnectionState.done) {
+                    DriverData? driverData = abc.data;
+                    return Column(
+                      crossAxisAlignment:CrossAxisAlignment.start,
+                      children: [
+                        if(driverData?.driverType=='Motorista')
+                          Text('Escanee el codigo qr del vehículo', style: TextStyle(color: Colors.white.withOpacity(0.5)),),
+                        if(driverData?.driverType=='Motorista')
+                          SizedBox(height: 5,),
+                        Row(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(15)),
+                                boxShadow: [
+                                  BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0, 0), ),
+                                  BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0, 0), ),
                                 ],
                               ),
+                              width: 220,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left:10.0, right: 10),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.emoji_transportation,color: thirdColor,size: 30.0,),
+                                    SizedBox(width: 10.0),
+                                    Flexible(
+                                      child: TextField(
+                                        enabled: driverData?.driverType=='Motorista'?false:true,
+                                                    style: TextStyle(color: Colors.white),
+                                                    controller: vehicleController,
+                                                    decoration: InputDecoration(
+                                                      border: InputBorder.none,
+                                                      hintText: 'Vehículo',
+                                                      hintStyle: TextStyle(color: Colors.white.withOpacity(0.5),
+                                                      fontSize: 15.0)
+                                                    ),
+                                                    onChanged: (value) => {
+                                                      prefs.vehiculo=value,
+                                                      prefs.vehiculoId='',
+                                                    },
+                                                  ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
-                          ),
-                          SizedBox(width: 10,),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: firstColor,
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            child: IconButton(
-                              icon: Icon(Icons.qr_code),
-                              color: backgroundColor,
-                              iconSize: 30.0,
-                              onPressed: () async{
-                                String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);
-                        
-                                  if (codigoQR == "-1") {
-                                    return;
-                                  } else {
-
-                                    LoadingIndicatorDialog().show(context);
-                                    http.Response responseSala = await http.get(Uri.parse('https://app.mantungps.com/3rd/vehicles/$codigoQR'),headers: {"Content-Type": "application/json", "x-api-key": 'a10xhq0p21h3fb9y86hh1oxp66c03f'});
-                                    final resp = json.decode(responseSala.body);
-                                    LoadingIndicatorDialog().dismiss();
-                                    if(resp['type']=='success'){
-                                      print(responseSala.body);
-                                      
-                                      if(mounted){
-                                        showDialog(
-                                                context: context,
-                                                builder: (context) => vehiculoE(resp, context, codigoQR),);
-                                      }
-                                    }else{
-                                      if(mounted){
-                                        QuickAlert.show(context: context,title: "Alerta",text: "Vehículo no valido",type: QuickAlertType.error,); 
+                            SizedBox(width: 10,),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: firstColor,
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              child: IconButton(
+                                icon: Icon(Icons.qr_code),
+                                color: backgroundColor,
+                                iconSize: 30.0,
+                                onPressed: () async{
+                                  String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);
+                          
+                                    if (codigoQR == "-1") {
+                                      return;
+                                    } else {
+      
+                                      LoadingIndicatorDialog().show(context);
+                                      http.Response responseSala = await http.get(Uri.parse('https://app.mantungps.com/3rd/vehicles/$codigoQR'),headers: {"Content-Type": "application/json", "x-api-key": 'a10xhq0p21h3fb9y86hh1oxp66c03f'});
+                                      final resp = json.decode(responseSala.body);
+                                      LoadingIndicatorDialog().dismiss();
+                                      if(resp['type']=='success'){
+                                        print(responseSala.body);
+                                        
+                                        if(mounted){
+                                          showDialog(
+                                                  context: context,
+                                                  builder: (context) => vehiculoE(resp, context, codigoQR),);
+                                        }
+                                      }else{
+                                        if(mounted){
+                                          QuickAlert.show(context: context,title: "Alerta",text: "Vehículo no valido",type: QuickAlertType.error,); 
+                                        }
                                       }
                                     }
-                                  }
-                              }
+                                }
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  );
-                } else {
-                  return ColorLoader3();
-                }
-              },
-            ),
-          ),
-          FutureBuilder<DriverData?>(
-            future: itemx!,
-            builder: (BuildContext context, abc) {
-              switch (abc.connectionState) {
-                case ConnectionState.waiting:
-                  return Text('Cargando....');
-                default:
-                  if (abc.hasError) {
-                    return Text('Error: ${abc.error}');
-                  } else {
-                    return Column(
-                      children: [
-                        if (abc.data?.driverCoord == true) showAndHide()
+                          ],
+                        ),
                       ],
                     );
+                  } else {
+                    return ColorLoader3();
                   }
-              }
-            }),
-          SizedBox(height: 20.0),
-          Row(crossAxisAlignment: CrossAxisAlignment.center,mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(width: 75,
-                child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: GradiantV_2,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0),),),
-                    child: Icon(Icons.delete,color: backgroundColor, size: 25.0),
-                    onPressed: () {
-                      QuickAlert.show(context: context,title: "...",
-                      text: "¿Desea eliminar a los agentes?",
-                      confirmBtnText: "Si",cancelBtnText: "Cancelar",showCancelBtn: true,  confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
-                        onConfirmBtnTap: () {
-                          Navigator.pop(context);
-                          QuickAlert.show(
-                            context: context,
-                            title: "Eliminando...",
-                            type: QuickAlertType.success,
-                          );
-                          setState(() {
-                            this.handler!.cleanTable();
-                          });
-                          },
-                          onCancelBtnTap: () {
+                },
+              ),
+            ),
+            FutureBuilder<DriverData?>(
+              future: itemx!,
+              builder: (BuildContext context, abc) {
+                switch (abc.connectionState) {
+                  case ConnectionState.waiting:
+                    return Text('Cargando....');
+                  default:
+                    if (abc.hasError) {
+                      return Text('Error: ${abc.error}');
+                    } else {
+                      return Column(
+                        children: [
+                          if (abc.data?.driverCoord == true) showAndHide()
+                        ],
+                      );
+                    }
+                }
+              }),
+            SizedBox(height: 20.0),
+            Row(crossAxisAlignment: CrossAxisAlignment.center,mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(width: 75,
+                  child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: GradiantV_2,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0),),),
+                      child: Icon(Icons.delete,color: backgroundColor, size: 25.0),
+                      onPressed: () {
+                        QuickAlert.show(context: context,title: "...",
+                        text: "¿Desea eliminar a los agentes?",
+                        confirmBtnText: "Si",cancelBtnText: "Cancelar",showCancelBtn: true,  confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
+                          onConfirmBtnTap: () {
                             Navigator.pop(context);
                             QuickAlert.show(
                               context: context,
-                              title: "Cancelado",
-                              type: QuickAlertType.success,                                                  
-                            );                                                
-                          },                                              
-                          type: QuickAlertType.warning,
-                        );
-                      
-                    }),
-              ),
-              SizedBox(width: 8.0),
-              Container(
-                width: 75,
-                child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: GradiantV2,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0),),),
-                  child: Icon(Icons.search, color: backgroundColor, size: 25.0),
-                  onPressed: () {
-                    showGeneralDialog(
-                        barrierColor: Colors.black.withOpacity(0.5),
-                        transitionBuilder: (context, a1, a2, widget) {
-                          return Transform.scale(scale: a1.value,
-                            child: Opacity(opacity: a1.value,
-                              child: AlertDialog(
-                                backgroundColor: backgroundColor,
-                                shape: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(16.0)),
-                                title: Center(child: Text('Buscar Agente',style: TextStyle(color: GradiantV_2, fontSize: 20.0),)),
-                                content: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius:BorderRadius.all(Radius.circular(15)),
-                                    boxShadow: [
-                                      BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0,0), ),
-                                      BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0,0),                                 ),
-                                    ],
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                    child: TextField(style: TextStyle(color: Colors.white),
-                                      controller: agentEmployeeId,
-                                      decoration: InputDecoration(border: InputBorder.none,labelText: 'Escriba aqui',labelStyle: TextStyle(color: Colors.white.withOpacity(0.5),fontSize: 15.0)),
+                              title: "Eliminando...",
+                              type: QuickAlertType.success,
+                            );
+                            setState(() {
+                              this.handler!.cleanTable();
+                            });
+                            },
+                            onCancelBtnTap: () {
+                              Navigator.pop(context);
+                              QuickAlert.show(
+                                context: context,
+                                title: "Cancelado",
+                                type: QuickAlertType.success,                                                  
+                              );                                                
+                            },                                              
+                            type: QuickAlertType.warning,
+                          );
+                        
+                      }),
+                ),
+                SizedBox(width: 8.0),
+                Container(
+                  width: 75,
+                  child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: GradiantV2,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0),),),
+                    child: Icon(Icons.search, color: backgroundColor, size: 25.0),
+                    onPressed: () {
+                      showGeneralDialog(
+                          barrierColor: Colors.black.withOpacity(0.5),
+                          transitionBuilder: (context, a1, a2, widget) {
+                            return Transform.scale(scale: a1.value,
+                              child: Opacity(opacity: a1.value,
+                                child: AlertDialog(
+                                  backgroundColor: backgroundColor,
+                                  shape: OutlineInputBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(16.0)),
+                                  title: Center(child: Text('Buscar Agente',style: TextStyle(color: GradiantV_2, fontSize: 20.0),)),
+                                  content: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius:BorderRadius.all(Radius.circular(15)),
+                                      boxShadow: [
+                                        BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0,0), ),
+                                        BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0,0),                                 ),
+                                      ],
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                      child: TextField(style: TextStyle(color: Colors.white),
+                                        controller: agentEmployeeId,
+                                        decoration: InputDecoration(border: InputBorder.none,labelText: 'Escriba aqui',labelStyle: TextStyle(color: Colors.white.withOpacity(0.5),fontSize: 15.0)),
+                                      ),
                                     ),
                                   ),
+                                  actions: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Container(width: 100,
+                                          child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: backgroundColor,),backgroundColor: Gradiant2,),
+                                            onPressed: () => {
+                                              fetchSearchAgents2(
+                                                  agentEmployeeId.text),
+                                              
+                                            },
+                                            child: Text('Buscar',style: TextStyle(color: backgroundColor,fontSize: 15.0)),
+                                          ),
+                                        ),
+                                        SizedBox(width: 10.0),
+                                        Container(width: 100,
+                                          child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: Colors.white,),backgroundColor: Colors.red,),
+                                            onPressed: () => {
+                                              Navigator.pop(context),
+                                            },
+                                            child: Text('Cerrar',style: TextStyle(color: Colors.white,fontSize: 15.0)),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
-                                actions: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Container(width: 100,
-                                        child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: backgroundColor,),backgroundColor: Gradiant2,),
-                                          onPressed: () => {
-                                            fetchSearchAgents2(
-                                                agentEmployeeId.text),
-                                            
-                                          },
-                                          child: Text('Buscar',style: TextStyle(color: backgroundColor,fontSize: 15.0)),
-                                        ),
-                                      ),
-                                      SizedBox(width: 10.0),
-                                      Container(width: 100,
-                                        child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: Colors.white,),backgroundColor: Colors.red,),
-                                          onPressed: () => {
-                                            Navigator.pop(context),
-                                          },
-                                          child: Text('Cerrar',style: TextStyle(color: Colors.white,fontSize: 15.0)),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
                               ),
-                            ),
-                          );
-                        },
-                        transitionDuration: Duration(milliseconds: 200),
-                        barrierDismissible: true,
-                        barrierLabel: '',
-                        context: context,
-                        pageBuilder: (context, animation1, animation2) {
-                          return Text('');
-                        });
-                  },
+                            );
+                          },
+                          transitionDuration: Duration(milliseconds: 200),
+                          barrierDismissible: true,
+                          barrierLabel: '',
+                          context: context,
+                          pageBuilder: (context, animation1, animation2) {
+                            return Text('');
+                          });
+                    },
+                  ),
                 ),
-              ),
-              SizedBox(width: 8.0),
-              Container(width: 75,
-                child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),backgroundColor: firstColor),child: Icon(Icons.qr_code,color: backgroundColor, size: 25.0),onPressed: scanBarcodeNormal),
-              )
-            ],
-          ),
-          SizedBox(height: 6.0),
-          FutureBuilder(
-            future: this.handler!.retrieveUsers(),
-            builder:
-                (BuildContext context, AsyncSnapshot<List<User?>> snapshot) {
-              if (snapshot.hasData) {
-                noemp.add("${snapshot.data?.length}");
-                return Text("Total de agentes: ${snapshot.data?.length}",style: TextStyle(color: Colors.white,fontSize: 15.0,fontWeight: FontWeight.bold));
-              } else {
-                return CircularProgressIndicator();
-              }
-            },
-          ),
-          SizedBox(height: 6.0),
-          FutureBuilder(
+                SizedBox(width: 8.0),
+                Container(width: 75,
+                  child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),backgroundColor: firstColor),child: Icon(Icons.qr_code,color: backgroundColor, size: 25.0),onPressed: scanBarcodeNormal),
+                )
+              ],
+            ),
+            SizedBox(height: 6.0),
+            FutureBuilder(
               future: this.handler!.retrieveUsers(),
               builder:
                   (BuildContext context, AsyncSnapshot<List<User?>> snapshot) {
                 if (snapshot.hasData) {
-                  return Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Container(
-                      child: Column(
-                        children: [
-                          for (var i = 0; i < snapshot.data!.length; i++) ...{
-                            Container(
-                              decoration: BoxDecoration(boxShadow: [
-                                BoxShadow(blurStyle: BlurStyle.normal,color: Colors.white.withOpacity(0.2),blurRadius: 15,spreadRadius: -30,offset: Offset(-25, -25)),
-                                BoxShadow(blurStyle: BlurStyle.normal,color: Colors.black.withOpacity(0.6),blurRadius: 30,spreadRadius: -45,offset: Offset(20, -15)),
-                              ]),
-                              child: Card(elevation: 20,color: backgroundColor,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),margin: EdgeInsets.all(4.0),
-                                child: Column(
-                                  children: <Widget>[
-                                    Container(margin: EdgeInsets.only(left: 15),
-                                      child: Column(
-                                        children: [
-                                          Column(crossAxisAlignment:CrossAxisAlignment.end,
-                                            children: <Widget>[
-                                              Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
-                                              child: Row(
-                                                children: [
-                                                  Icon(Icons.confirmation_number,color: thirdColor),
-                                                  SizedBox(width: 15,),
-                                                  Flexible(child: Text('# No empleado: ${snapshot.data![i]!.noempid}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
-                                                ],
-                                                ),
-                                              ),                       
-                                            ],
-                                          ),
-                                          Column(crossAxisAlignment:CrossAxisAlignment.end,
-                                            children: <Widget>[
-                                              Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
-                                              child: Row(
-                                                children: [
-                                                  Icon(Icons.account_box_sharp,color: thirdColor),
-                                                  SizedBox(width: 15,),
-                                                  Flexible(child: Text('Nombre: ${snapshot.data![i]!.nameuser}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
-                                                ],
-                                                ),
-                                              ),                       
-                                            ],
-                                          ),
-                                          Column(crossAxisAlignment:CrossAxisAlignment.end,
-                                            children: <Widget>[
-                                              Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
-                                              child: Row(
-                                                children: [
-                                                  Icon(Icons.access_alarms,color: thirdColor),
-                                                  SizedBox(width: 15,),
-                                                  Flexible(child: Text('Hora salida: ${snapshot.data![i]!.hourout}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
-                                                ],
-                                                ),
-                                              ),                       
-                                            ],
-                                          ),
-                                          Column(crossAxisAlignment:CrossAxisAlignment.end,
-                                            children: <Widget>[
-                                              Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
-                                              child: Row(
-                                                children: [
-                                                  Padding(padding: const EdgeInsets.only(bottom: 18),child: Icon(Icons.location_pin,color: thirdColor)),
-                                                  SizedBox(width: 15,),
-                                                  Flexible(child: Text('Dirección: ${snapshot.data![i]!.direction}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
-                                                ],
-                                                ),
-                                              ),                       
-                                            ],
-                                          ),          
-                                        ],
-                                      ),
-                                    ),
-                                    Container(width: 150,
-                                      decoration: BoxDecoration(boxShadow: [
-                                        BoxShadow(blurStyle: BlurStyle.normal,color:Colors.white.withOpacity(0.2),blurRadius: 10,spreadRadius: -8,offset: Offset(-10, -6)),
-                                        BoxShadow(blurStyle: BlurStyle.normal,color:Colors.black.withOpacity(0.6),blurRadius: 10,spreadRadius: -15,offset: Offset(18, 5)),
-                                      ]),                                    
-                                      child: ElevatedButton(style: ElevatedButton.styleFrom(textStyle: TextStyle(color: Colors.white,),backgroundColor: backgroundColor,shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0)),),
-                                        onPressed: () async {
-                                          final Database db = await handler!.initializeDB();
-                                          await this.handler!.deleteUser(snapshot.data![i]!.idsend!);
-                                          await db.rawQuery("DELETE FROM userX WHERE nameuser = '${snapshot.data![i]!.nameuser}'");
-                                          QuickAlert.show(context: context,title: "¿Desea eliminar el Agente?",confirmBtnText: "Si",cancelBtnText: "Cancelar",showCancelBtn: true,  confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
-                                            onConfirmBtnTap: () {
-                                              Navigator.pop(context);
-                                              QuickAlert.show(
-                                                context: context,
-                                                title: "Eliminado",
-                                                type: QuickAlertType.success,
-                                              );
-                                              setState(() {
-                                                snapshot.data!.remove(snapshot.data![i]);
-                                              });
-                                            },
-                                            onCancelBtnTap: () {
-                                              Navigator.pop(context);
-                                              QuickAlert.show(
-                                                context: context,
-                                                title: "Cancelado",
-                                                type: QuickAlertType.error,                                                  
-                                              );                                                
-                                            },                                              
-                                            type: QuickAlertType.success,
-                                          ); 
-                                        },
-                                        child: Text('Quitar',style: TextStyle(color: Colors.red,fontSize: 20,fontWeight: FontWeight.bold)),
-                                      ),
-                                    ),
-                                    SizedBox(height: 10.0),
-                                  ],
-                                ),
-                              ),
-                            )
-                          },
-                          Center(
-                            child: Column(
-                              children: [
-                                SizedBox(height: 20.0),
-                                Container(
-                                  decoration: BoxDecoration(boxShadow: [
-                                    BoxShadow(blurStyle: BlurStyle.normal,color: Colors.white.withOpacity(0.2),blurRadius: 15,spreadRadius: -30,offset: Offset(-25, -25)),
-                                    BoxShadow(blurStyle: BlurStyle.normal,color: Colors.black.withOpacity(0.6),blurRadius: 30,spreadRadius: -45,offset: Offset(20, -15)),
-                                  ]),
-                                  child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10.0)),backgroundColor: thirdColor,padding: EdgeInsets.symmetric(vertical: 5, horizontal: 22)),
-                                      child: Icon(Icons.save,color: backgroundColor, size: 25.0),
-                                      onPressed: () async {                                      
-                                        showGeneralDialog(
-                                          context: context,transitionBuilder:(context, a1, a2, widget) {
-                                            return Center( child: ColorLoader3());
-                                          },
-                                          transitionDuration:Duration(milliseconds: 200),
-                                          barrierDismissible: false,
-                                          barrierLabel: '',
-                                          pageBuilder: (context, animation1,animation2) {
-                                            return Text('');
-                                          }
-                                        );
-                                        await fetchAgentsLeftPastToProgres(hourOut.text, vehicule.text);
-                                        if(prefs.vehiculo != "" || nameController.text != ""){
-                                          setState(() {
-                                            this.handler!.cleanTable();
-                                          });
-                                        }
-                                      }),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: 60,)
-                        ],
-                      ),
-                    ),
-                  );
-                } else if (names.length == 0) {
-                  return Card(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),margin: EdgeInsets.symmetric(vertical: 25),
-                    child: Container(color: backgroundColor,
-                      child: Column(mainAxisSize: MainAxisSize.max,crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          ListTile(
-                            leading: Icon(Icons.bus_alert,color: thirdColor,),
-                            title: Text('Agentes',style: TextStyle(color: Colors.white,fontWeight: FontWeight.normal,fontSize: 26.0)),
-                            subtitle: Text('No hay agentes en el viaje',style: TextStyle(color: Colors.red,fontWeight: FontWeight.normal,fontSize: 18.0)),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
+                  noemp.add("${snapshot.data?.length}");
+                  return Text("Total de agentes: ${snapshot.data?.length}",style: TextStyle(color: Colors.white,fontSize: 15.0,fontWeight: FontWeight.bold));
                 } else {
-                  return Center(child: CircularProgressIndicator());
+                  return CircularProgressIndicator();
                 }
-              })
-        
-        ],
+              },
+            ),
+            SizedBox(height: 6.0),
+            FutureBuilder(
+                future: this.handler!.retrieveUsers(),
+                builder:
+                    (BuildContext context, AsyncSnapshot<List<User?>> snapshot) {
+                  if (snapshot.hasData) {
+                    return Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Container(
+                        child: Column(
+                          children: [
+                            for (var i = 0; i < snapshot.data!.length; i++) ...{
+                              Container(
+                                decoration: BoxDecoration(boxShadow: [
+                                  BoxShadow(blurStyle: BlurStyle.normal,color: Colors.white.withOpacity(0.2),blurRadius: 15,spreadRadius: -30,offset: Offset(-25, -25)),
+                                  BoxShadow(blurStyle: BlurStyle.normal,color: Colors.black.withOpacity(0.6),blurRadius: 30,spreadRadius: -45,offset: Offset(20, -15)),
+                                ]),
+                                child: Card(elevation: 20,color: backgroundColor,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),margin: EdgeInsets.all(4.0),
+                                  child: Column(
+                                    children: <Widget>[
+                                      Container(margin: EdgeInsets.only(left: 15),
+                                        child: Column(
+                                          children: [
+                                            Column(crossAxisAlignment:CrossAxisAlignment.end,
+                                              children: <Widget>[
+                                                Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
+                                                child: Row(
+                                                  children: [
+                                                    Icon(Icons.confirmation_number,color: thirdColor),
+                                                    SizedBox(width: 15,),
+                                                    Flexible(child: Text('# No empleado: ${snapshot.data![i]!.noempid}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
+                                                  ],
+                                                  ),
+                                                ),                       
+                                              ],
+                                            ),
+                                            Column(crossAxisAlignment:CrossAxisAlignment.end,
+                                              children: <Widget>[
+                                                Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
+                                                child: Row(
+                                                  children: [
+                                                    Icon(Icons.account_box_sharp,color: thirdColor),
+                                                    SizedBox(width: 15,),
+                                                    Flexible(child: Text('Nombre: ${snapshot.data![i]!.nameuser}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
+                                                  ],
+                                                  ),
+                                                ),                       
+                                              ],
+                                            ),
+                                            Column(crossAxisAlignment:CrossAxisAlignment.end,
+                                              children: <Widget>[
+                                                Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
+                                                child: Row(
+                                                  children: [
+                                                    Icon(Icons.access_alarms,color: thirdColor),
+                                                    SizedBox(width: 15,),
+                                                    Flexible(child: Text('Hora salida: ${snapshot.data![i]!.hourout}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
+                                                  ],
+                                                  ),
+                                                ),                       
+                                              ],
+                                            ),
+                                            Column(crossAxisAlignment:CrossAxisAlignment.end,
+                                              children: <Widget>[
+                                                Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
+                                                child: Row(
+                                                  children: [
+                                                    Padding(padding: const EdgeInsets.only(bottom: 18),child: Icon(Icons.location_pin,color: thirdColor)),
+                                                    SizedBox(width: 15,),
+                                                    Flexible(child: Text('Dirección: ${snapshot.data![i]!.direction}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
+                                                  ],
+                                                  ),
+                                                ),                       
+                                              ],
+                                            ),          
+                                          ],
+                                        ),
+                                      ),
+                                      Container(width: 150,
+                                        decoration: BoxDecoration(boxShadow: [
+                                          BoxShadow(blurStyle: BlurStyle.normal,color:Colors.white.withOpacity(0.2),blurRadius: 10,spreadRadius: -8,offset: Offset(-10, -6)),
+                                          BoxShadow(blurStyle: BlurStyle.normal,color:Colors.black.withOpacity(0.6),blurRadius: 10,spreadRadius: -15,offset: Offset(18, 5)),
+                                        ]),                                    
+                                        child: ElevatedButton(style: ElevatedButton.styleFrom(textStyle: TextStyle(color: Colors.white,),backgroundColor: backgroundColor,shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0)),),
+                                          onPressed: () async {
+                                            final Database db = await handler!.initializeDB();
+                                            await this.handler!.deleteUser(snapshot.data![i]!.idsend!);
+                                            await db.rawQuery("DELETE FROM userX WHERE nameuser = '${snapshot.data![i]!.nameuser}'");
+                                            QuickAlert.show(context: context,title: "¿Desea eliminar el Agente?",confirmBtnText: "Si",cancelBtnText: "Cancelar",showCancelBtn: true,  confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
+                                              onConfirmBtnTap: () {
+                                                Navigator.pop(context);
+                                                QuickAlert.show(
+                                                  context: context,
+                                                  title: "Eliminado",
+                                                  type: QuickAlertType.success,
+                                                );
+                                                setState(() {
+                                                  snapshot.data!.remove(snapshot.data![i]);
+                                                });
+                                              },
+                                              onCancelBtnTap: () {
+                                                Navigator.pop(context);
+                                                QuickAlert.show(
+                                                  context: context,
+                                                  title: "Cancelado",
+                                                  type: QuickAlertType.error,                                                  
+                                                );                                                
+                                              },                                              
+                                              type: QuickAlertType.success,
+                                            ); 
+                                          },
+                                          child: Text('Quitar',style: TextStyle(color: Colors.red,fontSize: 20,fontWeight: FontWeight.bold)),
+                                        ),
+                                      ),
+                                      SizedBox(height: 10.0),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            },
+                            Center(
+                              child: Column(
+                                children: [
+                                  SizedBox(height: 20.0),
+                                  Container(
+                                    decoration: BoxDecoration(boxShadow: [
+                                      BoxShadow(blurStyle: BlurStyle.normal,color: Colors.white.withOpacity(0.2),blurRadius: 15,spreadRadius: -30,offset: Offset(-25, -25)),
+                                      BoxShadow(blurStyle: BlurStyle.normal,color: Colors.black.withOpacity(0.6),blurRadius: 30,spreadRadius: -45,offset: Offset(20, -15)),
+                                    ]),
+                                    child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10.0)),backgroundColor: thirdColor,padding: EdgeInsets.symmetric(vertical: 5, horizontal: 22)),
+                                        child: Icon(Icons.save,color: backgroundColor, size: 25.0),
+                                        onPressed: () async {                                      
+                                          showGeneralDialog(
+                                            context: context,transitionBuilder:(context, a1, a2, widget) {
+                                              return Center( child: ColorLoader3());
+                                            },
+                                            transitionDuration:Duration(milliseconds: 200),
+                                            barrierDismissible: false,
+                                            barrierLabel: '',
+                                            pageBuilder: (context, animation1,animation2) {
+                                              return Text('');
+                                            }
+                                          );
+                                          await fetchAgentsLeftPastToProgres(hourOut.text, vehicule.text);
+                                          if(prefs.vehiculo != "" || nameController.text != ""){
+                                            setState(() {
+                                              this.handler!.cleanTable();
+                                            });
+                                          }
+                                        }),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: 60,)
+                          ],
+                        ),
+                      ),
+                    );
+                  } else if (names.length == 0) {
+                    return Card(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),margin: EdgeInsets.symmetric(vertical: 25),
+                      child: Container(color: backgroundColor,
+                        child: Column(mainAxisSize: MainAxisSize.max,crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            ListTile(
+                              leading: Icon(Icons.bus_alert,color: thirdColor,),
+                              title: Text('Agentes',style: TextStyle(color: Colors.white,fontWeight: FontWeight.normal,fontSize: 26.0)),
+                              subtitle: Text('No hay agentes en el viaje',style: TextStyle(color: Colors.red,fontWeight: FontWeight.normal,fontSize: 18.0)),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  } else {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                })
+          
+          ],
+        ),
       ),
     );
   }
@@ -1984,27 +1987,40 @@ class _DriverDescriptionState extends State<DriverDescription>
     final String starteTGU = "Startek TGU";
     final String aloricaSPS = "Alorica SPS";
     final String zerovarianceSPS = "Zero Variance SPS";
+
     return Container(
-      decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(15)),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0, 0),),
-          BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0, 0), ),
-        ],
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardTheme.color,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: Theme.of(context).dividerColor,
+          width: 1
+        )
       ),
-      margin: EdgeInsets.symmetric(horizontal: 40.0),
-      child: Row(
-        children: [
-          Padding(padding: const EdgeInsets.all(8.0),child: Icon(Icons.location_city,color: thirdColor,size: 30.0,),),          
-          Expanded(
-            child: new DropdownButton(underline: SizedBox(),style: TextStyle(color: Colors.white),dropdownColor: backgroundColor2,elevation: 20,
-            hint: Text(prefs.companyPrueba,style: TextStyle(color: Colors.white,fontWeight: FontWeight.normal,fontSize: 15.0)),
-            items: data.map((e) {
-              return new DropdownMenuItem(alignment: Alignment.centerLeft,
-                child: Text(e['companyName'] == null || e['companyName'] == "" ? prefs.companyPrueba: e['companyName']),
-                value: e['companyId'].toString(),
-              );
-            }).toList(),
-            onChanged: (val) {
+      child: Padding(
+        padding: const EdgeInsets.only(left:20.0, right: 10),
+        child: DropdownButtonFormField(
+          decoration: InputDecoration(
+            fillColor: Theme.of(context).cardTheme.color,
+            filled: true,
+            hintText: 'Seleccione una compañía',
+            hintStyle: TextStyle(
+              color: Theme.of(context).hintColor, fontSize: 14, fontFamily: 'Roboto', fontWeight: FontWeight.normal
+            ),
+            suffixIcon: SvgPicture.asset(  
+              "assets/icons/flecha_hacia_abajo.svg",
+              color: Theme.of(context).primaryIconTheme.color,
+              width: 25,
+              height: 25,
+            ),
+          ),
+          dropdownColor: Theme.of(context).cardTheme.color,
+          icon: SizedBox.shrink(),
+          style: TextStyle(
+            color: Theme.of(context).hintColor, fontSize: 14, fontFamily: 'Roboto', fontWeight: FontWeight.normal
+          ),
+          onChanged: (val) {
+            setState(() {
               setState(() {
                 companyId = val;
                 prefs.companyId = companyId!;
@@ -2035,12 +2051,23 @@ class _DriverDescriptionState extends State<DriverDescription>
                 }
               });
               print(val);
-            },
-            value: companyId,
-          )),
-        
-        
-        ],
+            });
+            print(val);
+          },
+          items: data.map<DropdownMenuItem<String>>((e) {
+            return DropdownMenuItem<String>(
+              value: e['companyId'].toString(),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text(
+                  e['companyName'] == null || e['companyName'] == ""
+                      ? prefs.companyPrueba
+                      : e['companyName'],
+                ),
+              ),
+            );
+          }).toList(),
+        ),
       ),
     );
   }

@@ -275,7 +275,12 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                           },
                           focusNode: _focusNode,
                           decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.search, color: Theme.of(context).primaryIconTheme.color),
+                            prefixIcon: SvgPicture.asset(  
+                              "assets/icons/buscador.svg",
+                              color: Theme.of(context).primaryIconTheme.color,
+                              width: 25,
+                              height: 25,
+                            ),
                             hintText: 'Buscar',
                             hintStyle: TextStyle(
                               color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto'

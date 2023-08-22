@@ -108,7 +108,7 @@ final ThemeData appThemeDataDark = ThemeData(
 
   appBarTheme: AppBarTheme(backgroundColor: const Color.fromRGBO(27, 27, 39, 1)),
 
-  cardTheme: CardTheme(color: Color.fromRGBO(158, 158, 158, 0.18)),
+  cardTheme: CardTheme(color: Color.fromRGBO(47, 46, 65, 1)),
 
   canvasColor: Color.fromRGBO(35, 35, 46, 1),
 
