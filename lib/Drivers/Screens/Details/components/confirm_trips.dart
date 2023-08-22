@@ -410,6 +410,12 @@ class _DataTableExample extends State<MyConfirmAgent> {
     });
   }
 
+  launchSalidasMaps(lat,lng)async{
+    String destination = '$lat,$lng';
+    String url = 'google.navigation:q=$destination&mode=d';
+    await launchUrl(Uri.parse(url));
+  }
+
  Future<void> launchGoogleMapsx(String apiKey, String startLat, String startLng, List<String> waypoints) async {
     String baseUrl = 'https://maps.googleapis.com/maps/api/directions/json';
     String origin = '$startLat,$startLng';
@@ -476,6 +482,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
       await launchUrl(Uri.parse(url));
     }
   }
+
+
   void getInfoViaje() async {
     http.Response responseSala =
         await http.get(Uri.parse('$ip/apis/agentsInTravel/${prefs.tripId}'));
@@ -1957,7 +1965,24 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontWeight: FontWeight.normal,
-                                              fontSize: 16.0)),                                      
+                                              fontSize: 16.0)),  
+                                      SizedBox(width: 70),
+                                      InkWell(
+                                        onTap: () {
+                                          launchSalidasMaps(abc.data!.trips![0].tripAgent![index].latitude,abc.data!.trips![0].tripAgent![index].longitude);                                          
+                                          //print('Dirección we');
+                                        },
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.end,
+                                              children: [
+                                              Icon(Icons.location_on_outlined, color:firstColor, size: 30,),
+                                              Text('Ubicación ',style: TextStyle(color: Colors.white,fontWeight: FontWeight.normal,fontSize: 16.0)),                                      
+                                            ],)
+                                          ],
+                                        ),
+                                      ),                                    
                                     ],
                                   ),
                                   SizedBox(height: 15),
