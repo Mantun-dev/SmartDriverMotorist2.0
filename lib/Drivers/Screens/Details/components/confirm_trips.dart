@@ -1966,30 +1966,32 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                               color: Colors.white,
                                               fontWeight: FontWeight.normal,
                                               fontSize: 16.0)),  
-                                      SizedBox(width: 70),
-                                      InkWell(
-                                        onTap: () {
-                                          if (abc.data!.trips![0].tripAgent![index].latitude==null) {
-                                            QuickAlert.show(
-                                              context: context,
-                                              title: "Alerta",
-                                              text: 'Este agente no cuenta con ubicación',
-                                              type: QuickAlertType.error,
-                                            );
-                                          }else{
-                                            launchSalidasMaps(abc.data!.trips![0].tripAgent![index].latitude,abc.data!.trips![0].tripAgent![index].longitude);                                          
-                                          }
-                                          //print('Dirección we');
-                                        },
-                                        child: Column(
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.end,
-                                              children: [
-                                              Icon(Icons.location_on_outlined, color:abc.data!.trips![0].tripAgent![index].latitude==null? Colors.red :firstColor, size: 30,),
-                                              Text('Ubicación ',style: TextStyle(color:Colors.white,fontWeight: FontWeight.normal,fontSize: 16.0)),                                      
-                                            ],)
-                                          ],
+                                      
+                                      Expanded(
+                                        child: InkWell(
+                                          onTap: () {
+                                            if (abc.data!.trips![0].tripAgent![index].latitude==null) {
+                                              QuickAlert.show(
+                                                context: context,
+                                                title: "Alerta",
+                                                text: 'Este agente no cuenta con ubicación',
+                                                type: QuickAlertType.error,
+                                              );
+                                            }else{
+                                              launchSalidasMaps(abc.data!.trips![0].tripAgent![index].latitude,abc.data!.trips![0].tripAgent![index].longitude);                                          
+                                            }
+                                            //print('Dirección we');
+                                          },
+                                          child: Column(
+                                            children: [
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.end,
+                                                children: [
+                                                Icon(Icons.location_on_outlined, color:abc.data!.trips![0].tripAgent![index].latitude==null? Colors.red :firstColor, size: 30,),
+                                                Text('Ubicación ',style: TextStyle(color:Colors.white,fontWeight: FontWeight.normal,fontSize: 16.0)),                                      
+                                              ],)
+                                            ],
+                                          ),
                                         ),
                                       ),                                    
                                     ],
@@ -2387,32 +2389,34 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                               color: Colors.white,
                                               fontWeight: FontWeight.normal,
                                               fontSize: 16.0)),
-                                      SizedBox(width: 70),
-                                      InkWell(
-                                        onTap: () {
-                                          if (abc.data!.trips![0].tripAgent![index].latitude==null) {
-                                            QuickAlert.show(
-                                              context: context,
-                                              title: "Alerta",
-                                              text: 'Este agente no cuenta con ubicación',
-                                              type: QuickAlertType.error,
-                                            );
-                                          }else{
-                                            waypoints.clear();
-                                            waypoints.add('${abc.data!.trips![0].tripAgent![index].latitude},${abc.data!.trips![0].tripAgent![index].longitude}');
-                                            launchGoogleMapsx(apiKey, latidudeInicial.toString(), longitudInicial.toString(), waypoints);
-                                          }
-                                          //print('Dirección we');
-                                        },
-                                        child: Column(
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.end,
-                                              children: [
-                                              Icon(Icons.location_on_outlined, color: abc.data!.trips![0].tripAgent![index].latitude==null? Colors.red : firstColor, size: 30,),
-                                              Text('Ubicación ',style: TextStyle(color: Colors.white,fontWeight: FontWeight.normal,fontSize: 16.0)),                                      
-                                            ],)
-                                          ],
+
+                                      Expanded(
+                                        child: InkWell(
+                                          onTap: () {
+                                            if (abc.data!.trips![0].tripAgent![index].latitude==null) {
+                                              QuickAlert.show(
+                                                context: context,
+                                                title: "Alerta",
+                                                text: 'Este agente no cuenta con ubicación',
+                                                type: QuickAlertType.error,
+                                              );
+                                            }else{
+                                              waypoints.clear();
+                                              waypoints.add('${abc.data!.trips![0].tripAgent![index].latitude},${abc.data!.trips![0].tripAgent![index].longitude}');
+                                              launchGoogleMapsx(apiKey, latidudeInicial.toString(), longitudInicial.toString(), waypoints);
+                                            }
+                                            //print('Dirección we');
+                                          },
+                                          child: Column(
+                                            children: [
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.end,
+                                                children: [
+                                                Icon(Icons.location_on_outlined, color: abc.data!.trips![0].tripAgent![index].latitude==null? Colors.red : firstColor, size: 30,),
+                                                Text('Ubicación ',style: TextStyle(color: Colors.white,fontWeight: FontWeight.normal,fontSize: 16.0)),                                      
+                                              ],)
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ],
