@@ -27,7 +27,14 @@ class WarningSuccessDialog {
       return;
     }
     Color containerC = Color.fromRGBO(40, 93, 169, 1);
-    String iconAsset = tipo == 1 ?"assets/icons/advertencia.svg": "assets/icons/check.svg";
+    
+    String iconAsset = 
+      tipo == 1 ?
+        "assets/icons/advertencia.svg"
+      : tipo == 2?
+        "assets/icons/check.svg"
+      : 
+        "assets/icons/info.svg";
     Size size = MediaQuery.of(context).size;
 
     showDialog<void>(
