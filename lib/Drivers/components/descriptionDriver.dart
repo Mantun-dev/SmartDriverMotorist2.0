@@ -68,6 +68,7 @@ class _DriverDescriptionState extends State<DriverDescription>
   final prefs = new PreferenciasUsuario();
 
   bool seleccionarCompany = false;
+  bool seleccionarMotorista = false;
 
   //arreglo para el agentId
   final tempArr = [];
@@ -1463,11 +1464,8 @@ class _DriverDescriptionState extends State<DriverDescription>
                     if (abc.hasError) {
                       return Text('Error: ${abc.error}');
                     } else {
-                      return Column(
-                        children: [
-                          if (abc.data?.driverCoord == true) showAndHide()
-                        ],
-                      );
+                      return abc.data?.driverCoord == true? 
+                      getSearchableDropdown(context) : Text('');
                     }
                 }
               }),
@@ -1887,111 +1885,131 @@ class _DriverDescriptionState extends State<DriverDescription>
   }
 
   Widget getSearchableDropdown(BuildContext context) {
-    return Container(width: 300,
-      decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(15),),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0, 0),),
-          BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0, 0),),
+    Size size = MediaQuery.of(context).size;
+    return Stack(
+      children: [
+        if(seleccionarMotorista==true)
+         Padding(
+          padding: const EdgeInsets.only(top:40.0),
+          child: menuConductor(size),
+        ),
+        GestureDetector(
+          onTap: () {
+            setState(() {
+              seleccionarMotorista = !seleccionarMotorista;
+            });
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardTheme.color,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: Theme.of(context).dividerColor,
+                width: 1
+              )
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(left:20.0, right: 10),
+              child: Row(
+                children: [
+                  SvgPicture.asset(  
+                    "assets/icons/compania.svg",
+                    color: Theme.of(context).primaryIconTheme.color,
+                    width: 20,
+                    height: 20,
+                  ),
+                  SizedBox(width: 5),
+                  if(prefs.driverIdx!='')...{
+                    Expanded(
+                      child: Text(
+                        prefs.companyPrueba,
+                        style:  Theme.of(navigatorKey.currentContext!).textTheme.titleMedium!.copyWith(fontSize: 15, fontWeight: FontWeight.normal),
+                      ),
+                    ),
+                  }else...{
+                    Expanded(
+                      child: Text(
+                        'Asignar un conductor (Opcional)',
+                        style: TextStyle(
+                        color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal
+                        ),
+                      ),
+                    ),
+                  },
+        
+                  SvgPicture.asset(  
+                    "assets/icons/flecha_hacia_abajo.svg",
+                    color: Theme.of(context).primaryIconTheme.color,
+                    width: 50,
+                    height: 50,
+                  ),
+                ],
+              )
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget menuConductor(size) {
+
+    return Container(
+      width: size.width,
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardTheme.color,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: Theme.of(context).dividerColor,
+          width: 1
+        )
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.only(right: 12, left: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: data.asMap().entries.map((entry) {
+                dynamic ventana = entry.value;
+                String nameCompany = ventana['companyName'];
+                int idCompany = ventana['companyId'];
+
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      seleccionarMotorista = false;
+                      prefs.companyId = idCompany.toString();
+                      prefs.companyPrueba = nameCompany;
+
+                      if (prefs.companyId != prefs.companyIdAgent) {
+                        if (handleerrror == 'khe') {
+                          this.handler!.cleanTable();
+                          this.handler!.cleanTableAgent();
+                        }
+                      }
+                    });
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Text(
+                      nameCompany,
+                      textAlign: TextAlign.start,
+                      style: Theme.of(navigatorKey.currentContext!)
+                          .textTheme
+                          .titleMedium!
+                          .copyWith(fontSize: 15, fontWeight: FontWeight.normal),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+          SizedBox(height: 10),
         ],
       ),
-      child: Theme(
-        data: ThemeData(
-          textTheme: TextTheme(titleMedium: TextStyle(color: Colors.white)),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(5.0),
-          child: DropdownSearch<TripsDrivers>(mode: Mode.DIALOG, showClearButton :false, items: driverId ,
-          dropdownSearchDecoration: InputDecoration(
-              
-            hintStyle: TextStyle(color: Colors.white),
-            labelStyle: TextStyle(color: Colors.white),
-          ),
-              itemAsString: (TripsDrivers? u) => u!.driverFullname!,                  
-                onChanged: (value){                                        
-                  setState(() {
-                    driver = value!.driverId.toString();
-                    prefs.driverIdx = driver.toString();
-                    print(prefs.driverIdx);
-                  });
-                },
-                showSearchBox: true,
-                filterFn: (instance, filter){
-                  if(instance!.driverFullname!.contains(filter!)){
-                    print(filter);
-                    return true;
-                  }else if(instance.driverFullname!.toLowerCase().contains(filter)){
-                    print(filter);
-                    return true;
-                  }
-                  else{
-                    return false;
-                  }
-                },
-                popupItemBuilder: (context,TripsDrivers item,bool isSelected){
-                  return Container(margin: EdgeInsets.symmetric(horizontal: 8),
-                    decoration: !isSelected? null: BoxDecoration(border: Border.all(color: Theme.of(context).primaryColor),borderRadius: BorderRadius.circular(5),color: Colors.white,),
-                    child: Padding(padding: const EdgeInsets.all(8.0),child: Text(item.driverFullname!,),),
-                  );
-                },
-              ),
-        ),
-      ),
-      // SearchableDropdown(
-      //   closeButton: (selectedItem) {
-      //     return (selectedItem == null || selectedItem.length == 0)
-      //         ? "Cancelar"
-      //         : "Aceptar";
-      //   },
-      //   menuBackgroundColor: backgroundColor,
-      //   icon: Icon(Icons.person,
-      //       color: thirdColor, size: 30.0, semanticLabel: 'Conductor'),
-      //   items: driverId.map((item) {
-      //     return new DropdownMenuItem(
-      //         child: Text(item['driverFullname'],
-      //             style: TextStyle(
-      //                 color: Colors.white,
-      //                 fontWeight: FontWeight.normal,
-      //                 fontSize: 18.0)),
-      //         value: item['driverId'].toString());
-      //   }).toList(),
-      //   isExpanded: true,
-      //   value: driver,
-      //   searchFn: (String keyword, items) {
-      //     List<int> ret = [];
-      //     if (items != null && keyword.isNotEmpty) {
-      //       keyword.split(" ").forEach((k) {
-      //         int i = 0;
-      //         driverId.forEach((item) {
-      //           if (k.isNotEmpty &&
-      //               (item['driverFullname']
-      //                   .toString()
-      //                   .toLowerCase()
-      //                   .contains(k.toLowerCase()))) {
-      //             ret.add(i);
-      //           }
-      //           i++;
-      //         });
-      //       });
-      //     }
-      //     if (keyword.isEmpty) {
-      //       ret = Iterable<int>.generate(items.length).toList();
-      //     }
-      //     return (ret);
-      //   },
-      //   isCaseSensitiveSearch: true,
-      //   searchHint: new Text(
-      //     'Seleccione ',
-      //     style: new TextStyle(
-      //         fontSize: 20, color: thirdColor, fontWeight: FontWeight.bold),
-      //   ),
-      //   onChanged: (value) {
-      //     setState(() {
-      //       driver = value;
-      //       prefs.driverIdx = driver.toString();
-      //       print(prefs.driverIdx);
-      //     });
-      //   },
-      // ),
     );
   }
 
