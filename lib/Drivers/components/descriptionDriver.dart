@@ -1341,47 +1341,54 @@ class _DriverDescriptionState extends State<DriverDescription>
 
             _crearDropdown(context),
             SizedBox(height: 20.0),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 40.0),
-              child: FutureBuilder<DriverData>(
-                future: itemx,
-                builder: (BuildContext context, abc) {
-                  if (abc.connectionState == ConnectionState.done) {
-                    DriverData? driverData = abc.data;
-                    return Column(
-                      crossAxisAlignment:CrossAxisAlignment.start,
-                      children: [
-                        if(driverData?.driverType=='Motorista')
-                          Text('Escanee el codigo qr del vehículo', style: TextStyle(color: Colors.white.withOpacity(0.5)),),
-                        if(driverData?.driverType=='Motorista')
-                          SizedBox(height: 5,),
-                        Row(
-                          children: [
-                            Container(
+            FutureBuilder<DriverData>(
+              future: itemx,
+              builder: (BuildContext context, abc) {
+                if (abc.connectionState == ConnectionState.done) {
+                  DriverData? driverData = abc.data;
+                  return Column(
+                    crossAxisAlignment:CrossAxisAlignment.start,
+                    children: [
+                      if(driverData?.driverType=='Motorista')
+                        Text('Escanee el codigo qr del vehículo', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 12)),
+                      if(driverData?.driverType=='Motorista')
+                        SizedBox(height: 5,),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Container(
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(15)),
-                                boxShadow: [
-                                  BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0, 0), ),
-                                  BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0, 0), ),
-                                ],
-                              ),
-                              width: 220,
+                              color: Theme.of(context).cardTheme.color,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: Theme.of(context).dividerColor,
+                                width: 1
+                              ) // Radio de la esquina
+                            ),
                               child: Padding(
-                                padding: const EdgeInsets.only(left:10.0, right: 10),
+                                padding: const EdgeInsets.only(left:20.0, right: 10),
                                 child: Row(
                                   children: [
-                                    Icon(Icons.emoji_transportation,color: thirdColor,size: 30.0,),
-                                    SizedBox(width: 10.0),
+                                    SvgPicture.asset(  
+                                      "assets/icons/vehiculo.svg",
+                                      color: Theme.of(context).primaryIconTheme.color,
+                                      width: 15,
+                                      height: 15,
+                                    ),
+                                    SizedBox(width: 6),
                                     Flexible(
                                       child: TextField(
                                         enabled: driverData?.driverType=='Motorista'?false:true,
-                                                    style: TextStyle(color: Colors.white),
+                                                    style: TextStyle(
+                                                      color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal
+                                                    ),
                                                     controller: vehicleController,
                                                     decoration: InputDecoration(
                                                       border: InputBorder.none,
                                                       hintText: 'Vehículo',
-                                                      hintStyle: TextStyle(color: Colors.white.withOpacity(0.5),
-                                                      fontSize: 15.0)
+                                                      hintStyle: TextStyle(
+                                                        color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal
+                                                      )
                                                     ),
                                                     onChanged: (value) => {
                                                       prefs.vehiculo=value,
@@ -1393,53 +1400,58 @@ class _DriverDescriptionState extends State<DriverDescription>
                                 ),
                               ),
                             ),
-                            SizedBox(width: 10,),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: firstColor,
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              child: IconButton(
-                                icon: Icon(Icons.qr_code),
-                                color: backgroundColor,
-                                iconSize: 30.0,
-                                onPressed: () async{
-                                  String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);
+                          ),
                           
-                                    if (codigoQR == "-1") {
-                                      return;
-                                    } else {
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(10.0),
+                              border: Border.all(
+                                color: Theme.of(context).primaryColorDark,
+                                width: 1
+                              )
+                            ),
+                            child: IconButton(
+                              icon: SvgPicture.asset(  
+                                    "assets/icons/QR.svg",
+                                    color: Theme.of(context).primaryColorDark,
+                                  ),
+                              onPressed: () async{
+                                String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);
+                        
+                                  if (codigoQR == "-1") {
+                                    return;
+                                  } else {
       
-                                      LoadingIndicatorDialog().show(context);
-                                      http.Response responseSala = await http.get(Uri.parse('https://app.mantungps.com/3rd/vehicles/$codigoQR'),headers: {"Content-Type": "application/json", "x-api-key": 'a10xhq0p21h3fb9y86hh1oxp66c03f'});
-                                      final resp = json.decode(responseSala.body);
-                                      LoadingIndicatorDialog().dismiss();
-                                      if(resp['type']=='success'){
-                                        print(responseSala.body);
-                                        
-                                        if(mounted){
-                                          showDialog(
-                                                  context: context,
-                                                  builder: (context) => vehiculoE(resp, context, codigoQR),);
-                                        }
-                                      }else{
-                                        if(mounted){
-                                          QuickAlert.show(context: context,title: "Alerta",text: "Vehículo no valido",type: QuickAlertType.error,); 
-                                        }
+                                    LoadingIndicatorDialog().show(context);
+                                    http.Response responseSala = await http.get(Uri.parse('https://app.mantungps.com/3rd/vehicles/$codigoQR'),headers: {"Content-Type": "application/json", "x-api-key": 'a10xhq0p21h3fb9y86hh1oxp66c03f'});
+                                    final resp = json.decode(responseSala.body);
+                                    LoadingIndicatorDialog().dismiss();
+                                    if(resp['type']=='success'){
+                                      print(responseSala.body);
+                                      
+                                      if(mounted){
+                                        showDialog(
+                                                context: context,
+                                                builder: (context) => vehiculoE(resp, context, codigoQR),);
+                                      }
+                                    }else{
+                                      if(mounted){
+                                        QuickAlert.show(context: context,title: "Alerta",text: "Vehículo no valido",type: QuickAlertType.error,); 
                                       }
                                     }
-                                }
-                              ),
+                                  }
+                              }
                             ),
-                          ],
-                        ),
-                      ],
-                    );
-                  } else {
-                    return ColorLoader3();
-                  }
-                },
-              ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                } else {
+                  return ColorLoader3();
+                }
+              },
             ),
             FutureBuilder<DriverData?>(
               future: itemx!,
@@ -2064,11 +2076,13 @@ class _DriverDescriptionState extends State<DriverDescription>
         )
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(height: 20),
           Padding(
             padding: const EdgeInsets.only(right: 12, left: 12),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: data.asMap().entries.map((entry) {
                 dynamic ventana = entry.value;
                 String nameCompany = ventana['companyName'];
@@ -2093,6 +2107,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                     padding: const EdgeInsets.all(5.0),
                     child: Text(
                       nameCompany,
+                      textAlign: TextAlign.start,
                       style: Theme.of(navigatorKey.currentContext!)
                           .textTheme
                           .titleMedium!
