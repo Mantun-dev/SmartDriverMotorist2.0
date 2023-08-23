@@ -1,6 +1,8 @@
 //import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 //import 'dart:developer';
 
+import 'dart:ui';
+
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/asignar_Horas.dart';
@@ -20,6 +22,7 @@ import 'package:flutter_auth/Drivers/models/search.dart';
 import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 import 'package:flutter_auth/Drivers/models/tripToSolid.dart';
 import 'package:flutter_auth/Drivers/models/tripsPendin2.dart';
+import 'package:flutter_auth/main.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_svg/svg.dart';
 //import 'package:geolocator/geolocator.dart';
@@ -56,13 +59,15 @@ class _DriverDescriptionState extends State<DriverDescription>
   String handleerrror = "";
   String ip = "https://driver.smtdriver.com";
   String barcodeScan = "";
-  String? companyId;
+
   String? destinationId;
   String? destinationPrueba;
   dynamic driver;
   List data = [];
   List data2 = [];
   final prefs = new PreferenciasUsuario();
+
+  bool seleccionarCompany = false;
 
   //arreglo para el agentId
   final tempArr = [];
@@ -1978,17 +1983,71 @@ class _DriverDescriptionState extends State<DriverDescription>
   }
 
   Widget _crearDropdown(BuildContext context) {
-    final String comp = "Company";
-    final String comp2 = "Company 2";
-    final String ibexTgu = "IBEX TGU";
-    final String resultTgu = "RESULT TGU";
-    final String partner = "PARTNER HERO TGU";
-    final String startekSPS = "Startek SPS";
-    final String starteTGU = "Startek TGU";
-    final String aloricaSPS = "Alorica SPS";
-    final String zerovarianceSPS = "Zero Variance SPS";
+    Size size = MediaQuery.of(context).size;
+    return Stack(
+      children: [
+        if(seleccionarCompany==true)
+         Padding(
+          padding: const EdgeInsets.only(top:40.0),
+          child: menuCompany(context, size),
+        ),
+        GestureDetector(
+          child: Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardTheme.color,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: Theme.of(context).dividerColor,
+                width: 1
+              )
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(left:20.0, right: 10),
+              child: Row(
+                children: [
+                  
+                  if(prefs.companyPrueba!='')...{
+                    Expanded(
+                      child: Text(
+                        prefs.companyPrueba,
+                        style:  Theme.of(navigatorKey.currentContext!).textTheme.titleMedium!.copyWith(fontSize: 15, fontWeight: FontWeight.normal),
+                      ),
+                    ),
+                  }else...{
+                    Expanded(
+                      child: Text(
+                        'Seleccione una compañía',
+                        style: TextStyle(
+                        color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal
+                        ),
+                      ),
+                    ),
+                  },
+        
+                  SvgPicture.asset(  
+                    "assets/icons/flecha_hacia_abajo.svg",
+                    color: Theme.of(context).primaryIconTheme.color,
+                    width: 50,
+                    height: 50,
+                  ),
+                ],
+              )
+            ),
+          ),
+          onTap: () {
+            setState(() {
+              seleccionarCompany = !seleccionarCompany;
+            });
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget menuCompany(contextP, size) {
 
     return Container(
+      width: size.width,
       decoration: BoxDecoration(
         color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(10),
@@ -1997,77 +2056,48 @@ class _DriverDescriptionState extends State<DriverDescription>
           width: 1
         )
       ),
-      child: Padding(
-        padding: const EdgeInsets.only(left:20.0, right: 10),
-        child: DropdownButtonFormField(
-          decoration: InputDecoration(
-            fillColor: Theme.of(context).cardTheme.color,
-            filled: true,
-            hintText: 'Seleccione una compañía',
-            hintStyle: TextStyle(
-              color: Theme.of(context).hintColor, fontSize: 14, fontFamily: 'Roboto', fontWeight: FontWeight.normal
-            ),
-            suffixIcon: SvgPicture.asset(  
-              "assets/icons/flecha_hacia_abajo.svg",
-              color: Theme.of(context).primaryIconTheme.color,
-              width: 25,
-              height: 25,
+      child: Column(
+        children: [
+          SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.only(right: 12, left: 12),
+            child: Column(
+              children: data.asMap().entries.map((entry) {
+                dynamic ventana = entry.value;
+                String nameCompany = ventana['companyName'];
+                int idCompany = ventana['companyId'];
+
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      seleccionarCompany = false;
+                      prefs.companyId = idCompany.toString();
+                      prefs.companyPrueba = nameCompany;
+
+                      if (prefs.companyId != prefs.companyIdAgent) {
+                        if (handleerrror == 'khe') {
+                          this.handler!.cleanTable();
+                          this.handler!.cleanTableAgent();
+                        }
+                      }
+                    });
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Text(
+                      nameCompany,
+                      style: Theme.of(navigatorKey.currentContext!)
+                          .textTheme
+                          .titleMedium!
+                          .copyWith(fontSize: 15, fontWeight: FontWeight.normal),
+                    ),
+                  ),
+                );
+              }).toList(),
             ),
           ),
-          dropdownColor: Theme.of(context).cardTheme.color,
-          icon: SizedBox.shrink(),
-          style: TextStyle(
-            color: Theme.of(context).hintColor, fontSize: 14, fontFamily: 'Roboto', fontWeight: FontWeight.normal
-          ),
-          onChanged: (val) {
-            setState(() {
-              setState(() {
-                companyId = val;
-                prefs.companyId = companyId!;
-                if (prefs.companyId == "1") {
-                  prefs.companyPrueba = comp;
-                } else if (prefs.companyId == "2") {
-                  prefs.companyPrueba = startekSPS;
-                } else if (prefs.companyId == "3") {
-                  prefs.companyPrueba = starteTGU;
-                } else if (prefs.companyId == "6") {
-                  prefs.companyPrueba = aloricaSPS;
-                } else if (prefs.companyId == "7") {
-                  prefs.companyPrueba = zerovarianceSPS;
-                } else if (prefs.companyId == "5") {
-                  prefs.companyPrueba = comp2;
-                } else if (prefs.companyId == "9") {
-                  prefs.companyPrueba = ibexTgu;
-                } else if (prefs.companyId == "11") {
-                  prefs.companyPrueba = resultTgu;
-                } else if (prefs.companyId == "12") {
-                  prefs.companyPrueba = partner;
-                }
-                if (prefs.companyId != prefs.companyIdAgent) {
-                  if (handleerrror == 'khe') {
-                    this.handler!.cleanTable();
-                    this.handler!.cleanTableAgent();
-                  }
-                }
-              });
-              print(val);
-            });
-            print(val);
-          },
-          items: data.map<DropdownMenuItem<String>>((e) {
-            return DropdownMenuItem<String>(
-              value: e['companyId'].toString(),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text(
-                  e['companyName'] == null || e['companyName'] == ""
-                      ? prefs.companyPrueba
-                      : e['companyName'],
-                ),
-              ),
-            );
-          }).toList(),
-        ),
+          SizedBox(height: 10),
+        ],
       ),
     );
   }
