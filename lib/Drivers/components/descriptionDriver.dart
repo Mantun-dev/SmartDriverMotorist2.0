@@ -122,8 +122,7 @@ class _DriverDescriptionState extends State<DriverDescription>
   }
 
   Future<List> fetchDriversDrivers() async {
-    http.Response response = await http
-        .get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
+    http.Response response = await http.get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
     final data = DriverData.fromJson(json.decode(response.body));
     http.Response responses = await http.get(Uri.parse(
       '$ip/apis/asigmentDriverToCoord/${data.driverId}',
@@ -137,9 +136,11 @@ class _DriverDescriptionState extends State<DriverDescription>
         countries.add(responseBody[i]['driverFullname']);
       }
       driverId = jsonData;
+      setState(() {});
       return countries;
     } else {
       print("error from server : $response");
+      setState(() {});
       throw Exception('Failed to load post');
     }
   }
@@ -2005,7 +2006,13 @@ class _DriverDescriptionState extends State<DriverDescription>
               padding: const EdgeInsets.only(left:20.0, right: 10),
               child: Row(
                 children: [
-                  
+                  SvgPicture.asset(  
+                    "assets/icons/compania.svg",
+                    color: Theme.of(context).primaryIconTheme.color,
+                    width: 20,
+                    height: 20,
+                  ),
+                  SizedBox(width: 5),
                   if(prefs.companyPrueba!='')...{
                     Expanded(
                       child: Text(
