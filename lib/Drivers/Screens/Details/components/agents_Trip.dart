@@ -574,7 +574,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
 
 
                         if(data?.driverType!='Motorista')
-                        SizedBox(width: 6),
+                        SizedBox(width: 10),
 
                         if(data?.driverType!='Motorista')
                         Container(
