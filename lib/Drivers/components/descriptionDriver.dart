@@ -62,7 +62,7 @@ class _DriverDescriptionState extends State<DriverDescription>
 
   String? destinationId;
   String? destinationPrueba;
-  dynamic driver;
+  dynamic driver = '';
   List data = [];
   List data2 = [];
   final prefs = new PreferenciasUsuario();
@@ -165,7 +165,8 @@ class _DriverDescriptionState extends State<DriverDescription>
           driverStatus:u["driverStatus"],
           driverPassword:u["driverPassword"],
       ));      
-    }           
+    }   
+    setState(() {});        
   }
 
   fetchAgentsLeftPastToProgres( String hourOut, String nameVehicle) async {
@@ -1465,7 +1466,12 @@ class _DriverDescriptionState extends State<DriverDescription>
                       return Text('Error: ${abc.error}');
                     } else {
                       return abc.data?.driverCoord == true? 
-                      getSearchableDropdown(context) : Text('');
+                      Column(
+                        children: [
+                          SizedBox(height: 20),
+                          getSearchableDropdown(context),
+                        ],
+                      ) : Text('');
                     }
                 }
               }),
@@ -1919,10 +1925,10 @@ class _DriverDescriptionState extends State<DriverDescription>
                     height: 20,
                   ),
                   SizedBox(width: 5),
-                  if(prefs.driverIdx!='')...{
+                  if(radioShowAndHide)...{
                     Expanded(
                       child: Text(
-                        prefs.companyPrueba,
+                        driver,
                         style:  Theme.of(navigatorKey.currentContext!).textTheme.titleMedium!.copyWith(fontSize: 15, fontWeight: FontWeight.normal),
                       ),
                     ),
@@ -1952,63 +1958,62 @@ class _DriverDescriptionState extends State<DriverDescription>
     );
   }
 
-  Widget menuConductor(size) {
+  Widget menuConductor(Size size) {
+    List<TripsDrivers> driversList = driverId;
+
+    bool ningunoPresent = driversList.any((driver) => driver.driverFullname == "Ninguno");
+
+    if (!ningunoPresent) {
+      driversList.insert(0, TripsDrivers(driverFullname: "Ninguno", driverId: -1));
+    }
 
     return Container(
       width: size.width,
+      height: 250,
       decoration: BoxDecoration(
         color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
           color: Theme.of(context).dividerColor,
-          width: 1
-        )
+          width: 1,
+        ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.only(right: 12, left: 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: data.asMap().entries.map((entry) {
-                dynamic ventana = entry.value;
-                String nameCompany = ventana['companyName'];
-                int idCompany = ventana['companyId'];
+      child: ListView.builder(
+        itemCount: driversList.length,
+        padding: const EdgeInsets.only(top: 20, right: 12, left: 12, bottom: 10),
+        itemBuilder: (context, index) {
+          TripsDrivers ventana = driversList[index];
+          String nameConductor = ventana.driverFullname!;
+          int idConductor = ventana.driverId!;
 
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      seleccionarMotorista = false;
-                      prefs.companyId = idCompany.toString();
-                      prefs.companyPrueba = nameCompany;
-
-                      if (prefs.companyId != prefs.companyIdAgent) {
-                        if (handleerrror == 'khe') {
-                          this.handler!.cleanTable();
-                          this.handler!.cleanTableAgent();
-                        }
-                      }
-                    });
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: Text(
-                      nameCompany,
-                      textAlign: TextAlign.start,
-                      style: Theme.of(navigatorKey.currentContext!)
-                          .textTheme
-                          .titleMedium!
-                          .copyWith(fontSize: 15, fontWeight: FontWeight.normal),
-                    ),
-                  ),
-                );
-              }).toList(),
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                
+                if(nameConductor!='Ninguno'){
+                  driver = nameConductor;
+                  prefs.driverIdx = idConductor.toString();
+                  radioShowAndHide = true;
+                  seleccionarMotorista = false;
+                }else{
+                  radioShowAndHide = false;
+                  seleccionarMotorista = false;
+                }
+              });
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: Text(
+                nameConductor,
+                textAlign: TextAlign.start,
+                style: Theme.of(navigatorKey.currentContext!)
+                    .textTheme
+                    .titleMedium!
+                    .copyWith(fontSize: 15, fontWeight: FontWeight.normal),
+              ),
             ),
-          ),
-          SizedBox(height: 10),
-        ],
+          );
+        },
       ),
     );
   }
