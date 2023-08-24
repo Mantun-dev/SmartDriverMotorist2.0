@@ -1978,42 +1978,66 @@ class _DriverDescriptionState extends State<DriverDescription>
           width: 1,
         ),
       ),
-      child: ListView.builder(
-        itemCount: driversList.length,
-        padding: const EdgeInsets.only(top: 20, right: 12, left: 12, bottom: 10),
-        itemBuilder: (context, index) {
-          TripsDrivers ventana = driversList[index];
-          String nameConductor = ventana.driverFullname!;
-          int idConductor = ventana.driverId!;
-
-          return GestureDetector(
-            onTap: () {
-              setState(() {
-                
-                if(nameConductor!='Ninguno'){
-                  driver = nameConductor;
-                  prefs.driverIdx = idConductor.toString();
-                  radioShowAndHide = true;
-                  seleccionarMotorista = false;
-                }else{
-                  radioShowAndHide = false;
-                  seleccionarMotorista = false;
-                }
-              });
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: Text(
-                nameConductor,
-                textAlign: TextAlign.start,
-                style: Theme.of(navigatorKey.currentContext!)
-                    .textTheme
-                    .titleMedium!
-                    .copyWith(fontSize: 15, fontWeight: FontWeight.normal),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 10, right: 12, left: 12),
+            child: TextField(
+              style: Theme.of(context).textTheme.bodyMedium,
+              decoration: InputDecoration(
+                hintText: 'Buscar',
+                hintStyle: TextStyle(
+                  fontWeight: FontWeight.normal,
+                  color: Theme.of(navigatorKey.currentContext!).hintColor, 
+                  fontSize: 15, 
+                  fontFamily: 'Roboto'
+                ),
               ),
+              onChanged: (value) {
+                print(value);
+              },
             ),
-          );
-        },
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: driversList.length,
+              padding: const EdgeInsets.only(top: 10, right: 12, left: 12, bottom: 10),
+              itemBuilder: (context, index) {
+                TripsDrivers ventana = driversList[index];
+                String nameConductor = ventana.driverFullname!;
+                int idConductor = ventana.driverId!;
+
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      if (nameConductor != 'Ninguno') {
+                        driver = nameConductor;
+                        prefs.driverIdx = idConductor.toString();
+                        radioShowAndHide = true;
+                        seleccionarMotorista = false;
+                      } else {
+                        radioShowAndHide = false;
+                        seleccionarMotorista = false;
+                      }
+                    });
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Text(
+                      nameConductor,
+                      textAlign: TextAlign.start,
+                      style: Theme.of(navigatorKey.currentContext!)
+                          .textTheme
+                          .titleMedium!
+                          .copyWith(fontSize: 15, fontWeight: FontWeight.normal),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
