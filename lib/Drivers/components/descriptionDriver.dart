@@ -96,6 +96,8 @@ class _DriverDescriptionState extends State<DriverDescription>
 
   bool vehFlag = false;
 
+  List<TripsDrivers>? driversList;
+
   @override
   void initState() {
     super.initState();
@@ -166,6 +168,7 @@ class _DriverDescriptionState extends State<DriverDescription>
           driverPassword:u["driverPassword"],
       ));      
     }   
+    driversList = driverId;
     setState(() {});        
   }
 
@@ -1903,6 +1906,10 @@ class _DriverDescriptionState extends State<DriverDescription>
           onTap: () {
             setState(() {
               seleccionarMotorista = !seleccionarMotorista;
+
+              if(seleccionarMotorista == false){
+                driversList = driverId;
+              }
             });
           },
           child: Container(
@@ -1959,12 +1966,11 @@ class _DriverDescriptionState extends State<DriverDescription>
   }
 
   Widget menuConductor(Size size) {
-    List<TripsDrivers> driversList = driverId;
 
-    bool ningunoPresent = driversList.any((driver) => driver.driverFullname == "Ninguno");
+    bool ningunoPresent = driversList!.any((driver) => driver.driverFullname == "Ninguno");
 
     if (!ningunoPresent) {
-      driversList.insert(0, TripsDrivers(driverFullname: "Ninguno", driverId: -1));
+      driversList!.insert(0, TripsDrivers(driverFullname: "Ninguno", driverId: -1));
     }
 
     return Container(
@@ -1995,16 +2001,21 @@ class _DriverDescriptionState extends State<DriverDescription>
                 ),
               ),
               onChanged: (value) {
-                print(value);
+                setState(() {
+                  driversList=driverId.where((element) {
+                    String nombre = element.driverFullname!.toLowerCase();
+                    return nombre.contains(value.toLowerCase());
+                  }).toList();
+                });
               },
             ),
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: driversList.length,
+              itemCount: driversList!.length,
               padding: const EdgeInsets.only(top: 10, right: 12, left: 12, bottom: 10),
               itemBuilder: (context, index) {
-                TripsDrivers ventana = driversList[index];
+                TripsDrivers ventana = driversList![index];
                 String nameConductor = ventana.driverFullname!;
                 int idConductor = ventana.driverId!;
 
@@ -2016,9 +2027,11 @@ class _DriverDescriptionState extends State<DriverDescription>
                         prefs.driverIdx = idConductor.toString();
                         radioShowAndHide = true;
                         seleccionarMotorista = false;
+                        driversList = driverId;
                       } else {
                         radioShowAndHide = false;
                         seleccionarMotorista = false;
+                        driversList = driverId;
                       }
                     });
                   },
