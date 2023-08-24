@@ -30,6 +30,8 @@ import 'package:flutter_svg/svg.dart';
 //import 'package:searchable_dropdown/searchable_dropdown.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:quickalert/quickalert.dart';
+import '../../components/ConfirmationDialog.dart';
+import '../../components/warning_dialog.dart';
 import '../../constants.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -69,6 +71,9 @@ class _DriverDescriptionState extends State<DriverDescription>
 
   bool seleccionarCompany = false;
   bool seleccionarMotorista = false;
+  
+  ConfirmationLoadingDialog loadingDialog = ConfirmationLoadingDialog();
+  ConfirmationDialog confirmationDialog = ConfirmationDialog();
 
   //arreglo para el agentId
   final tempArr = [];
@@ -173,29 +178,42 @@ class _DriverDescriptionState extends State<DriverDescription>
   }
 
   fetchAgentsLeftPastToProgres( String hourOut, String nameVehicle) async {
-    
+
+    if(prefs.vehiculo == ""){
+      WarningSuccessDialog().show(
+        context,
+        title: "Necesita agregar el vehículo",
+        tipo: 1,
+        onOkay: () {
+          Scrollable.ensureVisible(context);
+          setState(() {                
+            vehFlag = true;
+          });
+        },
+      ); 
+
+      return;
+    }
+    loadingDialog.show(context);
     http.Response responses = await http.get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
     final data = DriverData.fromJson(json.decode(responses.body));
     int? statusCodex;
     final Database db = await handler!.initializeDB();
     final tables = await db.rawQuery('SELECT * FROM userX ;');
     if (tables.length == 0) {
-      Navigator.pop(context);      
-      QuickAlert.show(context: context,title: "¡Alerta",text: "No hay agentes agregados",type: QuickAlertType.warning,); 
+      loadingDialog.dismiss();
+      if(mounted){
+        Navigator.pop(context);      
+        WarningSuccessDialog().show(
+          context,
+          title: "No hay agentes agregados",
+          tipo: 1,
+          onOkay: () {},
+        );
+      }
     } 
 
-    if(prefs.vehiculo == ""){
-      QuickAlert.show(context: context,title: "¡Alerta!",text: "Necesita agregar el vehículo",type: QuickAlertType.warning,
-        onConfirmBtnTap:() { 
-          Scrollable.ensureVisible(context);
-          setState(() {                
-            vehFlag = true;
-          });
-          Navigator.pop(context);
-          Navigator.pop(context);
-        },
-      );
-    }
+    
     if(prefs.vehiculo.isNotEmpty && tables.length != 0){
       if (data.driverCoord == true) {                
         Map datas = {
@@ -244,7 +262,7 @@ class _DriverDescriptionState extends State<DriverDescription>
         String sendData2 = json.encode(datas3);
 
         await http.post(Uri.parse('https://apichat.smtdriver.com/api/salas'),body: sendData2, headers: {"Content-Type": "application/json"});
-        
+        loadingDialog.dismiss();
         validationLastToPassProgres(statusCodex, prefs.tripId, send.title, send.message);        
       } else {
         Map datas = {'companyId': prefs.companyId,'driverId': data.driverId.toString(),'tripVehicle': prefs.vehiculo,'vehicleId': prefs.vehiculoId,};
@@ -264,6 +282,7 @@ class _DriverDescriptionState extends State<DriverDescription>
             statusCodex = dataResp.statusCode;
           });
         }
+        loadingDialog.dismiss();
         validationLastToPassProgres(statusCodex, prefs.tripId, send.title, send.message,);
       }
     }
@@ -275,7 +294,12 @@ class _DriverDescriptionState extends State<DriverDescription>
       Navigator.pop(context);
       Navigator.push(context,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
       prefs.removeIdCompanyAndVehicle();
-      QuickAlert.show(context: context,title: title,text: message,type: QuickAlertType.success,confirmBtnText: 'Ok'); 
+      WarningSuccessDialog().show(
+        context,
+        title: message,
+        tipo: 2,
+        onOkay: () {},
+      ); 
       this.handler!.cleanTable();
     } else {
         throw Exception('Failed to load Data');
@@ -301,12 +325,12 @@ class _DriverDescriptionState extends State<DriverDescription>
       if (barcodeScan == '${-1}') {
         print('');
       } else {
-        QuickAlert.show(
-          context: context,
-          title: '¡No encontrado!',
-          text: data1.agent!.msg,
-          type: QuickAlertType.error,
-        ); 
+        WarningSuccessDialog().show(
+          context,
+          title: "¡No encontrado!",
+          tipo: 1,
+          onOkay: () {},
+        );  
       }
       print(data1.agent!.msg);
     } else if (responsed.statusCode == 200 && data1.ok == true) {
@@ -414,24 +438,22 @@ class _DriverDescriptionState extends State<DriverDescription>
                                       List<User> listOfUsers = [firstUser];
                                       this.handler!.insertUser(listOfUsers);
                                     } else {
-                                      print('yasta we');
                                       Navigator.pop(context);
-                                      QuickAlert.show(
-                                        context: context,
-                                        title: "¡Advertencia!",
-                                        text: " El agente con número de empleado \n '${data1.agent!.agentEmployeeId}' ya está agregado al viaje",
-                                        type: QuickAlertType.error,
+                                      WarningSuccessDialog().show(
+                                        context,
+                                        title: "El agente con número de empleado '${data1.agent!.agentEmployeeId}' ya está agregado al viaje",
+                                        tipo: 1,
+                                        onOkay: () {},
                                       );                                    
                                     }
                                   } else if (tables.length > 13) {
-                                    print('yasta we');
                                     Navigator.pop(context);
-                                    QuickAlert.show(
-                                        context: context,
-                                        title: "¡Advertencia!",
-                                        text: " El limite de agentes son 14, favor \n comunicarse con su cordinador",
-                                        type: QuickAlertType.error,
-                                      );
+                                    WarningSuccessDialog().show(
+                                      context,
+                                      title: "El limite de agentes son 14, favor comunicarse con su cordinador",
+                                      tipo: 1,
+                                      onOkay: () {},
+                                    ); 
                                   }
                                   Navigator.pop(context);
                                 }),
@@ -493,12 +515,12 @@ class _DriverDescriptionState extends State<DriverDescription>
         print('');
       }
       if (data1.type == "error") {
-        QuickAlert.show(
-          context: context,
-          title: '¡No encontrado!',
-          text: 'No se encontró el agente con número de empleado \n $agentEmployeeId',
-          type: QuickAlertType.error,
-        );
+        WarningSuccessDialog().show(
+          context,
+          title: "No se encontró el agente con número de empleado $agentEmployeeId",
+          tipo: 1,
+          onOkay: () {},
+        ); 
       } else if (data1.type == "success") { 
         showDialog(
             context: context,
@@ -628,22 +650,22 @@ class _DriverDescriptionState extends State<DriverDescription>
                                       } else {
                                         print('yasta we');
                                         Navigator.pop(context);
-                                        QuickAlert.show(
-                                          context: context,
-                                          title: "¡Advertencia!",
-                                          text: " El agente con número de empleado \n '${data1.agent!.agentEmployeeId}' ya está agregado al viaje",
-                                          type: QuickAlertType.error,
-                                        );
+                                        WarningSuccessDialog().show(
+                                          context,
+                                          title: " El agente con número de empleado '${data1.agent!.agentEmployeeId}' ya está agregado al viaje",
+                                          tipo: 1,
+                                          onOkay: () {},
+                                        ); 
                                       }
                                     } else if (tables.length > 13) {
                                       print('yasta we');
                                       Navigator.pop(context);
-                                      QuickAlert.show(
-                                        context: context,
-                                        title: "¡Advertencia!",
-                                        text: " El limite de agentes son 14, favor \n comunicarse con su cordinador",
-                                        type: QuickAlertType.error,
-                                      );
+                                      WarningSuccessDialog().show(
+                                        context,
+                                        title: "El limite de agentes son 14, favor comunicarse con su cordinador",
+                                        tipo: 1,
+                                        onOkay: () {},
+                                      ); 
                                     }
 
                                     Navigator.pop(context);
@@ -744,12 +766,12 @@ class _DriverDescriptionState extends State<DriverDescription>
       //print('Este es el agentId' + data1.agent!.agentId.toString());
       // if (data1.agent!.agentId != null) {
       // }
-        QuickAlert.show(
-          context: context,
-          title: '¡No encontrado!',
-          text: data1.agent!.msg,
-          type: QuickAlertType.error,
-        );
+        WarningSuccessDialog().show(
+          context,
+          title: "¡No encontrado!",
+          tipo: 1,
+          onOkay: () {},
+        );  
     } else if (responsed.statusCode == 200 && data1.ok == true) {
       showDialog(
           context: context,
@@ -878,22 +900,22 @@ class _DriverDescriptionState extends State<DriverDescription>
                                       } else {
                                         print('yasta we');
                                         Navigator.pop(context);
-                                        QuickAlert.show(
-                                          context: context,
-                                          title: "¡Advertencia!",
-                                          text: " El agente con número de empleado \n '${data1.agent!.agentEmployeeId}' ya está agregado al viaje",
-                                          type: QuickAlertType.error,
-                                        );
+                                        WarningSuccessDialog().show(
+                                          context,
+                                          title: "El agente con número de empleado '${data1.agent!.agentEmployeeId}' ya está agregado al viaje",
+                                          tipo: 1,
+                                          onOkay: () {},
+                                        );  
                                       }
                                     } else if (tables.length > 13) {
                                       print('yasta we');
                                       Navigator.pop(context);
-                                      QuickAlert.show(
-                                        context: context,
-                                        title: "¡Advertencia!",
-                                        text: " El limite de agentes son 14, favor \n comunicarse con su cordinador",
-                                        type: QuickAlertType.error,
-                                      );
+                                      WarningSuccessDialog().show(
+                                        context,
+                                        title: "El limite de agentes son 14, favor comunicarse con su cordinador",
+                                        tipo: 1,
+                                        onOkay: () {},
+                                      );  
                                     }
 
                                     Navigator.pop(context);
@@ -959,12 +981,12 @@ class _DriverDescriptionState extends State<DriverDescription>
       final data1 = FindAgentSolid.fromJson(json.decode(responsed.body));
       if (responsed.statusCode == 200) {
         if (data1.type == "error") {
-          QuickAlert.show(
-            context: context,
-            title: '¡No encontrado!',
-            text: 'No se encontró el agente con número de empleado \n $agentEmployeeId',
-            type: QuickAlertType.error,
-          );    
+         WarningSuccessDialog().show(
+          context,
+          title: "No se encontró el agente con número de empleado $agentEmployeeId",
+          tipo: 1,
+          onOkay: () {},
+        );   
         } else if (data1.type == "success") { 
           showDialog(
               context: context,
@@ -1102,22 +1124,22 @@ class _DriverDescriptionState extends State<DriverDescription>
                                           } else {
                                             print('yasta we');
                                             Navigator.pop(context);
-                                            QuickAlert.show(
-                                              context: context,
-                                              title: "¡Advertencia!",
-                                              text: " El agente con número de empleado \n '${data1.agent!.agentEmployeeId}' ya está agregado al viaje",
-                                              type: QuickAlertType.error,
-                                            ); 
+                                            WarningSuccessDialog().show(
+                                              context,
+                                              title: "El agente con número de empleado '${data1.agent!.agentEmployeeId}' ya está agregado al viaje",
+                                              tipo: 1,
+                                              onOkay: () {},
+                                            );
                                           }
                                         } else if (tables.length > 13) {
                                           print('yasta we');
                                           Navigator.pop(context);
-                                          QuickAlert.show(
-                                            context: context,
-                                            title: "¡Advertencia!",
-                                            text: " El limite de agentes son 14, favor \n comunicarse con su cordinador",
-                                            type: QuickAlertType.error,
-                                          ); 
+                                          WarningSuccessDialog().show(
+                                            context,
+                                            title: "El limite de agentes son 14, favor comunicarse con su cordinador",
+                                            tipo: 1,
+                                            onOkay: () {},
+                                          );
                                         }
                                         Navigator.pop(context);
                                       }),
@@ -1177,12 +1199,12 @@ class _DriverDescriptionState extends State<DriverDescription>
     final tables = await db.rawQuery('SELECT * FROM agentInsertSolid ;');
     if (tables.length == 0) {
       Navigator.pop(context);
-      QuickAlert.show(
-        context: context,
-        title: "Alerta",
-        text: "No hay agentes agregados",
-        type: QuickAlertType.error,
-      ); 
+      WarningSuccessDialog().show(
+        context,
+        title: "No hay agentes agregados",
+        tipo: 1,
+        onOkay: () {},
+      );
     } else {
       if (si.driverCoord == true) {
         Map datas = {
@@ -1217,12 +1239,12 @@ class _DriverDescriptionState extends State<DriverDescription>
             Navigator.pop(context);
             Navigator.push(context,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
             prefs.removeIdCompanyAndVehicle();
-            QuickAlert.show(
-              context: context,
-              title: '¡Éxito!',
-              text: 'El viaje se ha registrado correctamente',
-              type: QuickAlertType.success,
-            );  
+            WarningSuccessDialog().show(
+              context,
+              title: "El viaje se ha registrado correctamente",
+              tipo: 2,
+              onOkay: () {},
+            );
             this.handler!.cleanTableAgent();
           }
 
@@ -1269,12 +1291,12 @@ class _DriverDescriptionState extends State<DriverDescription>
             Navigator.pop(context);
             Navigator.push(context,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
             prefs.removeIdCompanyAndVehicle();
-            QuickAlert.show(
-              context: context,
-              title: '¡Éxito!',
-              text: 'El viaje se ha registrado correctamente',
-              type: QuickAlertType.success,
-            ); 
+            WarningSuccessDialog().show(
+              context,
+              title: "El viaje se ha registrado correctamente",
+              tipo: 2,
+              onOkay: () {},
+            );
             this.handler!.cleanTableAgent();
           }
         } else {
@@ -1438,7 +1460,12 @@ class _DriverDescriptionState extends State<DriverDescription>
                                       }
                                     }else{
                                       if(mounted){
-                                        QuickAlert.show(context: context,title: "Alerta",text: "Vehículo no valido",type: QuickAlertType.error,); 
+                                        WarningSuccessDialog().show(
+                                          context,
+                                          title: "Vehículo no valido",
+                                          tipo: 1,
+                                          onOkay: () {},
+                                        );
                                       }
                                     }
                                   }
@@ -1556,30 +1583,24 @@ class _DriverDescriptionState extends State<DriverDescription>
                         color: Colors.white,
                       ),
                       onPressed: () async{
-                        QuickAlert.show(context: context,title: "...",
-                          text: "¿Desea eliminar a los agentes?",
-                          confirmBtnText: "Si",cancelBtnText: "Cancelar",showCancelBtn: true,  confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
-                          onConfirmBtnTap: () {
-                            Navigator.pop(context);
-                            QuickAlert.show(
-                              context: context,
-                              title: "Eliminando...",
-                              type: QuickAlertType.success,
+                        confirmationDialog.show(
+                          context,
+                          title: '¿Está seguro de eliminar a los agentes?',
+                          type: "0",
+                          onConfirm: () async {
+                            confirmationDialog.dismiss();
+                            WarningSuccessDialog().show(
+                              context,
+                              title: 'Eliminando...',
+                              tipo: 2,
+                              onOkay: () {},
                             );
                             setState(() {
                               this.handler!.cleanTable();
-                            });
+                            });             
                           },
-                          onCancelBtnTap: () {
-                            Navigator.pop(context);
-                            QuickAlert.show(
-                            context: context,
-                            title: "Cancelado",
-                            type: QuickAlertType.success,                                                  
-                            );                                                
-                          },                                              
-                          type: QuickAlertType.warning,
-                        );
+                          onCancel: () {},
+                        ); 
                       }
                     ),
                   ),
@@ -1604,25 +1625,32 @@ class _DriverDescriptionState extends State<DriverDescription>
                             return Transform.scale(scale: a1.value,
                               child: Opacity(opacity: a1.value,
                                 child: AlertDialog(
-                                  backgroundColor: backgroundColor,
+                                  backgroundColor: Theme.of(context).cardTheme.color,
                                   shape: OutlineInputBorder(
                                       borderRadius:
                                           BorderRadius.circular(16.0)),
-                                  title: Center(child: Text('Buscar Agente',style: TextStyle(color: GradiantV_2, fontSize: 20.0),)),
+                                  title: Center(child: Text('Buscar Agente',style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 22),)),
                                   content: Container(
+                                    
                                     decoration: BoxDecoration(
                                       borderRadius:BorderRadius.all(Radius.circular(15)),
-                                      boxShadow: [
-                                        BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0,0), ),
-                                        BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0,0),                                 ),
-                                      ],
+                                      border: Border.all(
+                                        color: Theme.of(context).primaryColorDark
+                                      )
                                     ),
                                     child: Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                      child: TextField(style: TextStyle(color: Colors.white),
-                                        controller: agentEmployeeId,
-                                        decoration: InputDecoration(border: InputBorder.none,labelText: 'Escriba aqui',labelStyle: TextStyle(color: Colors.white.withOpacity(0.5),fontSize: 15.0)),
-                                      ),
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: TextField(
+                                                      style:Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 15),
+                                                      controller: agentEmployeeId,
+                                                      decoration: InputDecoration(
+                                                        border: InputBorder.none,
+                                                        hintText: 'Ingresar Agente',
+                                                        hintStyle: TextStyle(
+                                                          color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal
+                                                        )
+                                                      ),
+                                                    ),
                                     ),
                                   ),
                                   actions: [
@@ -1697,43 +1725,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                         color: Colors.white,
                       ),
                       onPressed: () async {
-                        showGeneralDialog(
-                          context: context,transitionBuilder:(context, a1, a2, widget) {
-                            return WillPopScope(
-                              onWillPop: () async => false,
-                              child: SimpleDialog(
-                                elevation: 20,
-                                backgroundColor: Theme.of(context).cardColor,
-                                children: [
-                                  Center(
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        const Padding(
-                                          padding: EdgeInsets.only(left: 16, top: 16, right: 16),
-                                          child: CircularProgressIndicator(),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(16),
-                                          child: Text(
-                                            'Cargando...', 
-                                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  )
-                                ] ,
-                              ),
-                            );
-                          },
-                          transitionDuration:Duration(milliseconds: 200),
-                          barrierDismissible: false,
-                          barrierLabel: '',
-                          pageBuilder: (context, animation1,animation2) {
-                            return Text('');
-                          }
-                        );
+                        
                         await fetchAgentsLeftPastToProgres(hourOut.text, vehicule.text);
                         if(prefs.vehiculo != "" || nameController.text != ""){
                           setState(() {
@@ -1753,122 +1745,229 @@ class _DriverDescriptionState extends State<DriverDescription>
                 builder:
                     (BuildContext context, AsyncSnapshot<List<User?>> snapshot) {
                   if (snapshot.hasData) {
-                    return Padding(
-                      padding: const EdgeInsets.all(15.0),
-                      child: Column(
-                        children: [
-                          for (var i = 0; i < snapshot.data!.length; i++) ...{
-                            Container(
-                              decoration: BoxDecoration(boxShadow: [
-                                BoxShadow(blurStyle: BlurStyle.normal,color: Colors.white.withOpacity(0.2),blurRadius: 15,spreadRadius: -30,offset: Offset(-25, -25)),
-                                BoxShadow(blurStyle: BlurStyle.normal,color: Colors.black.withOpacity(0.6),blurRadius: 30,spreadRadius: -45,offset: Offset(20, -15)),
-                              ]),
-                              child: Card(elevation: 20,color: backgroundColor,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),margin: EdgeInsets.all(4.0),
-                                child: Column(
-                                  children: <Widget>[
-                                    Container(margin: EdgeInsets.only(left: 15),
-                                      child: Column(
-                                        children: [
-                                          Column(crossAxisAlignment:CrossAxisAlignment.end,
-                                            children: <Widget>[
-                                              Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
-                                              child: Row(
-                                                children: [
-                                                  Icon(Icons.confirmation_number,color: thirdColor),
-                                                  SizedBox(width: 15,),
-                                                  Flexible(child: Text('# No empleado: ${snapshot.data![i]!.noempid}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
-                                                ],
-                                                ),
-                                              ),                       
-                                            ],
-                                          ),
-                                          Column(crossAxisAlignment:CrossAxisAlignment.end,
-                                            children: <Widget>[
-                                              Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
-                                              child: Row(
-                                                children: [
-                                                  Icon(Icons.account_box_sharp,color: thirdColor),
-                                                  SizedBox(width: 15,),
-                                                  Flexible(child: Text('Nombre: ${snapshot.data![i]!.nameuser}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
-                                                ],
-                                                ),
-                                              ),                       
-                                            ],
-                                          ),
-                                          Column(crossAxisAlignment:CrossAxisAlignment.end,
-                                            children: <Widget>[
-                                              Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
-                                              child: Row(
-                                                children: [
-                                                  Icon(Icons.access_alarms,color: thirdColor),
-                                                  SizedBox(width: 15,),
-                                                  Flexible(child: Text('Hora salida: ${snapshot.data![i]!.hourout}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
-                                                ],
-                                                ),
-                                              ),                       
-                                            ],
-                                          ),
-                                          Column(crossAxisAlignment:CrossAxisAlignment.end,
-                                            children: <Widget>[
-                                              Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
-                                              child: Row(
-                                                children: [
-                                                  Padding(padding: const EdgeInsets.only(bottom: 18),child: Icon(Icons.location_pin,color: thirdColor)),
-                                                  SizedBox(width: 15,),
-                                                  Flexible(child: Text('Dirección: ${snapshot.data![i]!.direction}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
-                                                ],
-                                                ),
-                                              ),                       
-                                            ],
-                                          ),          
-                                        ],
-                                      ),
-                                    ),
-                                    Container(width: 150,
-                                      decoration: BoxDecoration(boxShadow: [
-                                        BoxShadow(blurStyle: BlurStyle.normal,color:Colors.white.withOpacity(0.2),blurRadius: 10,spreadRadius: -8,offset: Offset(-10, -6)),
-                                        BoxShadow(blurStyle: BlurStyle.normal,color:Colors.black.withOpacity(0.6),blurRadius: 10,spreadRadius: -15,offset: Offset(18, 5)),
-                                      ]),                                    
-                                      child: ElevatedButton(style: ElevatedButton.styleFrom(textStyle: TextStyle(color: Colors.white,),backgroundColor: backgroundColor,shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0)),),
-                                        onPressed: () async {
-                                          final Database db = await handler!.initializeDB();
-                                          await this.handler!.deleteUser(snapshot.data![i]!.idsend!);
-                                          await db.rawQuery("DELETE FROM userX WHERE nameuser = '${snapshot.data![i]!.nameuser}'");
-                                          QuickAlert.show(context: context,title: "¿Desea eliminar el Agente?",confirmBtnText: "Si",cancelBtnText: "Cancelar",showCancelBtn: true,  confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
-                                            onConfirmBtnTap: () {
-                                              Navigator.pop(context);
-                                              QuickAlert.show(
-                                                context: context,
-                                                title: "Eliminado",
-                                                type: QuickAlertType.success,
-                                              );
-                                              setState(() {
-                                                snapshot.data!.remove(snapshot.data![i]);
-                                              });
-                                            },
-                                            onCancelBtnTap: () {
-                                              Navigator.pop(context);
-                                              QuickAlert.show(
-                                                context: context,
-                                                title: "Cancelado",
-                                                type: QuickAlertType.error,                                                  
-                                              );                                                
-                                            },                                              
-                                            type: QuickAlertType.success,
-                                          ); 
-                                        },
-                                        child: Text('Quitar',style: TextStyle(color: Colors.red,fontSize: 20,fontWeight: FontWeight.bold)),
-                                      ),
-                                    ),
-                                    SizedBox(height: 10.0),
-                                  ],
-                                ),
+                    return Column(
+                      children: [
+                        for (var i = 0; i < snapshot.data!.length; i++) ...{
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12.0),
+                                border: Border.all(color: Theme.of(context).dividerColor,),
                               ),
-                            )
-                          },
-                          
-                        ],
-                      ),
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 20, left: 20),
+                                child: Column(
+                                children: [
+                                                  
+                                  SizedBox(height: 20),
+                                            Padding(
+                                              padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
+                                              child: Row(
+                                                children: [
+                                                  Container(
+                                                            width: 18,
+                                                            height: 18,
+                                                            child: SvgPicture.asset(
+                                                              "assets/icons/Numeral.svg",
+                                                              color: Theme.of(context).primaryIconTheme.color,
+                                                            ),
+                                                          ),
+                                                          SizedBox(width: 10),
+                                                          Flexible(
+                                                            child: RichText(
+                                                              text: TextSpan(
+                                                                style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                                children: [
+                                                                  TextSpan(
+                                                                    text: 'Empleado: ',
+                                                                    style: TextStyle(fontWeight: FontWeight.w500),
+                                                                  ),
+                                                                  TextSpan(
+                                                                    text: '${snapshot.data![i]!.noempid}',
+                                                                    style: TextStyle(fontWeight: FontWeight.normal),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          )                   
+                                                ],
+                                              ),
+                                            ),
+                                            Container(
+                                              height: 1,
+                                              color: Theme.of(context).dividerColor,
+                                            ),  
+                                      
+                                      SizedBox(height: 20),
+                                            Padding(
+                                              padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
+                                              child: Row(
+                                                children: [
+                                                  Container(
+                                                            width: 18,
+                                                            height: 18,
+                                                            child: SvgPicture.asset(
+                                                              "assets/icons/usuario.svg",
+                                                              color: Theme.of(context).primaryIconTheme.color,
+                                                            ),
+                                                          ),
+                                                          SizedBox(width: 10),
+                                                          Flexible(
+                                                            child: RichText(
+                                                              text: TextSpan(
+                                                                style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                                children: [
+                                                                  TextSpan(
+                                                                    text: 'Nombre: ',
+                                                                    style: TextStyle(fontWeight: FontWeight.w500),
+                                                                  ),
+                                                                  TextSpan(
+                                                                    text: '${snapshot.data![i]!.nameuser}',
+                                                                    style: TextStyle(fontWeight: FontWeight.normal),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          )                   
+                                                ],
+                                              ),
+                                            ),
+                                            Container(
+                                              height: 1,
+                                              color: Theme.of(context).dividerColor,
+                                            ),
+
+
+                                      SizedBox(height: 20),
+                                            Padding(
+                                              padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
+                                              child: Row(
+                                                children: [
+                                                  Container(
+                                                            width: 18,
+                                                            height: 18,
+                                                            child: SvgPicture.asset(
+                                                              "assets/icons/hora.svg",
+                                                              color: Theme.of(context).primaryIconTheme.color,
+                                                            ),
+                                                          ),
+                                                          SizedBox(width: 10),
+                                                          Flexible(
+                                                            child: RichText(
+                                                              text: TextSpan(
+                                                                style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                                children: [
+                                                                  TextSpan(
+                                                                    text: 'Hora salida: ',
+                                                                    style: TextStyle(fontWeight: FontWeight.w500),
+                                                                  ),
+                                                                  TextSpan(
+                                                                    text: '${snapshot.data![i]!.hourout}',
+                                                                    style: TextStyle(fontWeight: FontWeight.normal, color: Color.fromRGBO(40, 169, 83, 1)),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          )                   
+                                                ],
+                                              ),
+                                            ),
+                                            Container(
+                                              height: 1,
+                                              color: Theme.of(context).dividerColor,
+                                            ),
+                                      
+                                      SizedBox(height: 20),
+                                            Padding(
+                                              padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
+                                              child: Row(
+                                                children: [
+                                                  Container(
+                                                            width: 18,
+                                                            height: 18,
+                                                            child: SvgPicture.asset(
+                                                              "assets/icons/Casa.svg",
+                                                              color: Theme.of(context).primaryIconTheme.color,
+                                                            ),
+                                                          ),
+                                                          SizedBox(width: 10),
+                                                          Flexible(
+                                                            child: RichText(
+                                                              text: TextSpan(
+                                                                style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                                children: [
+                                                                  TextSpan(
+                                                                    text: 'Dirección: ',
+                                                                    style: TextStyle(fontWeight: FontWeight.w500),
+                                                                  ),
+                                                                  TextSpan(
+                                                                    text: '${snapshot.data![i]!.direction}',
+                                                                    style: TextStyle(fontWeight: FontWeight.normal),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          )                   
+                                                ],
+                                              ),
+                                            ),
+                                            Container(
+                                              height: 1,
+                                              color: Theme.of(context).dividerColor,
+                                            ), 
+                                                  
+                                  SizedBox(height: 20),
+                                  Column(
+                                    children: [
+                                                  
+                                              
+                                    ],
+                                  ),
+                                  TextButton(
+                                    style: TextButton.styleFrom(
+                                      textStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white, fontSize: 16),
+                                      backgroundColor: Color.fromRGBO(178, 13, 13, 1),
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(8)),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(right: 30, left: 30),
+                                      child: Text("Borrar", style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white, fontSize: 16),),
+                                    ),
+                                    onPressed: () async{
+                                      final Database db = await handler!.initializeDB();
+                                        await this.handler!.deleteUser(snapshot.data![i]!.idsend!);
+                                        await db.rawQuery("DELETE FROM userX WHERE nameuser = '${snapshot.data![i]!.nameuser}'");
+                                        confirmationDialog.show(
+                                          context,
+                                          title: '¿Está seguro de eliminar a los agentes?',
+                                          type: "0",
+                                          onConfirm: () async {
+                                            confirmationDialog.dismiss();
+                                            WarningSuccessDialog().show(
+                                              context,
+                                              title: 'Eliminando...',
+                                              tipo: 2,
+                                              onOkay: () {},
+                                            );
+                                            setState(() {
+                                              snapshot.data!.remove(snapshot.data![i]);
+                                            });             
+                                          },
+                                          onCancel: () {},
+                                        );  
+                                    },
+                                  ),
+                                  SizedBox(height: 10.0),
+                                ],
+                                                        ),
+                              ),
+                            ),
+                          )
+                        },
+                        
+                      ],
                     );
                   } else if (names.length == 0) {
                     return Card(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),margin: EdgeInsets.symmetric(vertical: 25),
@@ -2419,7 +2518,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                               child: Opacity(opacity: a1.value,
                                 child: AlertDialog(backgroundColor: backgroundColor,shape: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
                                   title: Center(
-                                    child: Text('Buscar Agente',style: TextStyle(color: GradiantV_2, fontSize: 20.0),)),
+                                    child: Text('Buscar Agente',style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 22),)),
                                     content: Container(decoration: BoxDecoration(borderRadius:BorderRadius.all(Radius.circular(15)),
                                       boxShadow: [
                                         BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0,0),),
