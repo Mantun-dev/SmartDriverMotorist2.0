@@ -187,7 +187,7 @@ class _DriverDescriptionState extends State<DriverDescription>
     if(prefs.vehiculo == ""){
       QuickAlert.show(context: context,title: "¡Alerta!",text: "Necesita agregar el vehículo",type: QuickAlertType.warning,
         onConfirmBtnTap:() { 
-          Scrollable.ensureVisible(dataKey.currentContext!);
+          Scrollable.ensureVisible(context);
           setState(() {                
             vehFlag = true;
           });
@@ -1345,7 +1345,7 @@ class _DriverDescriptionState extends State<DriverDescription>
           children: [
 
             _crearDropdown(context),
-            SizedBox(height: 20.0),
+            SizedBox(height: 30.0),
             FutureBuilder<DriverData>(
               future: itemx,
               builder: (BuildContext context, abc) {
@@ -1354,10 +1354,6 @@ class _DriverDescriptionState extends State<DriverDescription>
                   return Column(
                     crossAxisAlignment:CrossAxisAlignment.start,
                     children: [
-                      if(driverData?.driverType=='Motorista')
-                        Text('Escanee el codigo qr del vehículo', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 12)),
-                      if(driverData?.driverType=='Motorista')
-                        SizedBox(height: 5,),
                       Row(
                         children: [
                           Expanded(
@@ -1390,7 +1386,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                                                     controller: vehicleController,
                                                     decoration: InputDecoration(
                                                       border: InputBorder.none,
-                                                      hintText: 'Vehículo',
+                                                      hintText: 'Registrar vehículo',
                                                       hintStyle: TextStyle(
                                                         color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal
                                                       )
@@ -1454,7 +1450,33 @@ class _DriverDescriptionState extends State<DriverDescription>
                     ],
                   );
                 } else {
-                  return ColorLoader3();
+                  return WillPopScope(
+                      onWillPop: () async => false,
+                      child: SimpleDialog(
+                        elevation: 20,
+                        backgroundColor: Theme.of(context).cardColor,
+                        children: [
+                          Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.only(left: 16, top: 16, right: 16),
+                                  child: CircularProgressIndicator(),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Text(
+                                    'Cargando...', 
+                                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18),
+                                    ),
+                                )
+                              ],
+                            ),
+                          )
+                        ] ,
+                      ),
+                    );
                 }
               },
             ),
@@ -1463,7 +1485,33 @@ class _DriverDescriptionState extends State<DriverDescription>
               builder: (BuildContext context, abc) {
                 switch (abc.connectionState) {
                   case ConnectionState.waiting:
-                    return Text('Cargando....');
+                    return WillPopScope(
+                      onWillPop: () async => false,
+                      child: SimpleDialog(
+                        elevation: 20,
+                        backgroundColor: Theme.of(context).cardColor,
+                        children: [
+                          Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.only(left: 16, top: 16, right: 16),
+                                  child: CircularProgressIndicator(),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Text(
+                                    'Cargando...', 
+                                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18),
+                                    ),
+                                )
+                              ],
+                            ),
+                          )
+                        ] ,
+                      ),
+                    );
                   default:
                     if (abc.hasError) {
                       return Text('Error: ${abc.error}');
@@ -1471,23 +1519,46 @@ class _DriverDescriptionState extends State<DriverDescription>
                       return abc.data?.driverCoord == true? 
                       Column(
                         children: [
-                          SizedBox(height: 20),
+                          SizedBox(height: 30),
                           getSearchableDropdown(context),
                         ],
                       ) : Text('');
                     }
                 }
               }),
-            SizedBox(height: 20.0),
-            Row(crossAxisAlignment: CrossAxisAlignment.center,mainAxisAlignment: MainAxisAlignment.center,
+            SizedBox(height: 30.0),
+            FutureBuilder(
+              future: this.handler!.retrieveUsers(),
+              builder:
+                  (BuildContext context, AsyncSnapshot<List<User?>> snapshot) {
+                if (snapshot.hasData) {
+                  noemp.add("${snapshot.data?.length}");
+                  return Text("Total de agentes: ${snapshot.data?.length}", style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 15));
+                } else {
+                  return CircularProgressIndicator();
+                }
+              },
+            ),
+            SizedBox(height: 15.0),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(width: 75,
-                  child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: GradiantV_2,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0),),),
-                      child: Icon(Icons.delete,color: backgroundColor, size: 25.0),
-                      onPressed: () {
+                Container(
+                  decoration: BoxDecoration(
+                    color: Color.fromRGBO(178, 13, 13, 1),
+                    borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 10, left: 10),
+                      child: IconButton(
+                      icon: SvgPicture.asset(  
+                        "assets/icons/eliminar.svg",
+                        color: Colors.white,
+                      ),
+                      onPressed: () async{
                         QuickAlert.show(context: context,title: "...",
-                        text: "¿Desea eliminar a los agentes?",
-                        confirmBtnText: "Si",cancelBtnText: "Cancelar",showCancelBtn: true,  confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
+                          text: "¿Desea eliminar a los agentes?",
+                          confirmBtnText: "Si",cancelBtnText: "Cancelar",showCancelBtn: true,  confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
                           onConfirmBtnTap: () {
                             Navigator.pop(context);
                             QuickAlert.show(
@@ -1498,27 +1569,36 @@ class _DriverDescriptionState extends State<DriverDescription>
                             setState(() {
                               this.handler!.cleanTable();
                             });
-                            },
-                            onCancelBtnTap: () {
-                              Navigator.pop(context);
-                              QuickAlert.show(
-                                context: context,
-                                title: "Cancelado",
-                                type: QuickAlertType.success,                                                  
-                              );                                                
-                            },                                              
-                            type: QuickAlertType.warning,
-                          );
-                        
-                      }),
+                          },
+                          onCancelBtnTap: () {
+                            Navigator.pop(context);
+                            QuickAlert.show(
+                            context: context,
+                            title: "Cancelado",
+                            type: QuickAlertType.success,                                                  
+                            );                                                
+                          },                                              
+                          type: QuickAlertType.warning,
+                        );
+                      }
+                    ),
+                  ),
                 ),
-                SizedBox(width: 8.0),
+                SizedBox(width: 15),
                 Container(
-                  width: 75,
-                  child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: GradiantV2,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0),),),
-                    child: Icon(Icons.search, color: backgroundColor, size: 25.0),
-                    onPressed: () {
-                      showGeneralDialog(
+                  decoration: BoxDecoration(
+                    color: Color.fromRGBO(40, 93, 169, 1),
+                    borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 10, left: 10),
+                      child: IconButton(
+                      icon: SvgPicture.asset(  
+                        "assets/icons/buscador.svg",
+                        color: Colors.white,
+                      ),
+                      onPressed: () async{
+                        showGeneralDialog(
                           barrierColor: Colors.black.withOpacity(0.5),
                           transitionBuilder: (context, a1, a2, widget) {
                             return Transform.scale(scale: a1.value,
@@ -1582,29 +1662,92 @@ class _DriverDescriptionState extends State<DriverDescription>
                           pageBuilder: (context, animation1, animation2) {
                             return Text('');
                           });
-                    },
+                      }
+                    ),
                   ),
                 ),
-                SizedBox(width: 8.0),
-                Container(width: 75,
-                  child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),backgroundColor: firstColor),child: Icon(Icons.qr_code,color: backgroundColor, size: 25.0),onPressed: scanBarcodeNormal),
-                )
+                SizedBox(width: 15),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Color.fromRGBO(40, 93, 169, 1),
+                    borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 10, left: 10),
+                      child: IconButton(
+                      icon: SvgPicture.asset(  
+                        "assets/icons/QR.svg",
+                        color: Colors.white,
+                      ),
+                      onPressed: scanBarcodeNormal
+                    ),
+                  ),
+                ),
+                SizedBox(width: 15),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Color.fromRGBO(42, 201, 111, 1),
+                    borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 10, left: 10),
+                      child: IconButton(
+                      icon: SvgPicture.asset(  
+                        "assets/icons/Guardar.svg",
+                        color: Colors.white,
+                      ),
+                      onPressed: () async {
+                        showGeneralDialog(
+                          context: context,transitionBuilder:(context, a1, a2, widget) {
+                            return WillPopScope(
+                              onWillPop: () async => false,
+                              child: SimpleDialog(
+                                elevation: 20,
+                                backgroundColor: Theme.of(context).cardColor,
+                                children: [
+                                  Center(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Padding(
+                                          padding: EdgeInsets.only(left: 16, top: 16, right: 16),
+                                          child: CircularProgressIndicator(),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(16),
+                                          child: Text(
+                                            'Cargando...', 
+                                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  )
+                                ] ,
+                              ),
+                            );
+                          },
+                          transitionDuration:Duration(milliseconds: 200),
+                          barrierDismissible: false,
+                          barrierLabel: '',
+                          pageBuilder: (context, animation1,animation2) {
+                            return Text('');
+                          }
+                        );
+                        await fetchAgentsLeftPastToProgres(hourOut.text, vehicule.text);
+                        if(prefs.vehiculo != "" || nameController.text != ""){
+                          setState(() {
+                            this.handler!.cleanTable();
+                          });
+                       }
+                      }
+                    ),
+                  ),
+                ),
               ],
             ),
             SizedBox(height: 6.0),
-            FutureBuilder(
-              future: this.handler!.retrieveUsers(),
-              builder:
-                  (BuildContext context, AsyncSnapshot<List<User?>> snapshot) {
-                if (snapshot.hasData) {
-                  noemp.add("${snapshot.data?.length}");
-                  return Text("Total de agentes: ${snapshot.data?.length}",style: TextStyle(color: Colors.white,fontSize: 15.0,fontWeight: FontWeight.bold));
-                } else {
-                  return CircularProgressIndicator();
-                }
-              },
-            ),
-            SizedBox(height: 6.0),
+            
             FutureBuilder(
                 future: this.handler!.retrieveUsers(),
                 builder:
@@ -1612,155 +1755,119 @@ class _DriverDescriptionState extends State<DriverDescription>
                   if (snapshot.hasData) {
                     return Padding(
                       padding: const EdgeInsets.all(15.0),
-                      child: Container(
-                        child: Column(
-                          children: [
-                            for (var i = 0; i < snapshot.data!.length; i++) ...{
-                              Container(
-                                decoration: BoxDecoration(boxShadow: [
-                                  BoxShadow(blurStyle: BlurStyle.normal,color: Colors.white.withOpacity(0.2),blurRadius: 15,spreadRadius: -30,offset: Offset(-25, -25)),
-                                  BoxShadow(blurStyle: BlurStyle.normal,color: Colors.black.withOpacity(0.6),blurRadius: 30,spreadRadius: -45,offset: Offset(20, -15)),
-                                ]),
-                                child: Card(elevation: 20,color: backgroundColor,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),margin: EdgeInsets.all(4.0),
-                                  child: Column(
-                                    children: <Widget>[
-                                      Container(margin: EdgeInsets.only(left: 15),
-                                        child: Column(
-                                          children: [
-                                            Column(crossAxisAlignment:CrossAxisAlignment.end,
-                                              children: <Widget>[
-                                                Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
-                                                child: Row(
-                                                  children: [
-                                                    Icon(Icons.confirmation_number,color: thirdColor),
-                                                    SizedBox(width: 15,),
-                                                    Flexible(child: Text('# No empleado: ${snapshot.data![i]!.noempid}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
-                                                  ],
-                                                  ),
-                                                ),                       
-                                              ],
-                                            ),
-                                            Column(crossAxisAlignment:CrossAxisAlignment.end,
-                                              children: <Widget>[
-                                                Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
-                                                child: Row(
-                                                  children: [
-                                                    Icon(Icons.account_box_sharp,color: thirdColor),
-                                                    SizedBox(width: 15,),
-                                                    Flexible(child: Text('Nombre: ${snapshot.data![i]!.nameuser}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
-                                                  ],
-                                                  ),
-                                                ),                       
-                                              ],
-                                            ),
-                                            Column(crossAxisAlignment:CrossAxisAlignment.end,
-                                              children: <Widget>[
-                                                Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
-                                                child: Row(
-                                                  children: [
-                                                    Icon(Icons.access_alarms,color: thirdColor),
-                                                    SizedBox(width: 15,),
-                                                    Flexible(child: Text('Hora salida: ${snapshot.data![i]!.hourout}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
-                                                  ],
-                                                  ),
-                                                ),                       
-                                              ],
-                                            ),
-                                            Column(crossAxisAlignment:CrossAxisAlignment.end,
-                                              children: <Widget>[
-                                                Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
-                                                child: Row(
-                                                  children: [
-                                                    Padding(padding: const EdgeInsets.only(bottom: 18),child: Icon(Icons.location_pin,color: thirdColor)),
-                                                    SizedBox(width: 15,),
-                                                    Flexible(child: Text('Dirección: ${snapshot.data![i]!.direction}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
-                                                  ],
-                                                  ),
-                                                ),                       
-                                              ],
-                                            ),          
-                                          ],
-                                        ),
+                      child: Column(
+                        children: [
+                          for (var i = 0; i < snapshot.data!.length; i++) ...{
+                            Container(
+                              decoration: BoxDecoration(boxShadow: [
+                                BoxShadow(blurStyle: BlurStyle.normal,color: Colors.white.withOpacity(0.2),blurRadius: 15,spreadRadius: -30,offset: Offset(-25, -25)),
+                                BoxShadow(blurStyle: BlurStyle.normal,color: Colors.black.withOpacity(0.6),blurRadius: 30,spreadRadius: -45,offset: Offset(20, -15)),
+                              ]),
+                              child: Card(elevation: 20,color: backgroundColor,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),margin: EdgeInsets.all(4.0),
+                                child: Column(
+                                  children: <Widget>[
+                                    Container(margin: EdgeInsets.only(left: 15),
+                                      child: Column(
+                                        children: [
+                                          Column(crossAxisAlignment:CrossAxisAlignment.end,
+                                            children: <Widget>[
+                                              Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.confirmation_number,color: thirdColor),
+                                                  SizedBox(width: 15,),
+                                                  Flexible(child: Text('# No empleado: ${snapshot.data![i]!.noempid}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
+                                                ],
+                                                ),
+                                              ),                       
+                                            ],
+                                          ),
+                                          Column(crossAxisAlignment:CrossAxisAlignment.end,
+                                            children: <Widget>[
+                                              Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.account_box_sharp,color: thirdColor),
+                                                  SizedBox(width: 15,),
+                                                  Flexible(child: Text('Nombre: ${snapshot.data![i]!.nameuser}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
+                                                ],
+                                                ),
+                                              ),                       
+                                            ],
+                                          ),
+                                          Column(crossAxisAlignment:CrossAxisAlignment.end,
+                                            children: <Widget>[
+                                              Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.access_alarms,color: thirdColor),
+                                                  SizedBox(width: 15,),
+                                                  Flexible(child: Text('Hora salida: ${snapshot.data![i]!.hourout}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
+                                                ],
+                                                ),
+                                              ),                       
+                                            ],
+                                          ),
+                                          Column(crossAxisAlignment:CrossAxisAlignment.end,
+                                            children: <Widget>[
+                                              Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
+                                              child: Row(
+                                                children: [
+                                                  Padding(padding: const EdgeInsets.only(bottom: 18),child: Icon(Icons.location_pin,color: thirdColor)),
+                                                  SizedBox(width: 15,),
+                                                  Flexible(child: Text('Dirección: ${snapshot.data![i]!.direction}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
+                                                ],
+                                                ),
+                                              ),                       
+                                            ],
+                                          ),          
+                                        ],
                                       ),
-                                      Container(width: 150,
-                                        decoration: BoxDecoration(boxShadow: [
-                                          BoxShadow(blurStyle: BlurStyle.normal,color:Colors.white.withOpacity(0.2),blurRadius: 10,spreadRadius: -8,offset: Offset(-10, -6)),
-                                          BoxShadow(blurStyle: BlurStyle.normal,color:Colors.black.withOpacity(0.6),blurRadius: 10,spreadRadius: -15,offset: Offset(18, 5)),
-                                        ]),                                    
-                                        child: ElevatedButton(style: ElevatedButton.styleFrom(textStyle: TextStyle(color: Colors.white,),backgroundColor: backgroundColor,shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0)),),
-                                          onPressed: () async {
-                                            final Database db = await handler!.initializeDB();
-                                            await this.handler!.deleteUser(snapshot.data![i]!.idsend!);
-                                            await db.rawQuery("DELETE FROM userX WHERE nameuser = '${snapshot.data![i]!.nameuser}'");
-                                            QuickAlert.show(context: context,title: "¿Desea eliminar el Agente?",confirmBtnText: "Si",cancelBtnText: "Cancelar",showCancelBtn: true,  confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
-                                              onConfirmBtnTap: () {
-                                                Navigator.pop(context);
-                                                QuickAlert.show(
-                                                  context: context,
-                                                  title: "Eliminado",
-                                                  type: QuickAlertType.success,
-                                                );
-                                                setState(() {
-                                                  snapshot.data!.remove(snapshot.data![i]);
-                                                });
-                                              },
-                                              onCancelBtnTap: () {
-                                                Navigator.pop(context);
-                                                QuickAlert.show(
-                                                  context: context,
-                                                  title: "Cancelado",
-                                                  type: QuickAlertType.error,                                                  
-                                                );                                                
-                                              },                                              
-                                              type: QuickAlertType.success,
-                                            ); 
-                                          },
-                                          child: Text('Quitar',style: TextStyle(color: Colors.red,fontSize: 20,fontWeight: FontWeight.bold)),
-                                        ),
-                                      ),
-                                      SizedBox(height: 10.0),
-                                    ],
-                                  ),
-                                ),
-                              )
-                            },
-                            Center(
-                              child: Column(
-                                children: [
-                                  SizedBox(height: 20.0),
-                                  Container(
-                                    decoration: BoxDecoration(boxShadow: [
-                                      BoxShadow(blurStyle: BlurStyle.normal,color: Colors.white.withOpacity(0.2),blurRadius: 15,spreadRadius: -30,offset: Offset(-25, -25)),
-                                      BoxShadow(blurStyle: BlurStyle.normal,color: Colors.black.withOpacity(0.6),blurRadius: 30,spreadRadius: -45,offset: Offset(20, -15)),
-                                    ]),
-                                    child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10.0)),backgroundColor: thirdColor,padding: EdgeInsets.symmetric(vertical: 5, horizontal: 22)),
-                                        child: Icon(Icons.save,color: backgroundColor, size: 25.0),
-                                        onPressed: () async {                                      
-                                          showGeneralDialog(
-                                            context: context,transitionBuilder:(context, a1, a2, widget) {
-                                              return Center( child: ColorLoader3());
+                                    ),
+                                    Container(width: 150,
+                                      decoration: BoxDecoration(boxShadow: [
+                                        BoxShadow(blurStyle: BlurStyle.normal,color:Colors.white.withOpacity(0.2),blurRadius: 10,spreadRadius: -8,offset: Offset(-10, -6)),
+                                        BoxShadow(blurStyle: BlurStyle.normal,color:Colors.black.withOpacity(0.6),blurRadius: 10,spreadRadius: -15,offset: Offset(18, 5)),
+                                      ]),                                    
+                                      child: ElevatedButton(style: ElevatedButton.styleFrom(textStyle: TextStyle(color: Colors.white,),backgroundColor: backgroundColor,shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0)),),
+                                        onPressed: () async {
+                                          final Database db = await handler!.initializeDB();
+                                          await this.handler!.deleteUser(snapshot.data![i]!.idsend!);
+                                          await db.rawQuery("DELETE FROM userX WHERE nameuser = '${snapshot.data![i]!.nameuser}'");
+                                          QuickAlert.show(context: context,title: "¿Desea eliminar el Agente?",confirmBtnText: "Si",cancelBtnText: "Cancelar",showCancelBtn: true,  confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
+                                            onConfirmBtnTap: () {
+                                              Navigator.pop(context);
+                                              QuickAlert.show(
+                                                context: context,
+                                                title: "Eliminado",
+                                                type: QuickAlertType.success,
+                                              );
+                                              setState(() {
+                                                snapshot.data!.remove(snapshot.data![i]);
+                                              });
                                             },
-                                            transitionDuration:Duration(milliseconds: 200),
-                                            barrierDismissible: false,
-                                            barrierLabel: '',
-                                            pageBuilder: (context, animation1,animation2) {
-                                              return Text('');
-                                            }
-                                          );
-                                          await fetchAgentsLeftPastToProgres(hourOut.text, vehicule.text);
-                                          if(prefs.vehiculo != "" || nameController.text != ""){
-                                            setState(() {
-                                              this.handler!.cleanTable();
-                                            });
-                                          }
-                                        }),
-                                  ),
-                                ],
+                                            onCancelBtnTap: () {
+                                              Navigator.pop(context);
+                                              QuickAlert.show(
+                                                context: context,
+                                                title: "Cancelado",
+                                                type: QuickAlertType.error,                                                  
+                                              );                                                
+                                            },                                              
+                                            type: QuickAlertType.success,
+                                          ); 
+                                        },
+                                        child: Text('Quitar',style: TextStyle(color: Colors.red,fontSize: 20,fontWeight: FontWeight.bold)),
+                                      ),
+                                    ),
+                                    SizedBox(height: 10.0),
+                                  ],
+                                ),
                               ),
-                            ),
-                            SizedBox(height: 60,)
-                          ],
-                        ),
+                            )
+                          },
+                          
+                        ],
                       ),
                     );
                   } else if (names.length == 0) {
@@ -2487,7 +2594,33 @@ class _DriverDescriptionState extends State<DriverDescription>
                                     onPressed: () async {
                                       showGeneralDialog(context: context,
                                         transitionBuilder: (context, a1, a2, widget) {
-                                          return Center(child: ColorLoader3());
+                                          return WillPopScope(
+                                            onWillPop: () async => false,
+                                            child: SimpleDialog(
+                                              elevation: 20,
+                                              backgroundColor: Theme.of(context).cardColor,
+                                              children: [
+                                                Center(
+                                                  child: Column(
+                                                    mainAxisSize: MainAxisSize.min,
+                                                    children: [
+                                                      const Padding(
+                                                        padding: EdgeInsets.only(left: 16, top: 16, right: 16),
+                                                        child: CircularProgressIndicator(),
+                                                      ),
+                                                      Padding(
+                                                        padding: const EdgeInsets.all(16),
+                                                        child: Text(
+                                                          'Cargando...', 
+                                                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18),
+                                                          ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                )
+                                              ] ,
+                                            ),
+                                          );
                                         },
                                         transitionDuration:Duration(milliseconds: 200),
                                         barrierDismissible: false,
