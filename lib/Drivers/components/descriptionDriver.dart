@@ -1658,22 +1658,33 @@ class _DriverDescriptionState extends State<DriverDescription>
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         Container(width: 100,
-                                          child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: backgroundColor,),backgroundColor: Gradiant2,),
-                                            onPressed: () => {
+                                          child: TextButton(
+                                            style: TextButton.styleFrom(
+                                              textStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white, fontSize: 16),
+                                              backgroundColor: Color.fromRGBO(40, 93, 169, 1),
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(8)),
+                                            ),
+                                            child: Text("Buscar", style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white, fontSize: 16),),
+                                            onPressed: () async{
                                               fetchSearchAgents2(
-                                                  agentEmployeeId.text),
-                                              
+                                                  agentEmployeeId.text);
                                             },
-                                            child: Text('Buscar',style: TextStyle(color: backgroundColor,fontSize: 15.0)),
                                           ),
                                         ),
                                         SizedBox(width: 10.0),
                                         Container(width: 100,
-                                          child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: Colors.white,),backgroundColor: Colors.red,),
-                                            onPressed: () => {
-                                              Navigator.pop(context),
+                                          child: TextButton(
+                                            style: TextButton.styleFrom(
+                                              textStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white, fontSize: 16),
+                                              backgroundColor: Color.fromRGBO(178, 13, 13, 1),
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(8)),
+                                            ),
+                                            child: Text("Cerrar", style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white, fontSize: 16),),
+                                            onPressed: () async{
+                                              Navigator.pop(context);
                                             },
-                                            child: Text('Cerrar',style: TextStyle(color: Colors.white,fontSize: 15.0)),
                                           ),
                                         ),
                                       ],
@@ -2535,22 +2546,34 @@ class _DriverDescriptionState extends State<DriverDescription>
                                     Row(mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         Container(width: 100,
-                                          child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: backgroundColor,),backgroundColor: Gradiant2,),
-                                            onPressed: () => {
-                                              fetchSearchAgentsSolid(agentEmployeeId.text),
-                                              Navigator.pop(context)
+                                          child: TextButton(
+                                            style: TextButton.styleFrom(
+                                              textStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white, fontSize: 16),
+                                              backgroundColor: Color.fromRGBO(40, 93, 169, 1),
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(8)),
+                                            ),
+                                            child: Text("Buscar", style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white, fontSize: 16),),
+                                            onPressed: () async{
+                                              fetchSearchAgents2(
+                                                  agentEmployeeId.text);
                                             },
-                                            child: Text('Buscar',style: TextStyle(color: backgroundColor,fontSize: 15.0)),
                                           ),
                                         ),
                                         SizedBox(width: 10.0),
                                         Container(width: 100,
-                                          child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: Colors.white,),backgroundColor: Colors.red,),
-                                            onPressed: () => {
-                                              Navigator.pop(context),
-                                            },
-                                            child: Text('Cerrar',style: TextStyle(color: Colors.white,fontSize: 15.0)),
-                                          ),
+                                          child: TextButton(
+                                    style: TextButton.styleFrom(
+                                      textStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white, fontSize: 16),
+                                      backgroundColor: Color.fromRGBO(178, 13, 13, 1),
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(8)),
+                                    ),
+                                    child: Text("Cerrar", style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white, fontSize: 16),),
+                                    onPressed: () async{
+                                      Navigator.pop(context);
+                                    },
+                                  ),
                                         ),
                                       ],
                                     ),
