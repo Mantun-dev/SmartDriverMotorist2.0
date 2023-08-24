@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/details_solidtrip.dart';
 //import 'package:flutter/scheduler.dart';
 
-import 'package:flutter_auth/Drivers/Screens/Details/detailsDriver_Screen.dart';
+//import 'package:flutter_auth/Drivers/Screens/Details/detailsDriver_Screen.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/components/itemDriver_Card.dart';
 import 'package:flutter_auth/Drivers/models/DriverData.dart';
 import 'package:flutter_auth/Drivers/models/network.dart';

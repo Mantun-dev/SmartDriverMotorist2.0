@@ -54,6 +54,9 @@ class CancelAgent {
         this.hourIn,
         this.hourForTrip,
         this.didntGetOut,
+        this.neighborhoodReferencePoint,
+        this.latitude, // New latitude field
+        this.longitude, // New longitude field
     });
 
     int? tripId;
@@ -76,6 +79,9 @@ class CancelAgent {
     String? hourIn;
     String? hourForTrip;
     dynamic didntGetOut;
+    String? neighborhoodReferencePoint;
+    double? latitude; // New latitude field
+    double? longitude; // New longitude field
 
     factory CancelAgent.fromJson(Map<String, dynamic> json) => CancelAgent(
         tripId: json["tripId"],
@@ -98,6 +104,9 @@ class CancelAgent {
         hourIn: json["hourIn"],
         hourForTrip: json["hourForTrip"],
         didntGetOut: json["didntGetOut"],
+        neighborhoodReferencePoint: json["neighborhoodReferencePoint"],
+        latitude: json["latitude"],
+        longitude: json["longitude"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -120,7 +129,10 @@ class CancelAgent {
         "timeName": timeName,
         "hourIn": hourIn,
         "hourForTrip": hourForTrip,
-        "didntGetOut": didntGetOut,
+        "didntGetOut": didntGetOut,        
+        "neighborhoodReferencePoint": neighborhoodReferencePoint,
+        "latitude": latitude,
+        "longitude": longitude,
     };
 }
 
@@ -141,6 +153,9 @@ class TripActual {
         this.traveled,
         this.notTraveled,
         this.totalAgents,
+        this.neighborhoodReferencePoint,
+        this.latitude, // New latitude field
+        this.longitude, // New longitude field
     });
 
     int? tripId;
@@ -158,6 +173,9 @@ class TripActual {
     int? traveled;
     int? notTraveled;
     int? totalAgents;
+    String? neighborhoodReferencePoint;
+    double? latitude; // New latitude field
+    double? longitude; // New longitude field
 
     factory TripActual.fromJson(Map<String, dynamic> json) => TripActual(
         tripId: json["tripId"],
@@ -175,6 +193,9 @@ class TripActual {
         traveled: json["traveled"],
         notTraveled: json["notTraveled"],
         totalAgents: json["totalAgents"],
+        neighborhoodReferencePoint: json["neighborhoodReferencePoint"],
+        latitude: json["latitude"],
+        longitude: json["longitude"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -193,6 +214,9 @@ class TripActual {
         "traveled": traveled,
         "notTraveled": notTraveled,
         "totalAgents": totalAgents,
+        "neighborhoodReferencePoint": neighborhoodReferencePoint,
+        "latitude": latitude,
+        "longitude": longitude,
     };
 }
 

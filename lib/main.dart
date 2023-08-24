@@ -10,6 +10,7 @@ import 'package:flutter_auth/constants.dart';
 import 'package:flutter_auth/providers/chat.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
+import 'package:upgrader/upgrader.dart';
 import 'Drivers/SharePreferences/preferencias_usuario.dart';
 
 class MyHttpoverrides extends HttpOverrides {
@@ -19,6 +20,22 @@ class MyHttpoverrides extends HttpOverrides {
       ..badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
   }
+}
+
+int pantallaP = 0;
+
+void setPantallaP(int numero){
+  pantallaP = numero;
+}
+
+int ub = 0;
+
+void setUb(int numero){
+  ub = numero;
+}
+
+int getUb(){
+  return ub;
 }
 
 final GlobalKey<NavigatorState> navigatorKey =
@@ -38,6 +55,7 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 }
 
+
 class _MyAppState extends State<MyApp> {
   final prefs = new PreferenciasUsuario();
   @override
@@ -45,7 +63,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     PushNotificationServices.messageStream.listen((event) {
 
-      if (event != "MESSAGE_NOTIFICATION") {
+      if (event != "MESSAGE_NOTIFICATION" && pantallaP  ==1) {
         prefs.tripId = event.toString();
         //print(event);
         navigatorKey.currentState
@@ -73,8 +91,8 @@ class _MyAppState extends State<MyApp> {
             ? 'login'
             : 'home',
         routes: {
-          'login': (BuildContext context) => SplashView(),
-          'home': (BuildContext context) => HomeDriverScreen()
+          'login': (BuildContext context) =>  UpgradeAlert(upgrader: Upgrader(dialogStyle: Platform.isIOS? UpgradeDialogStyle.cupertino: UpgradeDialogStyle.material),child: SplashView()),
+          'home': (BuildContext context) => UpgradeAlert(upgrader: Upgrader(dialogStyle: Platform.isIOS? UpgradeDialogStyle.cupertino: UpgradeDialogStyle.material),child: HomeDriverScreen())
         },
       ),
     );

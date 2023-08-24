@@ -3,6 +3,7 @@
 import 'package:flutter_auth/Drivers/Screens/Chat/chatViews.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/travel_In_Trips.dart';
+//import 'package:flutter_auth/Drivers/Screens/Details/detailsDriver_Screen.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
 import 'package:flutter_auth/Drivers/components/loader.dart';
@@ -12,16 +13,31 @@ import 'package:flutter_auth/Drivers/models/network.dart';
 import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter_auth/Drivers/models/registerTripAsCompleted.dart';
+import 'package:flutter_auth/main.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:intl/intl.dart';
 import 'package:quickalert/quickalert.dart';
 import '../../../../constants.dart';
+import '../../../components/progress_indicator.dart';
 import '../../../models/agentsInTravelModel.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' show json;
 import 'package:url_launcher/url_launcher.dart';
+//import 'package:geolocator/geolocator.dart';
+
 
 void main() {
   runApp(MyAgent());
+}
+
+int recargar=-1;
+
+void setRecargar(int numero){
+  recargar=numero;
+}
+
+int gerRecargar(){
+  return recargar;
 }
 
 class MyAgent extends StatefulWidget {
@@ -33,13 +49,30 @@ class MyAgent extends StatefulWidget {
   _DataTableExample createState() => _DataTableExample();
 }
 
-class _DataTableExample extends State<MyAgent> {
+class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
+  Future<DriverData>? driverData;
   List<int>? counter;
   Future<TripsList2>? item;
   TextEditingController agentHours = new TextEditingController();
+  TextEditingController vehicleController = new TextEditingController();
+  var tripVehicle = '';
+  bool vehicleL = false;
   final prefs = new PreferenciasUsuario();
   String ip = "https://driver.smtdriver.com";
   dynamic flagalert;
+  
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if(AppLifecycleState.resumed==state){
+      if(mounted){
+        if(gerRecargar()==0){
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (_) => MyAgent()))
+          .then((_) => MyAgent());
+        }
+      }
+    }
+    
+  }
 
   Future<Driver> fetchHours(
       String agentId, String agentTripHour, String tripId) async {
@@ -60,7 +93,7 @@ class _DataTableExample extends State<MyAgent> {
       QuickAlert.show(
       context: context,
       type: QuickAlertType.success,
-      title: resp.title,
+      title: '¡Hecho!',
       text: resp.message,
       );
     } else if (response.statusCode == 200 && resp.ok != true) {
@@ -95,6 +128,7 @@ class _DataTableExample extends State<MyAgent> {
           type: QuickAlertType.success,
           title: '¡Hecho!',
           text: resp.message,
+          confirmBtnText: 'OK'
           );
         } else if (response.statusCode == 500) {
           QuickAlert.show(
@@ -114,9 +148,11 @@ class _DataTableExample extends State<MyAgent> {
   }
 
   Future<Driver> fetchPastInProgress() async {
+    
     http.Response response = await http
         .get(Uri.parse('$ip/apis/passTripToProgress/${prefs.tripId}'));
     final resp = Driver.fromJson(json.decode(response.body));
+    LoadingIndicatorDialog().dismiss();
     //print(response.body);
     if (response.statusCode == 200 && resp.ok == true) {
       //print(response.body);
@@ -124,11 +160,21 @@ class _DataTableExample extends State<MyAgent> {
           MaterialPageRoute(
               builder: (BuildContext context) => HomeDriverScreen()),
           (Route<dynamic> route) => false);
+
+          QuickAlert.show(
+                context: context,
+                type: QuickAlertType.success,
+                text: 'Su viaje está en proceso',
+                title: 'Confirmado'
+                );
       //   SweetAlert.show(context,
       //   title: resp.title,
       //   subtitle: resp.message,
       //   style: SweetAlertStyle.success
       // );
+      Map data2 = {"Estado": 'INICIADO'};
+      String sendData2 = json.encode(data2);
+      await http.put(Uri.parse('https://apichat.smtdriver.com/api/salas/Viaje_Estado/${prefs.tripId}'), body: sendData2, headers: {"Content-Type": "application/json"});
     } else if (response.statusCode == 200 && resp.ok == false) {
       QuickAlert.show(
           context: context,
@@ -144,9 +190,6 @@ class _DataTableExample extends State<MyAgent> {
           text: resp.message,
           );
     }
-    Map data2 = {"Estado": 'INICIADO'};
-      String sendData2 = json.encode(data2);
-      await http.put(Uri.parse('https://apichat.smtdriver.com/api/salas/Viaje_Estado/${prefs.tripId}'), body: sendData2, headers: {"Content-Type": "application/json"});
    
     return Driver.fromJson(json.decode(response.body));
   }
@@ -204,18 +247,55 @@ class _DataTableExample extends State<MyAgent> {
           text: resp.message,
           );
     }
-
-     Map data2 = {"Estado": 'FINALIZADO'};
-      String sendData2 = json.encode(data2);
-      await http.put(Uri.parse('https://apichat.smtdriver.com/api/salas/Viaje_Estado/${prefs.tripId}'), body: sendData2, headers: {"Content-Type": "application/json"});
       
+    http.Response responseSala = await http.get(Uri.parse('https://apichat.smtdriver.com/api/salas/Tripid/${prefs.tripId}'));
+    final respS = json.decode(responseSala.body);
+
+    for(int i = 0; i<respS['salas']['Agentes'].length; i++){
+
+      if(respS['salas']['Agentes'][i]['Estado']=='ESPERA'){
+        Map data2 = {"idU": respS['salas']['Agentes'][i]['agenteId'].toString(), "Estado": 'RECHAZADO'};
+        String sendData2 = json.encode(data2);
+        await http.put(Uri.parse('https://apichat.smtdriver.com/api/salas/${prefs.tripId}'), body: sendData2, headers: {"Content-Type": "application/json"});
+      }
+    }
+
     return Driver.fromJson(json.decode(response.body));
   }
 
   @override
   void initState() {
     super.initState();
+    setRecargar(0);
+    setUb(1);
+    WidgetsBinding.instance.addObserver(this);
     item = fetchAgentsInTravel2();
+    driverData = fetchRefres();
+    getInfoViaje();
+  }
+
+  void getInfoViaje() async{
+    http.Response responseSala = await http.get(Uri.parse('$ip/apis/agentsInTravel/${prefs.tripId}'));
+    final infoViaje = json.decode(responseSala.body);
+
+    if(infoViaje[3]['viajeActual']['tripVehicle']!=null){
+      if(mounted){
+        setState(() {
+          tripVehicle = infoViaje[3]['viajeActual']['tripVehicle'];
+          vehicleL = true;
+          vehicleController.text=tripVehicle;
+        });
+      }
+    }else{
+      if(mounted){
+        setState(() {
+          tripVehicle = '';
+          vehicleL = true;
+          vehicleController.text=tripVehicle;
+        });
+      }
+    }
+    
   }
   
   BuildContext? contextP;
@@ -241,6 +321,7 @@ class _DataTableExample extends State<MyAgent> {
                 icon:
                     Icon(Icons.textsms_rounded, color: thirdColor, size: 30.0),
                 onPressed: () {
+                  setRecargar(-1);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -254,6 +335,7 @@ class _DataTableExample extends State<MyAgent> {
                 icon:
                     Icon(Icons.arrow_circle_left, color: secondColor, size: 30),
                 onPressed: () {
+                  setRecargar(-1);
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => Trips()),
@@ -263,55 +345,304 @@ class _DataTableExample extends State<MyAgent> {
               SizedBox(width: kDefaultPadding / 2)
             ],
           ),
-          body: RefreshIndicator(
-            onRefresh: _refresh,
-            child: ListView(children: <Widget>[
-              SizedBox(height: 25.0),
-              Center(
-                  child: Text('Asignación de Horas',
-                      style: TextStyle(
-                          color: firstColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 25.0))),
-              SizedBox(height: 20.0),
-              Padding(
-                padding: const EdgeInsets.only(left: 15.0),
-                child: Text('Agentes confirmados',
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                        color: GradiantV_2,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18.0)),
-              ),
-              SizedBox(height: 10.0),
-              _agentToConfirm(),
-              SizedBox(height: 20.0),
-              Padding(
+          body: GestureDetector(
+            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+            child: RefreshIndicator(
+              onRefresh: _refresh,
+              child: ListView(children: <Widget>[
+                SizedBox(height: 25.0),
+                Center(
+                    child: Text('Asignación de Horas',
+                        style: TextStyle(
+                            color: firstColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 25.0))),
+                SizedBox(height: 20.0),
+                ingresarVehiculo(),
+                SizedBox(height: 20.0),
+                Padding(
                   padding: const EdgeInsets.only(left: 15.0),
-                  child: Text('Agentes no confirmados',
+                  child: Text('Agentes confirmados',
                       textAlign: TextAlign.left,
                       style: TextStyle(
                           color: GradiantV_2,
                           fontWeight: FontWeight.bold,
-                          fontSize: 18.0))),
-              _agentoNoConfirm(),
-              SizedBox(height: 20.0),
-              Padding(
-                padding: const EdgeInsets.only(left: 15.0),
-                child: Text('Agentes que han cancelado',
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                        color: GradiantV_2,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18.0)),
-              ),
-              SizedBox(height: 10.0),
-              _agentToCancel(),
-              SizedBox(height: 20.0),
-              _buttonsAgents(),
-              SizedBox(height: 30.0),
-            ]),
+                          fontSize: 18.0)),
+                ),
+                SizedBox(height: 10.0),
+                _agentToConfirm(),
+                SizedBox(height: 20.0),
+                Padding(
+                    padding: const EdgeInsets.only(left: 15.0),
+                    child: Text('Agentes no confirmados',
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                            color: GradiantV_2,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18.0))),
+                _agentoNoConfirm(),
+                SizedBox(height: 20.0),
+                Padding(
+                  padding: const EdgeInsets.only(left: 15.0),
+                  child: Text('Agentes que han cancelado',
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                          color: GradiantV_2,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18.0)),
+                ),
+                SizedBox(height: 10.0),
+                _agentToCancel(),
+                SizedBox(height: 20.0),
+                _buttonsAgents(),
+                SizedBox(height: 30.0),
+              ]),
+            ),
           )),
+    );
+  }
+
+  Widget ingresarVehiculo() {
+    return FutureBuilder<TripsList2>(
+      future: item,
+      builder: (BuildContext context, abc) {
+        if (abc.connectionState == ConnectionState.done) {
+          return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: FutureBuilder<DriverData>(
+              future: driverData,
+              builder: (BuildContext context, abc) {
+                if (abc.connectionState == ConnectionState.done) {
+                  DriverData? data = abc.data;
+                  return Column(
+                    crossAxisAlignment:CrossAxisAlignment.start,
+                    children: [
+                      if(data?.driverType=='Motorista')
+                        Text('Escanee el codigo qr del vehículo', style: TextStyle(color: Colors.white.withOpacity(0.5)),),
+                      if(data?.driverType=='Motorista')
+                        SizedBox(height: 5,),
+                      Row(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(Radius.circular(15)),
+                              boxShadow: [
+                                BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0, 0), ),
+                                BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0, 0), ),
+                              ],
+                            ),
+                            width: 200,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left:10.0, right: 10),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.emoji_transportation,color: thirdColor,size: 30.0,),
+                                  SizedBox(width: 10.0),
+                                  Flexible(
+                                    child: TextField(
+                                      enabled: data?.driverType=='Motorista'?false:true,
+                                      style: TextStyle(color: Colors.white),
+                                      controller: vehicleController,
+                                      decoration: InputDecoration(
+                                        border: InputBorder.none,
+                                        hintText: 'Vehículo',
+                                        hintStyle: TextStyle(color: Colors.white.withOpacity(0.5),
+                                        fontSize: 15.0)
+                                      ),
+                                      onChanged: (value) => tripVehicle,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          if(data?.driverType!='Motorista')
+                            SizedBox(width: 10,),
+
+                          if(data?.driverType!='Motorista')
+                            Container(
+                            decoration: BoxDecoration(
+                              color: firstColor,
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: IconButton(
+                              icon: Icon(Icons.save_outlined),
+                              color: backgroundColor,
+                              iconSize: 30.0,
+                              onPressed: vehicleL==false?null:() async{
+                                LoadingIndicatorDialog().show(context);
+                                http.Response responses = await http.get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
+                                final data2 = DriverData.fromJson(json.decode(responses.body));
+                                Map data = {
+                                  "driverId": data2.driverId.toString(),
+                                  "tripId": prefs.tripId.toString(),
+                                  "vehicleId": "",
+                                  "tripVehicle": vehicleController.text
+                                };
+                                http.Response responsed = await http.post(Uri.parse('https://driver.smtdriver.com/apis/editTripVehicle'), body: data);
+
+                                final resp2 = json.decode(responsed.body);
+                                LoadingIndicatorDialog().dismiss();
+                                if(resp2['type']=='success'){
+                                  if(mounted){
+                                    QuickAlert.show(context: context,title: "Exito",text: resp2['message'],type: QuickAlertType.success,);
+                                    setState(() {
+                                      tripVehicle = vehicleController.text;
+                                    });
+                                  }      
+
+                                }else{
+                                  QuickAlert.show(context: context,title: "Alerta",text: resp2['message'],type: QuickAlertType.error,);
+                                }
+                              }
+                            ),
+                          ),
+
+                          SizedBox(width: 10,),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: firstColor,
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: IconButton(
+                              icon: Icon(Icons.qr_code),
+                              color: backgroundColor,
+                              iconSize: 30.0,
+                              onPressed: vehicleL==false?null:() async{
+                                setRecargar(-1);
+                                String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);
+                      
+                                if (codigoQR == "-1") {
+                                  setRecargar(0);
+                                  return;
+                                } else {
+                                  LoadingIndicatorDialog().show(context);
+                                  http.Response responseSala = await http.get(Uri.parse('https://app.mantungps.com/3rd/vehicles/$codigoQR'),headers: {"Content-Type": "application/json", "x-api-key": 'a10xhq0p21h3fb9y86hh1oxp66c03f'});
+                                  final resp = json.decode(responseSala.body);
+                                  LoadingIndicatorDialog().dismiss();
+                                  if(resp['type']=='success'){
+                                    print(responseSala.body);
+                                    print('###########################');
+                                    if(mounted){
+                                      showDialog(
+                                              context: context,
+                                              builder: (context) => vehiculoE(resp, context),);
+                                    }
+                                  }else{
+                                    if(mounted){
+                                      QuickAlert.show(context: context,title: "Alerta",text: "Vehículo no valido",type: QuickAlertType.error,); 
+                                    }
+                                  }
+                                  setRecargar(0);
+                                }
+                              }
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                } else {
+                  return ColorLoader3();
+                }
+              },
+                ),
+            );
+        } else {
+          return ColorLoader3();
+        }
+      },
+    );
+  }
+
+  AlertDialog vehiculoE(resp, BuildContext context) {
+    //var size = MediaQuery.of(context).size;
+    return AlertDialog(
+      backgroundColor: backgroundColor,
+      shape: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
+      title: Center(
+          child: Text(
+        'Vehículo Encontrado',
+        style: TextStyle(color: GradiantV_2, fontSize: 20.0),
+      )),
+      content: Container(
+        height: 130,
+        child: Column(
+          children: [
+                const SizedBox(height: 8.0),
+                Text('Descripcion:',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold)),
+                SizedBox(
+                  height: 5,
+                ),
+                Text(resp['vehicle']['name'],
+                    style: TextStyle(color: Colors.white, fontSize: 18.0)),
+                SizedBox(
+                  height: 15,
+                ),
+                Text('Placa:',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold)),
+                SizedBox(
+                  height: 10,
+                ),
+                Text(resp['vehicle']['registrationNumber'],
+                    style: TextStyle(color: Colors.white, fontSize: 18.0)),
+              ],
+        ),
+      ),
+      actions: [
+                                                              Row(mainAxisAlignment: MainAxisAlignment.center,
+                                                                children: [
+                                                                  Container(width: 100,
+                                                                    child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: backgroundColor,),backgroundColor: Gradiant2,),
+                                                                      onPressed: () async{
+                                                                        LoadingIndicatorDialog().show(context);
+                                                                        http.Response responses = await http.get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
+                                                                        final data2 = DriverData.fromJson(json.decode(responses.body));
+                                                                        Map data = {
+                                                                          "driverId": data2.driverId.toString(),
+                                                                          "tripId": prefs.tripId.toString(),
+                                                                          "vehicleId": resp['vehicle']['_id'],
+                                                                          "tripVehicle": "${resp['vehicle']['name']} [${resp['vehicle']['registrationNumber']}]"
+                                                                        };
+                                                                        http.Response responsed = await http.post(Uri.parse('https://driver.smtdriver.com/apis/editTripVehicle'), body: data);
+                                                                        
+                                                                        final resp2 = json.decode(responsed.body);
+                                                                        LoadingIndicatorDialog().dismiss();
+                                                                        if(resp2['type']=='success'){
+                                                                          if(mounted){
+                                                                            Navigator.pop(context);
+                                                                            QuickAlert.show(context: context,title: "Exito",text: resp2['message'],type: QuickAlertType.success,);
+                                                                            setState(() {
+                                                                              tripVehicle = "${resp['vehicle']['name']} [${resp['vehicle']['registrationNumber']}]";
+                                                                              vehicleController.text=tripVehicle;  
+                                                                            });
+                                                                          }
+                                                                        }else{
+                                                                          QuickAlert.show(context: context,title: "Alerta",text: resp2['message'],type: QuickAlertType.error,);
+                                                                        }
+                                                                      },
+                                                                      child: Text('Agregar',style: TextStyle(color: backgroundColor,fontSize: 15.0)),
+                                                                    ),
+                                                                  ),
+                                                                  SizedBox(width: 10.0),
+                                                                  Container(width: 100,
+                                                                    child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: Colors.white,),backgroundColor: Colors.red,),
+                                                                      onPressed: () => {
+                                                                        Navigator.pop(context),
+                                                                      },
+                                                                      child: Text('Cancelar',style: TextStyle(color: Colors.white,fontSize: 15.0)),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ],
     );
   }
 
@@ -511,7 +842,7 @@ class _DataTableExample extends State<MyAgent> {
                                             padding: const EdgeInsets.only(left: 30),
                                             child: Row(
                                               children: [
-                                                Icon(Icons.location_pin,color: thirdColor),
+                                                Icon(Icons.warning_amber_outlined,color: thirdColor),
                                                 SizedBox(width: 15,),
                                                 Flexible(
                                                   child: Text('Acceso autorizado: ${abc.data!.trips![0].agentes![index].neighborhoodReferencePoint}',
@@ -559,7 +890,7 @@ class _DataTableExample extends State<MyAgent> {
                                                     ),
                                                     Column(
                                                       children: [
-                                                        Text(
+                                                        Text(abc.data!.trips![0].agentes![index].hourForTrip==null?' --':
                                                             ' ${abc.data!.trips![0].agentes![index].hourForTrip}',
                                                             style: TextStyle(
                                                                 color:
@@ -852,7 +1183,7 @@ class _DataTableExample extends State<MyAgent> {
                                               padding: const EdgeInsets.only(left: 30),
                                               child: Row(
                                                 children: [
-                                                  Icon(Icons.location_pin,color: thirdColor),
+                                                  Icon(Icons.warning_amber_outlined,color: thirdColor),
                                                   SizedBox(width: 15,),
                                                   Flexible(
                                                     child: Text('Acceso autorizado: ${abc.data!.trips![1].noConfirmados![index].neighborhoodReferencePoint}',
@@ -866,7 +1197,7 @@ class _DataTableExample extends State<MyAgent> {
                                             ),
                                           },
                                           //aqui lo demás
-                                          SizedBox(height: 30.0),
+                                          /*SizedBox(height: 30.0),
                                           Text('Hora de encuentro: ',
                                               style: TextStyle(
                                                   color: Colors.white,
@@ -917,7 +1248,7 @@ class _DataTableExample extends State<MyAgent> {
                                                 ),
                                               ],
                                             ),
-                                          ),
+                                          ),*/
                                           SizedBox(height: 20.0),
                                           Row(
                                             mainAxisAlignment:
@@ -982,6 +1313,7 @@ class _DataTableExample extends State<MyAgent> {
                                               ),
                                             ],
                                           ),
+                                          SizedBox(height: 30.0),
                                           // Usamos una fila para ordenar los botones del card
                                         ],
                                       ),
@@ -1007,7 +1339,10 @@ class _DataTableExample extends State<MyAgent> {
 
 
   validateHour(String agentId, String tripId, dynamic time)async{
-    //var time =await showTimePicker(context: context,initialTime:TimeOfDay.now(),);    
+    //var time =await showTimePicker(context: context,initialTime:TimeOfDay.now(),);   
+    if(time==null){
+      return;
+    } 
     String _eventTime = now.toString().substring(10, 15);
     _eventTime = time.toString().substring(10, 15);
     if (time!= null) {      
@@ -1314,15 +1649,13 @@ class _DataTableExample extends State<MyAgent> {
               confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
               cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ),         
               onConfirmBtnTap: () {
-                QuickAlert.show(
-                context: context,
-                type: QuickAlertType.success,
-                text: 'Su viaje está en proceso',
-                title: 'Confirmado'
-                );
+                Navigator.pop(context);
+                LoadingIndicatorDialog().show(context);
                 new Future.delayed(new Duration(seconds: 2), () {
                     fetchPastInProgress();
                   });
+                
+                  
               },
               onCancelBtnTap: () {
                 Navigator.pop(context);
@@ -1352,7 +1685,7 @@ class _DataTableExample extends State<MyAgent> {
               QuickAlert.show(
                 context: context,
                 type: QuickAlertType.success,
-                title: "...",
+                title: "Marcar como cancelados",
                 text: "¿Está seguro que desea marcarlos como cancelados?",
                 confirmBtnText: "Confirmar",
                 cancelBtnText: "Cancelar",
@@ -1360,7 +1693,9 @@ class _DataTableExample extends State<MyAgent> {
                 confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
                 cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
                 onConfirmBtnTap: () {
+                  Navigator.pop(context);
                   QuickAlert.show(
+                  title: 'Completado',
                   context: context,
                   type: QuickAlertType.success,
                   text: "Han sido marcado como cancelados",                

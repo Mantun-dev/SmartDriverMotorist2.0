@@ -157,6 +157,14 @@ class PreferenciasUsuario {
     _prefs.setString('vehiculo', value);
   }
 
+  String get vehiculoId {
+    return _prefs.getString('vehiculoId') ?? '';
+  }
+
+  set vehiculoId( String value ) {
+    _prefs.setString('vehiculoId', value);
+  }
+
   String get vehiculoSolid {
     return _prefs.getString('vehiculoSolid') ?? '';
   }
@@ -225,7 +233,6 @@ class PreferenciasUsuario {
     _prefs.remove('destinationPrueba');
     _prefs.remove('destinationIdAgent');
     _prefs.remove('vehiculoSolid');
-    _prefs.remove('companyId');
     _prefs.remove('vehiculo');
     _prefs.remove('companyPrueba');
   }
@@ -237,5 +244,4 @@ class PreferenciasUsuario {
 
   
 }
-
 

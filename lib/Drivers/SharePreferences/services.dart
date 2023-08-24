@@ -39,7 +39,12 @@ class PushNotificationServices{
     //final prefs = new PreferenciasUsuario();
     await Firebase.initializeApp();
     token = await FirebaseMessaging.instance.getToken();
-
+    FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
+    // Manejar la actualización del token de registro
+    token = newToken;
+      print("Nuevo token de registro: $token");
+      // Aquí puedes enviar el nuevo token al servidor de backend para actualizarlo
+    });
     //llamado
     FirebaseMessaging.onBackgroundMessage(_backgroundHandelr);
     FirebaseMessaging.onMessage.listen(_onMessageHandelr);

@@ -35,7 +35,9 @@ class ChatScreen extends StatefulWidget {
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+  int recargar = -1;
+
+class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   // final _socketResponse = StreamController<dynamic>();
   // Stream<dynamic> get getResponse => _socketResponse.stream;
   IO.Socket? socket;
@@ -83,9 +85,23 @@ class _ChatScreenState extends State<ChatScreen> {
     _messageInputController.clear();
   }
 
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if(AppLifecycleState.resumed==state){
+      if(mounted){
+            
+        if(recargar==0){
+          print(recargar);
+        }
+      }
+    }
+    
+  }
+
   @override
   void initState() {
     super.initState();
+    recargar=0;
+    WidgetsBinding.instance.addObserver(this);
     ChatApis().dataLogin(widget.id!, widget.rol!, widget.nombre!, prefs.tripId,
         widget.nombreAgent!, widget.idAgent!);
 
@@ -295,7 +311,7 @@ class _ChatScreenState extends State<ChatScreen> {
             streamSocket.socket!.disconnect();
             streamSocket.socket!.close();
             streamSocket.socket!.dispose();
-            
+            recargar=-1;
             Navigator.pushReplacement(
             context,
             MaterialPageRoute(
