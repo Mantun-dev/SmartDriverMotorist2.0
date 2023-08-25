@@ -3060,8 +3060,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
               }
               
-            });
-            
+            });      
   }
 
   Widget _buttonsAgents() {
