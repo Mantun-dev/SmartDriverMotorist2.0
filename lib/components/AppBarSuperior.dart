@@ -233,6 +233,34 @@ class _AppBarSuperior extends State<AppBarSuperior> {
               ),
             ),
 
+            if(item==3)
+            Expanded(
+              child: Center(
+                child: Text(
+                  "Registrar salidas",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.normal,
+                    fontSize: 21
+                  ),
+                ),
+              ),
+            ),
+
+            if(item==4)
+            Expanded(
+              child: Center(
+                child: Text(
+                  "Historial de viajes",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.normal,
+                    fontSize: 21
+                  ),
+                ),
+              ),
+            ),
+
         if(item==7)
           Expanded(
             child: Center(
