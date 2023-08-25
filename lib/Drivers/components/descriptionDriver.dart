@@ -773,192 +773,312 @@ class _DriverDescriptionState extends State<DriverDescription>
           onOkay: () {},
         );  
     } else if (responsed.statusCode == 200 && data1.ok == true) {
-      showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-                backgroundColor: backgroundColor,
-                content: Container(
-                  width: 450,
-                  height: 490,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: <Widget>[
-                        SizedBox(height: 15),
-                        Center(
-                          child: Text(
-                            '¿Agregar agente al viaje?',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: GradiantV_2),
-                          ),
-                        ),
-                        SizedBox(height: 15),
-                        ListTile(
-                          contentPadding: EdgeInsets.fromLTRB(5, 5, 5, 0),
-                          title: Text('No empleado:',
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white)),
-                          subtitle: Text('${data1.agent!.agentEmployeeId}',
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.normal,
-                                  color: Colors.white)),
-                          leading: Icon(
-                            Icons.card_travel,
-                            color: thirdColor,
-                            size: 35,
-                          ),
-                        ),
-                        ListTile(
-                          contentPadding: EdgeInsets.fromLTRB(5, 5, 5, 0),
-                          title: Text('Nombre: ',
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white)),
-                          subtitle: Text('${data1.agent!.agentFullname}',
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.normal,
-                                  color: Colors.white)),
-                          leading:
-                              Icon(Icons.person, color: thirdColor, size: 35),
-                        ),
-                        ListTile(
-                          contentPadding: EdgeInsets.fromLTRB(5, 5, 5, 0),
-                          title: Text('Hora salida: ',
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white)),
-                          subtitle: Text('${data1.agent!.hourOut}',
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.normal,
-                                  color: Colors.white)),
-                          leading: Icon(Icons.access_time,
-                              color: thirdColor, size: 35),
-                        ),
-                        ListTile(
-                          contentPadding: EdgeInsets.fromLTRB(5, 5, 5, 0),
-                          title: Text('Dirección: ',
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white)),
-                          subtitle: Text(
-                              '${data1.agent!.neighborhoodName} ${data1.agent!.agentReferencePoint}\n${data1.agent!.departmentName}',
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.normal,
-                                  color: Colors.white)),
-                          leading: Icon(Icons.directions,
-                              color: thirdColor, size: 35),
-                        ),
-                        SizedBox(height: 40),
-                        Row(
-                         // crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Container(
-                              width: 100,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20)),
-                                  textStyle: TextStyle(
-                                    color: backgroundColor,
-                                  ),
-                                  backgroundColor: firstColor,
-                                ),
-                                onPressed: () => {
-                                  setState(() {
-                                    if (tables.length <= 13) {
-                                      if (prefs.nameSalida != tables2.toString()) {
-                                        noemp.insert(0,'${data1.agent!.agentEmployeeId}');
-                                        names.insert(0, '${data1.agent!.agentFullname}');
-                                        hourout.insert(0, '${data1.agent!.hourOut}');
-                                        direction.insert(0,'${data1.agent!.departmentName} ${data1.agent!.neighborhoodName}\n${data1.agent!.agentReferencePoint}');
-                                        tempArr.add(data1.agent!.agentId);
-                                        prefs.companyIdAgent = data1.agent!.companyId.toString();
-                                        prefs.nameSalida = data1.agent!.agentEmployeeId.toString();
-                                        User firstUser = User(
-                                            noempid: '${data1.agent!.agentEmployeeId}',
-                                            nameuser: '${data1.agent!.agentFullname}',
-                                            hourout: '${data1.agent!.hourOut}',
-                                            direction:'${data1.agent!.departmentName} ${data1.agent!.neighborhoodName}\n${data1.agent!.agentReferencePoint}',
-                                            idsend: data1.agent!.agentId);
-                                        List<User> listOfUsers = [firstUser];
-                                        this.handler!.insertUser(listOfUsers);
-                                        clearText();
-                                        //guardar();
+      Size size = MediaQuery.of(context).size;
+      showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
 
-                                      } else {
+        return WillPopScope(
+          onWillPop: () async => false,
+          child: AlertDialog(
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+            content: SingleChildScrollView(
+              child: Column(
+
+                children: [
+                  Container(
+
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10.0),
+                        topRight: Radius.circular(10.0),
+                      ),
+                      color: Color.fromRGBO(40, 93, 169, 1),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Text(
+                        '¿Desea agregar agente al viaje?',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.normal,
+                        color: Colors.white),
+                      ),
+                    ),
+                  ),
+
+
+                  Container(
+           
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(10.0),
+                        bottomRight: Radius.circular(10.0),
+                      ),
+                      color: Theme.of(navigatorKey.currentContext!).cardColor, 
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        children: [
+                          SizedBox(height: 20),
+                        Padding(
+                                      padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                                    width: 18,
+                                                    height: 18,
+                                                    child: SvgPicture.asset(
+                                                      "assets/icons/Numeral.svg",
+                                                      color: Theme.of(context).primaryIconTheme.color,
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 10),
+                                                  Flexible(
+                                                    child: RichText(
+                                                      text: TextSpan(
+                                                        style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                        children: [
+                                                          TextSpan(
+                                                            text: 'Empleado: ',
+                                                            style: TextStyle(fontWeight: FontWeight.w500),
+                                                          ),
+                                                          TextSpan(
+                                                            text: '${data1.agent!.agentEmployeeId}',
+                                                            style: TextStyle(fontWeight: FontWeight.normal),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  )                   
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                      height: 1,
+                                      color: Theme.of(context).dividerColor,
+                                    ),  
+                              
+                              SizedBox(height: 20),
+                                    Padding(
+                                      padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                                    width: 18,
+                                                    height: 18,
+                                                    child: SvgPicture.asset(
+                                                      "assets/icons/usuario.svg",
+                                                      color: Theme.of(context).primaryIconTheme.color,
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 10),
+                                                  Flexible(
+                                                    child: RichText(
+                                                      text: TextSpan(
+                                                        style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                        children: [
+                                                          TextSpan(
+                                                            text: 'Nombre: ',
+                                                            style: TextStyle(fontWeight: FontWeight.w500),
+                                                          ),
+                                                          TextSpan(
+                                                            text: '${data1.agent!.agentFullname}',
+                                                            style: TextStyle(fontWeight: FontWeight.normal),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  )                   
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                      height: 1,
+                                      color: Theme.of(context).dividerColor,
+                                    ),
+                      
+                      
+                              SizedBox(height: 20),
+                                    Padding(
+                                      padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                                    width: 18,
+                                                    height: 18,
+                                                    child: SvgPicture.asset(
+                                                      "assets/icons/hora.svg",
+                                                      color: Theme.of(context).primaryIconTheme.color,
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 10),
+                                                  Flexible(
+                                                    child: RichText(
+                                                      text: TextSpan(
+                                                        style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                        children: [
+                                                          TextSpan(
+                                                            text: 'Hora salida: ',
+                                                            style: TextStyle(fontWeight: FontWeight.w500),
+                                                          ),
+                                                          TextSpan(
+                                                            text: '${data1.agent!.hourOut}',
+                                                            style: TextStyle(fontWeight: FontWeight.normal, color: Color.fromRGBO(40, 169, 83, 1)),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  )                   
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                      height: 1,
+                                      color: Theme.of(context).dividerColor,
+                                    ),
+                              
+                              SizedBox(height: 20),
+                                    Padding(
+                                      padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                                    width: 18,
+                                                    height: 18,
+                                                    child: SvgPicture.asset(
+                                                      "assets/icons/Casa.svg",
+                                                      color: Theme.of(context).primaryIconTheme.color,
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 10),
+                                                  Flexible(
+                                                    child: RichText(
+                                                      text: TextSpan(
+                                                        style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                        children: [
+                                                          TextSpan(
+                                                            text: 'Dirección: ',
+                                                            style: TextStyle(fontWeight: FontWeight.w500),
+                                                          ),
+                                                          TextSpan(
+                                                            text:  '${data1.agent!.neighborhoodName} ${data1.agent!.agentReferencePoint}\n${data1.agent!.departmentName}',
+                                                            style: TextStyle(fontWeight: FontWeight.normal),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  )                   
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                      height: 1,
+                                      color: Theme.of(context).dividerColor,
+                                    ), 
+                                      SizedBox(height: 20),
+                                      Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        
+                                        Container(
+                                          width: 100,
+                                          child: TextButton(
+                                            style: TextButton.styleFrom(
+                                              textStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white, fontSize: 16),
+                                              backgroundColor: Colors.transparent,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(8),
+                                                side: BorderSide(color: Theme.of(navigatorKey.currentContext!).primaryColorDark, width: 1.0), // Agrega un borde negro
+                                              ),
+                                            ),
+                                            onPressed: () async {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text(
+                                              "Cerrar",
+                                              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                                                    color: Theme.of(navigatorKey.currentContext!).primaryColorDark,
+                                                    fontSize: 16,
+                                                  ),
+                                            ),
+                                          )
+                                        ),
+                                        SizedBox(width: 10.0),
+                                        Container(width: 100,
+                                          child: TextButton(
+                                            style: TextButton.styleFrom(
+                                              textStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white, fontSize: 16),
+                                              backgroundColor: Color.fromRGBO(40, 93, 169, 1),
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(8)),
+                                            ),
+                                            child: Text("Agregar", style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white, fontSize: 16),),
+                                            onPressed: () async{
+                                              setState(() {
+                                      if (tables.length <= 13) {
+                                        if (prefs.nameSalida != tables2.toString()) {
+                                          noemp.insert(0,'${data1.agent!.agentEmployeeId}');
+                                          names.insert(0, '${data1.agent!.agentFullname}');
+                                          hourout.insert(0, '${data1.agent!.hourOut}');
+                                          direction.insert(0,'${data1.agent!.departmentName} ${data1.agent!.neighborhoodName}\n${data1.agent!.agentReferencePoint}');
+                                          tempArr.add(data1.agent!.agentId);
+                                          prefs.companyIdAgent = data1.agent!.companyId.toString();
+                                          prefs.nameSalida = data1.agent!.agentEmployeeId.toString();
+                                          User firstUser = User(
+                                              noempid: '${data1.agent!.agentEmployeeId}',
+                                              nameuser: '${data1.agent!.agentFullname}',
+                                              hourout: '${data1.agent!.hourOut}',
+                                              direction:'${data1.agent!.departmentName} ${data1.agent!.neighborhoodName}\n${data1.agent!.agentReferencePoint}',
+                                              idsend: data1.agent!.agentId);
+                                          List<User> listOfUsers = [firstUser];
+                                          this.handler!.insertUser(listOfUsers);
+                                          clearText();
+                                          //guardar();
+                                    
+                                        } else {
+                                          print('yasta we');
+                                          Navigator.pop(context);
+                                          WarningSuccessDialog().show(
+                                            context,
+                                            title: "El agente con número de empleado '${data1.agent!.agentEmployeeId}' ya está agregado al viaje",
+                                            tipo: 1,
+                                            onOkay: () {},
+                                          );  
+                                        }
+                                      } else if (tables.length > 13) {
                                         print('yasta we');
                                         Navigator.pop(context);
                                         WarningSuccessDialog().show(
                                           context,
-                                          title: "El agente con número de empleado '${data1.agent!.agentEmployeeId}' ya está agregado al viaje",
+                                          title: "El limite de agentes son 14, favor comunicarse con su cordinador",
                                           tipo: 1,
                                           onOkay: () {},
                                         );  
                                       }
-                                    } else if (tables.length > 13) {
-                                      print('yasta we');
+                                    
                                       Navigator.pop(context);
-                                      WarningSuccessDialog().show(
-                                        context,
-                                        title: "El limite de agentes son 14, favor comunicarse con su cordinador",
-                                        tipo: 1,
-                                        onOkay: () {},
-                                      );  
-                                    }
-
-                                    Navigator.pop(context);
-                                  }),
-                                  // },
-                                },
-                                child: Text('Agregar',
-                                    style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.normal,
-                                        color: backgroundColor)),
-                              ),
-                            ),                            
-                            Container(
-                              width: 100,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20)),
-                                  textStyle: TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                  backgroundColor: Colors.red,
-                                ),
-                                onPressed: () => {
-                                  setState(() {
-                                    Navigator.pop(context);
-                                  }),
-                                },
-                                child: Text('Cancelar',
-                                    style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.normal,
-                                        color: Colors.white)),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                                    });
+                                            },
+                                          ),
+                                        ),
+                                        
+                                      ],
+                                    ),
+                      ]),
                     ),
-                  ),
-                ),
-              ));
+                  )
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
     
     }
     return Search.fromJson(json.decode(responsed.body));
@@ -1657,6 +1777,22 @@ class _DriverDescriptionState extends State<DriverDescription>
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
+                                        
+                                        Container(width: 100,
+                                          child: TextButton(
+                                            style: TextButton.styleFrom(
+                                              textStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white, fontSize: 16),
+                                              backgroundColor: Color.fromRGBO(178, 13, 13, 1),
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(8)),
+                                            ),
+                                            child: Text("Cerrar", style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white, fontSize: 16),),
+                                            onPressed: () async{
+                                              Navigator.pop(context);
+                                            },
+                                          ),
+                                        ),
+                                        SizedBox(width: 10.0),
                                         Container(width: 100,
                                           child: TextButton(
                                             style: TextButton.styleFrom(
@@ -1672,21 +1808,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                                             },
                                           ),
                                         ),
-                                        SizedBox(width: 10.0),
-                                        Container(width: 100,
-                                          child: TextButton(
-                                            style: TextButton.styleFrom(
-                                              textStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white, fontSize: 16),
-                                              backgroundColor: Color.fromRGBO(178, 13, 13, 1),
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(8)),
-                                            ),
-                                            child: Text("Cerrar", style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white, fontSize: 16),),
-                                            onPressed: () async{
-                                              Navigator.pop(context);
-                                            },
-                                          ),
-                                        ),
+                                        
                                       ],
                                     ),
                                   ],

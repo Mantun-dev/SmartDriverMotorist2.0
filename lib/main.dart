@@ -120,15 +120,6 @@ class _MyAppState extends State<MyApp> {
   
 }
 
-Future<dynamic> showMyDialog() {
-  return WarningSuccessDialog().show(
-    navigatorKey.currentContext!,
-    title: 'El agente seleccionado ya está agregado al viaje',
-    tipo: 2,
-    onOkay: () {},
-  );
-}
-
 EventBus eventBus = EventBus();
 
 class ThemeChangeEvent {

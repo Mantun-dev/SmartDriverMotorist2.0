@@ -2,6 +2,7 @@ import 'package:flutter_auth/Drivers/components/descriptionDriver.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
+import '../../../../components/warning_dialog.dart';
 import '../../../../main.dart';
 
 class DatabaseHandler {
@@ -46,7 +47,12 @@ class DatabaseHandler {
       try {
         result = await db.insert('userX', user.toMap());
       } catch (e) {
-        showMyDialog();
+        WarningSuccessDialog().show(
+          navigatorKey.currentContext!,
+          title: 'El agente seleccionado ya está agregado al viaje',
+          tipo: 2,
+          onOkay: () {},
+        );
         print(e);
       }
     }
@@ -60,7 +66,12 @@ class DatabaseHandler {
       try {
         result = await db.insert('agentInsert', user.toMap());
       } catch (e) {
-        showMyDialog();
+        WarningSuccessDialog().show(
+          navigatorKey.currentContext!,
+          title: 'El agente seleccionado ya está agregado al viaje',
+          tipo: 2,
+          onOkay: () {},
+        );
         print(e);
       }
     }
