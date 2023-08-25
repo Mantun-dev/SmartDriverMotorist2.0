@@ -50,7 +50,7 @@ class DatabaseHandler {
         WarningSuccessDialog().show(
           navigatorKey.currentContext!,
           title: 'El agente seleccionado ya está agregado al viaje',
-          tipo: 2,
+          tipo: 1,
           onOkay: () {},
         );
         print(e);
@@ -69,7 +69,7 @@ class DatabaseHandler {
         WarningSuccessDialog().show(
           navigatorKey.currentContext!,
           title: 'El agente seleccionado ya está agregado al viaje',
-          tipo: 2,
+          tipo: 1,
           onOkay: () {},
         );
         print(e);
@@ -88,7 +88,7 @@ class DatabaseHandler {
         WarningSuccessDialog().show(
           navigatorKey.currentContext!,
           title: 'El agente seleccionado ya está agregado al viaje',
-          tipo: 2,
+          tipo: 1,
           onOkay: () {},
         );
 
