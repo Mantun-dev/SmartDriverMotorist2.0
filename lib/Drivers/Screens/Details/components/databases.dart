@@ -85,8 +85,13 @@ class DatabaseHandler {
       try {
         result = await db.insert('agentInsertSolid', user.toMap());
       } catch (e) {
-        showMyDialog();
-        print(e);
+        WarningSuccessDialog().show(
+          navigatorKey.currentContext!,
+          title: 'El agente seleccionado ya está agregado al viaje',
+          tipo: 2,
+          onOkay: () {},
+        );
+
       }
     }
     return result;
