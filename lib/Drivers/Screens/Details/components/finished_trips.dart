@@ -6,6 +6,8 @@ import 'package:flutter_auth/Drivers/models/agentsInTravelModel.dart';
 import 'package:flutter_auth/Drivers/models/network.dart';
 import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 import 'package:intl/intl.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../constants.dart';
 
@@ -77,6 +79,12 @@ class _DataTableExample extends State<MyFinishedTrips> {
             ]),
           )),
     );
+  }
+
+  launchSalidasMaps(lat,lng)async{
+    String destination = '$lat,$lng';
+    String url = 'google.navigation:q=$destination&mode=d';
+    await launchUrl(Uri.parse(url));
   }
 
   Widget _agentToConfirm() {
@@ -175,7 +183,38 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                     style: TextStyle(
                                                         color: Colors.white,
                                                         fontSize: 18)),
-                                              }
+                                              },
+                                              Expanded(
+                                        child: InkWell(
+                                          onTap: () {
+                                            if (abc.data!.trips![0]
+                                                      .inTrip![index].latitude==null) {
+                                              QuickAlert.show(
+                                                context: context,
+                                                title: "Alerta",
+                                                text: 'Este agente no cuenta con ubicación',
+                                                type: QuickAlertType.error,
+                                              );
+                                            }else{
+                                              launchSalidasMaps(abc.data!.trips![0]
+                                                      .inTrip![index].latitude,abc.data!.trips![0]
+                                                      .inTrip![index].longitude);                                          
+                                            }
+                                            //print('Dirección we');
+                                          },
+                                          child: Column(
+                                            children: [
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.end,
+                                                children: [
+                                                Icon(Icons.location_on_outlined, color:abc.data!.trips![0]
+                                                      .inTrip![index].latitude==null? Colors.red :firstColor, size: 30,),
+                                                Text('Ubicación ',style: TextStyle(color:Colors.white,fontWeight: FontWeight.normal,fontSize: 16.0)),                                      
+                                              ],)
+                                            ],
+                                          ),
+                                        ),
+                                      ), 
                                             ],
                                           ),
                                           Column(crossAxisAlignment:CrossAxisAlignment.end,

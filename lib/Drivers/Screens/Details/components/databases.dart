@@ -12,8 +12,8 @@ class DatabaseHandler {
     return openDatabase(
       join(path, 'agent.db'),
       onCreate: (database, version) async {
-        print('aquiiii week');
-        print(version);
+        //print('aquiiii week');
+        //print(version);
         await database.execute(
           "CREATE TABLE userX(noempid TEXT PRIMARY KEY, nameuser TEXT NOT NULL,hourout TEXT NOT NULL, direction TEXT NOT NULL, idsend INTEGER NOT NULL)",
         );
@@ -25,8 +25,8 @@ class DatabaseHandler {
           );
       },
       onUpgrade: (db, oldVersion, newVersion) async {
-        print('aquiiii week2wwe');
-        print(oldVersion);
+       // print('aquiiii week2wwe');
+       // print(oldVersion);
         if (oldVersion == 2) {
           await db.execute(
             "CREATE TABLE agentInsert(noempid TEXT PRIMARY KEY, nameuser TEXT NOT NULL,hourout TEXT NOT NULL, direction TEXT NOT NULL, idsend INTEGER NOT NULL)",
@@ -91,7 +91,7 @@ class DatabaseHandler {
           tipo: 1,
           onOkay: () {},
         );
-
+        print(e);
       }
     }
     return result;
