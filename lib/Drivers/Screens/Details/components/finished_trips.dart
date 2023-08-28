@@ -277,7 +277,43 @@ class _DataTableExample extends State<MyFinishedTrips> {
                             tilePadding: const EdgeInsets.only(right: 10, left: 10),
                               title: Column(
                               children: [
-
+                                SizedBox(height: 20),
+                                        Padding(
+                                            padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
+                                            child: InkWell(
+                                                onTap: () {
+                                              if (abc.data!.trips![0].inTrip![index].latitude==null) {
+                                                QuickAlert.show(
+                                                  context: context,
+                                                  title: "Alerta",
+                                                  text: 'Este agente no cuenta con ubicación',
+                                                  type: QuickAlertType.error,
+                                                );
+                                              }else{
+                                                launchSalidasMaps(abc.data!.trips![0].inTrip![index].latitude,abc.data!.trips![0].inTrip![index].longitude);                                          
+                                              }
+                                              //print('Dirección we');
+                                            },
+                                              child: Row(
+                                                children: [
+                                                  Container(
+                                                            width: 18,
+                                                            height: 18,
+                                                            child: Icon(Icons.location_on_outlined, color:abc.data!.trips![0].inTrip![index].latitude==null? Colors.red :Color.fromRGBO(0, 191, 95, 1)),
+                                                          ),
+                                                          SizedBox(width: 10),
+                                                          Flexible(
+                                                            child: Text(
+                                                              'Ubicación',
+                                                              style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                            ),
+                                                          ),
+                                                                             
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          
                                 SizedBox(height: 20),
                                 Padding(
                                   padding: const EdgeInsets.only(right: 10, left: 10),
