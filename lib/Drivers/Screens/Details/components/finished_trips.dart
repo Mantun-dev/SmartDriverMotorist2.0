@@ -5,6 +5,7 @@ import 'package:flutter_auth/Drivers/models/AgentTripCompleted.dart';
 import 'package:flutter_auth/Drivers/models/agentsInTravelModel.dart';
 import 'package:flutter_auth/Drivers/models/network.dart';
 import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
@@ -253,208 +254,326 @@ class _DataTableExample extends State<MyFinishedTrips> {
                     physics: ClampingScrollPhysics(),
                     itemCount: abc.data!.trips![0].inTrip!.length,
                     itemBuilder: (context, index) {
-                      return Container(
-                        decoration: BoxDecoration(boxShadow: [
-                          BoxShadow(
-                              blurStyle: BlurStyle.normal,
-                              color: Colors.white.withOpacity(0.2),
-                              blurRadius: 15,
-                              spreadRadius: -20,
-                              offset: Offset(-8, -6)),
-                          BoxShadow(
-                              blurStyle: BlurStyle.normal,
-                              color: Colors.black.withOpacity(0.6),
-                              blurRadius: 30,
-                              spreadRadius: -15,
-                              offset: Offset(18, 5)),
-                        ]),
-                        //width: 500.0,
-                        child: Column(
-                          children: [
-                            Card(
-                              color: backgroundColor,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10)),
-                              margin: EdgeInsets.all(15.0),
-                              elevation: 2,
-                              child: Column(
-                                children: <Widget>[
-                                  Padding(
-                                    padding: const EdgeInsets.all(1.0),
-                                    child: ExpansionTile(
-                                      collapsedIconColor: Colors.white,
-                                      backgroundColor: backgroundColor,
-                                      title: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
-                                        children: <Widget>[
-                                          Row(
-                                            children: [
-                                              if (abc.data!.trips![0]
-                                                      .inTrip![index].traveled ==
-                                                  1) ...{
-                                                Text('✅',
-                                                    style: TextStyle(
-                                                        color: Colors.green,
-                                                        fontSize: 15)),
-                                                SizedBox(width: 18),
-                                                Text('Abordó',
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 18)),
-                                              } else ...{
-                                                Icon(Icons.cancel,
-                                                    color: Colors.red[500]),
-                                                SizedBox(width: 15,),
-                                                Text('no abordó',
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 18)),
-                                              },
-                                              Expanded(
-                                        child: InkWell(
-                                          onTap: () {
-                                            if (abc.data!.trips![0]
-                                                      .inTrip![index].latitude==null) {
-                                              QuickAlert.show(
-                                                context: context,
-                                                title: "Alerta",
-                                                text: 'Este agente no cuenta con ubicación',
-                                                type: QuickAlertType.error,
-                                              );
-                                            }else{
-                                              launchSalidasMaps(abc.data!.trips![0]
-                                                      .inTrip![index].latitude,abc.data!.trips![0]
-                                                      .inTrip![index].longitude);                                          
-                                            }
-                                            //print('Dirección we');
-                                          },
-                                          child: Column(
-                                            children: [
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.end,
-                                                children: [
-                                                Icon(Icons.location_on_outlined, color:abc.data!.trips![0]
-                                                      .inTrip![index].latitude==null? Colors.red :firstColor, size: 30,),
-                                                Text('Ubicación ',style: TextStyle(color:Colors.white,fontWeight: FontWeight.normal,fontSize: 16.0)),                                      
-                                              ],)
-                                            ],
-                                          ),
-                                        ),
-                                      ), 
-                                            ],
-                                          ),
-                                          Column(crossAxisAlignment:CrossAxisAlignment.end,
-                                            children: <Widget>[
-                                              Padding(padding: const EdgeInsets.fromLTRB(0,10,20,0),
-                                              child: Row(
-                                                children: [
-                                                  Icon(Icons.supervised_user_circle_rounded,color: thirdColor),
-                                                  SizedBox(width: 15,),
-                                                  Flexible(child: Text('Nombre: ${abc.data!.trips![0].inTrip![index].agentFullname}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
-                                                ],
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 10.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8.0),
+                            border: Border.all(color: Theme.of(context).dividerColor,),
+                          ),
+                          child: ExpansionTile(
+                            iconColor: Theme.of(context).primaryIconTheme.color,
+                            tilePadding: const EdgeInsets.only(right: 10, left: 10),
+                              title: Column(
+                              children: [
+
+                                SizedBox(height: 20),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 10, left: 10),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                                width: 18,
+                                                height: 18,
+                                                child: SvgPicture.asset(
+                                                  "assets/icons/usuario.svg",
+                                                  color: Color.fromRGBO(213, 0, 0, 1),
                                                 ),
-                                              ),                       
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                      //trailing: SizedBox(),
-                                      children: [
-                                        Column(crossAxisAlignment:CrossAxisAlignment.end,
-                                          children: <Widget>[
-                                            Padding(padding: const EdgeInsets.fromLTRB(16,4,20,0),
+                                              ),
+                                              SizedBox(width: 10),
+                                              Flexible(
+                                                child: RichText(
+                                                  text: TextSpan(
+                                                    style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                    children: [
+                                                      TextSpan(
+                                                        text: 'Nombre: ',
+                                                        style: TextStyle(fontWeight: FontWeight.w500),
+                                                      ),
+                                                      TextSpan(
+                                                        text: '${abc.data!.trips![0].inTrip![index].agentFullname}',
+                                                        style: TextStyle(fontWeight: FontWeight.normal),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              )                   
+                                    ],
+                                  ),
+                                ),
+
+                                SizedBox(height: 20),
+                                        Padding(
+                                            padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
                                             child: Row(
                                               children: [
-                                                Icon(Icons.location_city,color: thirdColor),
-                                                SizedBox(width: 15,),
-                                                Flexible(child: Text('Empresa: ${abc.data!.trips![0].inTrip![index].companyName}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
+                                                Container(
+                                                          width: 18,
+                                                          height: 18,
+                                                          child: SvgPicture.asset(
+                                                            "assets/icons/hora.svg",
+                                                            color: Theme.of(context).primaryIconTheme.color,
+                                                          ),
+                                                        ),
+                                                        SizedBox(width: 10),
+                                                        Flexible(
+                                                          child: RichText(
+                                                            text: TextSpan(
+                                                              style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                              children: [
+                                                                TextSpan(
+                                                                  text: 'Hora de encuentro: ',
+                                                                  style: TextStyle(fontWeight: FontWeight.w500),
+                                                                ),
+                                                                TextSpan(
+                                                                  text: abc.data!.trips![0].inTrip![index].hourForTrip==null?' --':
+                                                                  '${abc.data!.trips![0].inTrip![index].hourForTrip}',
+                                                                  style: TextStyle(fontWeight: FontWeight.w700, color: Color.fromRGBO(40, 169, 83, 1)),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        )                   
                                               ],
-                                              ),
-                                            ),                       
-                                          ],
-                                        ),
-                                        Column(crossAxisAlignment:CrossAxisAlignment.end,
-                                            children: <Widget>[
-                                              Padding(padding: const EdgeInsets.fromLTRB(16,0,0,0),
-                                              child: Row(
-                                                children: [
-                                                  Icon(Icons.phone,color: thirdColor),
-                                                  SizedBox(width: 8,),
-                                                  TextButton(onPressed: () => launchUrl(
-                                                  Uri.parse('tel://${abc.data!.trips![0].inTrip![index].agentPhone}')),
-                                                  child: Text('Teléfono: ${abc.data!.trips![0].inTrip![index].agentPhone}',style: TextStyle(color: Colors.white,fontSize:18))),
-                                                  ],
-                                                ),
-                                              ),                       
-                                            ],
-                                          ),
-                                          Column(crossAxisAlignment:CrossAxisAlignment.end,
-                                            children: <Widget>[
-                                              Padding(padding: const EdgeInsets.fromLTRB(16,0,20,0),
-                                              child: Row(
-                                                children: [
-                                                  Icon(Icons.access_time,color: thirdColor),
-                                                  SizedBox(width: 15,),
-                                                  Flexible(child: Text('Entrada: ${abc.data!.trips![0].inTrip![index].hourIn}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
-                                                ],
-                                                ),
-                                              ),                       
-                                            ],
-                                        ),
-                                        Column(crossAxisAlignment:CrossAxisAlignment.end,
-                                          children: <Widget>[
-                                            Padding(padding: const EdgeInsets.fromLTRB(16,10,20,0),
-                                            child: Row(
-                                              children: [
-                                                Icon(Icons.location_pin,color: thirdColor),
-                                                SizedBox(width: 15,),
-                                                Flexible(child: Text('Dirección: ${abc.data!.trips![0].inTrip![index].agentReferencePoint} ${abc.data!.trips![0].inTrip![index].neighborhoodName} ${abc.data!.trips![0].inTrip![index].districtName}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
-                                              ],
-                                              ),
-                                            ),                       
-                                          ],
-                                        ),
-                                        Column(crossAxisAlignment:CrossAxisAlignment.end,
-                                            children: <Widget>[
-                                              Padding(padding: const EdgeInsets.fromLTRB(16,10,20,0),
-                                              child: Row(
-                                                children: [
-                                                  Icon(Icons.access_time,color: thirdColor),
-                                                  SizedBox(width: 15,),
-                                                  Flexible(child: Text('Hora de encuentro: ',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
-                                                  Text('${abc.data!.trips![0].inTrip![index].hourForTrip}',
-                                                    style: TextStyle(
-                                                    color: Gradiant2,
-                                                    fontWeight:
-                                                        FontWeight.bold,
-                                                    fontSize: 25.0))
-                                                  ],
-                                                ),
-                                              ),                       
-                                            ],
-                                        ),                                        
-                                        SizedBox(height: 20.0),
-                                        Container(
-                                          width: 200,
-                                          child: TextButton(
-                                            style: TextButton.styleFrom(
-                                              textStyle: TextStyle(
-                                                color:
-                                                    backgroundColor, // foreground
-                                              ),
-                                              backgroundColor: firstColor,
-                                              shape: RoundedRectangleBorder(
-                                                  side: BorderSide(
-                                                      color: firstColor,
-                                                      width: 2,
-                                                      style: BorderStyle.solid),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          20)),
                                             ),
-                                            onPressed: () {
-                                              showDialog(
+                                          ),
+                                    
+                                      Container(
+                                        height: 1,
+                                        color: Theme.of(context).dividerColor,
+                                      ),
+
+                                      SizedBox(height: 20),
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                                      width: 18,
+                                                      height: 18,
+                                                      child: SvgPicture.asset(
+                                                        "assets/icons/Casa.svg",
+                                                        color: Theme.of(context).primaryIconTheme.color,
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 10),
+                                                    Flexible(
+                                                      child: RichText(
+                                                        text: TextSpan(
+                                                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                          children: [
+                                                            TextSpan(
+                                                              text: 'Dirección: ',
+                                                              style: TextStyle(fontWeight: FontWeight.w500),
+                                                            ),
+                                                            TextSpan(
+                                                              text: '${abc.data!.trips![0].inTrip![index].agentReferencePoint} ${abc.data!.trips![0].inTrip![index].neighborhoodName} ${abc.data!.trips![0].inTrip![index].districtName}',
+                                                              style: TextStyle(fontWeight: FontWeight.normal),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    )                   
+                                          ],
+                                        ),
+                                      ),
+
+                                      if (abc.data!.trips![0].inTrip![index].neighborhoodReferencePoint != null)... {
+                                        Container(
+                                          height: 1,
+                                          color: Theme.of(context).dividerColor,
+                                        ),
+                                        SizedBox(height: 20),
+                                        Padding(
+                                          padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                        width: 18,
+                                                        height: 18,
+                                                        child: SvgPicture.asset(
+                                                          "assets/icons/warning.svg",
+                                                          color: Theme.of(context).primaryIconTheme.color,
+                                                        ),
+                                                      ),
+                                                      SizedBox(width: 10),
+                                                      Flexible(
+                                                        child: RichText(
+                                                          text: TextSpan(
+                                                            style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                            children: [
+                                                              TextSpan(
+                                                                text: 'Acceso autorizado: ',
+                                                                style: TextStyle(fontWeight: FontWeight.w500),
+                                                              ),
+                                                              TextSpan(
+                                                                text: '${abc.data!.trips![0].inTrip![index].neighborhoodReferencePoint}',
+                                                                style: TextStyle(fontWeight: FontWeight.normal),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      )                   
+                                            ],
+                                          ),
+                                        ),
+                                }
+                              ],
+                            ),
+                              trailing: SizedBox(),
+                              children: [
+                                
+                              Padding(
+                                padding: const EdgeInsets.only(right: 10, left: 10),
+                                child: Container(
+                                  height: 1,
+                                  color: Theme.of(context).dividerColor,
+                                ),
+                              ),
+                              SizedBox(height: 20),
+                              Padding(
+                                            padding: const EdgeInsets.only(right: 15, left: 20, bottom: 4),
+                                            child: Row(
+                                              children: [
+                                                Container(
+                                                          width: 18,
+                                                          height: 18,
+                                                          child: SvgPicture.asset(
+                                                            "assets/icons/hora.svg",
+                                                            color: Theme.of(context).primaryIconTheme.color,
+                                                          ),
+                                                        ),
+                                                        SizedBox(width: 10),
+                                                        Flexible(
+                                                          child: RichText(
+                                                            text: TextSpan(
+                                                              style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                              children: [
+                                                                TextSpan(
+                                                                  text: 'Entrada: ',
+                                                                  style: TextStyle(fontWeight: FontWeight.w500),
+                                                                ),
+                                                                TextSpan(
+                                                                  text: '${abc.data!.trips![0].inTrip![index].hourIn}',
+                                                                  style: TextStyle(fontWeight: FontWeight.w700, color: Color.fromRGBO(40, 169, 83, 1)),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        )                   
+                                              ],
+                                            ),
+                                          ),
+                                          Padding(
+                                        padding: const EdgeInsets.only(right: 10, left: 10),
+                                        child: Container(
+                                          height: 1,
+                                          color: Theme.of(context).dividerColor,
+                                        ),
+                                      ),
+
+                              
+                              SizedBox(height: 20),
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 15, left: 20, bottom: 4),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                                      width: 18,
+                                                      height: 18,
+                                                      child: SvgPicture.asset(
+                                                        "assets/icons/telefono_num.svg",
+                                                        color: Theme.of(context).primaryIconTheme.color,
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 10),
+                                                    Flexible(
+                                                      child: GestureDetector(
+                                                        onTap: () {
+                                                          launchUrl(Uri.parse(
+                                                            'tel://${abc.data!.trips![0].inTrip![index].agentPhone}',
+                                                          ));
+                                                        },
+                                                        child: RichText(
+                                                          text: TextSpan(
+                                                            style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                            children: [
+                                                              TextSpan(
+                                                                text: 'Teléfono: ',
+                                                                style: TextStyle(fontWeight: FontWeight.w500),
+                                                              ),
+                                                              TextSpan(
+                                                                text: '${abc.data!.trips![0].inTrip![index].agentPhone}',
+                                                                style: TextStyle(fontWeight: FontWeight.normal),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    )                   
+                                          ],
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 10, left: 10),
+                                        child: Container(
+                                          height: 1,
+                                          color: Theme.of(context).dividerColor,
+                                        ),
+                                      ),
+
+                                      SizedBox(height: 20),
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 15, left: 20, bottom: 4),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                                      width: 18,
+                                                      height: 18,
+                                                      child: SvgPicture.asset(
+                                                        "assets/icons/compania.svg",
+                                                        color: Theme.of(context).primaryIconTheme.color,
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 10),
+                                                    Flexible(
+                                                      child: RichText(
+                                                        text: TextSpan(
+                                                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                          children: [
+                                                            TextSpan(
+                                                              text: 'Empresa: ',
+                                                              style: TextStyle(fontWeight: FontWeight.w500),
+                                                            ),
+                                                            TextSpan(
+                                                              text: '${abc.data!.trips![0].inTrip![index].companyName}',
+                                                              style: TextStyle(fontWeight: FontWeight.normal),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    )                   
+                                          ],
+                                        ),
+                                      ),
+                                      Padding(
+                                padding: const EdgeInsets.only(right: 10, left: 10),
+                                child: Container(
+                                  height: 1,
+                                  color: Theme.of(context).dividerColor,
+                                ),
+                              ), 
+                                      SizedBox(height: 20.0),
+                                      TextButton(
+                                        style: TextButton.styleFrom(
+                                          side: BorderSide(width: 1, color: Theme.of(context).primaryColorDark),
+                                          fixedSize: Size(150, 25),
+                                          elevation: 0,
+                                          backgroundColor: Colors.transparent,
+                                          shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
+                                        ),
+                                        onPressed: () async{
+                                          showDialog(
                                                   context: context,
                                                   builder: (context) =>
                                                       AlertDialog(
@@ -548,32 +667,31 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                             ],
                                                           ),
                                                         ),
-                                                      ));
-                                            },
-                                            child: Text('Observaciones',
-                                                style: TextStyle(
-                                                    color: backgroundColor,
-                                                    fontSize: 18,
-                                                    fontWeight:
-                                                        FontWeight.w500)),
-                                          ),
-                                        ),
-                                        SizedBox(height: 20.0),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                                      ));                                
+                                        },
+                                        child: Text('Observaciones',
+                                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold)),
+                                      ),
+                                      SizedBox(height: 10.0),
+                                      // Usamos una fila para ordenar los botones del card
+                              ],
                             ),
-                          ],
-                        ),
-                      );
+                          ),
+                        );
                     });
               },
             );
           }
         } else {
-          return ColorLoader3();
+          return WillPopScope(
+            onWillPop: () async => false,
+            child: Center(
+              child: const Padding(
+                padding: EdgeInsets.all(16),
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          );
         }
       },
     );
@@ -897,7 +1015,15 @@ class _DataTableExample extends State<MyFinishedTrips> {
             );
           }
         } else {
-          return ColorLoader3();
+          return WillPopScope(
+            onWillPop: () async => false,
+            child: Center(
+              child: const Padding(
+                padding: EdgeInsets.all(16),
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          );
         }
       },
     );
