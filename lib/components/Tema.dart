@@ -16,6 +16,7 @@ final ThemeData appThemeDataLight = ThemeData(
   focusColor: const Color.fromRGBO(40, 93, 169, 1),
   hoverColor: Color(0xffc32c37),
   highlightColor: Colors.transparent,
+  unselectedWidgetColor: const Color.fromRGBO(40, 93, 169, 1),
 
   disabledColor: Color.fromRGBO(222, 218, 218, 1),
   dividerColor: Color.fromRGBO(214, 214, 214, 1),
@@ -86,6 +87,8 @@ final ThemeData appThemeDataLight = ThemeData(
 final ThemeData appThemeDataDark = ThemeData(
 
   fontFamily: familyFont,
+
+  unselectedWidgetColor: Colors.white,
 
   primaryColor: const Color.fromRGBO(27, 27, 39, 1),
   scaffoldBackgroundColor:const Color.fromRGBO(14, 14, 20, 1),

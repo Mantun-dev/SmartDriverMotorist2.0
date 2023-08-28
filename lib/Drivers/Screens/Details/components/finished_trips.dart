@@ -33,12 +33,23 @@ class _DataTableExample extends State<MyFinishedTrips> {
   Future<TripsList2>? itemx;
   bool confirmados = true;
   bool noconfirmados = false;
+  var datos;
 
   @override
   void initState() {
     super.initState();
     item = fetchAgentsCompleted();
     itemx = fetchAgentsInTravel2();
+    getData();
+  }
+
+  void getData() async{
+    
+    await fetchAgentsCompleted().then((value) => {
+      datos = value.trips,      
+    });
+
+    setState(() {});
   }
 
   @override
@@ -87,7 +98,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
   }
 
   Widget opcionesBotones() {
-    return Container(
+    return datos!=null? Container(
       decoration: BoxDecoration(
         color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(10),
@@ -97,18 +108,42 @@ class _DataTableExample extends State<MyFinishedTrips> {
         ) 
       ),
       child: Padding(
-        padding: const EdgeInsets.only(top: 2.0, bottom: 2, left: 4, right: 4),
+        padding: const EdgeInsets.only(top: 2.0, bottom: 2, right: 8, left: 8),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
                 child: TextButton(
                   style: TextButton.styleFrom(
-                    fixedSize: Size(150, 25),
+              
                     elevation: 0,
-                    backgroundColor: confirmados!=true?Colors.transparent:Theme.of(context).primaryColor,
+                    backgroundColor: confirmados!=true?Colors.transparent:Theme.of(context).unselectedWidgetColor,
                     shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
                   ),
-                  child: Text('Agentes confirmados',style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 15, color: confirmados==true?Theme.of(context).primaryColorLight:Theme.of(context).primaryColorDark)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Confirmados',style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 15, color: confirmados==true?Theme.of(context).primaryColorLight:Theme.of(context).primaryColorDark)),
+                      
+                      SizedBox(width: 5),
+                      
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: confirmados == false ? Theme.of(context).unselectedWidgetColor : Theme.of(context).primaryColorLight,
+                        ),
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Text(
+                              '${datos[0].inTrip!.length}',
+                              style: Theme.of(context).textTheme.labelSmall!.copyWith(color: confirmados == true ? Theme.of(context).unselectedWidgetColor : Theme.of(context).primaryColorLight, fontSize: 9)
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                   onPressed: confirmados==true?null:() {
                     setState(() {
                       confirmados = true;
@@ -117,16 +152,38 @@ class _DataTableExample extends State<MyFinishedTrips> {
                   },
                 ),
               ),
-              SizedBox(width: 5),
+              SizedBox(width: 10),
               Expanded(
                 child: TextButton(
                   style: TextButton.styleFrom(
-                    fixedSize: Size(150, 25),
                     elevation: 0,
-                    backgroundColor: noconfirmados!=true?Colors.transparent:Theme.of(context).primaryColor,
+                    backgroundColor: noconfirmados!=true?Colors.transparent:Theme.of(context).unselectedWidgetColor,
                     shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
                   ),
-                  child: Text('Agentes cancelados',style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 15, color: noconfirmados==true?Theme.of(context).primaryColorLight:Theme.of(context).primaryColorDark)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Cancelados',style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 15, color: noconfirmados==true?Theme.of(context).primaryColorLight:Theme.of(context).primaryColorDark)),
+                    
+                      SizedBox(width: 5),
+                  
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: noconfirmados == false ? Theme.of(context).unselectedWidgetColor : Theme.of(context).primaryColorLight,
+                        ),
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Text(
+                              '${datos[1].cancelAgent!.length}',
+                              style: Theme.of(context).textTheme.labelSmall!.copyWith(color: noconfirmados == true ? Theme.of(context).unselectedWidgetColor : Theme.of(context).primaryColorLight, fontSize: 9)
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                   onPressed: noconfirmados==true?null:() {
                     setState(() {
                       confirmados = false;
@@ -138,6 +195,15 @@ class _DataTableExample extends State<MyFinishedTrips> {
           
             ],
           ),
+      ),
+    ):
+    WillPopScope(
+      onWillPop: () async => false,
+      child: Center(
+        child: const Padding(
+          padding: EdgeInsets.all(16),
+          child: CircularProgressIndicator(),
+        ),
       ),
     );
   }
