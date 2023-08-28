@@ -262,7 +262,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
                             border: Border.all(color: Theme.of(context).dividerColor,),
                           ),
                           child: ExpansionTile(
-                            iconColor: Theme.of(context).primaryIconTheme.color,
+                            iconColor: Theme.of(context).focusColor,
                             tilePadding: const EdgeInsets.only(right: 10, left: 10),
                               title: Column(
                               children: [
@@ -273,13 +273,23 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                   child: Row(
                                     children: [
                                       Container(
-                                                width: 18,
-                                                height: 18,
-                                                child: SvgPicture.asset(
-                                                  "assets/icons/usuario.svg",
-                                                  color: Color.fromRGBO(213, 0, 0, 1),
-                                                ),
-                                              ),
+                                        width: 18,
+                                        height: 18,
+
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Color.fromRGBO(0, 191, 95, 1), // Borde blanco
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(3.0),
+                                          child: SvgPicture.asset(
+                                            "assets/icons/check.svg",
+                                            color: Colors.white,
+                                            width: 2,
+                                            height: 2,
+                                          ),
+                                        ),
+                                      ),
                                               SizedBox(width: 10),
                                               Flexible(
                                                 child: RichText(
