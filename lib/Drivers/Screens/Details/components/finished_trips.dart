@@ -221,27 +221,38 @@ class _DataTableExample extends State<MyFinishedTrips> {
       builder: (BuildContext context, abc) {
         if (abc.connectionState == ConnectionState.done) {
           if (abc.data!.trips![0].inTrip!.length == 0) {
-            return Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              margin: EdgeInsets.symmetric(vertical: 15),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  ListTile(
-                    leading: Icon(Icons.bus_alert),
-                    title: Text('Agentes',
-                        style: TextStyle(
-                            color: Colors.black,
+            return Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardTheme.color,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Theme.of(context).dividerColor,
+                  width: 1
+                ) // Radio de la esquina
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SvgPicture.asset( 
+                      "assets/icons/advertencia.svg",
+                      color: Theme.of(context).primaryIconTheme.color,
+                      width: 18,
+                      height: 18,
+                    ),
+                    Flexible(
+                      child: Text(
+                          '  No hay agentes confirmados para este viaje',
+                          style: TextStyle(
+                            color: Color.fromRGBO(213, 0, 0, 1),
                             fontWeight: FontWeight.normal,
-                            fontSize: 20.0)),
-                    subtitle: Text('No hay agentes confirmados para este viaje',
-                        style: TextStyle(
-                            color: Colors.red,
-                            fontWeight: FontWeight.normal,
-                            fontSize: 15.0)),
-                  ),
-                ],
+                            fontSize: 15.0
+                          )
+                        ),
+                    ),
+                  ],
+                ),
               ),
             );
           } else {
@@ -729,48 +740,37 @@ class _DataTableExample extends State<MyFinishedTrips> {
       builder: (BuildContext context, abc) {
         if (abc.connectionState == ConnectionState.done) {
           if (abc.data!.trips![2].cancelados!.length == 0) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15.0),
-              child: Container(
-                decoration: BoxDecoration(boxShadow: [
-                  BoxShadow(
-                      blurStyle: BlurStyle.normal,
-                      color: Colors.white.withOpacity(0.2),
-                      blurRadius: 15,
-                      spreadRadius: -15,
-                      offset: Offset(-15, -6)),
-                  BoxShadow(
-                      blurStyle: BlurStyle.normal,
-                      color: Colors.black.withOpacity(0.6),
-                      blurRadius: 30,
-                      spreadRadius: -15,
-                      offset: Offset(18, 5)),
-                ]),
-                child: Card(
-                  color: backgroundColor,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                  margin: EdgeInsets.symmetric(vertical: 15),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      ListTile(
-                        leading: Icon(Icons.bus_alert,
-                            color: thirdColor, size: 40.0),
-                        title: Text('Agentes',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.normal,
-                                fontSize: 20.0)),
-                        subtitle: Text(
-                            'No hay agentes cancelados para este viaje',
-                            style: TextStyle(
-                                color: Colors.red,
-                                fontWeight: FontWeight.normal,
-                                fontSize: 15.0)),
-                      ),
-                    ],
-                  ),
+            return Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardTheme.color,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Theme.of(context).dividerColor,
+                  width: 1
+                ) // Radio de la esquina
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SvgPicture.asset( 
+                      "assets/icons/advertencia.svg",
+                      color: Theme.of(context).primaryIconTheme.color,
+                      width: 18,
+                      height: 18,
+                    ),
+                    Flexible(
+                      child: Text(
+                          '  No hay agentes cancelados para este viaje',
+                          style: TextStyle(
+                            color: Color.fromRGBO(213, 0, 0, 1),
+                            fontWeight: FontWeight.normal,
+                            fontSize: 15.0
+                          )
+                        ),
+                    ),
+                  ],
                 ),
               ),
             );
@@ -784,147 +784,357 @@ class _DataTableExample extends State<MyFinishedTrips> {
                     physics: ClampingScrollPhysics(),
                     itemCount: abc.data!.trips![2].cancelados!.length,
                     itemBuilder: (context, index) {
-                      return Container(
-                       decoration: BoxDecoration(boxShadow: [
-                          BoxShadow(
-                              blurStyle: BlurStyle.normal,
-                              color: Colors.white.withOpacity(0.2),
-                              blurRadius: 15,
-                              spreadRadius: -20,
-                              offset: Offset(-8, -6)),
-                          BoxShadow(
-                              blurStyle: BlurStyle.normal,
-                              color: Colors.black.withOpacity(0.6),
-                              blurRadius: 30,
-                              spreadRadius: -15,
-                              offset: Offset(18, 5)),
-                        ]),
-                        child: Column(
-                          children: [
-                            Card(
-                              color: backgroundColor,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10)),
-                              margin: EdgeInsets.all(15.0),
-                              elevation: 2,
-                              child: Column(
-                                children: <Widget>[
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: ExpansionTile(
-                                      collapsedIconColor: Colors.white,
-                                      backgroundColor: backgroundColor,
-                                      title: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
-                                        children: <Widget>[
-                                          Row(
-                                            children: [
-                                              if (abc.data!.trips![2].cancelados![index].traveled == 1) ...{
-                                                Text('✅',style: TextStyle(color: Colors.green,fontSize: 20)),
-                                                SizedBox(width: 15),
-                                                Text('Abordó',style: TextStyle(color: Colors.white,fontSize: 20)),
-                                              } else ...{
-                                                Icon(Icons.cancel,color: Colors.red[500]),
-                                                Text(' no abordó',style: TextStyle(color: Colors.white,fontSize: 20)),
-                                              }
-                                            ],
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 10.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8.0),
+                            border: Border.all(color: Theme.of(context).dividerColor,),
+                          ),
+                          child: ExpansionTile(
+                            iconColor: Theme.of(context).focusColor,
+                            tilePadding: const EdgeInsets.only(right: 10, left: 10),
+                              title: Column(
+                              children: [
+
+                                SizedBox(height: 20),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 10, left: 10),
+                                  child: Row(
+                                    children: [
+                                      
+                                      abc.data!.trips![2].cancelados![index].traveled == 1 
+                                      ? Container(
+                                        width: 18,
+                                        height: 18,
+
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Color.fromRGBO(0, 191, 95, 1), // Borde blanco
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(3.0),
+                                          child: SvgPicture.asset(
+                                            "assets/icons/check.svg",
+                                            color: Colors.white,
+                                            width: 2,
+                                            height: 2,
                                           ),
-                                          Column(crossAxisAlignment:CrossAxisAlignment.end,
-                                            children: <Widget>[
-                                              Padding(padding: const EdgeInsets.fromLTRB(0,10,20,0),
-                                              child: Row(
-                                                children: [
-                                                  Icon(Icons.supervised_user_circle_rounded,color: thirdColor),
-                                                  SizedBox(width: 15,),
-                                                  Flexible(child: Text('Nombre: ${abc.data!.trips![2].cancelados![index].agentFullname}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
-                                                ],
+                                        ),
+                                      ):
+                                      Container(
+                                        width: 18,
+                                        height: 18,
+
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Color.fromRGBO(178, 13, 13, 1), // Borde blanco
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(3.0),
+                                          child: Center(child: Text('X', style: TextStyle(color: Colors.white, fontSize: 12))),
+                                        ),
+                                      )
+                                      ,
+                                              SizedBox(width: 10),
+                                              Flexible(
+                                                child: RichText(
+                                                  text: TextSpan(
+                                                    style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                    children: [
+                                                      TextSpan(
+                                                        text: 'Nombre: ',
+                                                        style: TextStyle(fontWeight: FontWeight.w500),
+                                                      ),
+                                                      TextSpan(
+                                                        text: '${abc.data!.trips![2].cancelados![index].agentFullname}',
+                                                        style: TextStyle(fontWeight: FontWeight.normal),
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
-                                              ),                       
+                                              )                   
+                                    ],
+                                  ),
+                                ),
+
+                                SizedBox(height: 20),
+                                        Padding(
+                                            padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
+                                            child: Row(
+                                              children: [
+                                                Container(
+                                                          width: 18,
+                                                          height: 18,
+                                                          child: SvgPicture.asset(
+                                                            "assets/icons/hora.svg",
+                                                            color: Theme.of(context).primaryIconTheme.color,
+                                                          ),
+                                                        ),
+                                                        SizedBox(width: 10),
+                                                        Flexible(
+                                                          child: RichText(
+                                                            text: TextSpan(
+                                                              style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                              children: [
+                                                                TextSpan(
+                                                                  text: 'Hora de encuentro: ',
+                                                                  style: TextStyle(fontWeight: FontWeight.w500),
+                                                                ),
+                                                                TextSpan(
+                                                                  text: abc.data!.trips![2].cancelados![index].hourForTrip==null?' --':
+                                                                  '${abc.data!.trips![2].cancelados![index].hourForTrip}',
+                                                                  style: TextStyle(fontWeight: FontWeight.w700, color: Color.fromRGBO(40, 169, 83, 1)),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        )                   
+                                              ],
+                                            ),
+                                          ),
+                                    
+                                      Container(
+                                        height: 1,
+                                        color: Theme.of(context).dividerColor,
+                                      ),
+
+                                      SizedBox(height: 20),
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                                      width: 18,
+                                                      height: 18,
+                                                      child: SvgPicture.asset(
+                                                        "assets/icons/Casa.svg",
+                                                        color: Theme.of(context).primaryIconTheme.color,
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 10),
+                                                    Flexible(
+                                                      child: RichText(
+                                                        text: TextSpan(
+                                                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                          children: [
+                                                            TextSpan(
+                                                              text: 'Dirección: ',
+                                                              style: TextStyle(fontWeight: FontWeight.w500),
+                                                            ),
+                                                            TextSpan(
+                                                              text: '${abc.data!.trips![2].cancelados![index].agentReferencePoint} ${abc.data!.trips![2].cancelados![index].neighborhoodName} ${abc.data!.trips![2].cancelados![index].districtName}',
+                                                              style: TextStyle(fontWeight: FontWeight.normal),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    )                   
+                                          ],
+                                        ),
+                                      ),
+
+                                      if (abc.data!.trips![2].cancelados![index].neighborhoodReferencePoint != null)... {
+                                        Container(
+                                          height: 1,
+                                          color: Theme.of(context).dividerColor,
+                                        ),
+                                        SizedBox(height: 20),
+                                        Padding(
+                                          padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                        width: 18,
+                                                        height: 18,
+                                                        child: SvgPicture.asset(
+                                                          "assets/icons/warning.svg",
+                                                          color: Theme.of(context).primaryIconTheme.color,
+                                                        ),
+                                                      ),
+                                                      SizedBox(width: 10),
+                                                      Flexible(
+                                                        child: RichText(
+                                                          text: TextSpan(
+                                                            style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                            children: [
+                                                              TextSpan(
+                                                                text: 'Acceso autorizado: ',
+                                                                style: TextStyle(fontWeight: FontWeight.w500),
+                                                              ),
+                                                              TextSpan(
+                                                                text: '${abc.data!.trips![2].cancelados![index].neighborhoodReferencePoint}',
+                                                                style: TextStyle(fontWeight: FontWeight.normal),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      )                   
                                             ],
                                           ),
-                                        ],
-                                      ),
-                                      //trailing: SizedBox(),
-                                      children: [
-                                        Column(crossAxisAlignment:CrossAxisAlignment.end,
-                                          children: <Widget>[
-                                            Padding(padding: const EdgeInsets.fromLTRB(15,5,20,0),
-                                            child: Row(
-                                              children: [
-                                                Icon(Icons.kitchen,color: thirdColor),
-                                                SizedBox(width: 15,),
-                                                Flexible(child: Text('Empresa: ${abc.data!.trips![2].cancelados![index].companyName}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
-                                              ],
-                                              ),
-                                            ),                       
-                                          ],
                                         ),
-                                        Column(crossAxisAlignment:CrossAxisAlignment.end,
-                                          children: <Widget>[
-                                            Padding(padding: const EdgeInsets.fromLTRB(15,0,20,0),
+                                }
+                              ],
+                            ),
+                              trailing: SizedBox(),
+                              children: [
+                                
+                              Padding(
+                                padding: const EdgeInsets.only(right: 10, left: 10),
+                                child: Container(
+                                  height: 1,
+                                  color: Theme.of(context).dividerColor,
+                                ),
+                              ),
+                              SizedBox(height: 20),
+                              Padding(
+                                            padding: const EdgeInsets.only(right: 15, left: 20, bottom: 4),
                                             child: Row(
                                               children: [
-                                                Icon(Icons.phone,color: thirdColor),
-                                                SizedBox(width: 10,),
-                                                TextButton(onPressed: () => launchUrl(Uri.parse('tel:${abc.data!.trips![2].cancelados![index].agentPhone}')),
-                                                  child: Container(
-                                                  child: Text('${abc.data!.trips![2].cancelados![index].agentPhone}',style: TextStyle(color: Colors.white,fontSize:18)))),
-                                                ],
-                                              ),
-                                            ),                       
-                                          ],
-                                        ),
-                                        Column(crossAxisAlignment:CrossAxisAlignment.end,
-                                          children: <Widget>[
-                                            Padding(padding: const EdgeInsets.fromLTRB(15,0,20,0),
-                                            child: Row(
-                                              children: [
-                                                Icon(Icons.access_time,color: thirdColor),
-                                                SizedBox(width: 15,),
-                                                Flexible(child: Text('Entrada: ${abc.data!.trips![2].cancelados![index].hourIn}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
+                                                Container(
+                                                          width: 18,
+                                                          height: 18,
+                                                          child: SvgPicture.asset(
+                                                            "assets/icons/hora.svg",
+                                                            color: Theme.of(context).primaryIconTheme.color,
+                                                          ),
+                                                        ),
+                                                        SizedBox(width: 10),
+                                                        Flexible(
+                                                          child: RichText(
+                                                            text: TextSpan(
+                                                              style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                              children: [
+                                                                TextSpan(
+                                                                  text: 'Entrada: ',
+                                                                  style: TextStyle(fontWeight: FontWeight.w500),
+                                                                ),
+                                                                TextSpan(
+                                                                  text: '${abc.data!.trips![2].cancelados![index].hourIn}',
+                                                                  style: TextStyle(fontWeight: FontWeight.w700, color: Color.fromRGBO(40, 169, 83, 1)),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        )                   
                                               ],
-                                              ),
-                                            ),                       
-                                          ],
-                                        ),
-                                        Column(crossAxisAlignment:CrossAxisAlignment.end,
-                                          children: <Widget>[
-                                            Padding(padding: const EdgeInsets.fromLTRB(15,10,20,0),
-                                            child: Row(
-                                              children: [
-                                                Icon(Icons.location_pin,color: thirdColor),
-                                                SizedBox(width: 15,),
-                                                Flexible(child: Text('Dirección: ${abc.data!.trips![2].cancelados![index].agentReferencePoint} ${abc.data!.trips![2].cancelados![index].neighborhoodName} ${abc.data!.trips![2].cancelados![index].districtName}',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
-                                              ],
-                                              ),
-                                            ),                       
-                                          ],
-                                        ),                    
-                                        SizedBox(height: 20.0),
-                                        Container(
-                                          width: 200,
-                                          child: TextButton(
-                                            style: TextButton.styleFrom(
-                                              textStyle: TextStyle(
-                                                color:
-                                                    backgroundColor, // foreground
-                                              ),
-                                              backgroundColor: firstColor,
-                                              shape: RoundedRectangleBorder(
-                                                  side: BorderSide(
-                                                      color: firstColor,
-                                                      width: 2,
-                                                      style: BorderStyle.solid),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          20)),
                                             ),
-                                            onPressed: () {
-                                              showDialog(
+                                          ),
+                                          Padding(
+                                        padding: const EdgeInsets.only(right: 10, left: 10),
+                                        child: Container(
+                                          height: 1,
+                                          color: Theme.of(context).dividerColor,
+                                        ),
+                                      ),
+
+                              
+                              SizedBox(height: 20),
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 15, left: 20, bottom: 4),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                                      width: 18,
+                                                      height: 18,
+                                                      child: SvgPicture.asset(
+                                                        "assets/icons/telefono_num.svg",
+                                                        color: Theme.of(context).primaryIconTheme.color,
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 10),
+                                                    Flexible(
+                                                      child: GestureDetector(
+                                                        onTap: () {
+                                                          launchUrl(Uri.parse(
+                                                            'tel://${abc.data!.trips![2].cancelados![index].agentPhone}',
+                                                          ));
+                                                        },
+                                                        child: RichText(
+                                                          text: TextSpan(
+                                                            style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                            children: [
+                                                              TextSpan(
+                                                                text: 'Teléfono: ',
+                                                                style: TextStyle(fontWeight: FontWeight.w500),
+                                                              ),
+                                                              TextSpan(
+                                                                text: '${abc.data!.trips![2].cancelados![index].agentPhone}',
+                                                                style: TextStyle(fontWeight: FontWeight.normal),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    )                   
+                                          ],
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 10, left: 10),
+                                        child: Container(
+                                          height: 1,
+                                          color: Theme.of(context).dividerColor,
+                                        ),
+                                      ),
+
+                                      SizedBox(height: 20),
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 15, left: 20, bottom: 4),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                                      width: 18,
+                                                      height: 18,
+                                                      child: SvgPicture.asset(
+                                                        "assets/icons/compania.svg",
+                                                        color: Theme.of(context).primaryIconTheme.color,
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 10),
+                                                    Flexible(
+                                                      child: RichText(
+                                                        text: TextSpan(
+                                                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                          children: [
+                                                            TextSpan(
+                                                              text: 'Empresa: ',
+                                                              style: TextStyle(fontWeight: FontWeight.w500),
+                                                            ),
+                                                            TextSpan(
+                                                              text: '${abc.data!.trips![2].cancelados![index].companyName}',
+                                                              style: TextStyle(fontWeight: FontWeight.normal),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    )                   
+                                          ],
+                                        ),
+                                      ),
+                                      Padding(
+                                padding: const EdgeInsets.only(right: 10, left: 10),
+                                child: Container(
+                                  height: 1,
+                                  color: Theme.of(context).dividerColor,
+                                ),
+                              ), 
+                                      SizedBox(height: 20.0),
+                                      TextButton(
+                                        style: TextButton.styleFrom(
+                                          side: BorderSide(width: 1, color: Theme.of(context).primaryColorDark),
+                                          fixedSize: Size(150, 25),
+                                          elevation: 0,
+                                          backgroundColor: Colors.transparent,
+                                          shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
+                                        ),
+                                        onPressed: () async{
+                                          showDialog(
                                                   context: context,
                                                   builder: (context) =>
-                                                      AlertDialog(backgroundColor:backgroundColor,
+                                                      AlertDialog(
+                                                        backgroundColor:
+                                                            backgroundColor,
                                                         content: Container(
                                                           width: 400,
                                                           height: 200,
@@ -933,32 +1143,25 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                               SizedBox(
                                                                   height: 15),
                                                               if (abc
-                                                                    .data
-                                                                    !.trips![2]
-                                                                    .cancelados![
-                                                                        index]
-                                                                    .comment ==
-                                                                null) ...{
+                                                                      .data
+                                                                      !.trips![2]
+                                                                      .cancelados![
+                                                                          index]
+                                                                      .commentDriver ==
+                                                                  null) ...{
                                                                 Center(
-                                                                  child: Text(
-                                                                    'Observación',
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            22,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .bold,
-                                                                        color:
-                                                                            thirdColor),
-                                                                  )),
-                                                                SizedBox(
-                                                                  height: 15),
-                                                                Text('${abc.data!.trips![2].cancelados![index].commentDriver}',
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            16,
-                                                                        color: Colors
-                                                                            .white),)
+                                                                    child: Text(
+                                                                  'Observación',
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          22,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      color: Colors
+                                                                          .white),
+                                                                )),
+                                                                Text('')
                                                               } else ...{
                                                                 Center(
                                                                   child: Text(
@@ -977,7 +1180,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                                     height: 15),
                                                                 Center(
                                                                   child: Text(
-                                                                   '${abc.data!.trips![2].cancelados![index].comment}',
+                                                                    '${abc.data!.trips![2].cancelados![index].commentDriver}',
                                                                     style: TextStyle(
                                                                         fontSize:
                                                                             16,
@@ -1020,22 +1223,17 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                             ],
                                                           ),
                                                         ),
-                                                      ));
-                                            },
-                                            child: Text('Observaciones',style: TextStyle(color: backgroundColor,fontSize: 18,fontWeight:FontWeight.w500)),
-                                          ),
-                                        ),
-                                        SizedBox(height: 20.0),
-                                      ],
-                                    ),
-                                  ),
-                                
-                                ],
-                              ),
+                                                      ));                                
+                                        },
+                                        child: Text('Observaciones',
+                                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold)),
+                                      ),
+                                      SizedBox(height: 10.0),
+                                      // Usamos una fila para ordenar los botones del card
+                              ],
                             ),
-                          ],
-                        ),
-                      );
+                          ),
+                        );
                     });
               },
             );
