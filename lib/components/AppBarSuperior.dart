@@ -105,6 +105,28 @@ class _AppBarSuperior extends State<AppBarSuperior> {
       );
       break;
 
+      case 44:
+        Navigator.push(
+        context,
+        PageRouteBuilder(
+          transitionDuration: Duration(milliseconds: 200),
+          pageBuilder: (_, __, ___) => DetailsDriverHistory(
+                                                          plantillaDriver:
+                                                              plantillaDriver[3],
+                                                        ),
+          transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+            return SlideTransition(
+              position: Tween<Offset>(
+                begin: Offset(-1.0, 0.0),
+                end: Offset.zero,
+              ).animate(animation),
+            child: child,
+           );
+          },
+        ),
+      );
+      break;
+
       default:
       Navigator.push(
         context,
@@ -248,6 +270,20 @@ class _AppBarSuperior extends State<AppBarSuperior> {
             ),
 
             if(item==4)
+            Expanded(
+              child: Center(
+                child: Text(
+                  "Historial de viajes",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.normal,
+                    fontSize: 21
+                  ),
+                ),
+              ),
+            ),
+
+            if(item==44)
             Expanded(
               child: Center(
                 child: Text(

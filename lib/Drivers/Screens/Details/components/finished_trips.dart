@@ -9,6 +9,9 @@ import 'package:intl/intl.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../../components/AppBarPosterior.dart';
+import '../../../../components/AppBarSuperior.dart';
+import '../../../../components/backgroundB.dart';
 import '../../../../constants.dart';
 
 void main() {
@@ -28,6 +31,9 @@ class _DataTableExample extends State<MyFinishedTrips> {
   final format = DateFormat("HH:mm");
   Future<TripsList3>? item;
   Future<TripsList2>? itemx;
+  bool confirmados = true;
+  bool noconfirmados = false;
+
   @override
   void initState() {
     super.initState();
@@ -37,47 +43,102 @@ class _DataTableExample extends State<MyFinishedTrips> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-          drawer: DriverMenuLateral(),
-          appBar: AppBar(
-            backgroundColor: backgroundColor,
-            elevation: 15,
-            actions: <Widget>[
-              IconButton(
-                icon: Icon(Icons.arrow_circle_left),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
+    return BackgroundBody(
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+                  appBar: PreferredSize(
+                    preferredSize: Size.fromHeight(56),
+                    child: AppBarSuperior(item: 44,)
+                  ),
+                  body: Column(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                        onTap: () {
+                          FocusScope.of(context).requestFocus(new FocusNode());
+                        },
+                        child: body()),
+                      ),
+                      SafeArea(child: AppBarPosterior(item:-1)),
+                    ],
+                  ),
+                ),
+      ),
+    );
+  }
+
+  Widget body() {
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+        child: ListView(children: <Widget>[
+        opcionesBotones(),
+        SizedBox(height: 10.0),
+
+        if(confirmados)
+          _agentToConfirm(),
+
+        if(noconfirmados)
+          _agentToCancel(),
+
+        SizedBox(height: 20.0),
+      ]),
+    );
+  }
+
+  Widget opcionesBotones() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardTheme.color,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: Theme.of(context).dividerColor,
+          width: 1
+        ) 
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(top: 2.0, bottom: 2, left: 4, right: 4),
+        child: Row(
+            children: [
+              Expanded(
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                    fixedSize: Size(150, 25),
+                    elevation: 0,
+                    backgroundColor: confirmados!=true?Colors.transparent:Theme.of(context).primaryColor,
+                    shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
+                  ),
+                  child: Text('Agentes confirmados',style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 15, color: confirmados==true?Theme.of(context).primaryColorLight:Theme.of(context).primaryColorDark)),
+                  onPressed: confirmados==true?null:() {
+                    setState(() {
+                      confirmados = true;
+                      noconfirmados = false;
+                    });
+                  },
+                ),
               ),
-              SizedBox(width: kDefaultPadding / 2)
+              SizedBox(width: 5),
+              Expanded(
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                    fixedSize: Size(150, 25),
+                    elevation: 0,
+                    backgroundColor: noconfirmados!=true?Colors.transparent:Theme.of(context).primaryColor,
+                    shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
+                  ),
+                  child: Text('Agentes cancelados',style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 15, color: noconfirmados==true?Theme.of(context).primaryColorLight:Theme.of(context).primaryColorDark)),
+                  onPressed: noconfirmados==true?null:() {
+                    setState(() {
+                      confirmados = false;
+                      noconfirmados = true;
+                    });
+                  },
+                ),
+              ),
+          
             ],
           ),
-          body: Container(
-            color: backgroundColor,
-            child: ListView(children: <Widget>[
-              SizedBox(height: 40.0),
-              Center(
-                  child: Text('Agentes con hora asignada',
-                      style: TextStyle(
-                          color: GradiantV_2,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 25.0))),
-              SizedBox(height: 10.0),
-              _agentToConfirm(),
-              SizedBox(height: 20.0),
-              Center(
-                  child: Text('Agentes cancelados',
-                      style: TextStyle(
-                          color: GradiantV_2,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 25.0))),
-              SizedBox(height: 10.0),
-              _agentToCancel(),
-              SizedBox(height: 20.0),
-            ]),
-          )),
+      ),
     );
   }
 
