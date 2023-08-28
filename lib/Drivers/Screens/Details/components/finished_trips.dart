@@ -272,7 +272,9 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                   padding: const EdgeInsets.only(right: 10, left: 10),
                                   child: Row(
                                     children: [
-                                      Container(
+                                      
+                                      abc.data!.trips![0].inTrip![index].traveled == 1 
+                                      ? Container(
                                         width: 18,
                                         height: 18,
 
@@ -289,7 +291,21 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                             height: 2,
                                           ),
                                         ),
-                                      ),
+                                      ):
+                                      Container(
+                                        width: 18,
+                                        height: 18,
+
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Color.fromRGBO(178, 13, 13, 1), // Borde blanco
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(3.0),
+                                          child: Center(child: Text('X', style: TextStyle(color: Colors.white, fontSize: 12))),
+                                        ),
+                                      )
+                                      ,
                                               SizedBox(width: 10),
                                               Flexible(
                                                 child: RichText(
