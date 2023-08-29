@@ -34,6 +34,9 @@ class _DataTableExample extends State<MyFinishedTrips> {
   Future<TripsList2>? itemx;
   bool confirmados = true;
   bool noconfirmados = false;
+  bool cargarData = false;
+  int totalViajaron = 0;
+  int totalNoViajaron = 0;
   var datos;
 
   @override
@@ -47,8 +50,18 @@ class _DataTableExample extends State<MyFinishedTrips> {
   void getData() async{
     
     await fetchAgentsCompleted().then((value) => {
-      datos = value.trips,      
+      datos = value.trips,
+
+      for(var i = 0; i< value.trips![0].inTrip!.length;i++){
+        if(value.trips![0].inTrip![i].traveled!=null)
+          totalViajaron++
+        else
+          totalNoViajaron++
+      },   
+
     });
+
+    cargarData = true;   
 
     setState(() {});
   }
@@ -84,6 +97,9 @@ class _DataTableExample extends State<MyFinishedTrips> {
     return Padding(
       padding: const EdgeInsets.all(20.0),
         child: ListView(children: <Widget>[
+
+        infoViaje(),  
+        SizedBox(height: 10.0), 
         opcionesBotones(),
         SizedBox(height: 10.0),
 
@@ -98,15 +114,119 @@ class _DataTableExample extends State<MyFinishedTrips> {
     );
   }
 
+  Widget infoViaje() {
+    return cargarData==true? Row(
+        children: [
+    
+          Container(
+            width: 115,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: Theme.of(context).dividerColor,
+                width: 1
+              ) // Radio de la esquina
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                children: [
+                  SvgPicture.asset(
+                    "assets/icons/viajaron.svg",
+                    color: Theme.of(context).primaryIconTheme.color,
+                    width: 25,
+                    height: 25,
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    'Viajaron: $totalViajaron',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 10),
+                  )
+                ],
+              ),
+            ),
+          ),
+    
+          Expanded(child: SizedBox()),
+    
+          Container(
+            width: 115,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: Theme.of(context).dividerColor,
+                width: 1
+              ) // Radio de la esquina
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                children: [
+                  SvgPicture.asset(
+                    "assets/icons/viajaron.svg",
+                    color: Theme.of(context).primaryIconTheme.color,
+                    width: 25,
+                    height: 25,
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    'No viajaron: $totalNoViajaron',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 10),
+                  )
+                ],
+              ),
+            ),
+          ),
+    
+          Expanded(child: SizedBox()),
+    
+          Container(
+            width: 115,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: Theme.of(context).dividerColor,
+                width: 1
+              ) // Radio de la esquina
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                children: [
+                  SvgPicture.asset(
+                    "assets/icons/agentes.svg",
+                    color: Theme.of(context).primaryIconTheme.color,
+                    width: 25,
+                    height: 25,
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    'Total de agentes: ${datos[0].inTrip!.length+datos[1].cancelAgent!.length}',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 10),
+                  )
+                ],
+              ),
+            ),
+          )
+    
+        ]
+      ):
+      WillPopScope(
+      onWillPop: () async => false,
+      child: Center(
+        child: const Padding(
+          padding: EdgeInsets.all(16),
+          child: CircularProgressIndicator(),
+        ),
+      ),
+    );
+  }
+
   Widget opcionesBotones() {
     return datos!=null? Container(
       decoration: BoxDecoration(
         color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: Theme.of(context).dividerColor,
-          width: 1
-        ) 
       ),
       child: Padding(
         padding: const EdgeInsets.only(top: 2.0, bottom: 2, right: 8, left: 8),
