@@ -74,6 +74,7 @@ class _DataTableExample extends State<DriverProfilePage> {
           future: item,
           builder: (BuildContext context, abc) {
             if (abc.connectionState == ConnectionState.done) {
+              print('${abc.data!.rating}');
               return Column(
                 children: [
                   Container(
@@ -245,7 +246,7 @@ class _DataTableExample extends State<DriverProfilePage> {
                             ),
                           ),
 
-                          SizedBox(height: 20),
+                          SizedBox(height: 10),
                           RatingBarIndicator(
                             rating: abc.data!.rating!["driverRating"]!,
                             itemBuilder: (context, index) => Padding(
@@ -283,29 +284,33 @@ class _DataTableExample extends State<DriverProfilePage> {
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.transparent,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(10.0),
                         border: Border.all(
                           color: Theme.of(context).dividerColor,
-                          width: 1
-                        )
+                          width: 1.0,  
+                        ),
                       ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          ListTile(
-                            leading: Icon(Icons.bus_alert, color: thirdColor),
-                            title: Text('Calificación',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.normal,
-                                    fontSize: 20.0)),
-                            subtitle: Text('Aún no ha sido calificado',
-                                style: TextStyle(
-                                    color: fourthColor,
-                                    fontWeight: FontWeight.normal,
-                                    fontSize: 15.0)),
+                      child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                        child: Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset( 
+                                "assets/icons/advertencia.svg",
+                                color: Theme.of(context).primaryIconTheme.color,
+                                width: 18,
+                                height: 18,
+                              ),
+                              Flexible(
+                                child: Text(
+                                  '  Aún no ha sido calificado',
+                                  style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15, color: Color.fromRGBO(213, 0, 0, 1), fontWeight: FontWeight.normal),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                     )
                   } else ...{
@@ -321,269 +326,51 @@ class _DataTableExample extends State<DriverProfilePage> {
 
                       child: Column(
                         children: [
-                          SizedBox(height: 10.0),
-                          Text('Conducción',
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: firstColor)),
-                          SizedBox(height: 10.0),
-                          Text('5 Estrellas',
-                              style: TextStyle(color: Colors.white)),
-                          RoundedProgressBar(
-                            margin: EdgeInsets.symmetric(horizontal: 15.0),
-                              childCenter: Text(
-                                  "${abc.data!.rating!["five1"]!.toInt()} ",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 10)),
-                              percent: abc.data!.percentageBars1!.stars5
-                                          .toDouble() ==
-                                      null
-                                  ? si
-                                  : abc.data!.percentageBars1!.stars5
-                                      .toDouble(),
-                              height: 20,
-                              theme: RoundedProgressBarTheme.blue),
-                          Text('4 Estrellas',
-                              style: TextStyle(color: Colors.white)),
-                          RoundedProgressBar(
-                            margin: EdgeInsets.symmetric(horizontal: 15.0),
-                              childCenter: Text(
-                                  "${abc.data!.rating!["four1"]!.toInt()} ",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 10)),
-                              percent: abc.data!.percentageBars1!.stars4
-                                          .toDouble() ==
-                                      null
-                                  ? si
-                                  : abc.data!.percentageBars1!.stars4
-                                      .toDouble(),
-                              height: 20,
-                              theme: RoundedProgressBarTheme.green),
-                          Text('3 Estrellas',
-                              style: TextStyle(color: Colors.white)),
-                          RoundedProgressBar(
-                            margin: EdgeInsets.symmetric(horizontal: 15.0),
-                              childCenter: Text(
-                                  "${abc.data!.rating!["three1"]!.toInt()} ",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 10)),
-                              percent: abc.data!.percentageBars1!.stars3
-                                          .toDouble() ==
-                                      null
-                                  ? si
-                                  : abc.data!.percentageBars1!.stars3
-                                      .toDouble(),
-                              height: 20,
-                              theme: RoundedProgressBarTheme.purple),
-                          Text('2 Estrellas',
-                              style: TextStyle(color: Colors.white)),
-                          RoundedProgressBar(
-                            margin: EdgeInsets.symmetric(horizontal: 15.0),
-                              childCenter: Text(
-                                  "${abc.data!.rating!["two1"]!.toInt()} ",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 10)),
-                              percent: abc.data!.percentageBars1!.stars2
-                                          .toDouble() ==
-                                      null
-                                  ? si
-                                  : abc.data!.percentageBars1!.stars2
-                                      .toDouble(),
-                              height: 20,
-                              theme: RoundedProgressBarTheme.yellow),
-                          Text('1 Estrellas',
-                              style: TextStyle(color: Colors.white)),
-                          RoundedProgressBar(
-                            margin: EdgeInsets.symmetric(horizontal: 15.0),
-                              childCenter: Text(
-                                  "${abc.data!.rating!["one1"]!.toInt()} ",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 10)),
-                              percent: abc.data!.percentageBars1!.stars1
-                                          .toDouble() ==
-                                      null
-                                  ? si
-                                  : abc.data!.percentageBars1!.stars1
-                                      .toDouble(),
-                              height: 20,
-                              theme: RoundedProgressBarTheme.red),
-                          Divider(),
-                          SizedBox(height: 30.0),
-                          Text('Amabilidad',
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: firstColor)),
-                          SizedBox(height: 10.0),
-                          Text('5 Estrellas',
-                              style: TextStyle(color: Colors.white)),
-                          RoundedProgressBar(
-                            margin: EdgeInsets.symmetric(horizontal: 15.0),
-                              childCenter: Text(
-                                  "${abc.data!.rating!["five2"]!.toInt()} ",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 10)),
-                              percent: abc.data!.percentageBars2!.stars5
-                                          .toDouble() ==
-                                      null
-                                  ? si
-                                  : abc.data!.percentageBars2!.stars5
-                                      .toDouble(),
-                              height: 20,
-                              theme: RoundedProgressBarTheme.blue),
-                          Text('4 Estrellas',
-                              style: TextStyle(color: Colors.white)),
-                          RoundedProgressBar(
-                            margin: EdgeInsets.symmetric(horizontal: 15.0),
-                              childCenter: Text(
-                                  "${abc.data!.rating!["four2"]!.toInt()} ",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 10)),
-                              percent: abc.data!.percentageBars2!.stars4
-                                          .toDouble() ==
-                                      null
-                                  ? si
-                                  : abc.data!.percentageBars2!.stars4
-                                      .toDouble(),
-                              height: 20,
-                              theme: RoundedProgressBarTheme.green),
-                          Text('3 Estrellas',
-                              style: TextStyle(color: Colors.white)),
-                          RoundedProgressBar(
-                            margin: EdgeInsets.symmetric(horizontal: 15.0),
-                              childCenter: Text(
-                                  "${abc.data!.rating!["three2"]!.toInt()} ",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 10)),
-                              percent: abc.data!.percentageBars2!.stars3
-                                          .toDouble() ==
-                                      null
-                                  ? si
-                                  : abc.data!.percentageBars2!.stars3
-                                      .toDouble(),
-                              height: 20,
-                              theme: RoundedProgressBarTheme.purple),
-                          Text('2 Estrellas',
-                              style: TextStyle(color: Colors.white)),
-                          RoundedProgressBar(
-                            margin: EdgeInsets.symmetric(horizontal: 15.0),
-                              childCenter: Text(
-                                  "${abc.data!.rating!["two2"]!.toInt()} ",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 10)),
-                              percent: abc.data!.percentageBars2!.stars2
-                                          .toDouble() ==
-                                      null
-                                  ? si
-                                  : abc.data!.percentageBars2!.stars2
-                                      .toDouble(),
-                              height: 20,
-                              theme: RoundedProgressBarTheme.yellow),
-                          Text('1 Estrellas',
-                              style: TextStyle(color: Colors.white)),
-                          RoundedProgressBar(
-                            margin: EdgeInsets.symmetric(horizontal: 15.0),
-                              childCenter: Text(
-                                  "${abc.data!.rating!["one2"]!.toInt()} ",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 10)),
-                              percent: abc.data!.percentageBars2!.stars1
-                                          .toDouble() ==
-                                      null
-                                  ? si
-                                  : abc.data!.percentageBars2!.stars1
-                                      .toDouble(),
-                              height: 20,
-                              theme: RoundedProgressBarTheme.red),
-                          Divider(),
-                          SizedBox(height: 30.0),
-                          Text('Condiciones del vehículo',
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: firstColor)),
-                          SizedBox(height: 10.0),
-                          Text('5 Estrellas',
-                              style: TextStyle(color: Colors.white)),
-                          RoundedProgressBar(
-                            margin: EdgeInsets.symmetric(horizontal: 15.0),
-                              childCenter: Text(
-                                  "${abc.data!.rating!["five3"]!.toInt()} ",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 10)),
-                              percent: abc.data!.percentageBars3!.stars5
-                                          .toDouble() ==
-                                      null
-                                  ? si
-                                  : abc.data!.percentageBars3!.stars5
-                                      .toDouble(),
-                              height: 20,
-                              theme: RoundedProgressBarTheme.blue),
-                          Text('4 Estrellas',
-                              style: TextStyle(color: Colors.white)),
-                          RoundedProgressBar(
-                            margin: EdgeInsets.symmetric(horizontal: 15.0),
-                              childCenter: Text(
-                                  "${abc.data!.rating!["four3"]!.toInt()} ",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 10)),
-                              percent: abc.data!.percentageBars3!.stars4
-                                          .toDouble() ==
-                                      null
-                                  ? si
-                                  : abc.data!.percentageBars3!.stars4
-                                      .toDouble(),
-                              height: 20,
-                              theme: RoundedProgressBarTheme.green),
-                          Text('3 Estrellas',
-                              style: TextStyle(color: Colors.white)),
-                          RoundedProgressBar(
-                            margin: EdgeInsets.symmetric(horizontal: 15.0),
-                              childCenter: Text(
-                                  "${abc.data!.rating!["three3"]!.toInt()} ",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 10)),
-                              percent: abc.data!.percentageBars3!.stars3
-                                          .toDouble() ==
-                                      null
-                                  ? si
-                                  : abc.data!.percentageBars3!.stars3
-                                      .toDouble(),
-                              height: 20,
-                              theme: RoundedProgressBarTheme.purple),
-                          Text('2 Estrellas',
-                              style: TextStyle(color: Colors.white)),
-                          RoundedProgressBar(
-                            margin: EdgeInsets.symmetric(horizontal: 15.0),
-                              childCenter: Text(
-                                  "${abc.data!.rating!["two3"]!.toInt()} ",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 10)),
-                              percent: abc.data!.percentageBars3!.stars2
-                                          .toDouble() ==
-                                      null
-                                  ? si
-                                  : abc.data!.percentageBars3!.stars2
-                                      .toDouble(),
-                              height: 20,
-                              theme: RoundedProgressBarTheme.yellow),
-                          Text('1 Estrellas',
-                              style: TextStyle(color: Colors.white)),
-                          RoundedProgressBar(
-                            margin: EdgeInsets.symmetric(horizontal: 15.0),
-                              childCenter: Text(
-                                  "${abc.data!.rating!["one3"]!.toInt()} ",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 10)),
-                              percent: abc.data!.percentageBars3!.stars1
-                                          .toDouble() ==
-                                      null
-                                  ? si
-                                  : abc.data!.percentageBars3!.stars1
-                                      .toDouble(),
-                              height: 20,
-                              theme: RoundedProgressBarTheme.red),
+                          SizedBox(height: 20),
+                          Center(
+                            child: Text(
+                              'Conducción',
+                              style: Theme.of(context).textTheme.labelMedium!.copyWith(fontSize: 16, fontWeight: FontWeight.w500),
+                            ),
+                          ),
+
+                          SizedBox(height: 5),
+                          RatingBarIndicator(
+                            rating: abc.data!.rating!["driverRating"]!,
+                            itemBuilder: (context, index) => Padding(
+                              padding: const EdgeInsets.only(right: 10, left: 10),
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  SvgPicture.asset(
+                                    "assets/icons/estrella.svg",
+                                    color: Colors.black,
+                                    height: 60,
+                                    width: 60,
+                                  ),
+                                  SvgPicture.asset(
+                                    "assets/icons/estrella.svg",
+                                    color: Color.fromRGBO(255, 225, 69, 1),
+                                    height: 52,
+                                    width: 52,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            itemCount: 5,
+                            itemSize: 50,
+                            direction: Axis.horizontal,
+                          ), 
+
+                          SizedBox(height: 5),
+                          Center(
+                            child: Text(
+                              '4 Estrellas (30 opiniones)',
+                              style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14),
+                            ),
+                          ),
+
+                          SizedBox(height: 20),
                         ],
                       ),
                     ),
@@ -591,7 +378,15 @@ class _DataTableExample extends State<DriverProfilePage> {
                 ],
               );
             } else {
-              return ColorLoader3();
+              return WillPopScope(
+                onWillPop: () async => false,
+                child: Center(
+                  child: const Padding(
+                    padding: EdgeInsets.all(16),
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+              );
             }
           },
         ),
