@@ -1501,13 +1501,13 @@ class _DriverDescriptionState extends State<DriverDescription>
                           Expanded(
                             child: Container(
                               decoration: BoxDecoration(
-                              color: Theme.of(context).cardTheme.color,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: Theme.of(context).dividerColor,
-                                width: 1
-                              ) // Radio de la esquina
-                            ),
+                                color: Theme.of(context).cardTheme.color,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: Theme.of(context).dividerColor,
+                                  width: 1
+                                ) // Radio de la esquina
+                              ),
                               child: Padding(
                                 padding: const EdgeInsets.only(left:20.0, right: 10),
                                 child: Row(
