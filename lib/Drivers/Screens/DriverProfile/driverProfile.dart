@@ -371,6 +371,94 @@ class _DataTableExample extends State<DriverProfilePage> {
                           ),
 
                           SizedBox(height: 20),
+                          Center(
+                            child: Text(
+                              'Amabilidad',
+                              style: Theme.of(context).textTheme.labelMedium!.copyWith(fontSize: 16, fontWeight: FontWeight.w500),
+                            ),
+                          ),
+
+                          SizedBox(height: 5),
+                          RatingBarIndicator(
+                            rating: abc.data!.rating!["driverRating"]!,
+                            itemBuilder: (context, index) => Padding(
+                              padding: const EdgeInsets.only(right: 10, left: 10),
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  SvgPicture.asset(
+                                    "assets/icons/estrella.svg",
+                                    color: Colors.black,
+                                    height: 60,
+                                    width: 60,
+                                  ),
+                                  SvgPicture.asset(
+                                    "assets/icons/estrella.svg",
+                                    color: Color.fromRGBO(255, 225, 69, 1),
+                                    height: 52,
+                                    width: 52,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            itemCount: 5,
+                            itemSize: 50,
+                            direction: Axis.horizontal,
+                          ), 
+
+                          SizedBox(height: 5),
+                          Center(
+                            child: Text(
+                              '4 Estrellas (30 opiniones)',
+                              style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14),
+                            ),
+                          ),
+
+                          SizedBox(height: 20),
+                          Center(
+                            child: Text(
+                              'Condiciones del vehículo',
+                              style: Theme.of(context).textTheme.labelMedium!.copyWith(fontSize: 16, fontWeight: FontWeight.w500),
+                            ),
+                          ),
+
+                          SizedBox(height: 5),
+                          RatingBarIndicator(
+                            rating: abc.data!.rating!["driverRating"]!,
+                            itemBuilder: (context, index) => Padding(
+                              padding: const EdgeInsets.only(right: 10, left: 10),
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  SvgPicture.asset(
+                                    "assets/icons/estrella.svg",
+                                    color: Colors.black,
+                                    height: 60,
+                                    width: 60,
+                                  ),
+                                  SvgPicture.asset(
+                                    "assets/icons/estrella.svg",
+                                    color: Color.fromRGBO(255, 225, 69, 1),
+                                    height: 52,
+                                    width: 52,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            itemCount: 5,
+                            itemSize: 50,
+                            direction: Axis.horizontal,
+                          ), 
+
+                          SizedBox(height: 5),
+                          Center(
+                            child: Text(
+                              '4 Estrellas (30 opiniones)',
+                              style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14),
+                            ),
+                          ),
+
+                          SizedBox(height: 20),
                         ],
                       ),
                     ),
