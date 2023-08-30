@@ -5,6 +5,7 @@ import 'package:flutter_auth/Drivers/models/AgentTripCompleted.dart';
 import 'package:flutter_auth/Drivers/models/agentsInTravelModel.dart';
 import 'package:flutter_auth/Drivers/models/network.dart';
 import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
+import 'package:flutter_auth/main.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:quickalert/models/quickalert_type.dart';
@@ -397,42 +398,6 @@ class _DataTableExample extends State<MyFinishedTrips> {
                             tilePadding: const EdgeInsets.only(right: 10, left: 10),
                               title: Column(
                               children: [
-                                SizedBox(height: 20),
-                                        Padding(
-                                            padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
-                                            child: InkWell(
-                                                onTap: () {
-                                              if (abc.data!.trips![0].inTrip![index].latitude==null) {
-                                                QuickAlert.show(
-                                                  context: context,
-                                                  title: "Alerta",
-                                                  text: 'Este agente no cuenta con ubicación',
-                                                  type: QuickAlertType.error,
-                                                );
-                                              }else{
-                                                launchSalidasMaps(abc.data!.trips![0].inTrip![index].latitude,abc.data!.trips![0].inTrip![index].longitude);                                          
-                                              }
-                                              //print('Dirección we');
-                                            },
-                                              child: Row(
-                                                children: [
-                                                  Container(
-                                                            width: 18,
-                                                            height: 18,
-                                                            child: Icon(Icons.location_on_outlined, color:abc.data!.trips![0].inTrip![index].latitude==null? Colors.red :Color.fromRGBO(0, 191, 95, 1)),
-                                                          ),
-                                                          SizedBox(width: 10),
-                                                          Flexible(
-                                                            child: Text(
-                                                              'Ubicación',
-                                                              style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
-                                                            ),
-                                                          ),
-                                                                             
-                                                ],
-                                              ),
-                                            ),
-                                          ),
                                           
                                 SizedBox(height: 20),
                                 Padding(
@@ -495,6 +460,42 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                   ),
                                 ),
 
+                                SizedBox(height: 20),
+                                        Padding(
+                                            padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
+                                            child: InkWell(
+                                                onTap: () {
+                                              if (abc.data!.trips![0].inTrip![index].latitude==null) {
+                                                QuickAlert.show(
+                                                  context: context,
+                                                  title: "Alerta",
+                                                  text: 'Este agente no cuenta con ubicación',
+                                                  type: QuickAlertType.error,
+                                                );
+                                              }else{
+                                                launchSalidasMaps(abc.data!.trips![0].inTrip![index].latitude,abc.data!.trips![0].inTrip![index].longitude);                                          
+                                              }
+                                              //print('Dirección we');
+                                            },
+                                              child: Row(
+                                                children: [
+                                                  Container(
+                                                            width: 18,
+                                                            height: 18,
+                                                            child: Icon(Icons.location_on_outlined, color:abc.data!.trips![0].inTrip![index].latitude==null? Colors.red :Color.fromRGBO(0, 191, 95, 1)),
+                                                          ),
+                                                          SizedBox(width: 10),
+                                                          Flexible(
+                                                            child: Text(
+                                                              'Ubicación',
+                                                              style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                            ),
+                                                          ),
+                                                                             
+                                                ],
+                                              ),
+                                            ),
+                                          ),
                                 SizedBox(height: 20),
                                         Padding(
                                             padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
@@ -766,101 +767,170 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                           shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
                                         ),
                                         onPressed: () async{
-                                          showDialog(
-                                                  context: context,
-                                                  builder: (context) =>
-                                                      AlertDialog(
-                                                        backgroundColor:
-                                                            backgroundColor,
-                                                        content: Container(
-                                                          width: 400,
-                                                          height: 200,
+                                          print(abc.data!.trips![0].inTrip![index].commentDriver);
+                                          Size size = MediaQuery.of(context).size;
+                                          showGeneralDialog(
+                                            barrierColor: Colors.black.withOpacity(0.6),
+                                            transitionBuilder: (context, a1, a2, widget) {
+                                              final curvedValue = Curves.easeInOut.transform(a1.value);
+                                              return Transform.translate(
+                                                offset: Offset(0.0, (1 - curvedValue) * size.height / 2),
+                                                child: Opacity(
+                                                  opacity: a1.value,
+                                                  child: Align(
+                                                    alignment: Alignment.bottomCenter,
+                                                    child: Container(
+                                                      height: size.height/3,
+                                                      width: size.width,
+                                                      decoration: BoxDecoration(
+                                                        color: prefs.tema ? Color.fromRGBO(47, 46, 65, 1) : Colors.white,
+                                                        borderRadius: BorderRadius.only(
+                                                          topLeft: Radius.circular(30.0),
+                                                          topRight: Radius.circular(30.0),
+                                                        ),
+                                                      ),
+                                                      child: Padding(
+                                                        padding: const EdgeInsets.symmetric(horizontal: 30),
+                                                        child: SingleChildScrollView(
                                                           child: Column(
-                                                            children: <Widget>[
-                                                              SizedBox(
-                                                                  height: 15),
-                                                              if (abc
-                                                                      .data
-                                                                      !.trips![0]
-                                                                      .inTrip![
-                                                                          index]
-                                                                      .commentDriver ==
-                                                                  null) ...{
-                                                                Center(
-                                                                    child: Text(
-                                                                  'Observación',
-                                                                  style: TextStyle(
-                                                                      fontSize:
-                                                                          22,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold,
-                                                                      color: Colors
-                                                                          .white),
-                                                                )),
-                                                                Text('')
-                                                              } else ...{
-                                                                Center(
-                                                                  child: Text(
-                                                                    'Observación',
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            22,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .bold,
-                                                                        color:
-                                                                            thirdColor),
+                                                            children: [
+                                                              Padding(
+                                                                      padding: const EdgeInsets.only(right: 120, left: 120, top: 15, bottom: 20),
+                                                                      child: GestureDetector(
+                                                                        onTap: () => Navigator.pop(context),
+                                                                        child: Container(
+                                                                          decoration: BoxDecoration(
+                                                                            color: Theme.of(navigatorKey.currentContext!).dividerColor,
+                                                                            borderRadius: BorderRadius.circular(80)
+                                                                          ),
+                                                                          height: 6,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                              
+                                                              Row(
+                                                                children: [
+                                                                  SizedBox(width: size.width/4.8),
+                                                                  Container(
+                                                                    width: 16,
+                                                                    height: 16,
+                                                                    decoration: BoxDecoration(
+                                                                      shape: BoxShape.circle,
+                                                                      border: Border.all(color: Color.fromRGBO(40, 93, 169, 1), width: 1),
+                                                                    ),
+                                                                    child: Center(
+                                                                      child: Container(
+                                                                        width: 9,
+                                                                        height: 9,
+                                                                        decoration: BoxDecoration(
+                                                                          shape: BoxShape.circle,
+                                                                          color: abc.data!.trips![0].inTrip![index].commentDriver == 'Pasé por él (ella) y no salió'? Color.fromRGBO(40, 93, 169, 1): Colors.transparent,
+                                                                        ),
+                                                                      ),
+                                                                    ),
                                                                   ),
-                                                                ),
-                                                                SizedBox(
-                                                                    height: 15),
-                                                                Center(
-                                                                  child: Text(
-                                                                    '${abc.data!.trips![0].inTrip![index].commentDriver}',
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            16,
-                                                                        color: Colors
-                                                                            .white),
+                                                                  SizedBox(width: 5),
+                                                                  Text(
+                                                                    'Se pasó y no salió',
+                                                                    style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 20),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              SizedBox(height: 20),
+                                                              Row(
+                                                                children: [
+                                                                  SizedBox(width: size.width/4.8),
+                                                                  Container(
+                                                                    width: 16,
+                                                                    height: 16,
+                                                                    decoration: BoxDecoration(
+                                                                      shape: BoxShape.circle,
+                                                                      border: Border.all(color: Color.fromRGBO(40, 93, 169, 1), width: 1),
+                                                                    ),
+                                                                    child: Center(
+                                                                      child: Container(
+                                                                        width: 9,
+                                                                        height: 9,
+                                                                        decoration: BoxDecoration(
+                                                                          shape: BoxShape.circle,
+                                                                          color: abc.data!.trips![0].inTrip![index].commentDriver == 'Canceló transporte'? Color.fromRGBO(40, 93, 169, 1): Colors.transparent,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  SizedBox(width: 5),
+                                                                  Text(
+                                                                    'Cancelo transporte',
+                                                                    style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 20),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              SizedBox(height: 20),
+                                                              Row(
+                                                                children: [
+                                                                  SizedBox(width: size.width/4.8),
+                                                                  Container(
+                                                                    width: 16,
+                                                                    height: 16,
+                                                                    decoration: BoxDecoration(
+                                                                      shape: BoxShape.circle,
+                                                                      border: Border.all(color: Color.fromRGBO(40, 93, 169, 1), width: 1),
+                                                                    ),
+                                                                    child: Center(
+                                                                      child: Container(
+                                                                        width: 9,
+                                                                        height: 9,
+                                                                        decoration: BoxDecoration(
+                                                                          shape: BoxShape.circle,
+                                                                          color: abc.data!.trips![0].inTrip![index].commentDriver != 'Canceló transporte'? abc.data!.trips![0].inTrip![index].commentDriver != 'Pasé por él (ella) y no salió'? Color.fromRGBO(40, 93, 169, 1): Colors.transparent: Colors.transparent,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  SizedBox(width: 5),
+                                                                  Text(
+                                                                    'Comentario',
+                                                                    style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 20),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              if(abc.data!.trips![0].inTrip![index].commentDriver != 'Canceló transporte' && abc.data!.trips![0].inTrip![index].commentDriver != 'Pasé por él (ella) y no salió')...{
+                                                                SizedBox(height: 10),
+                                                                Container(
+                                                                  decoration: BoxDecoration(
+                                                                    borderRadius: BorderRadius.circular(10),
+                                                                    border: Border.all(
+                                                                      color: Theme.of(context).dividerColor,
+                                                                      width: 1
+                                                                    ) // Radio de la esquina
+                                                                  ),
+                                                                  child: Padding(
+                                                                    padding: const EdgeInsets.all(10),
+                                                                    child: Text(
+                                                                      abc.data!.trips![0].inTrip![index].commentDriver == null ?'Sin comentario' :'${abc.data!.trips![0].inTrip![index].commentDriver}',
+                                                                      style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 18),
+                                                                    ),
                                                                   ),
                                                                 ),
                                                               },
-                                                              SizedBox(
-                                                                  height: 21),
-                                                              ElevatedButton(
-                                                                style: ElevatedButton
-                                                                    .styleFrom(
-                                                                        textStyle:
-                                                                            TextStyle(
-                                                                          color:
-                                                                              backgroundColor, // foreground
-                                                                        ),
-                                                                        // foreground
-                                                                        backgroundColor:
-                                                                            firstColor),
-                                                                onPressed: () =>
-                                                                    {
-                                                                  setState(() {
-                                                                    Navigator.pop(
-                                                                        context);
-                                                                  }),
-                                                                },
-                                                                child: Text(
-                                                                    'Entendido',
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            18,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .bold,
-                                                                        color:
-                                                                            backgroundColor)),
-                                                              ),
+                                                              SizedBox(height: 20),
                                                             ],
                                                           ),
                                                         ),
-                                                      ));                                
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                            transitionDuration: Duration(milliseconds: 200),
+                                            barrierDismissible: true,
+                                            barrierLabel: '',
+                                            context: context,
+                                            pageBuilder: (context, animation1, animation2) {
+                                              return widget;
+                                            },
+                                          );                               
                                         },
                                         child: Text('Observaciones',
                                             style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold)),
