@@ -365,12 +365,12 @@ class _DataTableExample extends State<DriverProfilePage> {
                           SizedBox(height: 5),
                           Center(
                             child: Text(
-                              '4 Estrellas (30 opiniones)',
+                              'Promedio: 4',
                               style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14),
                             ),
                           ),
 
-                          SizedBox(height: 20),
+                          SizedBox(height: 30),
                           Center(
                             child: Text(
                               'Amabilidad',
@@ -409,12 +409,12 @@ class _DataTableExample extends State<DriverProfilePage> {
                           SizedBox(height: 5),
                           Center(
                             child: Text(
-                              '4 Estrellas (30 opiniones)',
+                              'Promedio: 4',
                               style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14),
                             ),
                           ),
 
-                          SizedBox(height: 20),
+                          SizedBox(height: 30),
                           Center(
                             child: Text(
                               'Condiciones del vehículo',
@@ -453,7 +453,7 @@ class _DataTableExample extends State<DriverProfilePage> {
                           SizedBox(height: 5),
                           Center(
                             child: Text(
-                              '4 Estrellas (30 opiniones)',
+                              'Promedio: 4',
                               style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14),
                             ),
                           ),
