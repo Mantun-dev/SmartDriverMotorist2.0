@@ -816,7 +816,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                                     height: 16,
                                                                     decoration: BoxDecoration(
                                                                       shape: BoxShape.circle,
-                                                                      border: Border.all(color: Color.fromRGBO(40, 93, 169, 1), width: 1),
+                                                                      border: Border.all(color: Theme.of(navigatorKey.currentContext!).primaryIconTheme.color!, width: 1),
                                                                     ),
                                                                     child: Center(
                                                                       child: Container(
@@ -824,7 +824,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                                         height: 9,
                                                                         decoration: BoxDecoration(
                                                                           shape: BoxShape.circle,
-                                                                          color: abc.data!.trips![0].inTrip![index].commentDriver == 'Pasé por él (ella) y no salió'? Color.fromRGBO(40, 93, 169, 1): Colors.transparent,
+                                                                          color: abc.data!.trips![0].inTrip![index].commentDriver == 'Pasé por él (ella) y no salió'? Theme.of(navigatorKey.currentContext!).primaryIconTheme.color!: Colors.transparent,
                                                                         ),
                                                                       ),
                                                                     ),
@@ -845,7 +845,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                                     height: 16,
                                                                     decoration: BoxDecoration(
                                                                       shape: BoxShape.circle,
-                                                                      border: Border.all(color: Color.fromRGBO(40, 93, 169, 1), width: 1),
+                                                                      border: Border.all(color: Theme.of(navigatorKey.currentContext!).primaryIconTheme.color!, width: 1),
                                                                     ),
                                                                     child: Center(
                                                                       child: Container(
@@ -853,7 +853,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                                         height: 9,
                                                                         decoration: BoxDecoration(
                                                                           shape: BoxShape.circle,
-                                                                          color: abc.data!.trips![0].inTrip![index].commentDriver == 'Canceló transporte'? Color.fromRGBO(40, 93, 169, 1): Colors.transparent,
+                                                                          color: abc.data!.trips![0].inTrip![index].commentDriver == 'Canceló transporte'? Theme.of(navigatorKey.currentContext!).primaryIconTheme.color!: Colors.transparent,
                                                                         ),
                                                                       ),
                                                                     ),
@@ -874,7 +874,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                                     height: 16,
                                                                     decoration: BoxDecoration(
                                                                       shape: BoxShape.circle,
-                                                                      border: Border.all(color: Color.fromRGBO(40, 93, 169, 1), width: 1),
+                                                                      border: Border.all(color: Theme.of(navigatorKey.currentContext!).primaryIconTheme.color!, width: 1),
                                                                     ),
                                                                     child: Center(
                                                                       child: Container(
@@ -882,7 +882,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                                                         height: 9,
                                                                         decoration: BoxDecoration(
                                                                           shape: BoxShape.circle,
-                                                                          color: abc.data!.trips![0].inTrip![index].commentDriver != 'Canceló transporte'? abc.data!.trips![0].inTrip![index].commentDriver != 'Pasé por él (ella) y no salió'? Color.fromRGBO(40, 93, 169, 1): Colors.transparent: Colors.transparent,
+                                                                          color: abc.data!.trips![0].inTrip![index].commentDriver != 'Canceló transporte'? abc.data!.trips![0].inTrip![index].commentDriver != 'Pasé por él (ella) y no salió'? Theme.of(navigatorKey.currentContext!).primaryIconTheme.color!: Colors.transparent: Colors.transparent,
                                                                         ),
                                                                       ),
                                                                     ),
