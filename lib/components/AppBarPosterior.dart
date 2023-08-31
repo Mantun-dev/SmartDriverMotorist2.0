@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../Drivers/Screens/Chat/listaChas.dart';
 import '../Drivers/Screens/Details/components/detailsDriver_assignHour.dart';
 import '../Drivers/Screens/Details/components/details_TripProgress.dart';
 import '../Drivers/Screens/DriverProfile/driverProfile.dart';
@@ -426,9 +427,22 @@ class _AppBarPosterior extends State<AppBarPosterior> {
               ),
             ):GestureDetector(
             onTap: item==3?null:() {
-                setState(() {
-                  
-                });
+                Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    transitionDuration: Duration(milliseconds: 200 ),
+                    pageBuilder: (_, __, ___) => ChatsList(),
+                    transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                      return SlideTransition(
+                          position: Tween<Offset>(
+                            begin: Offset(1.0, 0.0),
+                            end: Offset.zero,
+                          ).animate(animation),
+                        child: child,
+                      );
+                    },
+                  ),
+                );
               },
             child: Padding(
               padding: const EdgeInsets.only(top:10, right: 18),
