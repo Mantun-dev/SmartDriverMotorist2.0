@@ -6,7 +6,7 @@ final ThemeData appThemeDataLight = ThemeData(
   fontFamily: familyFont,
 
   primaryColor: const Color.fromRGBO(40, 93, 169, 1),
-  scaffoldBackgroundColor:const Color.fromRGBO(248, 248, 248, 1),
+  scaffoldBackgroundColor: Colors.white,
 
   primaryColorLight: Colors.white,
   primaryColorDark: Colors.black,

@@ -76,18 +76,7 @@ class _ChatPageState extends State<ChatPage> {
                           constraints: BoxConstraints(
                             maxWidth: 700.0, // Aquí defines el ancho máximo deseado
                           ),
-                          child: Container(
-                            width: size.width,
-                            decoration: BoxDecoration(
-                              border: Border.all( 
-                                color: Theme.of(context).disabledColor,
-                                width: 2
-                              ),
-                              color: Theme.of(context).cardColor,
-                              borderRadius: BorderRadius.circular(20)
-                            ),
-                            child: SingleChildScrollView(child: body())
-                          ),
+                          child: SingleChildScrollView(child: body()),
                         ),
                       )
                     ),
@@ -144,26 +133,41 @@ class _ChatPageState extends State<ChatPage> {
           //     ),
           //   ),
           // ),
-          Padding(
-            padding: EdgeInsets.only(top: 16, left: 16, right: 16),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: "Buscar...",
-                hintStyle: TextStyle(color: Colors.grey.shade600),
-                prefixIcon: Icon(
-                  Icons.search,
-                  color: Colors.grey.shade600,
-                  size: 20,
-                ),
-                filled: true,
-                fillColor: Colors.grey.shade100,
-                contentPadding: EdgeInsets.all(8),
-                enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide(color: Colors.grey.shade100)),
+          Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardTheme.color,
+                borderRadius: BorderRadius.circular(10.0),
+                border: Border.all(color: Theme.of(context).disabledColor)
               ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      style: Theme.of(context).textTheme.bodyMedium,
+                      onChanged:(value) {
+
+                      },
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.search, color: Theme.of(context).primaryIconTheme.color),
+                        hintText: 'Buscar',
+                        hintStyle: TextStyle(
+                            color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto'
+                          ),
+                        border: InputBorder.none,
+                      ),
+                    ),
+                  ),
+
+                  IconButton(
+                    icon: Icon(Icons.refresh),
+                    color: Theme.of(context).primaryIconTheme.color,
+                    onPressed: () {
+                      //refresh();
+                    },
+                  )
+                ],
+              )
             ),
-          ),
           ListView.builder(
             itemCount: chatUsers.length,
             shrinkWrap: true,

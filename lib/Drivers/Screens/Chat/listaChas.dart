@@ -129,18 +129,7 @@ class _ChatsListState extends State<ChatsList> {
                           constraints: BoxConstraints(
                             maxWidth: 700.0, // Aquí defines el ancho máximo deseado
                           ),
-                          child: Container(
-                            width: size.width,
-                            decoration: BoxDecoration(
-                              border: Border.all( 
-                                color: Theme.of(context).disabledColor,
-                                width: 2
-                              ),
-                              color: Theme.of(context).cardColor,
-                              borderRadius: BorderRadius.circular(20)
-                            ),
-                            child: SingleChildScrollView(child: body())
-                          ),
+                          child: SingleChildScrollView(child: body()),
                         ),
                       )
                     ),
