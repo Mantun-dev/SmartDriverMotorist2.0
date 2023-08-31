@@ -1,3 +1,6 @@
+import 'package:http/http.dart' as http;
+import 'dart:convert' show json;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -6,6 +9,7 @@ import '../Drivers/Screens/Chat/listaChas.dart';
 import '../Drivers/Screens/Details/components/detailsDriver_assignHour.dart';
 import '../Drivers/Screens/Details/components/details_TripProgress.dart';
 import '../Drivers/Screens/DriverProfile/driverProfile.dart';
+import '../Drivers/models/DriverData.dart';
 import '../Drivers/models/countNotify.dart';
 import '../Drivers/models/network.dart';
 import '../Drivers/models/plantillaDriver.dart';
@@ -560,11 +564,16 @@ class _AppBarPosterior extends State<AppBarPosterior> {
   }
 
   void getData() async{
+    http.Response response = await http.get(Uri.parse('https://driver.smtdriver.com/apis/refreshingAgentData/${prefs.nombreUsuario}'));
+    final data = DriverData.fromJson(json.decode(response.body));
+    http.Response responses = await http.get(Uri.parse('https://apichat.smtdriver.com/api/salas/userId/${data.driverId}?estadoSala=NOFINALIZADOS'));
+    var resp = json.decode(responses.body);
     
     var listaN = await fetchCountNotify();
 
     if(mounted){
       setState(() {
+        counter = resp['salas'].length;
         totalNotificaciones = listaN[0].total;
       });
     }

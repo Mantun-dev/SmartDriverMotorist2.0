@@ -311,6 +311,20 @@ class _AppBarSuperior extends State<AppBarSuperior> {
             ),
           ),
 
+          if(item==6)
+          Expanded(
+            child: Center(
+              child: Text(
+                "Salas",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.normal,
+                  fontSize: 21
+                ),
+              ),
+            ),
+          ),
+
         item==0?Stack(
           children: [
             Padding(

@@ -10,8 +10,10 @@ import '../../../components/AppBarSuperior.dart';
 import '../../../components/backgroundB.dart';
 
 import '../../../components/progress_indicator.dart';
+import '../../../main.dart';
 import '../../SharePreferences/preferencias_usuario.dart';
 import '../../models/DriverData.dart';
+import 'chatViews.dart';
 
 class ChatsList extends StatefulWidget {
 
@@ -277,6 +279,7 @@ class _ChatsListState extends State<ChatsList> {
                               salas['Viaje'].toString().toLowerCase().contains(value.toLowerCase()) 
                               || salas['Company'].toString().toLowerCase().contains(value.toLowerCase()) 
                               || salas['Fecha'].toString().toLowerCase().contains(value.toLowerCase()) 
+                              || salas['Tipo'].toString().toLowerCase().contains(value.toLowerCase()) 
                             ).toList();
                             listaChats = listaB;
                           }
@@ -315,247 +318,243 @@ class _ChatsListState extends State<ChatsList> {
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.all(10.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12.0),
-                          border: Border.all(color: Theme.of(context).dividerColor,),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 20, left: 20),
-                          child: Column(
-                            children:[
-    
-                              SizedBox(height: 20),
-                              Padding(
-                                padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
-                                child: Row(
-                                  children: [ 
-                                    Container(
-                                      width: 18,
-                                      height: 18,
-                                      child: SvgPicture.asset(
-                                        "assets/icons/Numeral.svg",
-                                        color: Theme.of(context).primaryIconTheme.color,
-                                      ),
-                                    ),
-                                    Flexible(
-                                      child: RichText(
-                                        text: TextSpan(
-                                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
-                                          children: [
-                                            TextSpan(
-                                              text: '  Viaje: ',
-                                              style: TextStyle(fontWeight: FontWeight.w500),
-                                            ),
-                                            TextSpan(
-                                              text: '${listaChats[index]['Viaje']}',
-                                              style: TextStyle(fontWeight: FontWeight.w700),
-                                            ),
-                                          ],
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            navigatorKey.currentContext!,
+                            PageRouteBuilder(
+                              transitionDuration: Duration(milliseconds: 200),
+                              pageBuilder: (_, __, ___) => ChatPage(tripId: listaChats[index]['Viaje'].toString()),
+                              transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                return SlideTransition(
+                                  position: Tween<Offset>(
+                                    begin: Offset(1.0, 0.0),
+                                    end: Offset.zero, // Mantener Offset de final en (0.0, 0.0)
+                                  ).animate(animation),
+                                  child: child,
+                                );
+                              },
+                            ),
+                          );
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12.0),
+                            border: Border.all(color: Theme.of(context).dividerColor,),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 20, left: 20),
+                            child: Column(
+                              children:[
+                          
+                                SizedBox(height: 10),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
+                                  child: Row(
+                                    children: [ 
+                                      Container(
+                                        width: 18,
+                                        height: 18,
+                                        child: SvgPicture.asset(
+                                          "assets/icons/Numeral.svg",
+                                          color: Theme.of(context).primaryIconTheme.color,
                                         ),
                                       ),
-                                    )
-                                  ],
+                                      Flexible(
+                                        child: RichText(
+                                          text: TextSpan(
+                                            style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                            children: [
+                                              TextSpan(
+                                                text: '  Viaje: ',
+                                                style: TextStyle(fontWeight: FontWeight.w500),
+                                              ),
+                                              TextSpan(
+                                                text: '${listaChats[index]['Viaje']}',
+                                                style: TextStyle(fontWeight: FontWeight.w700),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              Container(
-                                height: 1,
-                                color: Theme.of(context).dividerColor,
-                              ),
-    
-                              SizedBox(height: 20),
-                              Padding(
-                                padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      width: 18,
-                                      height: 18,
-                                      child: SvgPicture.asset(
-                                        "assets/icons/calendar2.svg",
-                                        color: Theme.of(context).primaryIconTheme.color,
-                                      ),
-                                    ),
-                                    Flexible(
-                                      child: RichText(
-                                        text: TextSpan(
-                                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
-                                          children: [
-                                            TextSpan(
-                                              text: '  Fecha: ',
-                                              style: TextStyle(fontWeight: FontWeight.w500),
-                                            ),
-                                            TextSpan(
-                                              text: '${listaChats[index]['Fecha']}',
-                                              style: TextStyle(fontWeight: FontWeight.normal),
-                                            ),
-                                          ],
+                      
+                                SizedBox(height: 10),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 18,
+                                        height: 18,
+                                        child: SvgPicture.asset(
+                                          "assets/icons/compania.svg",
+                                          color: Theme.of(context).primaryIconTheme.color,
                                         ),
                                       ),
-                                    )
-                                  ],
+                                      Flexible(
+                                        child: RichText(
+                                          text: TextSpan(
+                                            style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                            children: [
+                                              TextSpan(
+                                                text: '  Empresa: ',
+                                                style: TextStyle(fontWeight: FontWeight.w500),
+                                              ),
+                                              TextSpan(
+                                                text: listaChats[index]['Company'],
+                                                style: TextStyle(fontWeight: FontWeight.normal),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              Container(
-                                height: 1,
-                                color: Theme.of(context).dividerColor,
-                              ),
-    
-                              SizedBox(height: 20),
-                              Padding(
-                                padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      width: 18,
-                                      height: 18,
-                                      child: SvgPicture.asset(
-                                        "assets/icons/compania.svg",
-                                        color: Theme.of(context).primaryIconTheme.color,
-                                      ),
-                                    ),
-                                    Flexible(
-                                      child: RichText(
-                                        text: TextSpan(
-                                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
-                                          children: [
-                                            TextSpan(
-                                              text: '  Empresa: ',
-                                              style: TextStyle(fontWeight: FontWeight.w500),
-                                            ),
-                                            TextSpan(
-                                              text: listaChats[index]['Company'],
-                                              style: TextStyle(fontWeight: FontWeight.normal),
-                                            ),
-                                          ],
+                          
+                                SizedBox(height: 10),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 18,
+                                        height: 18,
+                                        child: SvgPicture.asset(
+                                          "assets/icons/calendar2.svg",
+                                          color: Theme.of(context).primaryIconTheme.color,
                                         ),
                                       ),
-                                    )
-                                  ],
+                                      Flexible(
+                                        child: RichText(
+                                          text: TextSpan(
+                                            style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                            children: [
+                                              TextSpan(
+                                                text: '  Fecha: ',
+                                                style: TextStyle(fontWeight: FontWeight.w500),
+                                              ),
+                                              TextSpan(
+                                                text: '${listaChats[index]['Fecha']}',
+                                                style: TextStyle(fontWeight: FontWeight.normal),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              Container(
-                                height: 1,
-                                color: Theme.of(context).dividerColor,
-                              ),
-    
-                              SizedBox(height: 20),
-                              Padding(
-                                padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      width: 18,
-                                      height: 18,
-                                      child: SvgPicture.asset(
-                                        "assets/icons/hora.svg",
-                                        color: Theme.of(context).primaryIconTheme.color,
-                                      ),
-                                    ),
-                                    Flexible(
-                                      child: RichText(
-                                        text: TextSpan(
-                                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
-                                          children: [
-                                            TextSpan(
-                                              text: '  Hora: ',
-                                              style: TextStyle(fontWeight: FontWeight.w500),
-                                            ),
-                                            TextSpan(
-                                              text: '${listaChats[index]['Hora']}',
-                                              style: TextStyle(fontWeight: FontWeight.w700, color: Color.fromRGBO(40, 169, 83, 1)),
-                                            ),
-                                          ],
+                          
+                                SizedBox(height: 10),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 18,
+                                        height: 18,
+                                        child: SvgPicture.asset(
+                                          "assets/icons/hora.svg",
+                                          color: Theme.of(context).primaryIconTheme.color,
                                         ),
                                       ),
-                                    )
-                                  ],
+                                      Flexible(
+                                        child: RichText(
+                                          text: TextSpan(
+                                            style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                            children: [
+                                              TextSpan(
+                                                text: '  Hora: ',
+                                                style: TextStyle(fontWeight: FontWeight.w500),
+                                              ),
+                                              TextSpan(
+                                                text: '${listaChats[index]['Hora']}',
+                                                style: TextStyle(fontWeight: FontWeight.w700, color: Color.fromRGBO(40, 169, 83, 1)),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              Container(
-                                height: 1,
-                                color: Theme.of(context).dividerColor,
-                              ),
-                              
-                              SizedBox(height: 20),
-                              Padding(
-                                padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      width: 18,
-                                      height: 18,
-                                      child: SvgPicture.asset(
-                                        "assets/icons/agentes.svg",
-                                        color: Theme.of(context).primaryIconTheme.color,
-                                      ),
-                                    ),
-                                    Flexible(
-                                      child: RichText(
-                                        text: TextSpan(
-                                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
-                                          children: [
-                                            TextSpan(
-                                              text: '  Agentes: ',
-                                              style: TextStyle(fontWeight: FontWeight.w500),
-                                            ),
-                                            TextSpan(
-                                              text: '${listaChats[index]['Agentes']}',
-                                              style: TextStyle(fontWeight: FontWeight.w700,),
-                                            ),
-                                          ],
+                                
+                                SizedBox(height: 10),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 18,
+                                        height: 18,
+                                        child: SvgPicture.asset(
+                                          "assets/icons/agentes.svg",
+                                          color: Theme.of(context).primaryIconTheme.color,
                                         ),
                                       ),
-                                    )
-                                  ],
+                                      Flexible(
+                                        child: RichText(
+                                          text: TextSpan(
+                                            style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                            children: [
+                                              TextSpan(
+                                                text: '  Agentes: ',
+                                                style: TextStyle(fontWeight: FontWeight.w500),
+                                              ),
+                                              TextSpan(
+                                                text: '${listaChats[index]['Agentes']}',
+                                                style: TextStyle(fontWeight: FontWeight.w700,),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              Container(
-                                height: 1,
-                                color: Theme.of(context).dividerColor,
-                              ),
-    
-                              SizedBox(height: 20),
-                              Padding(
-                                padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      width: 18,
-                                      height: 18,
-                                      child: SvgPicture.asset(
-                                        "assets/icons/advertencia.svg",
-                                        color: Theme.of(context).primaryIconTheme.color,
-                                      ),
-                                    ),
-                                    Flexible(
-                                      child: RichText(
-                                        text: TextSpan(
-                                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
-                                          children: [
-                                            TextSpan(
-                                              text: '  Tipo: ',
-                                              style: TextStyle(fontWeight: FontWeight.w500),
-                                            ),
-                                            TextSpan(
-                                              text: '${listaChats[index]['Tipo']}',
-                                              style: TextStyle(fontWeight: FontWeight.normal,),
-                                            ),
-                                          ],
+                          
+                                SizedBox(height: 10),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 18,
+                                        height: 18,
+                                        child: SvgPicture.asset(
+                                          "assets/icons/advertencia.svg",
+                                          color: Theme.of(context).primaryIconTheme.color,
                                         ),
                                       ),
-                                    )
-                                  ],
+                                      Flexible(
+                                        child: RichText(
+                                          text: TextSpan(
+                                            style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                            children: [
+                                              TextSpan(
+                                                text: '  Tipo: ',
+                                                style: TextStyle(fontWeight: FontWeight.w500),
+                                              ),
+                                              TextSpan(
+                                                text: '${listaChats[index]['Tipo']}',
+                                                style: TextStyle(fontWeight: FontWeight.normal,),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              Container(
-                                height: 1,
-                                color: Theme.of(context).dividerColor,
-                              ),
-    
-                              SizedBox(height: 15),
-                                  
-                            ],
+                          
+                                SizedBox(height: 10),
+                                    
+                              ],
+                            ),
                           ),
                         ),
                       ),

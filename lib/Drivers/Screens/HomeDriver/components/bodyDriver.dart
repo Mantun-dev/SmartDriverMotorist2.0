@@ -11,6 +11,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info/package_info.dart';
 
 import '../../../../main.dart';
+import '../../Chat/listaChas.dart';
 import '../../Details/components/detailsDriver_assignHour.dart';
 import '../../Details/components/details_HoursOut.dart';
 import '../../Details/components/details_TripProgress.dart';
@@ -728,6 +729,22 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
       break;
 
       case 5:
+      Navigator.push(
+          context,
+          PageRouteBuilder(
+            transitionDuration: Duration(milliseconds: 200 ), // Adjust the animation duration as needed
+            pageBuilder: (_, __, ___) => ChatsList(),
+            transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+              return SlideTransition(
+                position: Tween<Offset>(
+                  begin: Offset(1.0, 0.0),
+                  end: Offset.zero,
+                ).animate(animation),
+                child: child,
+              );
+            },
+          ),
+        );
       
       break;
         
