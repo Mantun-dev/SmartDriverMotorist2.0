@@ -6,6 +6,7 @@ import 'package:flutter_auth/main.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:quickalert/quickalert.dart';
 
+import '../Drivers/Screens/Chat/listaChas.dart';
 import '../Drivers/Screens/Details/components/detailsDriver_assignHour.dart';
 import '../Drivers/Screens/Details/components/details_HoursOut.dart';
 import '../Drivers/Screens/Details/components/details_TripProgress.dart';
@@ -114,6 +115,25 @@ class _AppBarSuperior extends State<AppBarSuperior> {
                                                           plantillaDriver:
                                                               plantillaDriver[3],
                                                         ),
+          transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+            return SlideTransition(
+              position: Tween<Offset>(
+                begin: Offset(-1.0, 0.0),
+                end: Offset.zero,
+              ).animate(animation),
+            child: child,
+           );
+          },
+        ),
+      );
+      break;
+
+      case 66:
+        Navigator.push(
+        context,
+        PageRouteBuilder(
+          transitionDuration: Duration(milliseconds: 200),
+          pageBuilder: (_, __, ___) => ChatsList(),
           transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
             return SlideTransition(
               position: Tween<Offset>(
@@ -324,6 +344,21 @@ class _AppBarSuperior extends State<AppBarSuperior> {
               ),
             ),
           ),
+
+          if(item==66)
+          Expanded(
+            child: Center(
+              child: Text(
+                "Chats",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.normal,
+                  fontSize: 21
+                ),
+              ),
+            ),
+          ),
+
 
         item==0?Stack(
           children: [
