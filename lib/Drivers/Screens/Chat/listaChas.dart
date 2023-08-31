@@ -44,7 +44,21 @@ class _ChatsListState extends State<ChatsList> {
     http.Response responses = await http.get(Uri.parse('https://apichat.smtdriver.com/api/salas/userId/${data.driverId}?estadoSala=NOFINALIZADOS'));
     var resp = json.decode(responses.body);
 
-    listaChats = resp['salas'] as List<dynamic>;
+    for(var i=0;i<resp['salas'].length;i++){
+      if(listaChats==null)
+        listaChats=[];
+
+      listaChats.add(
+        {
+          'Viaje': resp['salas'][i]['id'],
+          'Fecha': resp['salas'][i]['Fecha'],
+          'Company': getCompany(resp['salas'][i]['Company']),
+          'Hora': resp['salas'][i]['id'],
+          'Agentes': getCantAgentes(resp['salas'][i]['Agentes']),
+          'Tipo': 'salida'
+        }
+      );
+    }
 
     listaChats2 = listaChats;
 
@@ -63,7 +77,21 @@ class _ChatsListState extends State<ChatsList> {
     http.Response responses = await http.get(Uri.parse('https://apichat.smtdriver.com/api/salas/userId/${data.driverId}?estadoSala=NOFINALIZADOS'));
     var resp = json.decode(responses.body);
 
-    listaChats = resp['salas'] as List<dynamic>;
+    for(var i=0;i<resp['salas'].length;i++){
+      if(listaChats==null)
+        listaChats=[];
+
+      listaChats.add(
+        {
+          'Viaje': resp['salas'][i]['id'],
+          'Fecha': resp['salas'][i]['Fecha'],
+          'Company': getCompany(resp['salas'][i]['Company']),
+          'Hora': resp['salas'][i]['id'],
+          'Agentes': getCantAgentes(resp['salas'][i]['Agentes']),
+          'Tipo': 'salida'
+        }
+      );
+    }
 
     listaChats2 = listaChats;
 
@@ -245,7 +273,11 @@ class _ChatsListState extends State<ChatsList> {
                         setState(() {
                               
                           if(value.isNotEmpty){
-                            listaB = listaChats.where((salas) => salas['NombreM'].toString().toLowerCase().contains(value.toLowerCase())).toList();
+                            listaB = listaChats.where((salas) =>
+                              salas['Viaje'].toString().toLowerCase().contains(value.toLowerCase()) 
+                              || salas['Company'].toString().toLowerCase().contains(value.toLowerCase()) 
+                              || salas['Fecha'].toString().toLowerCase().contains(value.toLowerCase()) 
+                            ).toList();
                             listaChats = listaB;
                           }
                             
@@ -316,7 +348,7 @@ class _ChatsListState extends State<ChatsList> {
                                               style: TextStyle(fontWeight: FontWeight.w500),
                                             ),
                                             TextSpan(
-                                              text: '${listaChats[index]['id']}',
+                                              text: '${listaChats[index]['Viaje']}',
                                               style: TextStyle(fontWeight: FontWeight.w700),
                                             ),
                                           ],
@@ -392,7 +424,7 @@ class _ChatsListState extends State<ChatsList> {
                                               style: TextStyle(fontWeight: FontWeight.w500),
                                             ),
                                             TextSpan(
-                                              text: getCompany(int.parse(listaChats[index]['Company'])),
+                                              text: listaChats[index]['Company'],
                                               style: TextStyle(fontWeight: FontWeight.normal),
                                             ),
                                           ],
@@ -430,7 +462,7 @@ class _ChatsListState extends State<ChatsList> {
                                               style: TextStyle(fontWeight: FontWeight.w500),
                                             ),
                                             TextSpan(
-                                              text: '${listaChats[index]['Company']}',
+                                              text: '${listaChats[index]['Hora']}',
                                               style: TextStyle(fontWeight: FontWeight.w700, color: Color.fromRGBO(40, 169, 83, 1)),
                                             ),
                                           ],
@@ -468,7 +500,7 @@ class _ChatsListState extends State<ChatsList> {
                                               style: TextStyle(fontWeight: FontWeight.w500),
                                             ),
                                             TextSpan(
-                                              text: '${getCantAgentes(listaChats[index]['Agentes'])}',
+                                              text: '${listaChats[index]['Agentes']}',
                                               style: TextStyle(fontWeight: FontWeight.w700,),
                                             ),
                                           ],
@@ -506,7 +538,7 @@ class _ChatsListState extends State<ChatsList> {
                                               style: TextStyle(fontWeight: FontWeight.w500),
                                             ),
                                             TextSpan(
-                                              text: 'salida',
+                                              text: '${listaChats[index]['Tipo']}',
                                               style: TextStyle(fontWeight: FontWeight.normal,),
                                             ),
                                           ],
@@ -566,7 +598,35 @@ class _ChatsListState extends State<ChatsList> {
   }
 
   String getCompany(int idCompany){
+    final String comp = "Company";
+    final String comp2 = "Company 2";
+    final String ibexTgu = "IBEX TGU";
+    final String resultTgu = "RESULT TGU";
+    final String partner = "PARTNER HERO TGU";
+    final String startekSPS = "Startek SPS";
+    final String starteTGU = "Startek TGU";
+    final String aloricaSPS = "Alorica SPS";
+    final String zerovarianceSPS = "Zero Variance SPS";
 
-    return '';
+    if (idCompany == 1) {
+      return comp;
+    } else if (idCompany == 2) {
+      return startekSPS;
+    } else if (idCompany == 3) {
+      return starteTGU;
+    } else if (idCompany == 6) {
+      return aloricaSPS;
+    } else if (idCompany == 7) {
+      return zerovarianceSPS;
+    } else if (idCompany == 5) {
+      return comp2;
+    } else if (idCompany == 9) {
+      return ibexTgu;
+    } else if (idCompany == 11) {
+      return resultTgu;
+    } else if (idCompany == 12) {
+      return partner;
+    }
+    return ' Compaña desconocida';
   }
 }
