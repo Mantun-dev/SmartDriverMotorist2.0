@@ -74,7 +74,7 @@ class _DataTableExample extends State<DriverProfilePage> {
           future: item,
           builder: (BuildContext context, abc) {
             if (abc.connectionState == ConnectionState.done) {
-              print('${abc.data!.rating}');
+              
               return Column(
                 children: [
                   Container(
@@ -336,7 +336,7 @@ class _DataTableExample extends State<DriverProfilePage> {
 
                           SizedBox(height: 5),
                           RatingBarIndicator(
-                            rating: abc.data!.rating!["driverRating"]!,
+                            rating: abc.data!.rating!["rating1"]!,
                             itemBuilder: (context, index) => Padding(
                               padding: const EdgeInsets.only(right: 10, left: 10),
                               child: Stack(
@@ -365,7 +365,7 @@ class _DataTableExample extends State<DriverProfilePage> {
                           SizedBox(height: 5),
                           Center(
                             child: Text(
-                              'Promedio: 4',
+                              'Promedio: ${abc.data!.rating!["rating1"]!}',
                               style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14),
                             ),
                           ),
@@ -380,7 +380,7 @@ class _DataTableExample extends State<DriverProfilePage> {
 
                           SizedBox(height: 5),
                           RatingBarIndicator(
-                            rating: abc.data!.rating!["driverRating"]!,
+                            rating: abc.data!.rating!["rating2"]!,
                             itemBuilder: (context, index) => Padding(
                               padding: const EdgeInsets.only(right: 10, left: 10),
                               child: Stack(
@@ -409,7 +409,7 @@ class _DataTableExample extends State<DriverProfilePage> {
                           SizedBox(height: 5),
                           Center(
                             child: Text(
-                              'Promedio: 4',
+                              'Promedio: ${abc.data!.rating!["rating2"]!}',
                               style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14),
                             ),
                           ),
@@ -424,7 +424,7 @@ class _DataTableExample extends State<DriverProfilePage> {
 
                           SizedBox(height: 5),
                           RatingBarIndicator(
-                            rating: abc.data!.rating!["driverRating"]!,
+                            rating: abc.data!.rating!["rating3"]!,
                             itemBuilder: (context, index) => Padding(
                               padding: const EdgeInsets.only(right: 10, left: 10),
                               child: Stack(
@@ -453,7 +453,7 @@ class _DataTableExample extends State<DriverProfilePage> {
                           SizedBox(height: 5),
                           Center(
                             child: Text(
-                              'Promedio: 4',
+                              'Promedio: ${abc.data!.rating!["rating3"]!}',
                               style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14),
                             ),
                           ),
