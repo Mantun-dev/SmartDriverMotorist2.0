@@ -72,6 +72,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
   final int aloricaCeiba = 13;
   final int itelSPS = 10;
   bool cargarCoordenadas = false;
+  String tipoViaje = '';
 
   String apiKey = 'AIzaSyBJJYIS4G4n-3AP93am08XyDyDiA-vgPmM';
   var latidudeInicial;
@@ -187,6 +188,18 @@ class _DataTableExample extends State<MyConfirmAgent> {
         body: sendData2,
         headers: {"Content-Type": "application/json"});
     //print(response2.body);
+
+    if(tipoViaje == 'Salida'){
+      http.Response responseSala = await http.get(Uri.parse('https://apichat.smtdriver.com/api/salas/Tripid/${prefs.tripId}'));
+      final respS = json.decode(responseSala.body);
+
+      for(int i = 0; i<respS['salas']['Agentes'].length; i++){
+        Map data2 = {"idU": respS['salas']['Agentes'][i]['agenteId'].toString(), "Estado": 'CONFIRMADO'};
+        String sendData2 = json.encode(data2);
+        await http.put(Uri.parse('https://apichat.smtdriver.com/api/salas/${prefs.tripId}'), body: sendData2, headers: {"Content-Type": "application/json"});
+      }
+    }
+
     return Driver2.fromJson(json.decode(responses.body));
     //throw Exception('Failed to load Data');
   }
@@ -798,6 +811,19 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                   };
                                                                 
                                                                   await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
+
+                                                                  Map data2 = {
+                                                                    "Agentes": [
+                                                                      {
+                                                                        "agenteN": itemAbordaje.trips![0].tripAgent![indexP].agentFullname,
+                                                                        "agenteId": itemAbordaje.trips![0].tripAgent![indexP].agentId.toString(),
+                                                                        "Estado": "CONFIRMADO"
+                                                                      }
+                                                                    ]                                                               
+                                                                  };
+                                                                  
+                                                                  String sendData2 = json.encode(data2);
+                                                                  await http.put(Uri.parse('https://apichat.smtdriver.com/api/salas/Tripid/${abc.data!.trips![1].actualTravel!.tripId.toString()}'), body: sendData2, headers: {"Content-Type": "application/json"});
                                                                   
                                                                   LoadingIndicatorDialog().dismiss();
                                                                   if(mounted){
@@ -1142,6 +1168,19 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                 
                                                                   await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
                                                                     
+                                                                  Map data2 = {
+                                                                    "Agentes": [
+                                                                      {
+                                                                        "agenteN": itemAbordaje.trips![0].tripAgent![indexP].agentFullname,
+                                                                        "agenteId": itemAbordaje.trips![0].tripAgent![indexP].agentId.toString(),
+                                                                        "Estado": "CONFIRMADO"
+                                                                      }
+                                                                    ]                                                               
+                                                                  };
+                                                                  
+                                                                  String sendData2 = json.encode(data2);
+                                                                  await http.put(Uri.parse('https://apichat.smtdriver.com/api/salas/Tripid/${abc.data!.trips![1].actualTravel!.tripId.toString()}'), body: sendData2, headers: {"Content-Type": "application/json"});
+                                                                 
                                                                   LoadingIndicatorDialog().dismiss();
                                                                   if(mounted){
                                                                     Navigator.pop(navigatorKey.currentContext!);
@@ -1828,7 +1867,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
       future: item,
       builder: (BuildContext context, abc) {
         if (abc.connectionState == ConnectionState.done) {
-          if (abc.data!.trips![0].tripAgent!.length == 0) {
+          if (abc.data!.trips![0].tripAgent!.length == 0) {           
             return Card(
               color: backgroundColor,
               shape: RoundedRectangleBorder(
@@ -1854,7 +1893,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
               ),
             );
           } else {
-    
+            tipoViaje = abc.data!.trips![1].actualTravel!.tripType!;
             List<TextEditingController> check = [];
             for (int i = 0; i < abc.data!.trips![0].tripAgent!.length; i++) {
               check.add(TextEditingController());
