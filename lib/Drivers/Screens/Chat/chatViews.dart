@@ -162,7 +162,7 @@ class _ChatPageState extends State<ChatPage> {
                     icon: Icon(Icons.refresh),
                     color: Theme.of(context).primaryIconTheme.color,
                     onPressed: () {
-                      //refresh();
+                      getCounterNotification(widget.tripId!);
                     },
                   )
                 ],
