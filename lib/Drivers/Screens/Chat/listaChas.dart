@@ -50,14 +50,17 @@ class _ChatsListState extends State<ChatsList> {
       if(listaChats==null)
         listaChats=[];
 
+      http.Response response2 = await http.get(Uri.parse('https://driver.smtdriver.com/apis/getTripDetails/${resp['salas'][i]['id']}'));
+      var resp2 = json.decode(response2.body);
+
       listaChats.add(
         {
           'Viaje': resp['salas'][i]['id'],
           'Fecha': resp['salas'][i]['Fecha'],
           'Company': getCompany(resp['salas'][i]['Company']),
-          'Hora': resp['salas'][i]['id'],
+          'Hora': resp2['trip']['tripHour'],
           'Agentes': getCantAgentes(resp['salas'][i]['Agentes']),
-          'Tipo': 'salida'
+          'Tipo': resp2['trip']['tripType'] == true ? 'Entrada' : 'Salida'
         }
       );
     }
@@ -75,22 +78,23 @@ class _ChatsListState extends State<ChatsList> {
     LoadingIndicatorDialog().show(context);
     http.Response response = await http.get(Uri.parse('https://driver.smtdriver.com/apis/refreshingAgentData/${prefs.nombreUsuario}'));
     final data = DriverData.fromJson(json.decode(response.body));
-
+    listaChats=[];
     http.Response responses = await http.get(Uri.parse('https://apichat.smtdriver.com/api/salas/userId/${data.driverId}?estadoSala=NOFINALIZADOS'));
     var resp = json.decode(responses.body);
-
+     
     for(var i=0;i<resp['salas'].length;i++){
-      if(listaChats==null)
-        listaChats=[];
+
+      http.Response response2 = await http.get(Uri.parse('https://driver.smtdriver.com/apis/getTripDetails/${resp['salas'][i]['id']}'));
+      var resp2 = json.decode(response2.body);
 
       listaChats.add(
         {
           'Viaje': resp['salas'][i]['id'],
           'Fecha': resp['salas'][i]['Fecha'],
           'Company': getCompany(resp['salas'][i]['Company']),
-          'Hora': resp['salas'][i]['id'],
+          'Hora': resp2['trip']['tripHour'],
           'Agentes': getCantAgentes(resp['salas'][i]['Agentes']),
-          'Tipo': 'salida'
+          'Tipo': resp2['trip']['tripType'] == true ? 'Entrada' : 'Salida'
         }
       );
     }
@@ -269,6 +273,7 @@ class _ChatsListState extends State<ChatsList> {
                               || salas['Company'].toString().toLowerCase().contains(value.toLowerCase()) 
                               || salas['Fecha'].toString().toLowerCase().contains(value.toLowerCase()) 
                               || salas['Tipo'].toString().toLowerCase().contains(value.toLowerCase()) 
+                              || salas['Hora'].toString().toLowerCase().contains(value.toLowerCase()) 
                             ).toList();
                             listaChats = listaB;
                           }
