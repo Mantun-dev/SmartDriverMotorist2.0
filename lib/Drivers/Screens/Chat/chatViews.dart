@@ -23,6 +23,9 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   List<dynamic> chatUsers = [];
+  bool confirmados = true;
+  bool noconfirmados = false;
+  bool cancelados = false;
 
   @override
   void initState() {
@@ -87,52 +90,150 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
+  Widget opcionesBotones() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+          children: [
+            TextButton(
+              style: TextButton.styleFrom(
+                side: BorderSide(width: 1, color: Theme.of(context).primaryColorDark),
+
+                elevation: 0,
+                backgroundColor: confirmados!=true?Colors.transparent:Theme.of(context).primaryColorDark,
+                shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(width: 5),
+                  Text('Confirmados',style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold, color: confirmados==true?Theme.of(context).primaryColorLight:Theme.of(context).primaryColorDark)),
+                
+                  SizedBox(width: 5),
+                  
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: confirmados == false ? Theme.of(context).unselectedWidgetColor : Theme.of(context).primaryColorLight,
+                        ),
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Text(
+                              '0',
+                              style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 10, color: confirmados == false ? Theme.of(context).primaryColorLight : Theme.of(context).primaryColorDark)
+                            ),
+                          ),
+                        ),
+                      ),
+                ],
+              ),
+              onPressed: confirmados==true?null:() {
+                setState(() {
+                  confirmados = true;
+                  noconfirmados = false;
+                  cancelados = false;
+                });
+              },
+            ),
+    
+            Padding(
+              padding: const EdgeInsets.only(right: 10, left: 10),
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  side: BorderSide(width: 1, color: Theme.of(context).primaryColorDark),
+                  elevation: 0,
+                  backgroundColor: noconfirmados!=true?Colors.transparent:Theme.of(context).primaryColorDark,
+                  shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(width: 5),
+                    Text('No confirmados',style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold, color: noconfirmados==true?Theme.of(context).primaryColorLight:Theme.of(context).primaryColorDark)),
+                  
+                    SizedBox(width: 5),
+                    
+                        Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: noconfirmados == false ? Theme.of(context).unselectedWidgetColor : Theme.of(context).primaryColorLight,
+                          ),
+                          child: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Text(
+                                '0',
+                                style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 10, color: noconfirmados == false ? Theme.of(context).primaryColorLight : Theme.of(context).primaryColorDark)
+                              ),
+                            ),
+                          ),
+                        ),
+                  ],
+                ),
+                onPressed: noconfirmados==true?null:() {
+                  setState(() {
+                    confirmados = false;
+                    noconfirmados = true;
+                    cancelados = false;
+                  });
+                },
+              ),
+            ),
+    
+            TextButton(
+              style: TextButton.styleFrom(
+                side: BorderSide(width: 1, color: Theme.of(context).primaryColorDark),
+                elevation: 0,
+                backgroundColor: cancelados!=true?Colors.transparent:Theme.of(context).primaryColorDark,
+                shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
+              ),
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(width: 5),
+                    Text('Cancelados',style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold, color: cancelados==true?Theme.of(context).primaryColorLight:Theme.of(context).primaryColorDark)),
+                  
+                    SizedBox(width: 5),
+                    
+                        Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: cancelados == false ? Theme.of(context).unselectedWidgetColor : Theme.of(context).primaryColorLight,
+                          ),
+                          child: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Text(
+                                '0',
+                                style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 10, color: cancelados == false ? Theme.of(context).primaryColorLight : Theme.of(context).primaryColorDark)
+                              ),
+                            ),
+                          ),
+                        ),
+                  ],
+                ),
+              onPressed: cancelados==true?null:() {
+                setState(() {
+                  confirmados = false;
+                  noconfirmados = false;
+                  cancelados = true;
+                });
+              },
+            ),
+          ],
+        ),
+    );
+  }
+
   SingleChildScrollView body() {
     return SingleChildScrollView(
       physics: BouncingScrollPhysics(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          // SafeArea(
-          //   child: Padding(
-          //     padding: EdgeInsets.only(left: 16, right: 16, top: 10),
-          //     child: Row(
-          //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //       children: <Widget>[
-          //         // Padding(
-          //         //   padding: const EdgeInsets.symmetric(horizontal: 40.0),
-          //         //   child:
-          //         // ),
-          //         // Container(
-          //         //   padding:
-          //         //       EdgeInsets.only(left: 8, right: 8, top: 2, bottom: 2),
-          //         //   height: 30,
-          //         //   decoration: BoxDecoration(
-          //         //     borderRadius: BorderRadius.circular(30),
-          //         //     color: Colors.pink[50],
-          //         //   ),
-          //         //   // child: Row(
-          //         //   //   children: <Widget>[
-          //         //   //     Icon(
-          //         //   //       Icons.add,
-          //         //   //       color: Colors.pink,
-          //         //   //       size: 20,
-          //         //   //     ),
-          //         //   //     SizedBox(
-          //         //   //       width: 2,
-          //         //   //     ),
-          //         //   //     Text(
-          //         //   //       "Add New",
-          //         //   //       style: TextStyle(
-          //         //   //           fontSize: 14, fontWeight: FontWeight.bold),
-          //         //   //     ),
-          //         //   //   ],
-          //         //   // ),
-          //         // )
-          //       ],
-          //     ),
-          //   ),
-          // ),
+          opcionesBotones(),
+          SizedBox(height: 10.0),
           Container(
               decoration: BoxDecoration(
                 color: Theme.of(context).cardTheme.color,
@@ -174,14 +275,29 @@ class _ChatPageState extends State<ChatPage> {
             padding: EdgeInsets.only(top: 16),
             physics: NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
-              return ConversationList(
-                  idAgent: chatUsers[index]['Id'].toString(),
-                  nombre: chatUsers[index]['Nombre'],
-                  sinLeer_Agente:
-                      chatUsers[index]['sinLeer_Agente'].toString(),
-                  estado: chatUsers[index]['Estado'],
-                  sinleer_Motorista:
-                      chatUsers[index]['sinleer_Motorista'].toString());
+              print(chatUsers);
+              return Container(
+                child: Column(
+                  children: [
+                    if(confirmados==true)...{
+                      if(chatUsers[index]['Estado'] == 'CONFIRMADO')...{
+                        Text('${chatUsers[index]['Nombre']}'),
+                        Text('${chatUsers[index]['Id']}'),
+                      }
+                    }else if(cancelados==true)...{
+                      if(chatUsers[index]['Estado'] == 'RECHAZADO')...{
+                        Text('${chatUsers[index]['Nombre']}'),
+                        Text('${chatUsers[index]['Id']}'),
+                      }
+                    }else...{
+                      if(chatUsers[index]['Estado'] != 'RECHAZADO' && chatUsers[index]['Estado'] != 'CONFIRMADO')...{
+                        Text('${chatUsers[index]['Nombre']}'),
+                        Text('${chatUsers[index]['Id']}'),
+                      }
+                    }
+                  ],
+                ),
+              );
             },
           ),
         ],
