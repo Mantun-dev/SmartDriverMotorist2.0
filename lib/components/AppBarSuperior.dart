@@ -12,6 +12,7 @@ import '../Drivers/Screens/Details/components/details_HoursOut.dart';
 import '../Drivers/Screens/Details/components/details_TripProgress.dart';
 import '../Drivers/Screens/Details/components/details_history.dart';
 import '../Drivers/Screens/Details/components/travel_In_Trips.dart';
+import '../Drivers/Screens/Details/components/trip_In_Process.dart';
 import '../Drivers/Screens/DriverProfile/driverProfile.dart';
 import '../Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 import '../Drivers/Screens/Welcome/welcome_screen.dart';
@@ -93,6 +94,25 @@ class _AppBarSuperior extends State<AppBarSuperior> {
           pageBuilder: (_, __, ___) => DetailsDriverTripInProgress(
             plantillaDriver:plantillaDriver[1]
           ),
+          transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+            return SlideTransition(
+              position: Tween<Offset>(
+                begin: Offset(-1.0, 0.0),
+                end: Offset.zero,
+              ).animate(animation),
+            child: child,
+           );
+          },
+        ),
+      );
+      break;
+
+      case 222:
+        Navigator.push(
+        context,
+        PageRouteBuilder(
+          transitionDuration: Duration(milliseconds: 200),
+          pageBuilder: (_, __, ___) => Process(),
           transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
             return SlideTransition(
               position: Tween<Offset>(
@@ -266,6 +286,20 @@ class _AppBarSuperior extends State<AppBarSuperior> {
               child: Center(
                 child: Text(
                   "Viajes en proceso",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.normal,
+                    fontSize: 21
+                  ),
+                ),
+              ),
+            ),
+
+            if(item==222)
+            Expanded(
+              child: Center(
+                child: Text(
+                  "Información de viaje",
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.normal,

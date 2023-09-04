@@ -27,6 +27,9 @@ import 'package:quickalert/quickalert.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:roundcheckbox/roundcheckbox.dart';
 
+import '../../../../components/AppBarPosterior.dart';
+import '../../../../components/AppBarSuperior.dart';
+import '../../../../components/backgroundB.dart';
 import '../../../components/progress_indicator.dart';
 import '../../../models/search.dart';
 //import 'details_TripProgress.dart';
@@ -523,77 +526,70 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        backgroundColor: backgroundColor,
-        drawer: DriverMenuLateral(),
-        appBar: AppBar(
-          backgroundColor: backgroundColor,
-          elevation: 10,
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.textsms_rounded, color: thirdColor, size: 30.0),
-              onPressed: () {
-
-              },
-            ),
-            IconButton(
-              icon: Icon(Icons.arrow_circle_left),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return Process();
-                    },
+    return BackgroundBody(
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+                  appBar: PreferredSize(
+                    preferredSize: Size.fromHeight(56),
+                    child: AppBarSuperior(item: 222)
                   ),
-                );
-                SizedBox(width: kDefaultPadding / 2);
-              },
-            ),
-          ],
-        ),
-        body: Column(
-          children: [
-            SizedBox(height: 10.0),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Text(
-                ' Viaje en proceso ',
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                  color: GradiantV_2,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20.0,
-                ),
-              ),
-            ),
-            SizedBox(height: 10.0),
-            _buttonsAgents(),
-            SizedBox(height: 10.0),
-            Expanded(
-              child: ListView.builder(
-                itemCount: 1, // Número de elementos fuera del ListView
-                itemBuilder: (BuildContext context, int index) {
-                  return Column(
+                  body: Column(
                     children: [
-                      SizedBox(height: 10.0),
-                      ingresarVehiculo(),
-                      SizedBox(height: 10.0),
-                      escanearAgente(),
-                      SizedBox(height: 10.0),
-                      _agentToConfirm(),
-                      SizedBox(height: 10.0),
+                      Expanded(
+                        child: GestureDetector(
+                        onTap: () {
+                          FocusScope.of(context).requestFocus(new FocusNode());
+                        },
+                        child:body()),
+                      ),
+                      SafeArea(child: AppBarPosterior(item:-1)),
                     ],
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
+                  ),
+                ),
       ),
     );
+  }
+
+  Column body() {
+    return Column(
+        children: [
+          SizedBox(height: 10.0),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Text(
+              ' Viaje en proceso ',
+              textAlign: TextAlign.start,
+              style: TextStyle(
+                color: GradiantV_2,
+                fontWeight: FontWeight.bold,
+                fontSize: 20.0,
+              ),
+            ),
+          ),
+          SizedBox(height: 10.0),
+          _buttonsAgents(),
+          SizedBox(height: 10.0),
+          Expanded(
+            child: ListView.builder(
+              itemCount: 1, // Número de elementos fuera del ListView
+              itemBuilder: (BuildContext context, int index) {
+                return Column(
+                  children: [
+                    SizedBox(height: 10.0),
+                    ingresarVehiculo(),
+                    SizedBox(height: 10.0),
+                    escanearAgente(),
+                    SizedBox(height: 10.0),
+                    _agentToConfirm(),
+                    SizedBox(height: 10.0),
+                  ],
+                );
+              },
+            ),
+          ),
+        ],
+      );
   }
 
   Widget escanearAgente() {
