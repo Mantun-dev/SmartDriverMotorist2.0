@@ -173,7 +173,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
         'https://admin.smtdriver.com/test/registerTripAsCompleted/${prefs.tripId}/${data.driverId}/mobile'));
     final si = Driver2.fromJson(json.decode(responses.body));
 
-    LoadingIndicatorDialog().dismiss();
+    loadingDialog.dismiss();
     //print(responses.body);
     if (responses.statusCode == 200 && si.ok!) {
       new Future.delayed(new Duration(seconds: 2), () {
@@ -1715,18 +1715,11 @@ class _DataTableExample extends State<MyConfirmAgent> {
     }
 
     alertaCancelo(abc, index) async {
-      await QuickAlert.show(
-        context: context,
-        type: QuickAlertType.confirm,
-        text: "¿Está seguro que desea marcar como canceló transporte?",
-        confirmBtnText: "Confirmar",
-        cancelBtnText: "Cancelar",
-        title: '¿Está seguro?',
-        showCancelBtn: true,
-        confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
-        cancelBtnTextStyle: TextStyle(
-            color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
-        onConfirmBtnTap: () {
+      await confirmationDialog.show(
+        context,
+        title: "¿Está seguro que desea marcar como canceló transporte?",
+        type: "0",
+        onConfirm: () async {
           fetchRegisterCommentAgent(
               abc.data!.trips![0].tripAgent![index].agentId.toString(),
               prefs.tripId,
@@ -1747,12 +1740,10 @@ class _DataTableExample extends State<MyConfirmAgent> {
             abc.data!.trips![0].tripAgent![index].commentDriver =
                 'Canceló transporte';
           });
-          Navigator.pop(context);
+          confirmationDialog.dismiss();
         },
-        onCancelBtnTap: () {
-          Navigator.pop(context);
-        },
-      );
+        onCancel: () {},
+      );  
 
       setState(() {});
     }
@@ -3017,39 +3008,27 @@ class _DataTableExample extends State<MyConfirmAgent> {
                     fontWeight: FontWeight.bold,
                     fontSize: 15)),
             onPressed: () {
-              QuickAlert.show(
-                context: context,
-                type: QuickAlertType.success,
-                title: "Completar viaje",
-                text: "¿Está seguro que desea completar el viaje?",
-                confirmBtnText: "Confirmar",
-                cancelBtnText: "Cancelar",
-                showCancelBtn: true,
-                confirmBtnTextStyle:
-                    TextStyle(fontSize: 15, color: Colors.white),
-                cancelBtnTextStyle: TextStyle(
-                    color: Colors.red,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold),
-                onConfirmBtnTap: () {
-                  Navigator.pop(context);
+              confirmationDialog.show(
+                context,
+                title: "¿Está seguro que desea completar el viaje?",
+                type: "0",
+                onConfirm: () async {
+                  confirmationDialog.dismiss();
 
                   if (tripVehicle == '') {
                     WarningSuccessDialog().show(
-                                                                      navigatorKey.currentContext!,
-                                                                      title: 'Tiene que ingresar un vehiculo.',
-                                                                      tipo: 1,
-                                                                      onOkay: () {},
-                                                                    );
+                      navigatorKey.currentContext!,
+                      title: 'Tiene que ingresar un vehiculo.',
+                      tipo: 1,
+                      onOkay: () {},
+                   );
                     return;
                   }
-                  LoadingIndicatorDialog().show(context);
+                  loadingDialog.show(context);
                   fetchRegisterTripCompleted();
                 },
-                onCancelBtnTap: () {
-                  Navigator.pop(context);
-                },
-              );
+                onCancel: () {},
+              ); 
             },
           ),
         ),
