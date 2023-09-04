@@ -1,12 +1,16 @@
+import 'dart:convert';
+
 import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Chat/chatapis.dart';
+import 'package:flutter_svg/svg.dart';
 //import 'package:flutter_auth/Drivers/Screens/Details/components/agents_Trip.dart';
 //import 'package:provider/provider.dart';
-
+import 'package:http/http.dart' as http;
 import '../../../components/AppBarPosterior.dart';
 import '../../../components/AppBarSuperior.dart';
 import '../../../components/backgroundB.dart';
+import 'chatscreen.dart';
 
 class ChatPage extends StatefulWidget {
   final String? tripId;
@@ -19,7 +23,8 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  List<dynamic> chatUsers = [];
+  var chatUsers;
+  var chatUsers2;
   bool cargarM = false;
   bool confirmados = true;
   bool noconfirmados = false;
@@ -27,6 +32,8 @@ class _ChatPageState extends State<ChatPage> {
   int totalConfirmados = 0;
   int totalNoConfirmados = 0;
   int totalCancelados = 0;
+  int? idMotorista;
+  String? nombreMotorista;
 
   @override
   void initState() {
@@ -42,11 +49,15 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void getCounterNotification(String tripId) async {
-    final getData = await ChatApis().notificationCounter(widget.tripId!);
+    http.Response responses = await http.get(Uri.parse('https://apichat.smtdriver.com/api/mensajes/$tripId'));
+    var getData = json.decode(responses.body);
 
     if (getData.isNotEmpty) {
 
-      chatUsers = getData;
+      chatUsers = getData['Agentes'];
+      chatUsers2 = chatUsers;
+      idMotorista = getData['Motorista']['Id'];
+      nombreMotorista = getData['Motorista']['Nombre'];
 
       for(var i=0;i<chatUsers.length;i++){
         
@@ -260,7 +271,8 @@ class _ChatPageState extends State<ChatPage> {
                     child: TextField(
                       style: Theme.of(context).textTheme.bodyMedium,
                       onChanged:(value) {
-
+                        chatUsers = chatUsers2.where((element) => element['Nombre'].toString().toLowerCase().contains(value.toLowerCase())).toList();
+                        setState(() {});
                       },
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.search, color: Theme.of(context).primaryIconTheme.color),
@@ -286,61 +298,81 @@ class _ChatPageState extends State<ChatPage> {
           ListView.builder(
             itemCount: chatUsers.length,
             shrinkWrap: true,
-            padding: EdgeInsets.only(top: 16),
+            padding: EdgeInsets.only(top: 8),
             physics: NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
-
-              return Container(
-                child: Column(
-                  children: [
-                    if(this.widget.tipoViaje=='Entrada')...{
-                      if(confirmados==true)...{
-                        if(chatUsers[index]['Estado'] == 'CONFIRMADO')...{
-                          contenido(
-                            chatUsers[index]['Nombre'],
-                            chatUsers[index]['Id'],
-                            chatUsers[index]['TiempoUltimoM'],
-                            chatUsers[index]['mensajes'].isEmpty? chatUsers[index]['mensajes']: chatUsers[index]['mensajes'][0],
-                            chatUsers[index]['sinleer_Motorista'],
-                            chatUsers[index]['esMotorista']
-                          )
-                        }
-                      }else if(cancelados==true)...{
-                        if(chatUsers[index]['Estado'] == 'RECHAZADO')...{
-                          contenido(
-                            chatUsers[index]['Nombre'],
-                            chatUsers[index]['Id'],
-                            chatUsers[index]['TiempoUltimoM'],
-                            chatUsers[index]['mensajes'].isEmpty? chatUsers[index]['mensajes']: chatUsers[index]['mensajes'][0],
-                            chatUsers[index]['sinleer_Motorista'],
-                            chatUsers[index]['esMotorista']
-                          )
-                        }
-                      }else...{
-                        if(chatUsers[index]['Estado'] != 'RECHAZADO' && chatUsers[index]['Estado'] != 'CONFIRMADO')...{
-                          contenido(
-                            chatUsers[index]['Nombre'],
-                            chatUsers[index]['Id'],
-                            chatUsers[index]['TiempoUltimoM'],
-                            chatUsers[index]['mensajes'].isEmpty? chatUsers[index]['mensajes']: chatUsers[index]['mensajes'][0],
-                            chatUsers[index]['sinleer_Motorista'],
-                            chatUsers[index]['esMotorista']
-                          )
-                        }
-                      }
-                    }else...{
-                      contenido(
+              if (this.widget.tipoViaje == 'Entrada') {
+                if (confirmados == true) {
+                  
+                  if (chatUsers[index]['Estado'] == 'CONFIRMADO') {
+                    return Padding(
+                      padding: const EdgeInsets.only(left: 8, right: 8),
+                      child: contenido(
                         chatUsers[index]['Nombre'],
                         chatUsers[index]['Id'],
                         chatUsers[index]['TiempoUltimoM'],
-                        chatUsers[index]['mensajes'].isEmpty? chatUsers[index]['mensajes']: chatUsers[index]['mensajes'][0],
+                        chatUsers[index]['mensajes'].isEmpty
+                            ? chatUsers[index]['mensajes']
+                            : chatUsers[index]['mensajes'][0],
                         chatUsers[index]['sinleer_Motorista'],
-                        chatUsers[index]['esMotorista']
-                      )
-                    }
-                  ],
-                ),
-              );
+                        chatUsers[index]['esMotorista'],
+                        chatUsers[index]['ultimoM'],
+                      ),
+                    );
+                  }else return SizedBox();
+                } else if (cancelados == true) {
+
+                  if (chatUsers[index]['Estado'] == 'RECHAZADO') {
+                    return Padding(
+                      padding: const EdgeInsets.only(left: 8, right: 8),
+                      child: contenido(
+                        chatUsers[index]['Nombre'],
+                        chatUsers[index]['Id'],
+                        chatUsers[index]['TiempoUltimoM'],
+                        chatUsers[index]['mensajes'].isEmpty
+                            ? chatUsers[index]['mensajes']
+                            : chatUsers[index]['mensajes'][0],
+                        chatUsers[index]['sinleer_Motorista'],
+                        chatUsers[index]['esMotorista'],
+                        chatUsers[index]['ultimoM'],
+                      ),
+                    );
+                  }else return SizedBox();
+                } else {
+                  if (chatUsers[index]['Estado'] != 'RECHAZADO' &&
+                      chatUsers[index]['Estado'] != 'CONFIRMADO') {
+                    return Padding(
+                      padding: const EdgeInsets.only(left: 8, right: 8),
+                      child: contenido(
+                        chatUsers[index]['Nombre'],
+                        chatUsers[index]['Id'],
+                        chatUsers[index]['TiempoUltimoM'],
+                        chatUsers[index]['mensajes'].isEmpty
+                            ? chatUsers[index]['mensajes']
+                            : chatUsers[index]['mensajes'][0],
+                        chatUsers[index]['sinleer_Motorista'],
+                        chatUsers[index]['esMotorista'],
+                        chatUsers[index]['ultimoM'],
+                      ),
+                    );
+                  }else return SizedBox();
+                }
+              } else {
+                return Padding(
+                  padding: const EdgeInsets.only(left: 8, right: 8),
+                  child: contenido(
+                    chatUsers[index]['Nombre'],
+                    chatUsers[index]['Id'],
+                    chatUsers[index]['TiempoUltimoM'],
+                    chatUsers[index]['mensajes'].isEmpty
+                        ? chatUsers[index]['mensajes']
+                        : chatUsers[index]['mensajes'][0],
+                    chatUsers[index]['sinleer_Motorista'],
+                    chatUsers[index]['esMotorista'],
+                    chatUsers[index]['ultimoM'],
+                  ),
+                );
+              }
             },
           ),
         ],
@@ -374,14 +406,222 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget contenido(String nombre, int idViaje, String hora, var mensaje, int cantSinLeer, bool esMotorista){
-    if(mensaje.isNotEmpty)
-      print(mensaje['Leido']);
-    return Column(
-      children: [
-        Text(nombre),
-        Text('$idViaje'),
-      ],
-    );
+  Widget contenido(String nombre, int idAg, String hora, var mensaje, int cantSinLeer, bool esMotorista, String ultimoM){
+    return mensaje.isNotEmpty? GestureDetector(
+                    onTap: () {
+                       Navigator.push(
+                                    context,
+                                    PageRouteBuilder(
+                                      transitionDuration: Duration(milliseconds: 200 ), // Adjust the animation duration as needed
+                                      pageBuilder: (_, __, ___) => ChatScreen(
+                                        idAgent: idAg.toString(),
+                                        nombreAgent: nombre,
+                                        nombre: "$nombreMotorista",
+                                        id: '$idMotorista',
+                                        rol: "MOTORISTA",
+                                        tipoViaje: this.widget.tipoViaje,
+                                      ),
+                                      transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                        return SlideTransition(
+                                          position: Tween<Offset>(
+                                            begin: Offset(1.0, 0.0),
+                                            end: Offset.zero,
+                                          ).animate(animation),
+                                          child: child,
+                                        );
+                                      },
+                                    ),
+                                  );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(top:20),
+                      child: Stack(
+                        children: [
+                          Container(
+                            width: 50,
+                            height: 50,
+                            child: Image.asset(
+                              "assets/images/perfilmotorista.png",
+                            ),
+                          ),
+                    
+                          Positioned(
+                            left: 60,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '$nombre',
+                                  style: Theme.of(context).textTheme.titleMedium!.copyWith(fontSize: 13),
+                                ),
+                                Text(
+                                  '# de agente: $idAg',
+                                  style: Theme.of(context).textTheme.labelMedium!.copyWith(fontSize: 10, fontWeight: FontWeight.normal),
+                                ),
+                              ],
+                            ),
+                          ),
+            
+                          Positioned(
+                            left: 60,
+                            bottom: 5,
+                            child: esMotorista == true ?
+                                  Row(
+                                    children: [
+                                      Container(
+                                        width: 15,
+                                        height: 15,
+                                        child: SvgPicture.asset(
+                                          "assets/icons/ignorado.svg",
+                                          color: mensaje['Leido'] == true?Theme.of(context).focusColor
+                                            :Theme.of(context).splashColor,
+                                        ),
+                                      ),
+                                      Text(
+                                        mensaje['Tipo']=='AUDIO'? 'Tu: Mensaje de voz':' Tu: $ultimoM',
+                                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 12),
+                                      ),
+                                    ],
+                                  ):
+                                  Text(
+                                    mensaje['Tipo']=='AUDIO'? 'Mensaje de voz': 'ultimoM',
+                                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 12),
+                                  ),
+                          ),
+                                if (cantSinLeer!= 0)
+                                  Positioned(
+                                    right: 0,
+                                    bottom: 5,
+                                    child: Container(
+                                      margin: const EdgeInsets.only(left: 5),
+                                      padding: const EdgeInsets.all(5),
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).focusColor,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Text(
+                                        '$cantSinLeer',
+                                        style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 9),
+                                      ),
+                                    ),
+                                  ),
+            
+                          Positioned(
+                            right: 0,
+                            child: Text(
+                                    '$hora',
+                                    style: cantSinLeer != 0? 
+                                      Theme.of(context).textTheme.labelMedium!.copyWith(fontSize: 12):
+                                      Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 12)
+                                    ,
+                                  ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ): GestureDetector(
+                    onTap: () {
+                       Navigator.push(
+                                    context,
+                                    PageRouteBuilder(
+                                      transitionDuration: Duration(milliseconds: 200 ), // Adjust the animation duration as needed
+                                      pageBuilder: (_, __, ___) => ChatScreen(
+                                        idAgent: idAg.toString(),
+                                        nombreAgent: nombre,
+                                        nombre: "$nombreMotorista",
+                                        id: '$idMotorista',
+                                        rol: "MOTORISTA",
+                                        tipoViaje: this.widget.tipoViaje,
+                                      ),
+                                      transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                        return SlideTransition(
+                                          position: Tween<Offset>(
+                                            begin: Offset(1.0, 0.0),
+                                            end: Offset.zero,
+                                          ).animate(animation),
+                                          child: child,
+                                        );
+                                      },
+                                    ),
+                                  );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(top:20),
+                      child: Stack(
+                        children: [
+                          Container(
+                            width: 50,
+                            height: 50,
+                            child: Image.asset(
+                              "assets/images/perfilmotorista.png",
+                            ),
+                          ),
+                    
+                          Positioned(
+                            left: 60,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '$nombre',
+                                  style: Theme.of(context).textTheme.titleMedium!.copyWith(fontSize: 13),
+                                ),
+                                Text(
+                                  '# de agente: $idAg',
+                                  style: Theme.of(context).textTheme.labelMedium!.copyWith(fontSize: 10, fontWeight: FontWeight.normal),
+                                ),
+                              ],
+                            ),
+                          ),
+            
+                          Positioned(
+                            left: 60,
+                            bottom: 5,
+                            child: esMotorista == true ?
+                                  Row(
+                                    children: [
+                                      Text(
+                                        '',
+                                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 12),
+                                      ),
+                                    ],
+                                  ):
+                                  Text(
+                                    '',
+                                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 12),
+                                  ),
+                          ),
+                                if (cantSinLeer!= 0)
+                                  Positioned(
+                                    right: 0,
+                                    bottom: 5,
+                                    child: Container(
+                                      margin: const EdgeInsets.only(left: 5),
+                                      padding: const EdgeInsets.all(5),
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).focusColor,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Text(
+                                        '$cantSinLeer',
+                                        style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 9),
+                                      ),
+                                    ),
+                                  ),
+            
+                          Positioned(
+                            right: 0,
+                            child: Text(
+                                    '$hora',
+                                    style: cantSinLeer != 0? 
+                                      Theme.of(context).textTheme.labelMedium!.copyWith(fontSize: 12):
+                                      Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 12)
+                                    ,
+                                  ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
   }
 }
