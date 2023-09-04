@@ -49,6 +49,10 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void getCounterNotification(String tripId) async {
+    totalConfirmados = 0;
+    totalNoConfirmados = 0;
+    totalCancelados = 0;
+    
     http.Response responses = await http.get(Uri.parse('https://apichat.smtdriver.com/api/mensajes/$tripId'));
     var getData = json.decode(responses.body);
 
