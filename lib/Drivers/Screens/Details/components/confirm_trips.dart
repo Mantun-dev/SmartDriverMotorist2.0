@@ -1617,7 +1617,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
     alertaAbordo(abc, index, isChecked)async{
       await confirmationDialog.show(
                                       context,
-                                      title: '¿Está seguro que desea marcar como no confirmado al agente?',
+                                      title: isChecked==false ?"¿Está seguro que desea marcar como no \nabordado al agente?":"¿Está seguro que desea marcar como \nabordado al agente?",
                                       type: "0",
                                       onConfirm: () async {
                                         if(traveled==false && abc.data!.trips![0].tripAgent![index].didntGetOut==1){
