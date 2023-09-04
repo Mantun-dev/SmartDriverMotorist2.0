@@ -1662,6 +1662,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
             );  
           }
           confirmationDialog.dismiss();
+          setState(() {});
                                       },
                                     onCancel: () {},
                                   );  
