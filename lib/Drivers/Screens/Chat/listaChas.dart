@@ -318,7 +318,7 @@ class _ChatsListState extends State<ChatsList> {
                             navigatorKey.currentContext!,
                             PageRouteBuilder(
                               transitionDuration: Duration(milliseconds: 200),
-                              pageBuilder: (_, __, ___) => ChatPage(tripId: listaChats[index]['Viaje'].toString()),
+                              pageBuilder: (_, __, ___) => ChatPage(tripId: listaChats[index]['Viaje'].toString(), tipoViaje: listaChats[index]['Tipo']),
                               transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
                                 return SlideTransition(
                                   position: Tween<Offset>(

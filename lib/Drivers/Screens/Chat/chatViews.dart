@@ -1,31 +1,32 @@
 import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Chat/chatapis.dart';
-import 'package:flutter_auth/Drivers/Screens/Chat/listchat_agents.dart';
-import 'package:flutter_auth/Drivers/Screens/Details/components/agents_Trip.dart';
-import 'package:flutter_auth/main.dart';
 //import 'package:flutter_auth/Drivers/Screens/Details/components/agents_Trip.dart';
 //import 'package:provider/provider.dart';
 
 import '../../../components/AppBarPosterior.dart';
 import '../../../components/AppBarSuperior.dart';
 import '../../../components/backgroundB.dart';
-import '../../../constants.dart';
-import '../Details/components/confirm_trips.dart';
 
 class ChatPage extends StatefulWidget {
   final String? tripId;
+  final String? tipoViaje;
 
-  const ChatPage({Key? key, this.tripId}) : super(key: key);
+  const ChatPage({Key? key, this.tripId, this.tipoViaje}) : super(key: key);
+  
   @override
   _ChatPageState createState() => _ChatPageState();
 }
 
 class _ChatPageState extends State<ChatPage> {
   List<dynamic> chatUsers = [];
+  bool cargarM = false;
   bool confirmados = true;
   bool noconfirmados = false;
   bool cancelados = false;
+  int totalConfirmados = 0;
+  int totalNoConfirmados = 0;
+  int totalCancelados = 0;
 
   @override
   void initState() {
@@ -42,18 +43,29 @@ class _ChatPageState extends State<ChatPage> {
 
   void getCounterNotification(String tripId) async {
     final getData = await ChatApis().notificationCounter(widget.tripId!);
+
     if (getData.isNotEmpty) {
-      if (mounted) {
-        setState(() {
-          chatUsers = getData;
-        });
+
+      chatUsers = getData;
+
+      for(var i=0;i<chatUsers.length;i++){
+        
+        if(chatUsers[i]['Estado']=='CONFIRMADO')
+          totalConfirmados++;
+        else if(chatUsers[i]['Estado']=='RECHAZADO')
+          totalCancelados++;
+        else 
+          totalNoConfirmados++;
       }
+
     }
-    //print(chatUsers);
+    cargarM = true;
+    setState(() {});
+
   }
 
   bool myInterceptor(bool stopDefaultButtonEvent, RouteInfo info) {
-    print("BACK BUTTON!"); // Do some stuff.
+
 
     Navigator.of(context).pop();
 
@@ -120,7 +132,7 @@ class _ChatPageState extends State<ChatPage> {
                           child: Padding(
                             padding: const EdgeInsets.all(5.0),
                             child: Text(
-                              '0',
+                              '$totalConfirmados',
                               style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 10, color: confirmados == false ? Theme.of(context).primaryColorLight : Theme.of(context).primaryColorDark)
                             ),
                           ),
@@ -163,7 +175,7 @@ class _ChatPageState extends State<ChatPage> {
                             child: Padding(
                               padding: const EdgeInsets.all(5.0),
                               child: Text(
-                                '0',
+                                '$totalNoConfirmados',
                                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 10, color: noconfirmados == false ? Theme.of(context).primaryColorLight : Theme.of(context).primaryColorDark)
                               ),
                             ),
@@ -205,7 +217,7 @@ class _ChatPageState extends State<ChatPage> {
                             child: Padding(
                               padding: const EdgeInsets.all(5.0),
                               child: Text(
-                                '0',
+                                '$totalCancelados',
                                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 10, color: cancelados == false ? Theme.of(context).primaryColorLight : Theme.of(context).primaryColorDark)
                               ),
                             ),
@@ -229,10 +241,12 @@ class _ChatPageState extends State<ChatPage> {
   SingleChildScrollView body() {
     return SingleChildScrollView(
       physics: BouncingScrollPhysics(),
-      child: Column(
+      child: cargarM == true? Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          opcionesBotones(),
+          
+          if(this.widget.tipoViaje=='Entrada')
+            opcionesBotones(),
           SizedBox(height: 10.0),
           Container(
               decoration: BoxDecoration(
@@ -275,25 +289,54 @@ class _ChatPageState extends State<ChatPage> {
             padding: EdgeInsets.only(top: 16),
             physics: NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
-              print(chatUsers);
+
               return Container(
                 child: Column(
                   children: [
-                    if(confirmados==true)...{
-                      if(chatUsers[index]['Estado'] == 'CONFIRMADO')...{
-                        Text('${chatUsers[index]['Nombre']}'),
-                        Text('${chatUsers[index]['Id']}'),
-                      }
-                    }else if(cancelados==true)...{
-                      if(chatUsers[index]['Estado'] == 'RECHAZADO')...{
-                        Text('${chatUsers[index]['Nombre']}'),
-                        Text('${chatUsers[index]['Id']}'),
+                    if(this.widget.tipoViaje=='Entrada')...{
+                      if(confirmados==true)...{
+                        if(chatUsers[index]['Estado'] == 'CONFIRMADO')...{
+                          contenido(
+                            chatUsers[index]['Nombre'],
+                            chatUsers[index]['Id'],
+                            chatUsers[index]['TiempoUltimoM'],
+                            chatUsers[index]['mensajes'].isEmpty? chatUsers[index]['mensajes']: chatUsers[index]['mensajes'][0],
+                            chatUsers[index]['sinleer_Motorista'],
+                            chatUsers[index]['esMotorista']
+                          )
+                        }
+                      }else if(cancelados==true)...{
+                        if(chatUsers[index]['Estado'] == 'RECHAZADO')...{
+                          contenido(
+                            chatUsers[index]['Nombre'],
+                            chatUsers[index]['Id'],
+                            chatUsers[index]['TiempoUltimoM'],
+                            chatUsers[index]['mensajes'].isEmpty? chatUsers[index]['mensajes']: chatUsers[index]['mensajes'][0],
+                            chatUsers[index]['sinleer_Motorista'],
+                            chatUsers[index]['esMotorista']
+                          )
+                        }
+                      }else...{
+                        if(chatUsers[index]['Estado'] != 'RECHAZADO' && chatUsers[index]['Estado'] != 'CONFIRMADO')...{
+                          contenido(
+                            chatUsers[index]['Nombre'],
+                            chatUsers[index]['Id'],
+                            chatUsers[index]['TiempoUltimoM'],
+                            chatUsers[index]['mensajes'].isEmpty? chatUsers[index]['mensajes']: chatUsers[index]['mensajes'][0],
+                            chatUsers[index]['sinleer_Motorista'],
+                            chatUsers[index]['esMotorista']
+                          )
+                        }
                       }
                     }else...{
-                      if(chatUsers[index]['Estado'] != 'RECHAZADO' && chatUsers[index]['Estado'] != 'CONFIRMADO')...{
-                        Text('${chatUsers[index]['Nombre']}'),
-                        Text('${chatUsers[index]['Id']}'),
-                      }
+                      contenido(
+                        chatUsers[index]['Nombre'],
+                        chatUsers[index]['Id'],
+                        chatUsers[index]['TiempoUltimoM'],
+                        chatUsers[index]['mensajes'].isEmpty? chatUsers[index]['mensajes']: chatUsers[index]['mensajes'][0],
+                        chatUsers[index]['sinleer_Motorista'],
+                        chatUsers[index]['esMotorista']
+                      )
                     }
                   ],
                 ),
@@ -301,7 +344,44 @@ class _ChatPageState extends State<ChatPage> {
             },
           ),
         ],
-      ),
+      ): WillPopScope(
+                    onWillPop: () async => false,
+                    child: SimpleDialog(
+                      elevation: 20,
+                      backgroundColor: Theme.of(context).cardColor,
+                      children: [
+                        Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.only(left: 16, top: 16, right: 16),
+                                child: CircularProgressIndicator(),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Text(
+                                  'Cargando...', 
+                                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18),
+                                  ),
+                              )
+                            ],
+                          ),
+                        )
+                      ] ,
+                    ),
+                  ),
+    );
+  }
+
+  Widget contenido(String nombre, int idViaje, String hora, var mensaje, int cantSinLeer, bool esMotorista){
+    if(mensaje.isNotEmpty)
+      print(mensaje['Leido']);
+    return Column(
+      children: [
+        Text(nombre),
+        Text('$idViaje'),
+      ],
     );
   }
 }

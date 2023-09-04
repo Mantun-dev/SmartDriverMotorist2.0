@@ -535,14 +535,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
             IconButton(
               icon: Icon(Icons.textsms_rounded, color: thirdColor, size: 30.0),
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ChatPage(
-                      tripId: prefs.tripId,
-                    ),
-                  ),
-                );
+
               },
             ),
             IconButton(
