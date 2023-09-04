@@ -321,6 +321,7 @@ class _ChatPageState extends State<ChatPage> {
                         chatUsers[index]['sinleer_Motorista'],
                         chatUsers[index]['esMotorista'],
                         chatUsers[index]['ultimoM'],
+                        chatUsers[index]['Tipo'],
                       ),
                     );
                   }else return SizedBox();
@@ -339,6 +340,7 @@ class _ChatPageState extends State<ChatPage> {
                         chatUsers[index]['sinleer_Motorista'],
                         chatUsers[index]['esMotorista'],
                         chatUsers[index]['ultimoM'],
+                        chatUsers[index]['Tipo'],
                       ),
                     );
                   }else return SizedBox();
@@ -357,6 +359,7 @@ class _ChatPageState extends State<ChatPage> {
                         chatUsers[index]['sinleer_Motorista'],
                         chatUsers[index]['esMotorista'],
                         chatUsers[index]['ultimoM'],
+                        chatUsers[index]['Tipo'],
                       ),
                     );
                   }else return SizedBox();
@@ -374,6 +377,7 @@ class _ChatPageState extends State<ChatPage> {
                     chatUsers[index]['sinleer_Motorista'],
                     chatUsers[index]['esMotorista'],
                     chatUsers[index]['ultimoM'],
+                    chatUsers[index]['Tipo'],
                   ),
                 );
               }
@@ -410,7 +414,7 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget contenido(String nombre, int idAg, String hora, var mensaje, int cantSinLeer, bool esMotorista, String ultimoM){
+  Widget contenido(String nombre, int idAg, String hora, var mensaje, int cantSinLeer, bool esMotorista, String ultimoM, String tipo){
     return mensaje.isNotEmpty? GestureDetector(
                     onTap: () {
                        Navigator.push(
@@ -445,7 +449,7 @@ class _ChatPageState extends State<ChatPage> {
                             width: 50,
                             height: 50,
                             child: Image.asset(
-                              "assets/images/perfilmotorista.png",
+                              "assets/images/perfil-usuario-general.png",
                             ),
                           ),
                     
@@ -482,13 +486,13 @@ class _ChatPageState extends State<ChatPage> {
                                         ),
                                       ),
                                       Text(
-                                        mensaje['Tipo']=='AUDIO'? 'Tu: Mensaje de voz':' Tu: $ultimoM',
+                                        tipo=='AUDIO'? 'Tu: Mensaje de voz':' Tu: $ultimoM',
                                         style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 12),
                                       ),
                                     ],
                                   ):
                                   Text(
-                                    mensaje['Tipo']=='AUDIO'? 'Mensaje de voz': 'ultimoM',
+                                    tipo=='AUDIO'? 'Mensaje de voz': '$ultimoM',
                                     style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 12),
                                   ),
                           ),
@@ -557,7 +561,7 @@ class _ChatPageState extends State<ChatPage> {
                             width: 50,
                             height: 50,
                             child: Image.asset(
-                              "assets/images/perfilmotorista.png",
+                              "assets/images/perfil-usuario-general.png",
                             ),
                           ),
                     

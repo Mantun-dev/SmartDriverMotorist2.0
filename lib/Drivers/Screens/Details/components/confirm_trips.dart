@@ -1922,7 +1922,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                   ),
                 ),
                 SizedBox(height: 10.0),
-              //_buttonsRuta(),
+              _buttonsRuta(),
               SizedBox(height: 10.0),
                 Column(
                   children: List.generate(

@@ -21,7 +21,9 @@ class MessageDriver {
       this.ao,
       this.tipo,
       this.leido,
-      this.id2});
+      this.id2,
+      this.mostrarF,
+    });
 
   String? user;
   dynamic sala;
@@ -34,6 +36,7 @@ class MessageDriver {
   String? tipo;
   bool? leido;
   dynamic id2;
+  bool? mostrarF;
 
   factory MessageDriver.fromJson(Map<String, dynamic> json) => MessageDriver(
       mensaje: json["mensaje"],
@@ -46,7 +49,9 @@ class MessageDriver {
       ao: json["año"],
       tipo: json["tipo"],
       leido: json["leido"],
-      id2: json["id2"]);
+      id2: json["id2"],
+      mostrarF: json["mostrarF"], 
+    );
 
   Map<String, dynamic> toJson() => {
         "mensaje": mensaje,
@@ -59,6 +64,7 @@ class MessageDriver {
         "año": ao,
         "tipo": tipo,
         "leido": leido,
-        "id2": id2
+        "id2": id2,
+        "mostrarF": mostrarF,
       };
 }

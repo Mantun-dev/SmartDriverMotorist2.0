@@ -295,8 +295,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         return false;
     }
 
-    // ignore: non_constant_identifier_names
-    String hoy_ayer(fechaBs){
+
+    String hoyayer(fechaBs){
 
       DateTime now = new DateTime.now();
       DateTime date = new DateTime(now.year, now.month, now.day);
@@ -324,259 +324,320 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       else
         return fechaBs;
     }
-
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: backgroundColor,
-      appBar: AppBar(
-        title: nameAgent == null
-            ? Text("")
-            : Text(
-                nameAgent!,
-                style: TextStyle(color: thirdColor),
+     backgroundColor: Theme.of(context).canvasColor,
+              appBar: PreferredSize(
+                preferredSize: Size.fromHeight(56),
+                child: AppBar(
+                  backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+                    elevation: 0,
+                    iconTheme: IconThemeData(size: 25),
+                    automaticallyImplyLeading: false, 
+                    actions: <Widget>[
+                    //aquí está el icono de las notificaciones
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          streamSocket.socket!.emit('salir');
+                          streamSocket.socket!.disconnect();
+                          streamSocket.socket!.close();
+                          streamSocket.socket!.dispose();
+                          deleteAllTempAudioFiles();
+                          recargar=-1;
+                          Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ChatPage(
+                                    tripId: prefs.tripId,
+                                    tipoViaje: this.widget.tipoViaje,
+                                  )));
+                        },
+                        child: Container(
+                          width: 45,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Theme.of(context).primaryIconTheme.color!,
+                              width: 0.5,
+                            ),
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: SvgPicture.asset(
+                              "assets/icons/flecha_atras_oscuro.svg",
+                              color: Theme.of(context).primaryIconTheme.color!,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(width: 10),
+
+                    Expanded(
+                      child: Row(
+                        children: [
+                      
+                          Container(
+                            width: 50,
+                            height: 50,
+                            child: Image.asset(
+                              "assets/images/perfil-usuario-general.png",
+                            ),
+                          ),
+                           SizedBox(width: 5),
+                          nameDriver != null ? 
+                            Flexible(
+                              child: Text(
+                                nameAgent!,
+                                style: Theme.of(context).textTheme.titleMedium!.copyWith(fontSize: 18),
+                              ),
+                            ) 
+                          : Text(''),
+                        ],
+                      )
+                    ),
+
+                  ],
+                ),
               ),
-        backgroundColor: backgroundColor,
-        shadowColor: Colors.black87,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_circle_left,
-            color: secondColor,
-          ),
-          onPressed: () {
-            streamSocket.socket!.emit('salir');
-            streamSocket.socket!.disconnect();
-            streamSocket.socket!.close();
-            streamSocket.socket!.dispose();
-            deleteAllTempAudioFiles();
-            recargar=-1;
-            Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ChatPage(
-                      tripId: prefs.tripId,
-                      tipoViaje: this.widget.tipoViaje,
-                    )));
-          },
-        ),
-        elevation: 10,
-        iconTheme: IconThemeData(color: secondColor, size: 35),
-        actions: <Widget>[
-          IconButton(
-            icon: SvgPicture.asset(
-              "assets/icons/user.svg",
-              width: 100,
-            ),
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return DriverProfilePage();
-              }));
-            },
-          ),
-          SizedBox(width: kDefaultPadding / 2)
-        ],
-      ),
       body: isloading == true
           ? Column(
               children: [
                 Expanded(
-                  child: Consumer<ChatProvider>(
-                    builder: (context, provider, child) =>
-                        SingleChildScrollView(
-                      reverse: true,
-                      child: ListView.separated(
-                        shrinkWrap: true,
-                        controller: _scrollController,
-                        padding: const EdgeInsets.all(16),
-                        itemBuilder: (context, index) {
-                          final message = provider.mensaje[index];
-                          return Wrap(
-                            alignment: message.user!.toUpperCase() ==
-                                    widget.nombre!.toUpperCase()
-                                ? WrapAlignment.end
-                                : WrapAlignment.start,
-                            children: [
-                              Center(
-                                child: fecha('${message.mes}/${message.dia}/${message.ao}')==true  
-                                ?Padding(
-                                  padding: const EdgeInsets.all(15.0),
-                                  child: Card(
-                                    color: Color.fromARGB(255, 101, 87, 170),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(hoy_ayer('${message.mes}/${message.dia}/${message.ao}'), style: TextStyle(color: Colors.white, fontSize: 17)),
+                    child: Consumer<ChatProvider>(
+                      builder: (context, provider, child) =>
+                          SingleChildScrollView(
+                        reverse: true,
+                        child: ListView.separated(
+                          shrinkWrap: true,
+                          controller: _scrollController,
+                          padding: const EdgeInsets.all(16),
+                          itemBuilder: (context, index) {
+                            var message = provider.mensaje[index];
+
+                            if(fecha('${message.mes}/${message.dia}/${message.ao}')==true ){
+                              message.mostrarF=true;
+                            }
+
+                            return Wrap(
+                              alignment:
+                                  message.id == widget.id
+                                      ? WrapAlignment.end
+                                      : WrapAlignment.start,
+                              children: [
+                                if(message.mostrarF==true)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 35, bottom: 35, left: 8, right: 8),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Container(
+                                            height: 1,
+                                            color: Color.fromRGBO(158, 158, 158, 1),
+                                          ),
+                                        ),
+                                        SizedBox(width: 10),
+                                        Text(hoyayer('${message.mes}/${message.dia}/${message.ao}'), style: TextStyle(color: Color.fromRGBO(158, 158, 158, 1), fontSize: 17)),
+                                        SizedBox(width: 10),
+                                        Expanded(
+                                          child: Container(
+                                            height: 1,
+                                            color: Color.fromRGBO(158, 158, 158, 1),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ) : null,
-                              ),
-                              Card(
-                                color: message.user!.toUpperCase() ==
-                                        widget.nombre!.toUpperCase()
-                                    ? thirdColor
-                                    : chatBubbleColor,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        message.user!.toUpperCase() ==
-                                                widget.nombre!.toUpperCase()
-                                            ? CrossAxisAlignment.end
-                                            : CrossAxisAlignment.start,
-                                    children: [
-                                      if (message.mensaje != null) ...{
-                                        message.tipo=='AUDIO'?
-                                        AudioContainer(
+  
+                                Container(
+                                  width: size.width/2,
+                                  child: Card(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(8.0),
+                                        topRight: message.id == widget.id?Radius.zero:Radius.circular(8.0),
+                                        bottomLeft:  message.id == widget.id? Radius.circular(8.0):Radius.zero,
+                                        bottomRight: Radius.circular(8.0),
+                                      ),
+                                    ),
+                                    color: message.id == widget.id
+                                        ? Theme.of(context).focusColor
+                                        : Theme.of(context).cardColor,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          if (message.mensaje != null) ...{
+                                            message.tipo=='AUDIO'?
+                                              AudioContainer(
                                                 audioName: message.mensaje!,
                                                 colorIcono: message.id == widget.id
                                                     ? Colors.white
                                                     : Theme.of(context).primaryColorDark,
                                                     idSala: int.parse(message.sala),
                                               )
-                                        :
-                                        Text(
-                                          message.mensaje!,
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 17),
-                                        )
-                                      },
-                                      Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          if (message.user!.toUpperCase() ==
-                                              widget.nombre!.toUpperCase())
-                                            Icon(
-                                              message.leido == true
-                                                  ? Icons.done_all
-                                                  : Icons.done,
-                                              size: 15,
-                                              color: message.leido == true
-                                                  ? firstColor
-                                                  : backgroundColor,
-                                            ),
-                                          if (message.user!.toUpperCase() ==
-                                              widget.nombre!.toUpperCase())
+                                            :
                                             Text(
-                                              message.hora,
+                                              message.mensaje!,
                                               style: TextStyle(
-                                                  color: Colors.white60,
-                                                  fontSize: 12),
+                                                  color: message.id ==
+                                                      widget.id
+                                                  ? Colors.white
+                                                  : Theme.of(context).primaryColorDark,
+                                                  fontSize: 17),
                                             ),
-                                          if (message.user!.toUpperCase() !=
-                                              widget.nombre!.toUpperCase())
-                                            Text(
-                                              message.hora,
-                                              style: TextStyle(
-                                                  color: Colors.grey[400],
-                                                  fontSize: 12),
+                                            Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Expanded(child: SizedBox()),
+                                                if (message.id ==
+                                                    widget.id)
+                                                  Text(
+                                                    message.hora,
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 10),
+                                                  ),
+                                                if (message.id !=
+                                                    widget.id)
+                                                  Text(
+                                                    message.hora,
+                                                    style: TextStyle(
+                                                        color: Theme.of(context).primaryColorDark,
+                                                        fontSize: 10),
+                                                  ),
+                                                SizedBox(
+                                                  width: 5,
+                                                ),
+                                                if (message.id ==
+                                                    widget.id)
+                                                  Icon(
+                                                    message.leido == true
+                                                        ? Icons.done_all
+                                                        : Icons.done,
+                                                    size: 16,
+                                                    color: message.leido == true
+                                                        ? Color.fromRGBO(0, 255, 255, 1)
+                                                        : Colors.grey,
+                                                  )
+                                              ],
                                             ),
+                                          },
                                         ],
                                       ),
-                                    ],
+                                    ),
                                   ),
-                                ),
-                              )
-                            ],
-                          );
-                        },
-                        separatorBuilder: (_, index) => const SizedBox(
-                          height: 5,
+                                )
+                              ],
+                            );
+                          },
+                          separatorBuilder: (_, index) => const SizedBox(
+                            height: 5,
+                          ),
+                          itemCount: provider.mensaje.length,
                         ),
-                        itemCount: provider.mensaje.length,
                       ),
                     ),
                   ),
-                ),
                 SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Container(
-                    //color: Gradiant2,
-                    height: 50,
-                    child: Row(
-                      children: [
-                        SizedBox(width: 8),
-                        NeumorphicButton(
-                            curve: Neumorphic.DEFAULT_CURVE,
+                    scrollDirection: Axis.horizontal,
+                    child: Container(
+                      //color: Gradiant2,
+                      height: 50,
+                      child: Row(
+                        children: [
+                          SizedBox(width: 5),
+                          NeumorphicButton(
                             margin: EdgeInsets.only(top: 0),
                             onPressed: () {
-                              _messageInputController.text = "Estoy en camino";
-                              if (_messageInputController.text
-                                  .trim()
-                                  .isNotEmpty) {
-                                _sendMessage();
-                              }
-                            },
+                                _messageInputController.text =
+                                    "Estoy en camino";
+                                if (_messageInputController.text
+                                    .trim()
+                                    .isNotEmpty) {
+                                  _sendMessage();
+                                }
+                              },
                             style: NeumorphicStyle(
-                              shadowLightColor: thirdColor,
-                              color: thirdColor,
+                              color: Color.fromRGBO(40, 93, 169, 1),
                               shape: NeumorphicShape.flat,
-                              boxShape: NeumorphicBoxShape.roundRect(
-                                  BorderRadius.circular(8)),
-                              //border: NeumorphicBorder()
+                              boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(8)),
+                              depth: 0, // Quita la sombra estableciendo la profundidad en 0
+                              border: NeumorphicBorder( // Agrega un borde
+                                color: Theme.of(context).disabledColor, // Color del borde
+                                width: 1.0, // Ancho del borde
+                              ),
                             ),
                             padding: const EdgeInsets.all(12.0),
                             child: Text(
                               "Estoy en camino",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+
+                          SizedBox(width: 5),
+                          NeumorphicButton(
+                              margin: EdgeInsets.only(top: 0),
+                              onPressed: () {
+                                _messageInputController.text =
+                                    "Estoy aquí";
+                                if (_messageInputController.text
+                                    .trim()
+                                    .isNotEmpty) {
+                                  _sendMessage();
+                                }
+                              },
+                              style: NeumorphicStyle(
+                              color: Color.fromRGBO(40, 93, 169, 1),
+                              shape: NeumorphicShape.flat,
+                              boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(8)),
+                              depth: 0, // Quita la sombra estableciendo la profundidad en 0
+                              border: NeumorphicBorder( // Agrega un borde
+                                color: Theme.of(context).disabledColor, // Color del borde
+                                width: 1.0, // Ancho del borde
                               ),
-                            )),
-                        SizedBox(width: 8),
-                        NeumorphicButton(
-                            margin: EdgeInsets.only(top: 0),
-                            onPressed: () {
-                              _messageInputController.text = "Estoy aquí";
-                              if (_messageInputController.text
-                                  .trim()
-                                  .isNotEmpty) {
-                                _sendMessage();
-                              }
-                            },
-                            style: NeumorphicStyle(
-                              color: thirdColor,
-                              shadowLightColor: thirdColor,
-                              shape: NeumorphicShape.flat,
-                              boxShape: NeumorphicBoxShape.roundRect(
-                                  BorderRadius.circular(8)),
-                              //border: NeumorphicBorder()
                             ),
-                            padding: const EdgeInsets.all(12.0),
-                            child: Text(
-                              "Estoy aquí",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            )),
-                        SizedBox(width: 8),
-                        NeumorphicButton(
-                            margin: EdgeInsets.only(top: 0),
-                            onPressed: () {
-                              _messageInputController.text = "¡Entendido!";
-                              if (_messageInputController.text
-                                  .trim()
-                                  .isNotEmpty) {
-                                _sendMessage();
-                              }
-                            },
-                            style: NeumorphicStyle(
-                              color: thirdColor,
-                              shadowLightColor: thirdColor,
+                              padding: const EdgeInsets.all(12.0),
+                              child: Text(
+                                "Estoy aquí",
+                                style: TextStyle(color: Colors.white),
+                              )),
+                          SizedBox(width: 5),
+                          NeumorphicButton(
+                              margin: EdgeInsets.only(top: 0),
+                              onPressed: () {
+                                _messageInputController.text = "¡Entendido!";
+                                if (_messageInputController.text
+                                    .trim()
+                                    .isNotEmpty) {
+                                  _sendMessage();
+                                }
+                              },
+                              style: NeumorphicStyle(
+                              color: Color.fromRGBO(40, 93, 169, 1),
                               shape: NeumorphicShape.flat,
-                              boxShape: NeumorphicBoxShape.roundRect(
-                                  BorderRadius.circular(8)),
-                              //border: NeumorphicBorder()
+                              boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(8)),
+                              depth: 0, // Quita la sombra estableciendo la profundidad en 0
+                              border: NeumorphicBorder( // Agrega un borde
+                                color: Theme.of(context).disabledColor, // Color del borde
+                                width: 1.0, // Ancho del borde
+                              ),
                             ),
-                            padding: const EdgeInsets.all(12.0),
-                            child: Text(
-                              "Entendido!",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            )),
-                        SizedBox(width: 8),
-                        NeumorphicButton(
-                            margin: EdgeInsets.only(top: 0),
-                            onPressed: () {
+                              padding: const EdgeInsets.all(12.0),
+                              child: Text(
+                                "¡Entendido!",
+                                style: TextStyle(color: Colors.white),
+                              )),
+
+                              SizedBox(width: 5),
+                          NeumorphicButton(
+                              margin: EdgeInsets.only(top: 0),
+                              onPressed: () {
                               _messageInputController.text =
                                   "Lo estoy buscando";
                               if (_messageInputController.text
@@ -585,57 +646,76 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                                 _sendMessage();
                               }
                             },
-                            style: NeumorphicStyle(
-                                shape: NeumorphicShape.flat,
-                                boxShape: NeumorphicBoxShape.roundRect(
-                                  BorderRadius.circular(8),
-                                ),
-                                color: thirdColor,
-                                shadowLightColor: thirdColor
-                                //border: NeumorphicBorder()
-                                ),
-                            padding: const EdgeInsets.all(12.0),
-                            child: Text(
-                              "Lo estoy buscando",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            )),
-                      ],
+                              style: NeumorphicStyle(
+                              color: Color.fromRGBO(40, 93, 169, 1),
+                              shape: NeumorphicShape.flat,
+                              boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(8)),
+                              depth: 0, // Quita la sombra estableciendo la profundidad en 0
+                              border: NeumorphicBorder( // Agrega un borde
+                                color: Theme.of(context).disabledColor, // Color del borde
+                                width: 1.0, // Ancho del borde
+                              ),
+                            ),
+                              padding: const EdgeInsets.all(12.0),
+                              child: Text(
+                                "Lo estoy buscando",
+                                style: TextStyle(color: Colors.white),
+                              )),
+                        ],
+                      ),
                     ),
                   ),
-                ),
                 Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade200,
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                  ),
-                  child: SafeArea(
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: _messageInputController,
-                            decoration: const InputDecoration(
-                              hintText: 'Escribe tu mensaje aqui...',
-                              border: InputBorder.none,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                    ),
+                    child: SafeArea(
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              margin: EdgeInsets.only(top: 15, bottom: 15),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                color: Theme.of(context).cardTheme.color,
+                                border: Border.all(color: Theme.of(context).disabledColor),
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: TextField(
+                                      enabled: !activateMic ? true : false,
+                                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 15),
+                                      controller: _messageInputController,
+                                      decoration: InputDecoration(
+                                        contentPadding: EdgeInsets.only(left: 10),
+                                        hintText: !activateMic ? 'Mensaje' : 'Grabando audio...',
+                                        hintStyle: Theme.of(context).textTheme.labelSmall!.copyWith(color: Theme.of(context).hintColor, fontSize: 15),
+                                        border: InputBorder.none,
+                                      ),
+                                    ),
+                                  ),
+                                  IconButton(
+                                    onPressed: () {
+                                      {
+                                        if (_messageInputController.text
+                                            .trim()
+                                            .isNotEmpty) {
+                                          _sendMessage();
+                                        }
+                                      }
+                                    },
+                                    icon: Icon(Icons.send, color: Theme.of(context).primaryIconTheme.color),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            if (_messageInputController.text
-                                .trim()
-                                .isNotEmpty) {
-                              _sendMessage();
-                            }
-                          },
-                          icon: const Icon(Icons.send),
-                        ),
-
-                        Padding(
+                          
+                          Padding(
                             padding: const EdgeInsets.only(left: 10),
                             child: Container(
                               width: 48,
@@ -656,27 +736,28 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                                     }
                                   }else{
                                     WarningSuccessDialog().show(
-                                      context,
-                                      title: 'No dio permiso del uso del microfono',
-                                      tipo: 1,
-                                      onOkay: () {
-                                        try{
-                                          AppSettings.openAppSettings();
-                                        }catch(error){
-                                          print(error);
-                                        }
-                                      },
-                                    );
+                                          context,
+                                          title: "No dio permiso del uso del microfono",
+                                          tipo: 1,
+                                          onOkay: () {
+                                            try{
+                                              AppSettings.openAppSettings();
+                                            }catch(error){
+                                              print(error);
+                                            }
+                                          },
+                                        ); 
                                   }
                                 },
                                 icon: !activateMic ? Icon(Icons.mic, color: Colors.white) : Icon(Icons.mic_off, color: Colors.red),
                               ),
                             ),
                           )
-                      ],
-                    ),
+                        ],
+                      ),
+                    )
+
                   ),
-                )
               ],
             )
           : Center(
