@@ -1189,7 +1189,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                     LoadingIndicatorDialog().dismiss();
                                     confirmationDialog.show(
                                       context,
-                                      title: '¿Está seguro que desea marcar como no confirmado al agente?',
+                                      title: traveled==true ?"¿Está seguro que desea marcar como no \nabordado al agente ${abc.data!.trips![0].tripAgent![index].agentFullname}?":"¿Está seguro que desea marcar como \nabordado al agente ${abc.data!.trips![0].tripAgent![index].agentFullname}?",
                                       type: "0",
                                       onConfirm: () async {
                                         confirmationDialog.dismiss();
