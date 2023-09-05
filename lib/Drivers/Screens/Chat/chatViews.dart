@@ -428,6 +428,7 @@ class _ChatPageState extends State<ChatPage> {
                                         id: '$idMotorista',
                                         rol: "MOTORISTA",
                                         tipoViaje: this.widget.tipoViaje,
+                                        idV: this.widget.tripId
                                       ),
                                       transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
                                         return SlideTransition(
@@ -540,6 +541,7 @@ class _ChatPageState extends State<ChatPage> {
                                         id: '$idMotorista',
                                         rol: "MOTORISTA",
                                         tipoViaje: this.widget.tipoViaje,
+                                        idV: this.widget.tripId
                                       ),
                                       transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
                                         return SlideTransition(

@@ -36,8 +36,9 @@ class ChatScreen extends StatefulWidget {
   final String? nombreAgent;
   final String? idAgent;
   final String? tipoViaje;
+  final String? idV;
   const ChatScreen(
-      {Key? key, this.nombre, this.id, this.rol, this.nombreAgent, this.idAgent, this.tipoViaje})
+      {Key? key, this.nombre, this.id, this.rol, this.nombreAgent, this.idAgent, this.tipoViaje, this.idV})
       : super(key: key);
 
   @override
@@ -350,7 +351,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                           context,
                           MaterialPageRoute(
                               builder: (context) => ChatPage(
-                                    tripId: prefs.tripId,
+                                    tripId: this.widget.idV,
                                     tipoViaje: this.widget.tipoViaje,
                                   )));
                         },
