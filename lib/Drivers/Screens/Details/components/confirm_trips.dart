@@ -135,7 +135,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
     totalAgente = lista!.trips![0].tripAgent!.length;
     tipoViaje = lista.trips![1].actualTravel!.tripType!;
     
-    for (int i = 0; i < lista!.trips![0].tripAgent!.length; i++) {
+    for (int i = 0; i < lista.trips![0].tripAgent!.length; i++) {
       if (traveledB(lista, i)) {
         waypointsAbordados.add( lista.trips![0].tripAgent![i].agentId.toString());
         totalAbordado++;
