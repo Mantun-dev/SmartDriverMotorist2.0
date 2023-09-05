@@ -54,6 +54,8 @@ class MyConfirmAgent extends StatefulWidget {
 
 class _DataTableExample extends State<MyConfirmAgent> {
   int totalAbordado = 0;
+  int totalAgente = 0;
+  int totalNoAbordado = 0;
   Future<TripsList4>? item;
   Future<DriverData>? driverData;
   bool traveled = false;
@@ -76,6 +78,9 @@ class _DataTableExample extends State<MyConfirmAgent> {
   final int itelSPS = 10;
   bool cargarCoordenadas = false;
   String tipoViaje = '';
+
+  bool abordados = true;
+  bool noabordaron = false;
 
   String apiKey = 'AIzaSyBJJYIS4G4n-3AP93am08XyDyDiA-vgPmM';
   var latidudeInicial;
@@ -127,11 +132,15 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
   void gettotalAbordado() async {
     var lista = await item;
-
+    totalAgente = lista!.trips![0].tripAgent!.length;
+    tipoViaje = lista.trips![1].actualTravel!.tripType!;
+    
     for (int i = 0; i < lista!.trips![0].tripAgent!.length; i++) {
       if (traveledB(lista, i)) {
         waypointsAbordados.add( lista.trips![0].tripAgent![i].agentId.toString());
         totalAbordado++;
+      }else{
+        totalNoAbordado++;
       }
     }
 
@@ -443,6 +452,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
         final responseDistance = await http.get(Uri.parse(urlDistance));
         if (responseDistance.statusCode == 200) {
           final dataDistance = json.decode(responseDistance.body);
+          print(responseDistance.body);
           double distanceValue = double.parse(dataDistance['routes'][0]['legs'][0]['distance']['value'].toString());
           distances.add(distanceValue);
         }
@@ -493,6 +503,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
           // }
         }
     }else{
+      LoadingIndicatorDialog().dismiss();
       String destination = waypoints.last;
       String url = 'google.navigation:q=$destination&mode=d';
       await launchUrl(Uri.parse(url));
@@ -558,11 +569,33 @@ class _DataTableExample extends State<MyConfirmAgent> {
         child: Column(
           children: [
             ingresarVehiculo(),
-            SizedBox(height: 10.0),
+            SizedBox(height: 30.0),
             escanearAgente(),
+            SizedBox(height: 20.0),
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: Text(
+                'Total de agentes: $totalAgente',
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 12),
+              ),
+            ),
             SizedBox(height: 10.0),
-            _buttonsAgents(),
+            Padding(
+              padding: const EdgeInsets.only(top: 2.0, bottom: 2, right: 8, left: 8),
+              child: Row(
+                 mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buttonsAgents(),
+                  if(tipoViaje!='Entrada')...{
+                    Expanded(child: SizedBox()),
+                    _buttonsRuta(),
+                  }
+                ],
+              ),
+            ),   
             SizedBox(height: 10.0),
+            opcionesBotones(),  
+            SizedBox(height: 5.0),
             _agentToConfirm(),
             SizedBox(height: 10.0),
           ],
@@ -826,6 +859,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                   );  
                                   waypointsAbordados.removeWhere((element) => element == abc.data!.trips![0].tripAgent![index].agentId.toString());
                                   totalAbordado--;
+                                  totalNoAbordado++;
                                   }
               
                                   if(abc.data!.trips![0].tripAgent![index].commentDriver=="Canceló transporte"){
@@ -864,6 +898,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                   ); 
                                 abc.data!.trips![0].tripAgent![index].commentDriver='';
                                 totalAbordado++;
+                                totalNoAbordado--;
                                 waypointsAbordados.add(abc.data!.trips![0].tripAgent![index].agentId.toString());
                                 setState(() { });
                                 },
@@ -890,7 +925,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                 IconButton(
                                   icon: SvgPicture.asset(  
                                             "assets/icons/QR.svg",
-                                            color: Theme.of(context).primaryColorDark,
+                                            color: Theme.of(context).primaryIconTheme.color,
                                           ),
                                   onPressed: null
                                 ),
@@ -904,7 +939,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                             ),
                           ),
               ),
-              SizedBox(width: 5),
+              SizedBox(width: 10),
               GestureDetector(
                 onTap: (){
                   WarningSuccessDialog().show(
@@ -918,11 +953,11 @@ class _DataTableExample extends State<MyConfirmAgent> {
                   padding: EdgeInsets.all(8.0),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color:  Theme.of(context).focusColor, width: 2.0), // Borde blanco
+                    border: Border.all(color:  Theme.of(context).primaryIconTheme.color!, width: 2.0), // Borde blanco
                   ),
                   child: SvgPicture.asset(
                     "assets/icons/info.svg",
-                    color: Theme.of(context).focusColor,
+                    color: Theme.of(context).primaryIconTheme.color,
                     height: 14,
                     width: 14,
                   ),
@@ -1325,6 +1360,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
             abc.data!.trips![0].tripAgent![index].commentDriver='';
             fetchCheckAgentTrip(abc.data!.trips![0].tripAgent![index].agentId.toString());
             totalAbordado++;
+            totalNoAbordado--;
             waypointsAbordados.add(abc.data!.trips![0].tripAgent![index].agentId.toString());
             //print('////////');
           } else if (isChecked == false) {
@@ -1334,6 +1370,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
             abc.data!.trips![0].tripAgent![index].commentDriver='No abordó';
             waypointsAbordados.removeWhere((element) => element == abc.data!.trips![0].tripAgent![index].agentId.toString());
             totalAbordado--;
+            totalNoAbordado++;
             fetchRegisterCommentAgent(
               abc.data!.trips![0].tripAgent![index].agentId.toString(),
               prefs.tripId,
@@ -1447,6 +1484,795 @@ class _DataTableExample extends State<MyConfirmAgent> {
       setState(() {});
     }
 
+  Container datosAgentes(bool traveledB(dynamic abc, dynamic index), AsyncSnapshot<TripsList4> abc, int index, BuildContext context, var check2) {
+    return Container(
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          blurStyle: BlurStyle.normal,
+                          color: traveledB(abc, index) ? Colors.green.withOpacity(0.5) : Colors.red.withOpacity(0.5),
+                          blurRadius: 15,
+                          spreadRadius: -18,
+                          offset: Offset(-15, -6),
+                        ),
+                        BoxShadow(
+                          blurStyle: BlurStyle.normal,
+                          color: Colors.black.withOpacity(0.6),
+                          blurRadius: 30,
+                          spreadRadius: -15,
+                          offset: Offset(18, 5),
+                        ),
+                      ],
+                    ),
+                    width: 500.0,
+                    child: Card(
+                      color: backgroundColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      margin: EdgeInsets.all(15.0),
+                      elevation: 10,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ExpansionTile(
+                          backgroundColor: backgroundColor,
+                          title: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: <Widget>[
+                              Row(
+                                children: [
+                                  SizedBox(width: 3.0),
+                                  traveledB(abc, index)
+                                      ? RoundCheckBox(
+                                          border: Border.all(style: BorderStyle.none),
+                                          animationDuration: Duration(seconds: 1),
+                                          uncheckedColor: Colors.red,
+                                          uncheckedWidget: Icon(
+                                            Icons.close,
+                                            color: backgroundColor,
+                                            size: 15,
+                                          ),
+                                          checkedColor: firstColor,
+                                          checkedWidget: Icon(
+                                            Icons.check,
+                                            color: backgroundColor,
+                                            size: 15,
+                                          ),
+                                          size: 20,
+                                          isChecked: traveledB(abc, index),
+                                          onTap: (bool? isChecked) {
+                                            alertaAbordo(abc, index, isChecked);
+                                          },
+                                        )
+                                      : Icon(
+                                          Icons.close,
+                                          color: Colors.red,
+                                          size: 15,
+                                        ),
+                                  SizedBox(width: 15.0),
+                                  Text('Abordó ',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.normal,
+                                          fontSize: 16.0)),  
+                                  
+                                  Expanded(
+                                    child: InkWell(
+                                      onTap: () {
+                                        if (abc.data!.trips![0].tripAgent![index].latitude==null) {
+                                          WarningSuccessDialog().show(
+                                            context,
+                                            title: "Este agente no cuenta con ubicación",
+                                            tipo: 1,
+                                            onOkay: () {},
+                                          ); 
+                                        }else{
+                                          launchSalidasMaps(abc.data!.trips![0].tripAgent![index].latitude,abc.data!.trips![0].tripAgent![index].longitude);                                          
+                                        }
+                                        //print('Dirección we');
+                                      },
+                                      child: Column(
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.end,
+                                            children: [
+                                            Icon(Icons.location_on_outlined, color:abc.data!.trips![0].tripAgent![index].latitude==null? Colors.red :firstColor, size: 30,),
+                                            Text('Ubicación ',style: TextStyle(color:Colors.white,fontWeight: FontWeight.normal,fontSize: 16.0)),                                      
+                                          ],)
+                                        ],
+                                      ),
+                                    ),
+                                  ),                                    
+                                ],
+                              ),
+                              SizedBox(height: 15),
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.person, color: thirdColor),
+                                    SizedBox(width: 15),
+                                    Flexible(
+                                      child: Text(
+                                        'Nombre: ${abc.data!.trips![0].tripAgent![index].agentFullname}',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16.0,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(height: 15),
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.access_time, color: thirdColor),
+                                        SizedBox(width: 15),
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Hora de encuentro: ',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 18.0,
+                                              ),
+                                            ),
+                                            Text(
+                                              '${abc.data!.trips![0].tripAgent![index].hourForTrip}',
+                                              style: TextStyle(
+                                                color: firstColor,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                              if (abc.data!.trips![0].tripAgent![index].neighborhoodReferencePoint != null)
+                                ...{
+                                  SizedBox(height: 15),
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.warning_amber_outlined, color: thirdColor),
+                                        SizedBox(width: 15),
+                                        Flexible(
+                                          child: Text(
+                                            'Acceso autorizado: ${abc.data!.trips![0].tripAgent![index].neighborhoodReferencePoint}',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16.0,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                },
+                            ],
+                          ),
+                          trailing: SizedBox(),
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(left: 18),
+                              child: Column(
+                                children: [
+                                  SizedBox(height: 15),
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.location_city, color: thirdColor),
+                                        SizedBox(width: 15),
+                                        Flexible(
+                                          child: Text(
+                                            'Empresa: ${abc.data!.trips![0].tripAgent![index].companyName}',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16.0,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(height: 15),
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.phone, color: thirdColor),
+                                        SizedBox(width: 7),
+                                        Flexible(
+                                          child: TextButton(
+                                            onPressed: () => launchUrl(Uri.parse('tel://${abc.data!.trips![0].tripAgent![index].agentPhone}')),
+                                            child: Container(
+                                              child: Text(
+                                                'Teléfono: ${abc.data!.trips![0].tripAgent![index].agentPhone}',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.normal,
+                                                  fontSize: 16.0,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(height: 15),
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.access_time, color: thirdColor),
+                                        SizedBox(width: 15),
+                                        Flexible(
+                                          child: Text(
+                                            'Salida: ${abc.data!.trips![0].tripAgent![index].hourIn}',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16.0,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(height: 15),
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.location_pin, color: thirdColor),
+                                        SizedBox(width: 15),
+                                        Flexible(
+                                          child: Text(
+                                            abc.data!.trips![0].tripAgent![index].agentReferencePoint == null ||
+                                                    abc.data!.trips![0].tripAgent![index].agentReferencePoint == ''
+                                                ? "Dirección: ${abc.data!.trips![0].tripAgent![index].neighborhoodName}, ${abc.data!.trips![0].tripAgent![index].townName}"
+                                                : 'Dirección: ${abc.data!.trips![0].tripAgent![index].agentReferencePoint}, ${abc.data!.trips![0].tripAgent![index].neighborhoodName}, ${abc.data!.trips![0].tripAgent![index].townName},',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16.0,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  
+                                  SizedBox(height: 15),
+                                ],
+                              ),
+                            ),
+
+                            if(tipoViaje=='Entrada')...{
+                              Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.spaceEvenly,
+                              children: [
+                                if (abc.data!.trips![0].tripAgent![index]
+                                        .didntGetOut ==
+                                    1) ...{
+                                  Text('Se pasó pero no salió.',
+                                      style: TextStyle(
+                                          color: Colors.orangeAccent,
+                                          fontWeight: FontWeight.normal,
+                                          fontSize: 15))
+                                } else ...{
+
+                                   Column(
+                                      children: [
+                                        Container(
+                                          width: 150,
+                                          height: 40,
+                                          decoration:
+                                              BoxDecoration(boxShadow: [
+                                            BoxShadow(
+                                                blurStyle:
+                                                    BlurStyle.normal,
+                                                color: Colors.white
+                                                    .withOpacity(0.2),
+                                                blurRadius: 15,
+                                                spreadRadius: -10,
+                                                offset: Offset(-15, -6)),
+                                            BoxShadow(
+                                                blurStyle:
+                                                    BlurStyle.normal,
+                                                color: Colors.black
+                                                    .withOpacity(0.6),
+                                                blurRadius: 30,
+                                                spreadRadius: -15,
+                                                offset: Offset(18, 5)),
+                                          ]),
+                                          child: TextButton(
+                                            style: TextButton.styleFrom(
+                                              textStyle: TextStyle(
+                                                  color: Colors.white),
+                                              backgroundColor: Colors.red,
+                                              shape:
+                                                  RoundedRectangleBorder(
+                                                      side: BorderSide(
+                                                          style:
+                                                              BorderStyle
+                                                                  .none),
+                                                      borderRadius:
+                                                          BorderRadius
+                                                              .circular(
+                                                                  20)),
+                                            ),
+                                            onPressed: () {
+                                              alertaPaso_noSalio(abc, index);
+                                            },
+                                            child:
+                                                Text('Se pasó y no salió',
+                                                    style: TextStyle(
+                                                      fontSize: 15,
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    )),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+
+                                },
+                                Column(
+                                  children: [
+                                    Container(
+                                      width: 150,
+                                      height: 40,
+                                      decoration:
+                                          BoxDecoration(boxShadow: [
+                                        BoxShadow(
+                                            blurStyle: BlurStyle.normal,
+                                            color: Colors.white
+                                                .withOpacity(0.2),
+                                            blurRadius: 15,
+                                            spreadRadius: -10,
+                                            offset: Offset(-15, -6)),
+                                        BoxShadow(
+                                            blurStyle: BlurStyle.normal,
+                                            color: Colors.black
+                                                .withOpacity(0.6),
+                                            blurRadius: 30,
+                                            spreadRadius: -15,
+                                            offset: Offset(18, 5)),
+                                      ]),
+                                      child: TextButton(
+                                        style: TextButton.styleFrom(
+                                          textStyle: TextStyle(
+                                              color: backgroundColor),
+                                          // foreground
+                                          backgroundColor: firstColor,
+                                          shape: RoundedRectangleBorder(
+                                              side: BorderSide(
+                                                  style:
+                                                      BorderStyle.none),
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                      20)),
+                                        ),
+                                        onPressed: () async {
+                                          http.Response response =
+                                              await http.get(Uri.parse(
+                                                  '$ip/apis/getDriverComment/${abc.data!.trips![0].tripAgent![index].agentId}/${abc.data!.trips![0].tripAgent![index].tripId}'));
+                                          final send = Comment.fromJson(
+                                              json.decode(
+                                                  response.body));
+                                              check2[index].text = send.comment!.commentDriver;
+                                          showGeneralDialog(
+                                              barrierColor: Colors.black
+                                                  .withOpacity(0.5),
+                                              transitionBuilder:
+                                                  (context, a1, a2,
+                                                      widget) {
+                                                return Transform.scale(
+                                                  scale: a1.value,
+                                                  child: Opacity(
+                                                    opacity: a1.value,
+                                                    child: AlertDialog(
+                                                      backgroundColor:
+                                                          backgroundColor,
+                                                      shape: OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      16.0)),
+                                                      title: Padding(
+                                                        padding: const EdgeInsets
+                                                                .symmetric(
+                                                            horizontal:
+                                                                25.0),
+                                                        child: Text(
+                                                            '¿Razón por la cual no ingresó a la unidad?',
+                                                            style: TextStyle(
+                                                                color:
+                                                                    GradiantV_2,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize:
+                                                                    20)),
+                                                      ),
+                                                      content:
+                                                          Container(
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius.circular(
+                                                                      15)),
+                                                          boxShadow: [
+                                                            BoxShadow(
+                                                              color: Colors
+                                                                  .black
+                                                                  .withOpacity(
+                                                                      0.2),
+                                                              spreadRadius:
+                                                                  0,
+                                                              blurStyle:
+                                                                  BlurStyle
+                                                                      .solid,
+                                                              blurRadius:
+                                                                  10,
+                                                              offset: Offset(
+                                                                  0,
+                                                                  0), // changes position of shadow
+                                                            ),
+                                                            BoxShadow(
+                                                              color: Colors
+                                                                  .white
+                                                                  .withOpacity(
+                                                                      0.1),
+                                                              spreadRadius:
+                                                                  0,
+                                                              blurRadius:
+                                                                  5,
+                                                              blurStyle:
+                                                                  BlurStyle
+                                                                      .inner,
+                                                              offset: Offset(
+                                                                  0,
+                                                                  0), // changes position of shadow
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        child: Padding(
+                                                          padding: const EdgeInsets
+                                                                  .symmetric(
+                                                              horizontal:
+                                                                  15.0),
+                                                          child:
+                                                              TextField(
+                                                            cursorColor:
+                                                                firstColor,
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white),
+                                                            decoration: InputDecoration(
+                                                                border: InputBorder
+                                                                    .none,
+                                                                hintText:
+                                                                    'Escriba aquí',
+                                                                hintStyle:
+                                                                    TextStyle(color: Colors.white70)),
+                                                            controller:
+                                                                check2[
+                                                                    index],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      actions: [
+                      
+                                                        Row(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .center,
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceEvenly,
+                                                          children: [
+                                                            Container(
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                      borderRadius: BorderRadius.circular(15)),
+                                                              width: 95,
+                                                              height:
+                                                                  40,
+                                                              child:
+                                                                  ElevatedButton(
+                                                                style: ElevatedButton.styleFrom(
+                                                                    shape: RoundedRectangleBorder(
+                                                                      borderRadius: BorderRadius.circular(30), // <-- Radius
+                                                                    ),
+                                                                    elevation: 10,
+                                                                    textStyle: TextStyle(color: Colors.white), // foreground
+                                                                    backgroundColor: Gradiant2),
+                                                                onPressed:
+                                                                    () =>
+                                                                        {
+                                                                          if(check2[index].text.isEmpty){
+                                                                            Navigator.pop(context),
+                                                                            WarningSuccessDialog().show(
+                                                                              context,
+                                                                              title: "No puede ir vacío la observación",
+                                                                              tipo: 1,
+                                                                              onOkay: () {},
+                                                                            ),
+                                                                          }else{
+                                                                          fetchRegisterCommentAgent(
+                                                                              abc.data!.trips![0].tripAgent![index].agentId.toString(),
+                                                                              prefs.tripId,
+                                                                              check2[index].text),
+                                                                          Navigator.pop(
+                                                                              context),
+                                                                          }
+                                                                },
+                                                                child: Text(
+                                                                    'Guardar',
+                                                                    style: TextStyle(
+                                                                        color: backgroundColor,
+                                                                        fontWeight: FontWeight.bold,
+                                                                        fontSize: 15)),
+                                                              ),
+                                                            ),
+                                                            Container(
+                                                              width: 95,
+                                                              height:
+                                                                  40,
+                                                              child:
+                                                                  ElevatedButton(
+                                                                style: ElevatedButton.styleFrom(
+                                                                    shape: RoundedRectangleBorder(
+                                                                      borderRadius: BorderRadius.circular(30), // <-- Radius
+                                                                    ),
+                                                                    textStyle: TextStyle(color: Colors.white), // foreground
+                                                                    // foreground
+                                                                    backgroundColor: Colors.red),
+                                                                onPressed:
+                                                                    () =>
+                                                                        {
+                                                                  Navigator.pop(
+                                                                      context),
+                                                                },
+                                                                child: Text(
+                                                                    'Cerrar',
+                                                                    style: TextStyle(
+                                                                        color: Colors.white,
+                                                                        fontWeight: FontWeight.bold,
+                                                                        fontSize: 15)),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        SizedBox(
+                                                            height:
+                                                                10.0),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                              transitionDuration:
+                                                  Duration(
+                                                      milliseconds:
+                                                          200),
+                                              barrierDismissible: true,
+                                              barrierLabel: '',
+                                              context: context,
+                                              pageBuilder: (context,
+                                                  animation1,
+                                                  animation2) {
+                                                return Text('');
+                                              });
+                                        },
+                                        child: Text('Observaciones',
+                                            style: TextStyle(
+                                              color: backgroundColor,
+                                              fontWeight:
+                                                  FontWeight.bold,
+                                            )),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 15.0),
+            
+                            if (abc.data!.trips![0].tripAgent![index].commentDriver=='Canceló transporte') ...{
+                              Text('Canceló transporte',
+                                style: TextStyle(
+                                  color: Colors.orangeAccent,
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 15
+                                )
+                              )
+                            } else ...{
+                              Container(
+                                height: 40,
+                                decoration:
+                                BoxDecoration(boxShadow: [
+                                  BoxShadow(
+                                    blurStyle:
+                                    BlurStyle.normal,
+                                    color: Colors.white.withOpacity(0.2),
+                                                blurRadius: 15,
+                                                spreadRadius: -10,
+                                                offset: Offset(-15, -6)),
+                                            BoxShadow(
+                                                blurStyle:
+                                                    BlurStyle.normal,
+                                                color: Colors.black
+                                                    .withOpacity(0.6),
+                                                blurRadius: 30,
+                                                spreadRadius: -15,
+                                                offset: Offset(18, 5)),
+                                          ]),
+                                          child: TextButton(
+                                            style: TextButton.styleFrom(
+                                              textStyle: TextStyle(
+                                                  color: Colors.white),
+                                              backgroundColor: Colors.red,
+                                              shape:
+                                                  RoundedRectangleBorder(
+                                                      side: BorderSide(
+                                                          style:
+                                                              BorderStyle
+                                                                  .none),
+                                                      borderRadius:
+                                                          BorderRadius
+                                                              .circular(
+                                                                  20)),
+                                            ),
+                                            onPressed: () {
+                                              alertaCancelo(abc, index);
+                                            },
+                                            child:
+                                                Text('Canceló transporte',
+                                                    style: TextStyle(
+                                                      fontSize: 15,
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    )),
+                                          ),
+                                        ),
+                              SizedBox(height: 20.0),
+                            }
+                            }else
+                            Container(
+                              width: 150,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                boxShadow: [
+                                  BoxShadow(
+                                    blurStyle: BlurStyle.normal,
+                                    color: Colors.white.withOpacity(0.2),
+                                    blurRadius: 15,
+                                    spreadRadius: -10,
+                                    offset: Offset(-15, -6),
+                                  ),
+                                  BoxShadow(
+                                    blurStyle: BlurStyle.normal,
+                                    color: Colors.black.withOpacity(0.6),
+                                    blurRadius: 30,
+                                    spreadRadius: -15,
+                                    offset: Offset(18, 5),
+                                  ),
+                                ],
+                              ),
+                              child: TextButton(
+                                style: TextButton.styleFrom(
+                                  textStyle: TextStyle(color: backgroundColor),
+                                  backgroundColor: abc.data!.trips![0].tripAgent![index].commentDriver != 'No abordó'
+                                      ? Colors.red
+                                      : Colors.grey,
+                                  shape: RoundedRectangleBorder(
+                                    side: BorderSide(style: BorderStyle.none),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                ),
+                                onPressed: () async {
+                                  if (abc.data!.trips![0].tripAgent![index].commentDriver == 'No abordó') {
+                                    return;
+                                  }
+              
+                                  Map<String, String> datas = {
+                                    'agentId': abc.data!.trips![0].tripAgent![index].agentId.toString(),
+                                    'tripId': prefs.tripId.toString(),
+                                    'traveled': '0',
+                                  };
+              
+                                  await http.post(Uri.parse('$ip/apis/agentCheckIn'), body: datas);                
+              
+                                  setState(() {
+                                    if (traveledB(abc, index)) {
+                                      waypointsAbordados.removeWhere((element) => element == abc.data!.trips![0].tripAgent![index].agentId.toString());
+                                      totalAbordado--;
+                                      totalNoAbordado++;
+                                    }
+                                    abc.data!.trips![0].tripAgent![index].commentDriver = 'No abordó';
+                                    abc.data!.trips![0].tripAgent![index].traveled = 0;
+                                  });
+              
+                                  fetchRegisterCommentAgent(
+                                    abc.data!.trips![0].tripAgent![index].agentId.toString(),
+                                    prefs.tripId,
+                                    'No abordó',
+                                  );
+                                },
+                                child: Text(
+                                  'No abordó',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 20.0),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+  }
+
+  Widget entrada(AsyncSnapshot<TripsList4> abc, bool traveledB(dynamic abc, dynamic index), Future<Null> alertaAbordo(dynamic abc, dynamic index, dynamic isChecked), BuildContext context, Future<Null> alertaPaso_noSalio(dynamic abc, dynamic index), List<TextEditingController> check, Future<Null> alertaCancelo(dynamic abc, dynamic index)) {
+    return Column(
+    children: List.generate(
+      abc.data!.trips![0].tripAgent!.length,
+      (index) {
+        if(abordados){
+          if(traveledB(abc,index))
+            return datosAgentes(traveledB, abc, index, context, check);
+          else
+            return SizedBox();
+        }else{
+          if(!traveledB(abc,index))
+            return datosAgentes(traveledB, abc, index, context, check);
+          else
+            return SizedBox();
+        }
+      },
+    ),
+    );
+  }
+
+  Widget salida(AsyncSnapshot<TripsList4> abc, bool traveledB(dynamic abc, dynamic index), Future<Null> alertaAbordo(dynamic abc, dynamic index, dynamic isChecked), BuildContext context) {
+    return Column(
+      children: List.generate(
+        abc.data!.trips![0].tripAgent!.length,
+        (index) {
+          if(abordados){
+          if(traveledB(abc,index))
+            return datosAgentes(traveledB, abc, index, context, check);
+          else
+            return SizedBox();
+        }else{
+          if(!traveledB(abc,index))
+            return datosAgentes(traveledB, abc, index, context, check);
+          else
+            return SizedBox();
+        }
+        },
+      ),
+    );
+  }
+
     //Size size = MediaQuery.of(context).size;
     return FutureBuilder<TripsList4>(
       future: item,
@@ -1478,1125 +2304,15 @@ class _DataTableExample extends State<MyConfirmAgent> {
               ),
             );
           } else {
-            tipoViaje = abc.data!.trips![1].actualTravel!.tripType!;
+            
             List<TextEditingController> check = [];
             for (int i = 0; i < abc.data!.trips![0].tripAgent!.length; i++) {
               check.add(TextEditingController());
             }
             
-            return abc.data!.trips![1].actualTravel!.tripType=='Salida' ?Column(
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Container(
-                    margin: EdgeInsets.only(left: 18),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start, // Alineación a la izquierda
-                      children: [
-                        Text(
-                          'Total de agentes: ${abc.data!.trips![0].tripAgent!.length}',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontWeight: FontWeight.normal,
-                            fontSize: 15.0,
-                          ),
-                        ),
-                        Text(
-                          'Abordados: $totalAbordado',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontWeight: FontWeight.normal,
-                            fontSize: 15.0,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(height: 10.0),
-              _buttonsRuta(),
-              SizedBox(height: 10.0),
-                Column(
-                  children: List.generate(
-                    abc.data!.trips![0].tripAgent!.length,
-                    (index) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          boxShadow: [
-                            BoxShadow(
-                              blurStyle: BlurStyle.normal,
-                              color: traveledB(abc, index) ? Colors.green.withOpacity(0.5) : Colors.red.withOpacity(0.5),
-                              blurRadius: 15,
-                              spreadRadius: -18,
-                              offset: Offset(-15, -6),
-                            ),
-                            BoxShadow(
-                              blurStyle: BlurStyle.normal,
-                              color: Colors.black.withOpacity(0.6),
-                              blurRadius: 30,
-                              spreadRadius: -15,
-                              offset: Offset(18, 5),
-                            ),
-                          ],
-                        ),
-                        width: 500.0,
-                        child: Card(
-                          color: backgroundColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          margin: EdgeInsets.all(15.0),
-                          elevation: 10,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ExpansionTile(
-                              backgroundColor: backgroundColor,
-                              title: Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: <Widget>[
-                                  Row(
-                                    children: [
-                                      SizedBox(width: 3.0),
-                                      traveledB(abc, index)
-                                          ? RoundCheckBox(
-                                              border: Border.all(style: BorderStyle.none),
-                                              animationDuration: Duration(seconds: 1),
-                                              uncheckedColor: Colors.red,
-                                              uncheckedWidget: Icon(
-                                                Icons.close,
-                                                color: backgroundColor,
-                                                size: 15,
-                                              ),
-                                              checkedColor: firstColor,
-                                              checkedWidget: Icon(
-                                                Icons.check,
-                                                color: backgroundColor,
-                                                size: 15,
-                                              ),
-                                              size: 20,
-                                              isChecked: traveledB(abc, index),
-                                              onTap: (bool? isChecked) {
-                                                alertaAbordo(abc, index, isChecked);
-                                              },
-                                            )
-                                          : Icon(
-                                              Icons.close,
-                                              color: Colors.red,
-                                              size: 15,
-                                            ),
-                                      SizedBox(width: 15.0),
-                                      Text('Abordó ',
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.normal,
-                                              fontSize: 16.0)),  
-                                      
-                                      Expanded(
-                                        child: InkWell(
-                                          onTap: () {
-                                            if (abc.data!.trips![0].tripAgent![index].latitude==null) {
-                                              WarningSuccessDialog().show(
-                                                context,
-                                                title: "Este agente no cuenta con ubicación",
-                                                tipo: 1,
-                                                onOkay: () {},
-                                              ); 
-                                            }else{
-                                              launchSalidasMaps(abc.data!.trips![0].tripAgent![index].latitude,abc.data!.trips![0].tripAgent![index].longitude);                                          
-                                            }
-                                            //print('Dirección we');
-                                          },
-                                          child: Column(
-                                            children: [
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.end,
-                                                children: [
-                                                Icon(Icons.location_on_outlined, color:abc.data!.trips![0].tripAgent![index].latitude==null? Colors.red :firstColor, size: 30,),
-                                                Text('Ubicación ',style: TextStyle(color:Colors.white,fontWeight: FontWeight.normal,fontSize: 16.0)),                                      
-                                              ],)
-                                            ],
-                                          ),
-                                        ),
-                                      ),                                    
-                                    ],
-                                  ),
-                                  SizedBox(height: 15),
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.person, color: thirdColor),
-                                        SizedBox(width: 15),
-                                        Flexible(
-                                          child: Text(
-                                            'Nombre: ${abc.data!.trips![0].tripAgent![index].agentFullname}',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 16.0,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(height: 15),
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.access_time, color: thirdColor),
-                                            SizedBox(width: 15),
-                                            Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              mainAxisAlignment: MainAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  'Hora de encuentro: ',
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 18.0,
-                                                  ),
-                                                ),
-                                                Text(
-                                                  '${abc.data!.trips![0].tripAgent![index].hourForTrip}',
-                                                  style: TextStyle(
-                                                    color: firstColor,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 16,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                  if (abc.data!.trips![0].tripAgent![index].neighborhoodReferencePoint != null)
-                                    ...{
-                                      SizedBox(height: 15),
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.warning_amber_outlined, color: thirdColor),
-                                            SizedBox(width: 15),
-                                            Flexible(
-                                              child: Text(
-                                                'Acceso autorizado: ${abc.data!.trips![0].tripAgent![index].neighborhoodReferencePoint}',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 16.0,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    },
-                                ],
-                              ),
-                              trailing: SizedBox(),
-                              children: [
-                                Container(
-                                  margin: EdgeInsets.only(left: 18),
-                                  child: Column(
-                                    children: [
-                                      SizedBox(height: 15),
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.location_city, color: thirdColor),
-                                            SizedBox(width: 15),
-                                            Flexible(
-                                              child: Text(
-                                                'Empresa: ${abc.data!.trips![0].tripAgent![index].companyName}',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 16.0,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      SizedBox(height: 15),
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.phone, color: thirdColor),
-                                            SizedBox(width: 7),
-                                            Flexible(
-                                              child: TextButton(
-                                                onPressed: () => launchUrl(Uri.parse('tel://${abc.data!.trips![0].tripAgent![index].agentPhone}')),
-                                                child: Container(
-                                                  child: Text(
-                                                    'Teléfono: ${abc.data!.trips![0].tripAgent![index].agentPhone}',
-                                                    style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontWeight: FontWeight.normal,
-                                                      fontSize: 16.0,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      SizedBox(height: 15),
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.access_time, color: thirdColor),
-                                            SizedBox(width: 15),
-                                            Flexible(
-                                              child: Text(
-                                                'Salida: ${abc.data!.trips![0].tripAgent![index].hourIn}',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 16.0,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      SizedBox(height: 15),
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.location_pin, color: thirdColor),
-                                            SizedBox(width: 15),
-                                            Flexible(
-                                              child: Text(
-                                                abc.data!.trips![0].tripAgent![index].agentReferencePoint == null ||
-                                                        abc.data!.trips![0].tripAgent![index].agentReferencePoint == ''
-                                                    ? "Dirección: ${abc.data!.trips![0].tripAgent![index].neighborhoodName}, ${abc.data!.trips![0].tripAgent![index].townName}"
-                                                    : 'Dirección: ${abc.data!.trips![0].tripAgent![index].agentReferencePoint}, ${abc.data!.trips![0].tripAgent![index].neighborhoodName}, ${abc.data!.trips![0].tripAgent![index].townName},',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 16.0,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      
-                                      SizedBox(height: 15),
-                                    ],
-                                  ),
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Column(
-                                      children: [
-                                        Container(
-                                          width: 150,
-                                          height: 40,
-                                          decoration: BoxDecoration(
-                                            boxShadow: [
-                                              BoxShadow(
-                                                blurStyle: BlurStyle.normal,
-                                                color: Colors.white.withOpacity(0.2),
-                                                blurRadius: 15,
-                                                spreadRadius: -10,
-                                                offset: Offset(-15, -6),
-                                              ),
-                                              BoxShadow(
-                                                blurStyle: BlurStyle.normal,
-                                                color: Colors.black.withOpacity(0.6),
-                                                blurRadius: 30,
-                                                spreadRadius: -15,
-                                                offset: Offset(18, 5),
-                                              ),
-                                            ],
-                                          ),
-                                          child: TextButton(
-                                            style: TextButton.styleFrom(
-                                              textStyle: TextStyle(color: backgroundColor),
-                                              backgroundColor: abc.data!.trips![0].tripAgent![index].commentDriver != 'No abordó'
-                                                  ? Colors.red
-                                                  : Colors.grey,
-                                              shape: RoundedRectangleBorder(
-                                                side: BorderSide(style: BorderStyle.none),
-                                                borderRadius: BorderRadius.circular(20),
-                                              ),
-                                            ),
-                                            onPressed: () async {
-                                              if (abc.data!.trips![0].tripAgent![index].commentDriver == 'No abordó') {
-                                                return;
-                                              }
-                  
-                                              Map<String, String> datas = {
-                                                'agentId': abc.data!.trips![0].tripAgent![index].agentId.toString(),
-                                                'tripId': prefs.tripId.toString(),
-                                                'traveled': '0',
-                                              };
-                  
-                                              await http.post(Uri.parse('$ip/apis/agentCheckIn'), body: datas);                
-                  
-                                              setState(() {
-                                                if (traveledB(abc, index)) {
-                                                  waypointsAbordados.removeWhere((element) => element == abc.data!.trips![0].tripAgent![index].agentId.toString());
-                                                  totalAbordado--;
-                                                }
-                                                abc.data!.trips![0].tripAgent![index].commentDriver = 'No abordó';
-                                                abc.data!.trips![0].tripAgent![index].traveled = 0;
-                                              });
-                  
-                                              fetchRegisterCommentAgent(
-                                                abc.data!.trips![0].tripAgent![index].agentId.toString(),
-                                                prefs.tripId,
-                                                'No abordó',
-                                              );
-                                            },
-                                            child: Text(
-                                              'No abordó',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: 20.0),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ) : Column(
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Container(
-                    margin:  EdgeInsets.only(left: 18),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                            'Total de agentes: ${abc.data!.trips![0].tripAgent!.length}',
-                            style: TextStyle(
-                                color: Colors.white70,
-                                fontWeight: FontWeight.normal,
-                                fontSize: 15.0)),
-                        Text(
-                          'Abordados: $totalAbordado',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontWeight: FontWeight.normal,
-                            fontSize: 15.0,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              SizedBox(height: 10.0),
-              //_buttonsRuta(),
-              SizedBox(height: 10.0),
-                Column(
-                children: List.generate(
-                  abc.data!.trips![0].tripAgent!.length,
-                  (index) {
-                    return Container(
-                        decoration: BoxDecoration(boxShadow: [
-                          BoxShadow(
-                              blurStyle: BlurStyle.normal,
-                              color:  traveledB(abc,index)==true ? Colors.green.withOpacity(0.5) : Colors.red.withOpacity(0.5),
-                              blurRadius: 15,
-                              spreadRadius: -18,
-                              offset: Offset(-15, -6)),
-                          BoxShadow(
-                              blurStyle: BlurStyle.normal,
-                              color: Colors.black.withOpacity(0.6),
-                              blurRadius: 30,
-                              spreadRadius: -15,
-                              offset: Offset(18, 5)),
-                        ]),
-                        width: 500.0,
-                        child: Card(
-                          color: backgroundColor,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          margin: EdgeInsets.all(15),
-                          elevation: 10,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ExpansionTile(
-                              backgroundColor: backgroundColor,
-                              title: Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: <Widget>[
-                                  /*Row(
-                                    children: [
-                                      SizedBox(width: 3.0),
-                                      traveledB(abc,index)==true ? RoundCheckBox(
-                                          border: Border.all(
-                                              style: BorderStyle.none),
-                                          animationDurate:ion:
-                                              Duration(seconds: 1),
-                                          uncheckedColor: Colors.red,
-                                          uncheckedWidget: Icon(
-                                            Icons.close,
-                                            color: backgroundColor,
-                                            size: 15,
-                                          ),
-                                          checkedColor: firstColor,
-                                          checkedWidget: Icon(
-                                            Icons.check,
-                                            color: backgroundColor,
-                                            size: 15,
-                                          ),
-                                          size: 20,
-                                          isChecked: traveledB(abc,index),
-                                          onTap: (bool? isChecked) {
-                                            alertaAbordo(abc, index, isChecked);
-                                          }
-                                        ) 
-                                        :Icon(
-                                          Icons.close,
-                                          color:Colors.red,
-                                          size: 15,
-                                        ),
-                                      
-                                      SizedBox(width: 15.0),
-                                      Text('Abordó ',
-                                      style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.normal,
-                                      fontSize: 20.0)),
-                          
-                                    ],
-                                  ),*/
-                                  Row(
-                                    //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                    children: [                                      
-                                      RoundCheckBox(
-                                          border: Border.all(
-                                              style: BorderStyle.none),
-                                          animationDuration:
-                                              Duration(seconds: 1),
-                                          uncheckedColor: Colors.red,
-                                          uncheckedWidget: Icon(
-                                            Icons.close,
-                                            color: backgroundColor,
-                                            size: 15,
-                                          ),
-                                          checkedColor: firstColor,
-                                          checkedWidget: Icon(
-                                            Icons.check,
-                                            color: backgroundColor,
-                                            size: 15,
-                                          ),
-                                          size: 20,
-                                          isChecked: traveledB(abc,index),
-                                          onTap: (bool? isChecked) {
-                                            alertaAbordo(abc, index, isChecked);
-                                          }),
-                                      SizedBox(width: 15.0),
-                                      Text('Abordó ',
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.normal,
-                                              fontSize: 16.0)),
-
-                                      Expanded(
-                                        child: InkWell(
-                                          onTap: () {
-                                            if (abc.data!.trips![0].tripAgent![index].latitude==null) {
-                                              WarningSuccessDialog().show(
-                                                context,
-                                                title: "Este agente no cuenta con ubicación",
-                                                tipo: 1,
-                                                onOkay: () {},
-                                              ); 
-                                            }else{
-                                              waypoints.clear();
-                                              waypoints.add('${abc.data!.trips![0].tripAgent![index].latitude},${abc.data!.trips![0].tripAgent![index].longitude}');
-                                              launchGoogleMapsx(apiKey, latidudeInicial.toString(), longitudInicial.toString(), waypoints);
-                                            }
-                                            //print('Dirección we');
-                                          },
-                                          child: Column(
-                                            children: [
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.end,
-                                                children: [
-                                                Icon(Icons.location_on_outlined, color: abc.data!.trips![0].tripAgent![index].latitude==null? Colors.red : firstColor, size: 30,),
-                                                Text('Ubicación ',style: TextStyle(color: Colors.white,fontWeight: FontWeight.normal,fontSize: 16.0)),                                      
-                                              ],)
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 15,),
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(0,0,20,0),
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.person,color: thirdColor),
-                                        SizedBox(width: 15,),
-                                        Flexible(
-                                          child: Text('Nombre: ${abc.data!.trips![0].tripAgent![index].agentFullname}',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                //fontWeight: FontWeight.bold,
-                                                fontSize: 16.0)),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(height: 15,),
-                                      Padding(
-                                      padding: const EdgeInsets.fromLTRB(0,0,20,0),
-                                      child: Row(
-                                        children: [
-                                          Icon(Icons.access_time,color: thirdColor),
-                                          SizedBox(width: 15,),
-                                          Column(
-                                            crossAxisAlignment :CrossAxisAlignment.start,
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            children: [
-                                              Text('Hora de encuentro: ',style: TextStyle(color: Colors.white,fontSize: 18.0)),
-                                              Text(textAlign:TextAlign.start,'${abc.data!.trips![0].tripAgent![index].hourForTrip}',style: TextStyle(
-                                                color: firstColor,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16)),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  if (abc.data!.trips![0].tripAgent![index].neighborhoodReferencePoint != null)... {
-                                    SizedBox(height: 15,),
-                                    Padding(
-                                      padding: const EdgeInsets.fromLTRB(0,0,20,0),
-                                      child: Row(
-                                        children: [
-                                          Icon(Icons.warning_amber_outlined,color: thirdColor),
-                                          SizedBox(width: 15,),
-                                          Flexible(child: Text('Acceso autorizado: ${abc.data!.trips![0].tripAgent![index].neighborhoodReferencePoint}',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  //fontWeight: FontWeight.bold,
-                                                  fontSize: 16.0)),
-                                          ),
-                                        ],
-                                      ),
-                                    ), 
-                                  },
-                                ],
-                              ),
-                              trailing: SizedBox(),
-                              children: [
-                                Container(
-                                  margin: EdgeInsets.only(left: 18),
-                                  child: Column(
-                                    children: [
-                                      SizedBox(height: 15,),
-                                      Padding(
-                                      padding: const EdgeInsets.fromLTRB(0,0,20,0),
-                                      child: Row(
-                                        children: [
-                                          Icon(Icons.location_city,color: thirdColor),
-                                          SizedBox(width: 15,),
-                                          Flexible(
-                                            child: Text('Empresa: ${abc.data!.trips![0].tripAgent![index].companyName}',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  //fontWeight: FontWeight.bold,
-                                                  fontSize: 16.0)),
-                                          ),
-                                        ],
-                                      ),
-                                    ), 
-                                    SizedBox(height: 15,),
-                                      Padding(
-                                      padding: const EdgeInsets.fromLTRB(0,0,20,0),
-                                      child: Row(
-                                        children: [
-                                          Icon(Icons.phone,color: thirdColor),
-                                          SizedBox(width: 7,),
-                                          Flexible(
-                                            child: TextButton(
-                                            onPressed: () => launchUrl(
-                                                Uri.parse(
-                                                    'tel://${abc.data!.trips![0].tripAgent![index].agentPhone}')),
-                                            child: Container(
-                                                child: Text(
-                                                    'Teléfono: ${abc.data!.trips![0].tripAgent![index].agentPhone}',
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontWeight:
-                                                            FontWeight
-                                                                .normal,
-                                                        fontSize: 16.0)))
-                                                        ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),                  
-                                    SizedBox(height: 15,),
-                                      Padding(
-                                      padding: const EdgeInsets.fromLTRB(0,0,20,0),
-                                      child: Row(
-                                        children: [
-                                          Icon(Icons.access_time,color: thirdColor),
-                                          SizedBox(width: 15,),
-                                          Flexible(
-                                            child: Text('Entrada: ${abc.data!.trips![0].tripAgent![index].hourIn}',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  //fontWeight: FontWeight.bold,
-                                                  fontSize: 16.0)),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    SizedBox(height: 15,),
-                                      Padding(
-                                      padding: const EdgeInsets.fromLTRB(0,0,20,0),
-                                      child: Row(
-                                        children: [
-                                          Icon(Icons.location_pin,color: thirdColor),
-                                          SizedBox(width: 15,),
-                                          Flexible(
-                                            child: Text(abc.data!.trips![0].tripAgent![index].agentReferencePoint==null
-                                                    ||abc.data!.trips![0].tripAgent![index].agentReferencePoint==""
-                                                    ?"Dirección: ${abc.data!.trips![0].tripAgent![index].neighborhoodName}, ${abc.data!.trips![0].tripAgent![index].townName}":'Dirección: ${abc.data!.trips![0].tripAgent![index].agentReferencePoint}, ${abc.data!.trips![0].tripAgent![index].neighborhoodName}, ${abc.data!.trips![0].tripAgent![index].townName},',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  //fontWeight: FontWeight.bold,
-                                                  fontSize: 16.0)),
-                                          ),
-                                        ],
-                                      ),
-                                    ),                                       
-                                    SizedBox(height: 15.0),
-                                    ],
-                                  ),
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    if (abc.data!.trips![0].tripAgent![index]
-                                            .didntGetOut ==
-                                        1) ...{
-                                      Text('Se pasó pero no salió.',
-                                          style: TextStyle(
-                                              color: Colors.orangeAccent,
-                                              fontWeight: FontWeight.normal,
-                                              fontSize: 15))
-                                    } else ...{
-
-                                       Column(
-                                          children: [
-                                            Container(
-                                              width: 150,
-                                              height: 40,
-                                              decoration:
-                                                  BoxDecoration(boxShadow: [
-                                                BoxShadow(
-                                                    blurStyle:
-                                                        BlurStyle.normal,
-                                                    color: Colors.white
-                                                        .withOpacity(0.2),
-                                                    blurRadius: 15,
-                                                    spreadRadius: -10,
-                                                    offset: Offset(-15, -6)),
-                                                BoxShadow(
-                                                    blurStyle:
-                                                        BlurStyle.normal,
-                                                    color: Colors.black
-                                                        .withOpacity(0.6),
-                                                    blurRadius: 30,
-                                                    spreadRadius: -15,
-                                                    offset: Offset(18, 5)),
-                                              ]),
-                                              child: TextButton(
-                                                style: TextButton.styleFrom(
-                                                  textStyle: TextStyle(
-                                                      color: Colors.white),
-                                                  backgroundColor: Colors.red,
-                                                  shape:
-                                                      RoundedRectangleBorder(
-                                                          side: BorderSide(
-                                                              style:
-                                                                  BorderStyle
-                                                                      .none),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      20)),
-                                                ),
-                                                onPressed: () {
-                                                  alertaPaso_noSalio(abc, index);
-                                                },
-                                                child:
-                                                    Text('Se pasó y no salió',
-                                                        style: TextStyle(
-                                                          fontSize: 15,
-                                                          color: Colors.white,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        )),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-    
-                                    },
-                                    Column(
-                                      children: [
-                                        Container(
-                                          width: 150,
-                                          height: 40,
-                                          decoration:
-                                              BoxDecoration(boxShadow: [
-                                            BoxShadow(
-                                                blurStyle: BlurStyle.normal,
-                                                color: Colors.white
-                                                    .withOpacity(0.2),
-                                                blurRadius: 15,
-                                                spreadRadius: -10,
-                                                offset: Offset(-15, -6)),
-                                            BoxShadow(
-                                                blurStyle: BlurStyle.normal,
-                                                color: Colors.black
-                                                    .withOpacity(0.6),
-                                                blurRadius: 30,
-                                                spreadRadius: -15,
-                                                offset: Offset(18, 5)),
-                                          ]),
-                                          child: TextButton(
-                                            style: TextButton.styleFrom(
-                                              textStyle: TextStyle(
-                                                  color: backgroundColor),
-                                              // foreground
-                                              backgroundColor: firstColor,
-                                              shape: RoundedRectangleBorder(
-                                                  side: BorderSide(
-                                                      style:
-                                                          BorderStyle.none),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          20)),
-                                            ),
-                                            onPressed: () async {
-                                              http.Response response =
-                                                  await http.get(Uri.parse(
-                                                      '$ip/apis/getDriverComment/${abc.data!.trips![0].tripAgent![index].agentId}/${abc.data!.trips![0].tripAgent![index].tripId}'));
-                                              final send = Comment.fromJson(
-                                                  json.decode(
-                                                      response.body));
-                                                  check[index].text = send.comment!.commentDriver;
-                                              showGeneralDialog(
-                                                  barrierColor: Colors.black
-                                                      .withOpacity(0.5),
-                                                  transitionBuilder:
-                                                      (context, a1, a2,
-                                                          widget) {
-                                                    return Transform.scale(
-                                                      scale: a1.value,
-                                                      child: Opacity(
-                                                        opacity: a1.value,
-                                                        child: AlertDialog(
-                                                          backgroundColor:
-                                                              backgroundColor,
-                                                          shape: OutlineInputBorder(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          16.0)),
-                                                          title: Padding(
-                                                            padding: const EdgeInsets
-                                                                    .symmetric(
-                                                                horizontal:
-                                                                    25.0),
-                                                            child: Text(
-                                                                '¿Razón por la cual no ingresó a la unidad?',
-                                                                style: TextStyle(
-                                                                    color:
-                                                                        GradiantV_2,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
-                                                                    fontSize:
-                                                                        20)),
-                                                          ),
-                                                          content:
-                                                              Container(
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              borderRadius:
-                                                                  BorderRadius.all(
-                                                                      Radius.circular(
-                                                                          15)),
-                                                              boxShadow: [
-                                                                BoxShadow(
-                                                                  color: Colors
-                                                                      .black
-                                                                      .withOpacity(
-                                                                          0.2),
-                                                                  spreadRadius:
-                                                                      0,
-                                                                  blurStyle:
-                                                                      BlurStyle
-                                                                          .solid,
-                                                                  blurRadius:
-                                                                      10,
-                                                                  offset: Offset(
-                                                                      0,
-                                                                      0), // changes position of shadow
-                                                                ),
-                                                                BoxShadow(
-                                                                  color: Colors
-                                                                      .white
-                                                                      .withOpacity(
-                                                                          0.1),
-                                                                  spreadRadius:
-                                                                      0,
-                                                                  blurRadius:
-                                                                      5,
-                                                                  blurStyle:
-                                                                      BlurStyle
-                                                                          .inner,
-                                                                  offset: Offset(
-                                                                      0,
-                                                                      0), // changes position of shadow
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            child: Padding(
-                                                              padding: const EdgeInsets
-                                                                      .symmetric(
-                                                                  horizontal:
-                                                                      15.0),
-                                                              child:
-                                                                  TextField(
-                                                                cursorColor:
-                                                                    firstColor,
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .white),
-                                                                decoration: InputDecoration(
-                                                                    border: InputBorder
-                                                                        .none,
-                                                                    hintText:
-                                                                        'Escriba aquí',
-                                                                    hintStyle:
-                                                                        TextStyle(color: Colors.white70)),
-                                                                controller:
-                                                                    check[
-                                                                        index],
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          actions: [
-                          
-                                                            Row(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .center,
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .spaceEvenly,
-                                                              children: [
-                                                                Container(
-                                                                  decoration:
-                                                                      BoxDecoration(
-                                                                          borderRadius: BorderRadius.circular(15)),
-                                                                  width: 95,
-                                                                  height:
-                                                                      40,
-                                                                  child:
-                                                                      ElevatedButton(
-                                                                    style: ElevatedButton.styleFrom(
-                                                                        shape: RoundedRectangleBorder(
-                                                                          borderRadius: BorderRadius.circular(30), // <-- Radius
-                                                                        ),
-                                                                        elevation: 10,
-                                                                        textStyle: TextStyle(color: Colors.white), // foreground
-                                                                        backgroundColor: Gradiant2),
-                                                                    onPressed:
-                                                                        () =>
-                                                                            {
-                                                                              if(check[index].text.isEmpty){
-                                                                                Navigator.pop(context),
-                                                                                WarningSuccessDialog().show(
-                                                                                  context,
-                                                                                  title: "No puede ir vacío la observación",
-                                                                                  tipo: 1,
-                                                                                  onOkay: () {},
-                                                                                ),
-                                                                              }else{
-                                                                              fetchRegisterCommentAgent(
-                                                                                  abc.data!.trips![0].tripAgent![index].agentId.toString(),
-                                                                                  prefs.tripId,
-                                                                                  check[index].text),
-                                                                              Navigator.pop(
-                                                                                  context),
-                                                                              }
-                                                                    },
-                                                                    child: Text(
-                                                                        'Guardar',
-                                                                        style: TextStyle(
-                                                                            color: backgroundColor,
-                                                                            fontWeight: FontWeight.bold,
-                                                                            fontSize: 15)),
-                                                                  ),
-                                                                ),
-                                                                Container(
-                                                                  width: 95,
-                                                                  height:
-                                                                      40,
-                                                                  child:
-                                                                      ElevatedButton(
-                                                                    style: ElevatedButton.styleFrom(
-                                                                        shape: RoundedRectangleBorder(
-                                                                          borderRadius: BorderRadius.circular(30), // <-- Radius
-                                                                        ),
-                                                                        textStyle: TextStyle(color: Colors.white), // foreground
-                                                                        // foreground
-                                                                        backgroundColor: Colors.red),
-                                                                    onPressed:
-                                                                        () =>
-                                                                            {
-                                                                      Navigator.pop(
-                                                                          context),
-                                                                    },
-                                                                    child: Text(
-                                                                        'Cerrar',
-                                                                        style: TextStyle(
-                                                                            color: Colors.white,
-                                                                            fontWeight: FontWeight.bold,
-                                                                            fontSize: 15)),
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            SizedBox(
-                                                                height:
-                                                                    10.0),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    );
-                                                  },
-                                                  transitionDuration:
-                                                      Duration(
-                                                          milliseconds:
-                                                              200),
-                                                  barrierDismissible: true,
-                                                  barrierLabel: '',
-                                                  context: context,
-                                                  pageBuilder: (context,
-                                                      animation1,
-                                                      animation2) {
-                                                    return Text('');
-                                                  });
-                                            },
-                                            child: Text('Observaciones',
-                                                style: TextStyle(
-                                                  color: backgroundColor,
-                                                  fontWeight:
-                                                      FontWeight.bold,
-                                                )),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: 15.0),
-                
-                                if (abc.data!.trips![0].tripAgent![index].commentDriver=='Canceló transporte') ...{
-                                  Text('Canceló transporte',
-                                    style: TextStyle(
-                                      color: Colors.orangeAccent,
-                                      fontWeight: FontWeight.normal,
-                                      fontSize: 15
-                                    )
-                                  )
-                                } else ...{
-                                  Container(
-                                    height: 40,
-                                    decoration:
-                                    BoxDecoration(boxShadow: [
-                                      BoxShadow(
-                                        blurStyle:
-                                        BlurStyle.normal,
-                                        color: Colors.white.withOpacity(0.2),
-                                                    blurRadius: 15,
-                                                    spreadRadius: -10,
-                                                    offset: Offset(-15, -6)),
-                                                BoxShadow(
-                                                    blurStyle:
-                                                        BlurStyle.normal,
-                                                    color: Colors.black
-                                                        .withOpacity(0.6),
-                                                    blurRadius: 30,
-                                                    spreadRadius: -15,
-                                                    offset: Offset(18, 5)),
-                                              ]),
-                                              child: TextButton(
-                                                style: TextButton.styleFrom(
-                                                  textStyle: TextStyle(
-                                                      color: Colors.white),
-                                                  backgroundColor: Colors.red,
-                                                  shape:
-                                                      RoundedRectangleBorder(
-                                                          side: BorderSide(
-                                                              style:
-                                                                  BorderStyle
-                                                                      .none),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      20)),
-                                                ),
-                                                onPressed: () {
-                                                  alertaCancelo(abc, index);
-                                                },
-                                                child:
-                                                    Text('Canceló transporte',
-                                                        style: TextStyle(
-                                                          fontSize: 15,
-                                                          color: Colors.white,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        )),
-                                              ),
-                                            ),
-                                  SizedBox(height: 20.0),
-                                }
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                  },
-                ),
-                ),
-              ],
-            );
+            return abc.data!.trips![1].actualTravel!.tripType=='Salida' ?
+              salida(abc, traveledB, alertaAbordo, context) 
+            : entrada(abc, traveledB, alertaAbordo, context, alertaPaso_noSalio, check, alertaCancelo);
           }
         } else {
           return ColorLoader3();
@@ -2605,27 +2321,134 @@ class _DataTableExample extends State<MyConfirmAgent> {
     );
   }
 
+  Widget opcionesBotones() {
+    return item!=null? Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardTheme.color,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(top: 2.0, bottom: 2, right: 8, left: 8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: TextButton(
+                  style: TextButton.styleFrom(
+              
+                    elevation: 0,
+                    backgroundColor: abordados!=true?Colors.transparent:Theme.of(context).unselectedWidgetColor,
+                    shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Abordaron',style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 15, color: abordados==true?Theme.of(context).primaryColorLight:Theme.of(context).primaryColorDark)),
+                      
+                      SizedBox(width: 5),
+                      
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: abordados == false ? Theme.of(context).unselectedWidgetColor : Theme.of(context).primaryColorLight,
+                        ),
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Text(
+                              '$totalAbordado',
+                              style: Theme.of(context).textTheme.labelSmall!.copyWith(color: abordados == true ? Theme.of(context).unselectedWidgetColor : Theme.of(context).primaryColorLight, fontSize: 9)
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  onPressed: abordados==true?null:() {
+                    setState(() {
+                      abordados = true;
+                      noabordaron = false;
+                    });
+                  },
+                ),
+              ),
+              SizedBox(width: 10),
+              Expanded(
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                    elevation: 0,
+                    backgroundColor: noabordaron!=true?Colors.transparent:Theme.of(context).unselectedWidgetColor,
+                    shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('No abordaron',style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 15, color: noabordaron==true?Theme.of(context).primaryColorLight:Theme.of(context).primaryColorDark)),
+                    
+                      SizedBox(width: 5),
+                  
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: noabordaron == false ? Theme.of(context).unselectedWidgetColor : Theme.of(context).primaryColorLight,
+                        ),
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Text(                             
+                              '$totalNoAbordado',
+                              style: Theme.of(context).textTheme.labelSmall!.copyWith(color: noabordaron == true ? Theme.of(context).unselectedWidgetColor : Theme.of(context).primaryColorLight, fontSize: 9)
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  onPressed: noabordaron==true?null:() {
+                    setState(() {
+                      abordados = false;
+                      noabordaron = true;
+                    });
+                  },
+                ),
+              ),
+          
+            ],
+          ),
+      ),
+    ):
+    WillPopScope(
+      onWillPop: () async => false,
+      child: Center(
+        child: const Padding(
+          padding: EdgeInsets.all(16),
+          child: CircularProgressIndicator(),
+        ),
+      ),
+    );
+  }
+
   Widget _buttonsRuta() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: <Widget>[
-        Container(
-          width: 200,
-          height: 40,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-                elevation: 10,
-                textStyle: TextStyle(color: backgroundColor),
-                backgroundColor: firstColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0),
-                )),
-            child: Text("Generar ruta",
-                style: TextStyle(
-                    color: backgroundColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15)),
-            onPressed: () async{
+    return TextButton(
+      style: TextButton.styleFrom(
+        fixedSize: Size(150, 25),
+        elevation: 0,
+        backgroundColor: Theme.of(context).primaryColor,
+        shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
+      ),
+      child: Row(
+        children: [
+          SvgPicture.asset(  
+            "assets/icons/navegacion-gps.svg",
+            color: Colors.white,
+            height: 20,
+            width: 20,
+          ),
+          SizedBox(width: 8),
+          Text('Generar ruta',style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white, fontSize: 16)),
+        ],
+      ),
+      onPressed: () async{
 
               permiso = await checkLocationPermission();
               if (!permiso!) {
@@ -2653,9 +2476,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
               });
               
             },
-          ),
-        ),
-      ],
     );
   }
 
@@ -2688,63 +2508,49 @@ class _DataTableExample extends State<MyConfirmAgent> {
   }
 
   Widget _buttonsAgents() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: <Widget>[
-        Container(
-          width: 200,
-          height: 40,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-                elevation: 10,
-                textStyle: TextStyle(color: backgroundColor),
-                backgroundColor: firstColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0),
-                )),
-            child: Text("Completar Viaje",
-                style: TextStyle(
-                    color: backgroundColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15)),
-            onPressed: () {
-              QuickAlert.show(
-                context: context,
-                type: QuickAlertType.success,
-                title: "Completar viaje",
-                text: "¿Está seguro que desea completar el viaje?",
-                confirmBtnText: "Confirmar",
-                cancelBtnText: "Cancelar",
-                showCancelBtn: true,
-                confirmBtnTextStyle:
-                    TextStyle(fontSize: 15, color: Colors.white),
-                cancelBtnTextStyle: TextStyle(
-                    color: Colors.red,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold),
-                onConfirmBtnTap: () {
-                  Navigator.pop(context);
+    return TextButton(
+      style: TextButton.styleFrom(
+        fixedSize: Size(150, 25),
+        elevation: 0,
+        backgroundColor: Theme.of(context).primaryColor,
+        shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
+      ),
+      child: Text('Completar viaje',style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white, fontSize: 16)),
+      onPressed: () {
+        QuickAlert.show(
+            context: context,
+            type: QuickAlertType.success,
+            title: "Completar viaje",
+            text: "¿Está seguro que desea completar el viaje?",
+            confirmBtnText: "Confirmar",
+            cancelBtnText: "Cancelar",
+            showCancelBtn: true,
+            confirmBtnTextStyle:
+                TextStyle(fontSize: 15, color: Colors.white),
+            cancelBtnTextStyle: TextStyle(
+                color: Colors.red,
+                fontSize: 15,
+                fontWeight: FontWeight.bold),
+            onConfirmBtnTap: () {
+              Navigator.pop(context);
 
-                  if (tripVehicle == '') {
-                    WarningSuccessDialog().show(
-                      context,
-                      title: "Tiene que ingresar un veiculo",
-                      tipo: 1,
-                      onOkay: () {},
-                    );
-                    return;
-                  }
-                  LoadingIndicatorDialog().show(context);
-                  fetchRegisterTripCompleted();
-                },
-                onCancelBtnTap: () {
-                  Navigator.pop(context);
-                },
-              );
+              if (tripVehicle == '') {
+                WarningSuccessDialog().show(
+                  context,
+                  title: "Tiene que ingresar un veiculo",
+                  tipo: 1,
+                  onOkay: () {},
+                );
+                return;
+              }
+              LoadingIndicatorDialog().show(context);
+              fetchRegisterTripCompleted();
             },
-          ),
-        ),
-      ],
+            onCancelBtnTap: () {
+              Navigator.pop(context);
+            },
+          );
+      },
     );
   }
 }
