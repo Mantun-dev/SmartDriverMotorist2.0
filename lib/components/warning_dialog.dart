@@ -2,11 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_auth/main.dart';
 import 'package:flutter_svg/svg.dart';
 
-enum QuickAlertType {
-  warning,
-  // Otros tipos de alerta
-}
-
 class WarningSuccessDialog {
   static final WarningSuccessDialog _singleton = WarningSuccessDialog._internal();
   late BuildContext _context;

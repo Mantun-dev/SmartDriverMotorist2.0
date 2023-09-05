@@ -2,12 +2,9 @@
 
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_auth/Drivers/Screens/Chat/chatViews.dart';
-import 'package:flutter_auth/Drivers/Screens/Details/components/trip_In_Process.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
 import 'package:flutter_auth/Drivers/components/loader.dart';
-import 'package:flutter_auth/Drivers/components/menu_lateralDriver.dart';
 import 'package:flutter_auth/Drivers/models/DriverData.dart';
 import 'package:flutter_auth/Drivers/models/agentInProgress.dart';
 import 'package:flutter_auth/Drivers/models/comment.dart';
@@ -25,12 +22,12 @@ import 'dart:convert' show json;
 import 'package:flutter_auth/constants.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:quickalert/quickalert.dart';
+
 import 'package:url_launcher/url_launcher.dart';
 import 'package:roundcheckbox/roundcheckbox.dart';
 
 import '../../../../components/AppBarPosterior.dart';
 import '../../../../components/AppBarSuperior.dart';
-import '../../../../components/ConfirmationDialog.dart';
 import '../../../../components/backgroundB.dart';
 import '../../../../components/warning_dialog.dart';
 import '../../../components/progress_indicator.dart';
@@ -45,16 +42,6 @@ void main() {
   runApp(MyConfirmAgent());
 }
 
-int recargar=-1;
-
-void setRecargar(int numero){
-  recargar=numero;
-}
-
-int gerRecargar(){
-  return recargar;
-}
-
 class MyConfirmAgent extends StatefulWidget {
   final PlantillaDriver? plantillaDriver;
   final departmentId;
@@ -66,8 +53,6 @@ class MyConfirmAgent extends StatefulWidget {
 }
 
 class _DataTableExample extends State<MyConfirmAgent> {
-  ConfirmationLoadingDialog loadingDialog = ConfirmationLoadingDialog();
-  ConfirmationDialog confirmationDialog = ConfirmationDialog();
   int totalAbordado = 0;
   Future<TripsList4>? item;
   Future<DriverData>? driverData;
@@ -130,8 +115,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
       
     } else if (response.statusCode == 500) {
       WarningSuccessDialog().show(
-        navigatorKey.currentContext!,
-        title: '$resp.message',
+        context,
+        title: "${resp.message}",
         tipo: 1,
         onOkay: () {},
       );
@@ -173,7 +158,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
         'https://admin.smtdriver.com/test/registerTripAsCompleted/${prefs.tripId}/${data.driverId}/mobile'));
     final si = Driver2.fromJson(json.decode(responses.body));
 
-    loadingDialog.dismiss();
+    LoadingIndicatorDialog().dismiss();
     //print(responses.body);
     if (responses.statusCode == 200 && si.ok!) {
       new Future.delayed(new Duration(seconds: 2), () {
@@ -184,19 +169,19 @@ class _DataTableExample extends State<MyConfirmAgent> {
       });
       if (mounted) {
         WarningSuccessDialog().show(
-                                      navigatorKey.currentContext!,
-                                      title: "Su viaje ha sido completado",
-                                      tipo: 2,
-                                      onOkay: () {},
-                                    );
+          context,
+          title: "Su viaje ha sido completado",
+          tipo: 2,
+          onOkay: () {},
+        );
       }
     } else if (si.ok != true) {
       WarningSuccessDialog().show(
-                                      navigatorKey.currentContext!,
-                                      title: "${si.message}",
-                                      tipo: 1,
-                                      onOkay: () {},
-                                    );
+        context,
+        title: "${si.message}",
+        tipo: 1,
+        onOkay: () {},
+      );
     }
     Map data2 = {"Estado": 'FINALIZADO'};
     String sendData2 = json.encode(data2);
@@ -240,19 +225,19 @@ class _DataTableExample extends State<MyConfirmAgent> {
         si.ok == true &&
         responses.statusCode == 200) {
       WarningSuccessDialog().show(
-                                      navigatorKey.currentContext!,
-                                      title: "Enviado",
-                                      tipo: 2,
-                                      onOkay: () {},
-                                    );
+        context,
+        title: "${si.message}",
+        tipo: 2,
+        onOkay: () {},
+      );
       Navigator.pop(context);
     } else if (si.ok != true) {
       WarningSuccessDialog().show(
-                                      navigatorKey.currentContext!,
-                                      title: "${si.message}",
-                                      tipo: 1,
-                                      onOkay: () {},
-                                    );
+        context,
+        title: "${si.message}",
+        tipo: 1,
+        onOkay: () {},
+      );
     }
     return Driver.fromJson(json.decode(responses.body));
   }
@@ -267,19 +252,19 @@ class _DataTableExample extends State<MyConfirmAgent> {
     final si = Driver.fromJson(json.decode(responses.body));
 
     if (responses.statusCode == 200 && si.ok!) {
-     WarningSuccessDialog().show(
-                                      navigatorKey.currentContext!,
-                                      title: "${si.message}",
-                                      tipo: 2,
-                                      onOkay: () {},
-                                    );
+      WarningSuccessDialog().show(
+        context,
+        title: "${si.message}",
+        tipo: 2,
+        onOkay: () {},
+      );
     } else if (si.ok != true) {
       WarningSuccessDialog().show(
-                                      navigatorKey.currentContext!,
-                                      title: "${si.message}",
-                                      tipo: 1,
-                                      onOkay: () {},
-                                    );
+        context,
+        title: "${si.message}",
+        tipo: 1,
+        onOkay: () {},
+      );
     }
     return Driver.fromJson(json.decode(responses.body));
   }
@@ -300,11 +285,11 @@ class _DataTableExample extends State<MyConfirmAgent> {
           (Route<dynamic> route) => false);
     } else if (response.statusCode == 500) {
       WarningSuccessDialog().show(
-                                      navigatorKey.currentContext!,
-                                      title: "${resp.message}",
-                                      tipo: 1,
-                                      onOkay: () {},
-                                    );
+        context,
+        title: "${resp.message}",
+        tipo: 1,
+        onOkay: () {},
+      );
     }
 
     Map data2 = {"Estado": 'FINALIZADO'};
@@ -574,9 +559,9 @@ class _DataTableExample extends State<MyConfirmAgent> {
           children: [
             ingresarVehiculo(),
             SizedBox(height: 10.0),
-            _buttonsAgents(),
-            SizedBox(height: 10.0),
             escanearAgente(),
+            SizedBox(height: 10.0),
+            _buttonsAgents(),
             SizedBox(height: 10.0),
             _agentToConfirm(),
             SizedBox(height: 10.0),
@@ -586,678 +571,363 @@ class _DataTableExample extends State<MyConfirmAgent> {
     );
   }
 
-
   Widget escanearAgente() {
 
     return FutureBuilder<TripsList4>(
       future: item,
       builder: (BuildContext context, abc) {
         if (abc.connectionState == ConnectionState.done) {
-          return Column(
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(height: 10.0),
-              Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: Column(
-                    crossAxisAlignment:CrossAxisAlignment.start,
-                    children: [
-                      Text('Escanee el codigo del agente', style: TextStyle(color: Colors.white70,fontWeight: FontWeight.normal,fontSize: 15.0),),
-                      SizedBox(height: 5),
-                      Row(
-                        children: [
-                           GestureDetector(
-                            onTap: (){
-                              showGeneralDialog(
-                                barrierColor: Colors.black.withOpacity(0.5),
-                                transitionBuilder: (context, a1, a2, widget) {
-                                  return Transform.scale(scale: a1.value,
-                                    child: Opacity(opacity: a1.value,
-                                      child: AlertDialog(
-                                        backgroundColor: backgroundColor,
-                                        shape: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(16.0)),
-                                        title: Center(child: Text('Buscar Agente',style: TextStyle(color: GradiantV_2, fontSize: 20.0),)),
-                                        content: Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius:BorderRadius.all(Radius.circular(15)),
-                                            boxShadow: [
-                                              BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0,0), ),
-                                              BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0,0),                                 ),
-                                            ],
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                            child: TextField(style: TextStyle(color: Colors.white),
-                                              controller: agentEmployeeId,
-                                              decoration: InputDecoration(border: InputBorder.none,labelText: 'Escriba aqui',labelStyle: TextStyle(color: Colors.white.withOpacity(0.5),fontSize: 15.0)),
-                                            ),
-                                          ),
-                                        ),
-                                        actions: [
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                              Container(width: 100,
-                                                child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: backgroundColor,),backgroundColor: Gradiant2,),
-                                                  onPressed: () async{
-                                                    permiso = await checkLocationPermission();
-                                                      if (!permiso!) {
-                                                        WarningSuccessDialog().show(
-                                                          navigatorKey.currentContext!,
-                                                          title: 'Usted negó el acceso a la ubicación. Esto es necesario para poder abordar agentes. Si no da acceso en configuraciones, no podrá abordar agentes.',
-                                                          tipo: 1,
-                                                          onOkay: () {
-                                                            try {
-                                                              AppSettings.openLocationSettings();
-                                                              } catch (error) {
-                                                                print(error);
-                                                              }
-                                                          },
-                                                        );
-                                                        return;
-                                                      }
-                                                   
-                                                      LoadingIndicatorDialog().show(context);
-
-                                                      Map data =   {
-                                                        'agentUser':agentEmployeeId.text, 
-                                                        'tripId':tripId.toString(),
-                                                        'itsManualSearch':"1"
-                                                      };
-
-                                                      http.Response response = await http
-                                                          .post(Uri.parse('https://driver.smtdriver.com/apis/agents/validateCheckIn'), body: data);
-
-                                                      final resp = json.decode(response.body);
-
-                                                      if(mounted){
-                                                        LoadingIndicatorDialog().dismiss();
-                                                        if(resp['type']=='error'){
-                                                          WarningSuccessDialog().show(
-                                                          navigatorKey.currentContext!,
-                                                          title: "${resp['msg']}",
-                                                          tipo: 1,
-                                                          onOkay: () {},
-                                                        );
-                                                          return;
-                                                        } 
-
-                                                        if(resp['allow']==0){
-                                                          if(abc.data!.trips![1].actualTravel!.tripType!='Salida'){
-                                                            
-                                                            LoadingIndicatorDialog().dismiss();
-                                                            WarningSuccessDialog().show(
-                                                              navigatorKey.currentContext!,
-                                                              title: resp['msg'],
-                                                              tipo: 1,
-                                                              onOkay: () {},
-                                                            );
-                                                            return;
-                                                          
-                                                          }else{
-                                                          if(resp['msg']=='Agente no se encuentra registrado en este viaje.'){
-                                                            LoadingIndicatorDialog().dismiss();
-                                                            confirmationDialog.show(
-                                                                context,
-                                                                title: 'Usted negó el acceso a la ubicación. Esto es necesario para poder abordar agentes. Si no da acceso en configuraciones, no podrá abordar agentes.',
-                                                                type: "0",
-                                                                onConfirm: () async {
-                                                                  loadingDialog.show(context);
-
-                                                                 Map datas = {
-                                                                  "companyId": abc.data!.trips![1].actualTravel!.companyId.toString(),
-                                                                  "agentEmployeeId": agentEmployeeId.text
-                                                                };
-
-                                                                http.Response responsed =
-                                                                    await http.post(Uri.parse('$ip/apis/searchAgent'), body: datas);
-                                                                final data1 = Search.fromJson(json.decode(responsed.body));
-
-
-                                                                if(data1.agent!.msg!=null){
-                                                                  loadingDialog.dismiss();
-
-                                                                  if(data1.ok==true){
-                                                                    confirmationDialog.dismiss();
-                                                                    Navigator.pop(context);                                         
-                                                                    WarningSuccessDialog().show(
-                                                                      navigatorKey.currentContext!,
-                                                                      title: '${data1.agent!.msg!}',
-                                                                      tipo: 1,
-                                                                      onOkay: () {},
-                                                                    );
-
-                                                                    return;
-                                                                  }
-                                                                }
-
-                                                                Map datas2 = {
-                                                                  "agentId": data1.agent!.agentId.toString(),
-                                                                  "tripId": abc.data!.trips![1].actualTravel!.tripId.toString(),
-                                                                  "tripHour": abc.data!.trips![1].actualTravel!.tripHour.toString()
-                                                                };
-
-                                                                final sendDatas = await http.post(Uri.parse('$ip/apis/registerAgentTripEntryByDriver'),body: datas2);
-
-                                                                final dataR = json.decode(sendDatas.body);
-
-
-                                                                if(dataR['type']=='error'){
-
-                                                                  loadingDialog.dismiss();
-
-                                                                  if(mounted){
-                                                                    confirmationDialog.dismiss();
-                                                                    Navigator.pop(context);
-                                                                    WarningSuccessDialog().show(
-                                                                      navigatorKey.currentContext!,
-                                                                      title: '${dataR['message']}',
-                                                                      tipo: 1,
-                                                                      onOkay: () {},
-                                                                    );
-                                                                  }
-
-                                                                return;
-
-                                                                }else{
-                                                                  var itemAbordaje = await fetchAgentsTripInProgress();
-
-                                                                  int indexP = await addAgente(resp['agentId'], itemAbordaje);
-                                                                  abc.data!.trips![0].tripAgent=itemAbordaje.trips![0].tripAgent;
-
-                                                                  fetchRegisterCommentAgent(
-                                                                    abc.data!.trips![0].tripAgent![indexP].agentId.toString(),
-                                                                    prefs.tripId,
-                                                                    ''
-                                                                  ); 
-
-                                                                  Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-  
-                                                                  traveled = !traveled;
-                                                                  abc.data!.trips![0].tripAgent![indexP].traveled = traveled;
-                                                                  
-                                                                  Map data =   {
-                                                                    'agentId':data1.agent!.agentId.toString(), 
-                                                                    'tripId':abc.data!.trips![1].actualTravel!.tripId.toString(),
-                                                                    'latitude':position.latitude.toString(),
-                                                                    'longitude':position.longitude.toString(),
-                                                                    'actionName':'Abordaje'
-                                                                  };
-                                                                
-                                                                  await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
-
-                                                                  Map data2 = {
-                                                                    "Agentes": [
-                                                                      {
-                                                                        "agenteN": itemAbordaje.trips![0].tripAgent![indexP].agentFullname,
-                                                                        "agenteId": itemAbordaje.trips![0].tripAgent![indexP].agentId.toString(),
-                                                                        "Estado": "CONFIRMADO"
-                                                                      }
-                                                                    ]                                                               
-                                                                  };
-                                                                  
-                                                                  String sendData2 = json.encode(data2);
-                                                                  await http.put(Uri.parse('https://apichat.smtdriver.com/api/salas/Tripid/${abc.data!.trips![1].actualTravel!.tripId.toString()}'), body: sendData2, headers: {"Content-Type": "application/json"});
-                                                                  
-                                                                  loadingDialog.dismiss();
-                                                                  confirmationDialog.dismiss();
-                                                                  if(mounted){
-                                                                    Navigator.push(context,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
-
-                                                                    WarningSuccessDialog().show(
-                                                                      navigatorKey.currentContext!,
-                                                                      title: 'Se agrego el agente ${itemAbordaje.trips![0].tripAgent![indexP].agentFullname} al viaje.',
-                                                                      tipo: 2,
-                                                                      onOkay: () {},
-                                                                    );
-                                                                    
-                                                                  } 
-                                                                }
-                                                      
-                                                    },
-                                                    onCancel: () {},
-                                                  );
-                                                          return;
-                                                          }else{
-                                                            LoadingIndicatorDialog().dismiss();
-                                                            WarningSuccessDialog().show(
-                                                                      navigatorKey.currentContext!,
-                                                                      title: '${resp['msg']}',
-                                                                      tipo: 1,
-                                                                      onOkay: () {},
-                                                                    );
-                                                            return;
-                                                          }
-                                                        }
-                                                        }
-
-                                                        int index = 0;
-
-                                                        for (int i = 0; i < abc.data!.trips![0].tripAgent!.length; i++) {  
-                                                          if(abc.data!.trips![0].tripAgent![i].agentId==resp['agentId']){
-
-                                                            if(abc.data!.trips![0].tripAgent![i].traveled == 1){
-                                                              traveled = true;
-                                                            }else{
-                                                              traveled = false;
-                                                            }
-                                                            index = i;
-                                                          }
-                                                        }
-
-                                                        LoadingIndicatorDialog().dismiss();
-                                                        confirmationDialog.show(
-                                                                context,
-                                                                title: 'Usted negó el acceso a la ubicación. Esto es necesario para poder abordar agentes. Si no da acceso en configuraciones, no podrá abordar agentes.',
-                                                                type: "0",
-                                                                onConfirm: () async {
-
-                                                                  Navigator.pop(context);
-
-                                                            loadingDialog.show(context);
-                                                            if(traveled==false && abc.data!.trips![0].tripAgent![index].didntGetOut==1){
-                                                              abc.data!.trips![0].tripAgent![index].didntGetOut=0;
-                                                              fetchRegisterCommentAgent(
-                                                                abc.data!.trips![0].tripAgent![index].agentId.toString(),
-                                                                prefs.tripId,
-                                                                'No abordó'
-                                                              );  
-                                                              waypointsAbordados.removeWhere((element) => element == abc.data!.trips![0].tripAgent![index].agentId.toString());
-                                                              totalAbordado--;
-                                                            }
-
-                                                            if(abc.data!.trips![0].tripAgent![index].commentDriver=="Canceló transporte"){
-                                                              abc.data!.trips![0].tripAgent![index].commentDriver="";
-
-                                                              fetchRegisterCommentAgent(
-                                                                abc.data!.trips![0].tripAgent![index].agentId.toString(),
-                                                                prefs.tripId,
-                                                                ''
-                                                              );   
-                                                              
-                                                            }
-                                                            Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+              GestureDetector(
+                onTap: () async{
+                      permiso = await checkLocationPermission();
+                      if (!permiso!) {
+                        WarningSuccessDialog().show(
+                          context,
+                          title: "Usted negó el acceso a la ubicación. Esto es necesario para poder abordar agentes. Si no da acceso en configuraciones, no podrá abordar agentes.",
+                          tipo: 1,
+                          onOkay: () async {
+                                Navigator.pop(context);
+                                try {
+                                  AppSettings.openLocationSettings();
+                                } catch (error) {
+                                  print(error);
+                                }
+                          },
+                        ); 
+                        return;
+                      }
                       
+                      String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);
+                
+                      if (codigoQR == "-1") {
+                        return;
+                      } else {
+                        LoadingIndicatorDialog().show(context);
+              
+                        Map data =   {
+                          'agentUser':codigoQR, 
+                          'tripId':tripId.toString()
+                        };
+              
+                        http.Response response = await http
+                                .post(Uri.parse('https://driver.smtdriver.com/apis/agents/validateCheckIn'), body: data);
+              
+                        final resp = json.decode(response.body);
+              
+                        if(mounted){
+                                                  LoadingIndicatorDialog().dismiss();
+                                                  if(resp['type']=='error'){
+                                                    WarningSuccessDialog().show(
+                                                      context,
+                                                      title: "${resp['msg']}",
+                                                      tipo: 1,
+                                                      onOkay: () {},
+                                                    ); 
+                                                    return;
+                                                  } 
+              
+                                                  if(resp['allow']==0){
+                                                    if(abc.data!.trips![1].actualTravel!.tripType!='Salida'){
+                                                      
+                                                      LoadingIndicatorDialog().dismiss();
+                                                      WarningSuccessDialog().show(
+                                                        context,
+                                                        title: "${resp['msg']}",
+                                                        tipo: 1,
+                                                        onOkay: () {},
+                                                      ); 
+                                                      return;
+                                                    
+                                                    }else{
+                                                    if(resp['msg']=='Agente no se encuentra registrado en este viaje.'){
+                                                      LoadingIndicatorDialog().dismiss();
+                                                      QuickAlert.show(
+                                                        context: navigatorKey.currentContext!,
+                                                        type: QuickAlertType.warning,
+                                                        title: '¡Alerta!',
+                                                        text: 'Agente no se encuentra registrado en este viaje. Desea agregarlo al viaje?',
+                                                        confirmBtnText: 'Confirmar',
+                                                        cancelBtnText: 'Cancelar',
+                                                        showCancelBtn: true,  
+                                                        confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
+                                                        cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ),
+                                                        onConfirmBtnTap: () async{
+              
+                                                          LoadingIndicatorDialog().show(navigatorKey.currentContext!);
+              
+                                                           Map datas = {
+                                                            "companyId": abc.data!.trips![1].actualTravel!.companyId.toString(),
+                                                            "agentEmployeeId": codigoQR
+                                                          };
+              
+                                                          http.Response responsed =
+                                                              await http.post(Uri.parse('$ip/apis/searchAgent'), body: datas);
+                                                          final data1 = Search.fromJson(json.decode(responsed.body));
+              
+              
+                                                          if(data1.agent!.msg!=null){
+                                                            LoadingIndicatorDialog().dismiss();
+              
+                                                            if(data1.ok==true){
+                                                              Navigator.pop(navigatorKey.currentContext!);
+                                                              WarningSuccessDialog().show(
+                                                                context,
+                                                                title: "${data1.agent!.msg!}",
+                                                                tipo: 1,
+                                                                onOkay: () {},
+                                                              ); 
+              
+                                                              return;
+                                                            }
+                                                          }
+              
+                                                          Map datas2 = {
+                                                            "agentId": data1.agent!.agentId.toString(),
+                                                            "tripId": abc.data!.trips![1].actualTravel!.tripId.toString(),
+                                                            "tripHour": abc.data!.trips![1].actualTravel!.tripHour.toString()
+                                                          };
+              
+                                                          final sendDatas = await http.post(Uri.parse('$ip/apis/registerAgentTripEntryByDriver'),body: datas2);
+              
+                                                          final dataR = json.decode(sendDatas.body);
+              
+                                                          if(dataR['type']=='error'){
+                                                            LoadingIndicatorDialog().dismiss();
+                                                            
+                                                            if(mounted){
+                                                              Navigator.pop(navigatorKey.currentContext!);
+                                                              Navigator.pop(navigatorKey.currentContext!);
+                                                              WarningSuccessDialog().show(
+                                                                context,
+                                                                title: "${dataR['message']}",
+                                                                tipo: 1,
+                                                                onOkay: () {},
+                                                              ); 
+                                                            }
+              
+                                                          return;
+              
+                                                          }else{
+              
+                                                            var itemAbordaje = await fetchAgentsTripInProgress();
+              
+                                                            int indexP = await addAgente(resp['agentId'], itemAbordaje);
+                                                            abc.data!.trips![0].tripAgent=itemAbordaje.trips![0].tripAgent;
+              
+                                                            fetchRegisterCommentAgent(
+                                                              abc.data!.trips![0].tripAgent![indexP].agentId.toString(),
+                                                              prefs.tripId,
+                                                              ''
+                                                            ); 
+              
+              
+                                                            Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+                
                                                             traveled = !traveled;
-                                                            abc.data!.trips![0].tripAgent![index].traveled = traveled;
+                                                            abc.data!.trips![0].tripAgent![indexP].traveled = traveled;
                                                             
                                                             Map data =   {
-                                                              'agentId':abc.data!.trips![0].tripAgent![index].agentId.toString(), 
-                                                              'tripId':tripId.toString(),
+                                                              'agentId':data1.agent!.agentId.toString(), 
+                                                              'tripId':abc.data!.trips![1].actualTravel!.tripId.toString(),
                                                               'latitude':position.latitude.toString(),
                                                               'longitude':position.longitude.toString(),
                                                               'actionName':'Abordaje'
                                                             };
-                                                            
-                                                            http.Response response2 = await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
-                                                            final resp2 = json.decode(response2.body);
-                                                            confirmationDialog.dismiss();
-                                                            loadingDialog.dismiss();
-                                                            
-
-                                                            WarningSuccessDialog().show(
-                                                                      navigatorKey.currentContext!,
-                                                                      title: 'El agente ${abc.data!.trips![0].tripAgent![index].agentFullname} ha abordado.',
-                                                                      tipo: 2,
-                                                                      onOkay: () {},
-                                                                    );
-                                                          agentEmployeeId.text='';
-                                                          abc.data!.trips![0].tripAgent![index].commentDriver='';
-                                                          totalAbordado++;
-                                                          waypointsAbordados.add(abc.data!.trips![0].tripAgent![index].agentId.toString());
-                                                          setState(() { });
-                                                    },
-                                                    onCancel: () {},
-                                                  );
-                                                    
-                                                      }
-                                                    
-                                                  },
-                                                  child: Text('Abordar',style: TextStyle(color: backgroundColor,fontSize: 15.0)),
-                                                ),
-                                              ),
-                                              SizedBox(width: 10.0),
-                                              Container(width: 100,
-                                                child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: Colors.white,),backgroundColor: Colors.red,),
-                                                  onPressed: () => {
-                                                    Navigator.pop(context),
-                                                  },
-                                                  child: Text('Cerrar',style: TextStyle(color: Colors.white,fontSize: 15.0)),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                },
-                                transitionDuration: Duration(milliseconds: 200),
-                                barrierDismissible: true,
-                                barrierLabel: '',
-                                context: context,
-                                pageBuilder: (context, animation1, animation2) {
-                                  return Text('');
-                                });
-                            },
-                             child: Container(
-                               decoration: BoxDecoration(
-                                 borderRadius: BorderRadius.all(Radius.circular(15)),
-                                 boxShadow: [
-                                   BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0, 0), ),
-                                   BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0, 0), ),
-                                 ],
-                               ),
-                               width: 220,
-                               child: Padding(
-                                 padding: const EdgeInsets.all(10),
-                                 child: Row(
-                                   children: [
-                                    Icon(Icons.person,color: thirdColor,size: 30.0,),
-                                    SizedBox(width: 10.0),
-                                     Text(
-                                       'Abordar Agente',
-                                       style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 15),
-                                     ),
-                                   ],
-                                 ),
-                               ),
-                             ),
-                           ),
-                          SizedBox(width: 10,),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: firstColor,
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            child: IconButton(
-                              icon: Icon(Icons.qr_code),
-                              color: backgroundColor,
-                              iconSize: 30.0,
-                              onPressed: () async{
-                                permiso = await checkLocationPermission();
-                                if (!permiso!) {
-                                  WarningSuccessDialog().show(
-                                                          navigatorKey.currentContext!,
-                                                          title: 'Usted negó el acceso a la ubicación. Esto es necesario para poder abordar agentes. Si no da acceso en configuraciones, no podrá abordar agentes.',
-                                                          tipo: 1,
-                                                          onOkay: () {
-                                                            try {
-                                                              AppSettings.openLocationSettings();
-                                                              } catch (error) {
-                                                                print(error);
-                                                              }
-                                                          },
-                                                        );
-                                  return;
-                                }
-                                
-                                String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);
-                      
-                                if (codigoQR == "-1") {
-                                  return;
-                                } else {
-                                  LoadingIndicatorDialog().show(context);
-
-                                  Map data =   {
-                                    'agentUser':codigoQR, 
-                                    'tripId':tripId.toString()
-                                  };
-
-                                  http.Response response = await http
-                                      .post(Uri.parse('https://driver.smtdriver.com/apis/agents/validateCheckIn'), body: data);
-
-                                  final resp = json.decode(response.body);
-
-                                  if(mounted){
-                                                        LoadingIndicatorDialog().dismiss();
-                                                        if(resp['type']=='error'){
-                                                          WarningSuccessDialog().show(
-                                                                      navigatorKey.currentContext!,
-                                                                      title: '${resp['msg']}',
-                                                                      tipo: 1,
-                                                                      onOkay: () {},
-                                                                    );
-                                                          return;
-                                                        } 
-
-                                                        if(resp['allow']==0){
-                                                          if(abc.data!.trips![1].actualTravel!.tripType!='Salida'){
-                                                            
-                                                            LoadingIndicatorDialog().dismiss();
-                                                            WarningSuccessDialog().show(
-                                                                      navigatorKey.currentContext!,
-                                                                      title: '${resp['msg']}',
-                                                                      tipo: 1,
-                                                                      onOkay: () {},
-                                                                    );
-                                                            return;
                                                           
-                                                          }else{
-                                                          if(resp['msg']=='Agente no se encuentra registrado en este viaje.'){
-                                                            LoadingIndicatorDialog().dismiss();
-                                                            confirmationDialog.show(
-                                                                          context,
-                                                                          title: 'Agente no se encuentra registrado en este viaje. Desea agregarlo al viaje?',
-                                                                          type: "0",
-                                                                          onConfirm: () async {
-                                                                        
-                                                                loadingDialog.show(navigatorKey.currentContext!);
-
-                                                                 Map datas = {
-                                                                  "companyId": abc.data!.trips![1].actualTravel!.companyId.toString(),
-                                                                  "agentEmployeeId": codigoQR
-                                                                };
-
-                                                                http.Response responsed =
-                                                                    await http.post(Uri.parse('$ip/apis/searchAgent'), body: datas);
-                                                                final data1 = Search.fromJson(json.decode(responsed.body));
-
-
-                                                                if(data1.agent!.msg!=null){
-                                                                  loadingDialog.dismiss();
-
-                                                                  if(data1.ok==true){
-                                                                    confirmationDialog.dismiss();
-                                                                    WarningSuccessDialog().show(
-                                                                      navigatorKey.currentContext!,
-                                                                      title: '${data1.agent!.msg!}',
-                                                                      tipo: 1,
-                                                                      onOkay: () {},
-                                                                    );
-
-                                                                    return;
-                                                                  }
+                                                            await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
+                                                              
+                                                            Map data2 = {
+                                                              "Agentes": [
+                                                                {
+                                                                  "agenteN": itemAbordaje.trips![0].tripAgent![indexP].agentFullname,
+                                                                  "agenteId": itemAbordaje.trips![0].tripAgent![indexP].agentId.toString(),
+                                                                  "Estado": "CONFIRMADO"
                                                                 }
-
-                                                                Map datas2 = {
-                                                                  "agentId": data1.agent!.agentId.toString(),
-                                                                  "tripId": abc.data!.trips![1].actualTravel!.tripId.toString(),
-                                                                  "tripHour": abc.data!.trips![1].actualTravel!.tripHour.toString()
-                                                                };
-
-                                                                final sendDatas = await http.post(Uri.parse('$ip/apis/registerAgentTripEntryByDriver'),body: datas2);
-
-                                                                final dataR = json.decode(sendDatas.body);
-
-                                                                if(dataR['type']=='error'){
-                                                                  loadingDialog.dismiss();
-                                                                  
-                                                                  if(mounted){
-                                                                    confirmationDialog.dismiss();
-                                                                    Navigator.pop(navigatorKey.currentContext!);
-                                                                   WarningSuccessDialog().show(
-                                                                      navigatorKey.currentContext!,
-                                                                      title: '${dataR['message']}',
-                                                                      tipo: 1,
-                                                                      onOkay: () {},
-                                                                    );
-                                                                  }
-
-                                                                return;
-
-                                                                }else{
-
-                                                                  var itemAbordaje = await fetchAgentsTripInProgress();
-
-                                                                  int indexP = await addAgente(resp['agentId'], itemAbordaje);
-                                                                  abc.data!.trips![0].tripAgent=itemAbordaje.trips![0].tripAgent;
-
-                                                                  fetchRegisterCommentAgent(
-                                                                    abc.data!.trips![0].tripAgent![indexP].agentId.toString(),
-                                                                    prefs.tripId,
-                                                                    ''
-                                                                  ); 
-
-
-                                                                  Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-  
-                                                                  traveled = !traveled;
-                                                                  abc.data!.trips![0].tripAgent![indexP].traveled = traveled;
-                                                                  
-                                                                  Map data =   {
-                                                                    'agentId':data1.agent!.agentId.toString(), 
-                                                                    'tripId':abc.data!.trips![1].actualTravel!.tripId.toString(),
-                                                                    'latitude':position.latitude.toString(),
-                                                                    'longitude':position.longitude.toString(),
-                                                                    'actionName':'Abordaje'
-                                                                  };
-                                                                
-                                                                  await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
-                                                                    
-                                                                  Map data2 = {
-                                                                    "Agentes": [
-                                                                      {
-                                                                        "agenteN": itemAbordaje.trips![0].tripAgent![indexP].agentFullname,
-                                                                        "agenteId": itemAbordaje.trips![0].tripAgent![indexP].agentId.toString(),
-                                                                        "Estado": "CONFIRMADO"
-                                                                      }
-                                                                    ]                                                               
-                                                                  };
-                                                                  
-                                                                  String sendData2 = json.encode(data2);
-                                                                  await http.put(Uri.parse('https://apichat.smtdriver.com/api/salas/Tripid/${abc.data!.trips![1].actualTravel!.tripId.toString()}'), body: sendData2, headers: {"Content-Type": "application/json"});
-                                                                 
-                                                                  loadingDialog.dismiss();
-                                                                  if(mounted){
-                                                                    confirmationDialog.dismiss();
-                                                                    Navigator.push(navigatorKey.currentContext!,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
-
-                                                                    WarningSuccessDialog().show(
-                                                                      navigatorKey.currentContext!,
-                                                                      title: 'Se agrego el agente ${itemAbordaje.trips![0].tripAgent![indexP].agentFullname} al viaje.',
-                                                                      tipo: 2,
-                                                                      onOkay: () {},
-                                                                    );
-                                                                    
-                                                                  } 
-                                                                }
-                                                                
-                                                              },
-                                                            onCancel: () {},
-                                                            );   
-                                                          return;
-                                                          }else{
+                                                              ]                                                               
+                                                            };
+                                                            
+                                                            String sendData2 = json.encode(data2);
+                                                            await http.put(Uri.parse('https://apichat.smtdriver.com/api/salas/Tripid/${abc.data!.trips![1].actualTravel!.tripId.toString()}'), body: sendData2, headers: {"Content-Type": "application/json"});
+                                                           
                                                             LoadingIndicatorDialog().dismiss();
-                                                            WarningSuccessDialog().show(
-                                                                      navigatorKey.currentContext!,
-                                                                      title: '${resp['msg']}',
-                                                                      tipo: 1,
-                                                                      onOkay: () {},
-                                                                    );
-                                                            return;
+                                                            if(mounted){
+                                                              Navigator.pop(navigatorKey.currentContext!);
+                                                              Navigator.push(navigatorKey.currentContext!,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
+              
+                                                              WarningSuccessDialog().show(
+                                                                context,
+                                                                title: "Se agrego el agente ${itemAbordaje.trips![0].tripAgent![indexP].agentFullname} al viaje.",
+                                                                tipo: 2,
+                                                                onOkay: () {},
+                                                              );  
+                                                              
+                                                            } 
                                                           }
-                                                        }
-                                                        }
-                                    
-
-                                    int index = 0;
-
-                                    for (int i = 0; i < abc.data!.trips![0].tripAgent!.length; i++) {  
-                                      if(abc.data!.trips![0].tripAgent![i].agentId==resp['agentId']){
-
-                                        if(abc.data!.trips![0].tripAgent![i].traveled == 1){
-                                          traveled = true;
-                                        }else{
-                                          traveled = false;
-                                        }
-                                        index = i;
-                                      }
-                                    }
-
-                                    LoadingIndicatorDialog().dismiss();
-                                    confirmationDialog.show(
-                                      context,
-                                      title: traveled==true ?"¿Está seguro que desea marcar como no \nabordado al agente ${abc.data!.trips![0].tripAgent![index].agentFullname}?":"¿Está seguro que desea marcar como \nabordado al agente ${abc.data!.trips![0].tripAgent![index].agentFullname}?",
-                                      type: "0",
-                                      onConfirm: () async {
-                                        confirmationDialog.dismiss();
-
-                                        loadingDialog.show(context);
-                                        if(traveled==false && abc.data!.trips![0].tripAgent![index].didntGetOut==1){
-                                          abc.data!.trips![0].tripAgent![index].didntGetOut=0;
-                                          fetchRegisterCommentAgent(
-                                            abc.data!.trips![0].tripAgent![index].agentId.toString(),
-                                            prefs.tripId,
-                                            'No abordó'
-                                          );  
-                                          waypointsAbordados.removeWhere((element) => element == abc.data!.trips![0].tripAgent![index].agentId.toString());
-                                          totalAbordado--;
-                                          }
-
-                                          if(abc.data!.trips![0].tripAgent![index].commentDriver=="Canceló transporte"){
-                                            abc.data!.trips![0].tripAgent![index].commentDriver="";
-
-                                            fetchRegisterCommentAgent(
-                                              abc.data!.trips![0].tripAgent![index].agentId.toString(),
-                                              prefs.tripId,
-                                              ''
-                                            );   
-                                          }
-                                          Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    
-                                          traveled = !traveled;
-                                          abc.data!.trips![0].tripAgent![index].traveled = traveled;
-                                          
-                                          Map data =   {
-                                            'agentId':abc.data!.trips![0].tripAgent![index].agentId.toString(), 
-                                            'tripId':tripId.toString(),
-                                            'latitude':position.latitude.toString(),
-                                            'longitude':position.longitude.toString(),
-                                            'actionName':'Abordaje'
-                                          };
-
-                                          http.Response response2 = await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
-                                          final resp2 = json.decode(response2.body);
-
-                                          loadingDialog.dismiss();
-                                          
-
-                                          WarningSuccessDialog().show(
-                                                                        navigatorKey.currentContext!,
-                                                                        title: "El agente ${abc.data!.trips![0].tripAgent![index].agentFullname} ha abordado.",
-                                                                        tipo: 2,
-                                                                        onOkay: () {},
-                                                                      );
-                                        abc.data!.trips![0].tripAgent![index].commentDriver='';
-                                        totalAbordado++;
-                                        waypointsAbordados.add(abc.data!.trips![0].tripAgent![index].agentId.toString());
-                                        setState(() { });
-                                      },
-                                    onCancel: () {},
-                                  );  
-                                
+              
+                                                        },
+                                                        onCancelBtnTap: () {
+                                                          Navigator.pop(navigatorKey.currentContext!);
+                                                        },
+                                                      );
+                                                    return;
+                                                    }else{
+                                                      LoadingIndicatorDialog().dismiss();
+                                                      WarningSuccessDialog().show(
+                                                        context,
+                                                        title: "${resp['msg']}",
+                                                        tipo: 1,
+                                                        onOkay: () {},
+                                                      ); 
+                                                      return;
+                                                    }
+                                                  }
+                                                  }
+                          
+              
+                          int index = 0;
+              
+                          for (int i = 0; i < abc.data!.trips![0].tripAgent!.length; i++) {  
+                                if(abc.data!.trips![0].tripAgent![i].agentId==resp['agentId']){
+              
+                                  if(abc.data!.trips![0].tripAgent![i].traveled == 1){
+                                    traveled = true;
+                                  }else{
+                                    traveled = false;
                                   }
+                                  index = i;
                                 }
-                              }
+                          }
+              
+                          LoadingIndicatorDialog().dismiss();
+                          QuickAlert.show(
+                                context: navigatorKey.currentContext!,
+                                type: QuickAlertType.confirm,
+                                title: traveled==true ?'No abordó':'Abordó',
+                                text: traveled==true ?"¿Está seguro que desea marcar como no \nabordado al agente ${abc.data!.trips![0].tripAgent![index].agentFullname}?":"¿Está seguro que desea marcar como \nabordado al agente ${abc.data!.trips![0].tripAgent![index].agentFullname}?",
+                                confirmBtnText: 'Confirmar',
+                                cancelBtnText: 'Cancelar',
+                                showCancelBtn: true,  
+                                confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
+                                cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ),
+                                onConfirmBtnTap: () async{
+              
+                                  Navigator.pop(navigatorKey.currentContext!);
+              
+                                  LoadingIndicatorDialog().show(context);
+                                  if(traveled==false && abc.data!.trips![0].tripAgent![index].didntGetOut==1){
+                                    abc.data!.trips![0].tripAgent![index].didntGetOut=0;
+                                    fetchRegisterCommentAgent(
+                                    abc.data!.trips![0].tripAgent![index].agentId.toString(),
+                                    prefs.tripId,
+                                    'No abordó'
+                                  );  
+                                  waypointsAbordados.removeWhere((element) => element == abc.data!.trips![0].tripAgent![index].agentId.toString());
+                                  totalAbordado--;
+                                  }
+              
+                                  if(abc.data!.trips![0].tripAgent![index].commentDriver=="Canceló transporte"){
+                                    abc.data!.trips![0].tripAgent![index].commentDriver="";
+              
+                                    fetchRegisterCommentAgent(
+                                      abc.data!.trips![0].tripAgent![index].agentId.toString(),
+                                      prefs.tripId,
+                                      ''
+                                    );   
+                                  }
+                                  Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+                
+                                  traveled = !traveled;
+                                  abc.data!.trips![0].tripAgent![index].traveled = traveled;
+                                  
+                                  Map data =   {
+                                    'agentId':abc.data!.trips![0].tripAgent![index].agentId.toString(), 
+                                    'tripId':tripId.toString(),
+                                    'latitude':position.latitude.toString(),
+                                    'longitude':position.longitude.toString(),
+                                    'actionName':'Abordaje'
+                                  };
+              
+                                  http.Response response2 = await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
+                                  final resp2 = json.decode(response2.body);
+              
+                                  LoadingIndicatorDialog().dismiss();
+                                  
+              
+                                  WarningSuccessDialog().show(
+                                    context,
+                                    title: "${resp2['title']}",
+                                    tipo: 2,
+                                    onOkay: () {},
+                                  ); 
+                                abc.data!.trips![0].tripAgent![index].commentDriver='';
+                                totalAbordado++;
+                                waypointsAbordados.add(abc.data!.trips![0].tripAgent![index].agentId.toString());
+                                setState(() { });
+                                },
+                                onCancelBtnTap: () {
+                                  Navigator.pop(navigatorKey.currentContext!);
+                                },
+                          );
+                      
+                        }
+                      }
+                    },
+                child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(10.0),
+                              border: Border.all(
+                                color: Theme.of(context).primaryColorDark,
+                                width: 1
+                              )
+                            ),
+                            width: 190,
+                            child: Row(
+                              children: [
+                                IconButton(
+                                  icon: SvgPicture.asset(  
+                                            "assets/icons/QR.svg",
+                                            color: Theme.of(context).primaryColorDark,
+                                          ),
+                                  onPressed: null
+                                ),
+              
+                                SizedBox(width: 5),
+                                Text(
+                                  'Escanear Agente',
+                                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
+                                )
+                              ],
                             ),
                           ),
-                        ],
-                      ),
-                    ],
+              ),
+              SizedBox(width: 5),
+              GestureDetector(
+                onTap: (){
+                  WarningSuccessDialog().show(
+                    navigatorKey.currentContext!,
+                    title: "Debe marcar el abordaje al momento de que el agente ingrese a la unidad, en caso de no abordar, solo debe presionar que no abordó",
+                    tipo: 3,
+                    onOkay: () {},
+                  );
+                },
+                child: Container(
+                  padding: EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color:  Theme.of(context).focusColor, width: 2.0), // Borde blanco
+                  ),
+                  child: SvgPicture.asset(
+                    "assets/icons/info.svg",
+                    color: Theme.of(context).focusColor,
+                    height: 14,
+                    width: 14,
                   ),
                 ),
+              )
             ],
           );
         } else {
@@ -1357,11 +1027,10 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                       color: Theme.of(context).primaryColorDark,
                                     ),
                             onPressed: vehicleL==false?null:() async{
-                              setRecargar(-1);
                               String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);
                     
                               if (codigoQR == "-1") {
-                                setRecargar(0);
+
                                 return;
                               } else {
                                 LoadingIndicatorDialog().show(context);
@@ -1384,7 +1053,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                     );
                                   }
                                 }
-                                setRecargar(0);
                               }
                             }
                           ),
@@ -1396,17 +1064,20 @@ class _DataTableExample extends State<MyConfirmAgent> {
                           ),
                         if (data?.driverType != 'Motorista')
                           Container(
-                            decoration: BoxDecoration(
-                              color: firstColor,
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            child: IconButton(
-                                icon: Icon(Icons.save_outlined),
-                                color: backgroundColor,
-                                iconSize: 30.0,
-                                onPressed: vehicleL == false
-                                    ? null
-                                    : () async {
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(10.0),
+                          border: Border.all(
+                            color: Theme.of(context).primaryColorDark,
+                            width: 1
+                          )
+                        ),
+                        child: IconButton(
+                          icon: SvgPicture.asset(  
+                                    "assets/icons/Guardar.svg",
+                                    color: Theme.of(context).primaryColorDark,
+                                  ),
+                          onPressed: vehicleL==false?null:() async{
                                         LoadingIndicatorDialog()
                                             .show(context);
                                         http.Response responses =
@@ -1452,8 +1123,9 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                       onOkay: () {},
                                                                     );
                                         }
-                                      }),
-                          ),
+                                      }
+                        ),
+                      ),
                       ],
                     ),
                   ],
@@ -1551,11 +1223,11 @@ class _DataTableExample extends State<MyConfirmAgent> {
                     if (mounted) {
                       Navigator.pop(context);
                       WarningSuccessDialog().show(
-                                                                      navigatorKey.currentContext!,
-                                                                      title: '${resp2['message']}',
-                                                                      tipo: 2,
-                                                                      onOkay: () {},
-                                                                    );
+                        context,
+                        title: "$resp2['message']}",
+                        tipo: 2,
+                        onOkay: () {},
+                      ); 
                       setState(() {
                         tripVehicle =
                             "${resp['vehicle']['name']} [${resp['vehicle']['registrationNumber']}]";
@@ -1564,11 +1236,11 @@ class _DataTableExample extends State<MyConfirmAgent> {
                     }
                   } else {
                     WarningSuccessDialog().show(
-                                                                      navigatorKey.currentContext!,
-                                                                      title: '${resp2['message']}',
-                                                                      tipo: 1,
-                                                                      onOkay: () {},
-                                                                    );
+                        context,
+                        title: "$resp2['message']}",
+                        tipo: 1,
+                        onOkay: () {},
+                      ); 
                   }
                 },
                 child: Text('Agregar',
@@ -1615,12 +1287,19 @@ class _DataTableExample extends State<MyConfirmAgent> {
     }
 
     alertaAbordo(abc, index, isChecked)async{
-      await confirmationDialog.show(
-                                      context,
-                                      title: isChecked==false ?"¿Está seguro que desea marcar como no \nabordado al agente?":"¿Está seguro que desea marcar como \nabordado al agente?",
-                                      type: "0",
-                                      onConfirm: () async {
-                                        if(traveled==false && abc.data!.trips![0].tripAgent![index].didntGetOut==1){
+      await QuickAlert.show(
+        context: context,
+        type: QuickAlertType.confirm,          
+        text: isChecked==false ?"¿Está seguro que desea marcar como no \nabordado al agente?":"¿Está seguro que desea marcar como \nabordado al agente?",
+        confirmBtnText: "Confirmar",
+        cancelBtnText: "Cancelar",
+        title: isChecked==false ?'No abordó':'Abordó',
+        showCancelBtn: true,  
+        confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
+        cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
+        onConfirmBtnTap: () {
+
+          if(traveled==false && abc.data!.trips![0].tripAgent![index].didntGetOut==1){
             abc.data!.trips![0].tripAgent![index].didntGetOut=0;
             fetchRegisterCommentAgent(
             abc.data!.trips![0].tripAgent![index].agentId.toString(),
@@ -1661,23 +1340,31 @@ class _DataTableExample extends State<MyConfirmAgent> {
               'No abordó'
             );  
           }
-          confirmationDialog.dismiss();
-          setState(() {});
-                                      },
-                                    onCancel: () {},
-                                  );  
+          Navigator.pop(context);
+        },
+        onCancelBtnTap: () {
+          Navigator.pop(context);
+        },
+      ); 
       
       setState(() {});
     }
 
     // ignore: non_constant_identifier_names
     alertaPaso_noSalio(abc, index) async {
-      await confirmationDialog.show(
-        context,
-        title: '¿Está seguro que desea marcar como no salio el agente?',
-        type: "0",
-        onConfirm: () async {
-          loadingDialog.show(context);
+      await QuickAlert.show(
+        context: context,
+        type: QuickAlertType.confirm,
+        text: "¿Está seguro que desea marcar como no salio el agente?",
+        confirmBtnText: "Confirmar",
+        cancelBtnText: "Cancelar",
+        title: '¿Está seguro?',
+        showCancelBtn: true,
+        confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
+        cancelBtnTextStyle: TextStyle(
+            color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
+        onConfirmBtnTap: () async {
+          LoadingIndicatorDialog().show(context);
           //fetchRegisterAgentDidntGetOut(abc.data!.trips![0].tripAgent![index].agentId.toString(),prefs.tripId);
           Position position = await Geolocator.getCurrentPosition(
               desiredAccuracy: LocationAccuracy.high);
@@ -1694,7 +1381,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                   'https://driver.smtdriver.com/apis/agents/registerTripAction'),
               body: data);
 
-          loadingDialog.dismiss();
+          LoadingIndicatorDialog().dismiss();
 
           abc.data!.trips![0].tripAgent![index].didntGetOut = 1;
           if (abc.data!.trips![0].tripAgent![index].traveled = traveled) {
@@ -1707,20 +1394,29 @@ class _DataTableExample extends State<MyConfirmAgent> {
             abc.data!.trips![0].tripAgent![index].commentDriver =
                 "Pasé por él (ella) y no salió";
           }
-          confirmationDialog.dismiss();
+          Navigator.pop(context);
         },
-        onCancel: () {},
-      ); 
+        onCancelBtnTap: () {
+          Navigator.pop(context);
+        },
+      );
 
       setState(() {});
     }
 
     alertaCancelo(abc, index) async {
-      await confirmationDialog.show(
-        context,
-        title: "¿Está seguro que desea marcar como canceló transporte?",
-        type: "0",
-        onConfirm: () async {
+      await QuickAlert.show(
+        context: context,
+        type: QuickAlertType.confirm,
+        text: "¿Está seguro que desea marcar como canceló transporte?",
+        confirmBtnText: "Confirmar",
+        cancelBtnText: "Cancelar",
+        title: '¿Está seguro?',
+        showCancelBtn: true,
+        confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
+        cancelBtnTextStyle: TextStyle(
+            color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
+        onConfirmBtnTap: () {
           fetchRegisterCommentAgent(
               abc.data!.trips![0].tripAgent![index].agentId.toString(),
               prefs.tripId,
@@ -1741,10 +1437,12 @@ class _DataTableExample extends State<MyConfirmAgent> {
             abc.data!.trips![0].tripAgent![index].commentDriver =
                 'Canceló transporte';
           });
-          confirmationDialog.dismiss();
+          Navigator.pop(context);
         },
-        onCancel: () {},
-      );  
+        onCancelBtnTap: () {
+          Navigator.pop(context);
+        },
+      );
 
       setState(() {});
     }
@@ -1898,11 +1596,11 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                           onTap: () {
                                             if (abc.data!.trips![0].tripAgent![index].latitude==null) {
                                               WarningSuccessDialog().show(
-                                                                      navigatorKey.currentContext!,
-                                                                      title: 'Este agente no cuenta con ubicación',
-                                                                      tipo: 1,
-                                                                      onOkay: () {},
-                                                                    );
+                                                context,
+                                                title: "Este agente no cuenta con ubicación",
+                                                tipo: 1,
+                                                onOkay: () {},
+                                              ); 
                                             }else{
                                               launchSalidasMaps(abc.data!.trips![0].tripAgent![index].latitude,abc.data!.trips![0].tripAgent![index].longitude);                                          
                                             }
@@ -2321,11 +2019,11 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                           onTap: () {
                                             if (abc.data!.trips![0].tripAgent![index].latitude==null) {
                                               WarningSuccessDialog().show(
-                                                                      navigatorKey.currentContext!,
-                                                                      title: 'Este agente no cuenta con ubicación',
-                                                                      tipo: 1,
-                                                                      onOkay: () {},
-                                                                    );
+                                                context,
+                                                title: "Este agente no cuenta con ubicación",
+                                                tipo: 1,
+                                                onOkay: () {},
+                                              ); 
                                             }else{
                                               waypoints.clear();
                                               waypoints.add('${abc.data!.trips![0].tripAgent![index].latitude},${abc.data!.trips![0].tripAgent![index].longitude}');
@@ -2743,8 +2441,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                               if(check[index].text.isEmpty){
                                                                                 Navigator.pop(context),
                                                                                 WarningSuccessDialog().show(
-                                                                                  navigatorKey.currentContext!,
-                                                                                  title: 'No puede ir vacío la observación',
+                                                                                  context,
+                                                                                  title: "No puede ir vacío la observación",
                                                                                   tipo: 1,
                                                                                   onOkay: () {},
                                                                                 ),
@@ -2932,17 +2630,18 @@ class _DataTableExample extends State<MyConfirmAgent> {
               permiso = await checkLocationPermission();
               if (!permiso!) {
                 WarningSuccessDialog().show(
-                                                          navigatorKey.currentContext!,
-                                                          title: 'Usted negó el acceso a la ubicación. Esto es necesario para poder abordar agentes. Si no da acceso en configuraciones, no podrá abordar agentes.',
-                                                          tipo: 1,
-                                                          onOkay: () {
-                                                            try {
-                                                              AppSettings.openLocationSettings();
-                                                              } catch (error) {
-                                                                print(error);
-                                                              }
-                                                          },
-                                                        );
+                                    context,
+                                    title: "Usted negó el acceso a la ubicación. Esto es necesario para poder abordar agentes. Si no da acceso en configuraciones, no podrá abordar agentes.",
+                                    tipo: 1,
+                                    onOkay: () async {
+                                      Navigator.pop(context);
+                                      try {
+                                        AppSettings.openLocationSettings();
+                                      } catch (error) {
+                                        print(error);
+                                      }
+                                    },
+                                  ); 
                 return;
               }
 
@@ -3009,27 +2708,39 @@ class _DataTableExample extends State<MyConfirmAgent> {
                     fontWeight: FontWeight.bold,
                     fontSize: 15)),
             onPressed: () {
-              confirmationDialog.show(
-                context,
-                title: "¿Está seguro que desea completar el viaje?",
-                type: "0",
-                onConfirm: () async {
-                  confirmationDialog.dismiss();
+              QuickAlert.show(
+                context: context,
+                type: QuickAlertType.success,
+                title: "Completar viaje",
+                text: "¿Está seguro que desea completar el viaje?",
+                confirmBtnText: "Confirmar",
+                cancelBtnText: "Cancelar",
+                showCancelBtn: true,
+                confirmBtnTextStyle:
+                    TextStyle(fontSize: 15, color: Colors.white),
+                cancelBtnTextStyle: TextStyle(
+                    color: Colors.red,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold),
+                onConfirmBtnTap: () {
+                  Navigator.pop(context);
 
                   if (tripVehicle == '') {
                     WarningSuccessDialog().show(
-                      navigatorKey.currentContext!,
-                      title: 'Tiene que ingresar un vehiculo.',
+                      context,
+                      title: "Tiene que ingresar un veiculo",
                       tipo: 1,
                       onOkay: () {},
-                   );
+                    );
                     return;
                   }
-                  loadingDialog.show(context);
+                  LoadingIndicatorDialog().show(context);
                   fetchRegisterTripCompleted();
                 },
-                onCancel: () {},
-              ); 
+                onCancelBtnTap: () {
+                  Navigator.pop(context);
+                },
+              );
             },
           ),
         ),
