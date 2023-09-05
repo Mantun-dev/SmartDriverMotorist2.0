@@ -101,6 +101,9 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
   var tripVehicle = '';
   bool vehicleL = false;
+  bool cargarInfoViaje = false;
+  bool cargarL = false;
+  bool cargarTotal = false;
 
   Future<Message> fetchCheckAgentTrip(String agentId) async {
     int flag = (traveled) ? 1 : 0;
@@ -143,6 +146,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
         totalNoAbordado++;
       }
     }
+    cargarTotal = true;
+    setState(() {});
 
   }
 
@@ -401,6 +406,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
         },
 
         waypoints.add('$lat,$long'),
+        cargarL = true,
         setState(() {})
       }else{
         latidudeFinal = lat,
@@ -412,6 +418,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
           waypoints.add('${value.trips![0].tripAgent![i].latitude},${value.trips![0].tripAgent![i].longitude}')
         },
         //waypoints.add('$lat,$long'),
+        cargarL = true,
         setState(() {
           //print(waypoints);
         })
@@ -518,6 +525,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
     if (mounted) {
       if (infoViaje[3]['viajeActual']['tripVehicle'] != null) {
+        cargarInfoViaje=true;
         setState(() {
           tripVehicle = infoViaje[3]['viajeActual']['tripVehicle'];
           vehicleL = true;
@@ -525,7 +533,9 @@ class _DataTableExample extends State<MyConfirmAgent> {
           tripId = infoViaje[3]['viajeActual']['tripId'];
         });
       } else {
+        cargarInfoViaje=true;
         setState(() {
+          
           tripVehicle = '';
           vehicleL = true;
           vehicleController.text = tripVehicle;
@@ -563,6 +573,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
   }
 
   Widget body() {
+
+    if(cargarInfoViaje == true && cargarL == true && cargarTotal == true)
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: SingleChildScrollView(
@@ -602,6 +614,33 @@ class _DataTableExample extends State<MyConfirmAgent> {
         ),
       )
     );
+    else return WillPopScope(
+                      onWillPop: () async => false,
+                      child: SimpleDialog(
+                        elevation: 20,
+                        backgroundColor: Theme.of(context).cardColor,
+                        children: [
+                          Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.only(left: 16, top: 16, right: 16),
+                                  child: CircularProgressIndicator(),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Text(
+                                    'Cargando...', 
+                                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18),
+                                    ),
+                                )
+                              ],
+                            ),
+                          )
+                        ] ,
+                      ),
+                    );
   }
 
   Widget escanearAgente() {
