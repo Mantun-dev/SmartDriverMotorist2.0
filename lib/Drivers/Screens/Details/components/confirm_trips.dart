@@ -221,8 +221,9 @@ class _DataTableExample extends State<MyConfirmAgent> {
     //throw Exception('Failed to load Data');
   }
 
-  Future<Driver> fetchRegisterCommentAgent(
+  Future<bool> fetchRegisterCommentAgent(
       String agentId, String tripId, String comment) async {
+        LoadingIndicatorDialog().show(context);
     Map datas = {'agentId': agentId, 'tripId': tripId};
     Map datas2 = {
       'agentId': agentId,
@@ -235,16 +236,19 @@ class _DataTableExample extends State<MyConfirmAgent> {
     final si = Driver.fromJson(json.decode(responses.body));
       await http.post(Uri.parse('$ip/apis/agentTripSetComment'), body: datas2);
 
+    LoadingIndicatorDialog().dismiss();
     if (responses.statusCode == 200 &&
         si.ok == true &&
         responses.statusCode == 200) {
+
       WarningSuccessDialog().show(
         context,
         title: "${si.message}",
         tipo: 2,
         onOkay: () {},
       );
-      Navigator.pop(context);
+      
+      return true;
     } else if (si.ok != true) {
       WarningSuccessDialog().show(
         context,
@@ -253,7 +257,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
         onOkay: () {},
       );
     }
-    return Driver.fromJson(json.decode(responses.body));
+    return false;
   }
 
   Future<Driver> fetchRegisterAgentDidntGetOut(
@@ -1493,6 +1497,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
         cancelBtnTextStyle: TextStyle(
             color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
         onConfirmBtnTap: () {
+          Navigator.pop(context);
           fetchRegisterCommentAgent(
               abc.data!.trips![0].tripAgent![index].agentId.toString(),
               prefs.tripId,
@@ -1513,7 +1518,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
             abc.data!.trips![0].tripAgent![index].commentDriver =
                 'Canceló transporte';
           });
-          Navigator.pop(context);
+          
         },
         onCancelBtnTap: () {
           Navigator.pop(context);
@@ -1937,114 +1942,123 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                       ), 
                                       SizedBox(height: 20.0),
                                       if(tipoViaje=='Entrada')...{
-              Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.spaceEvenly,
-              children: [
-                if (abc.data!.trips![0].tripAgent![index]
-                        .didntGetOut ==
-                    1) ...{
-                  Text('Se pasó pero no salió.',
-                      style: TextStyle(
-                          color: Colors.orangeAccent,
-                          fontWeight: FontWeight.normal,
-                          fontSize: 15))
-                } else ...{
-    
-                   Column(
-                      children: [
-                        Container(
-                          width: 150,
-                          height: 40,
-                          decoration:
-                              BoxDecoration(boxShadow: [
-                            BoxShadow(
-                                blurStyle:
-                                    BlurStyle.normal,
-                                color: Colors.white
-                                    .withOpacity(0.2),
-                                blurRadius: 15,
-                                spreadRadius: -10,
-                                offset: Offset(-15, -6)),
-                            BoxShadow(
-                                blurStyle:
-                                    BlurStyle.normal,
-                                color: Colors.black
-                                    .withOpacity(0.6),
-                                blurRadius: 30,
-                                spreadRadius: -15,
-                                offset: Offset(18, 5)),
-                          ]),
-                          child: TextButton(
-                            style: TextButton.styleFrom(
-                              textStyle: TextStyle(
-                                  color: Colors.white),
-                              backgroundColor: Colors.red,
-                              shape:
-                                  RoundedRectangleBorder(
-                                      side: BorderSide(
-                                          style:
-                                              BorderStyle
-                                                  .none),
-                                      borderRadius:
-                                          BorderRadius
-                                              .circular(
-                                                  20)),
-                            ),
-                            onPressed: () {
-                              alertaPaso_noSalio(abc, index);
-                            },
-                            child:
-                                Text('Se pasó y no salió',
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      color: Colors.white,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                    )),
-                          ),
-                        ),
-                      ],
-                    ),
-    
-                },
-                Column(
-                  children: [
-                    Container(
-                      width: 150,
-                      height: 40,
-                      decoration:
-                          BoxDecoration(boxShadow: [
-                        BoxShadow(
-                            blurStyle: BlurStyle.normal,
-                            color: Colors.white
-                                .withOpacity(0.2),
-                            blurRadius: 15,
-                            spreadRadius: -10,
-                            offset: Offset(-15, -6)),
-                        BoxShadow(
-                            blurStyle: BlurStyle.normal,
-                            color: Colors.black
-                                .withOpacity(0.6),
-                            blurRadius: 30,
-                            spreadRadius: -15,
-                            offset: Offset(18, 5)),
-                      ]),
-                      child: TextButton(
-                        style: TextButton.styleFrom(
-                          textStyle: TextStyle(
-                              color: backgroundColor),
-                          // foreground
-                          backgroundColor: firstColor,
-                          shape: RoundedRectangleBorder(
-                              side: BorderSide(
-                                  style:
-                                      BorderStyle.none),
-                              borderRadius:
-                                  BorderRadius.circular(
-                                      20)),
-                        ),
-                        onPressed: () async {
+             
+              TextButton(
+                                        style: TextButton.styleFrom(
+                                          side: BorderSide(width: 1, color: Theme.of(context).primaryColorDark),
+                                          fixedSize: Size(150, 25),
+                                          elevation: 0,
+                                          backgroundColor: Colors.transparent,
+                                          shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
+                                        ),
+                                        onPressed: () async{
+
+                                          Size size = MediaQuery.of(context).size;
+                                          showGeneralDialog(
+                                            barrierColor: Colors.black.withOpacity(0.6),
+                                            transitionBuilder: (context, a1, a2, widget) {
+                                              final curvedValue = Curves.easeInOut.transform(a1.value);
+                                              return Transform.translate(
+                                                offset: Offset(0.0, (1 - curvedValue) * size.height / 2),
+                                                child: Opacity(
+                                                  opacity: a1.value,
+                                                  child: Align(
+                                                    alignment: Alignment.bottomCenter,
+                                                    child: Container(
+                                                      height: size.height/3,
+                                                      width: size.width,
+                                                      decoration: BoxDecoration(
+                                                        color: prefs.tema ? Color.fromRGBO(47, 46, 65, 1) : Colors.white,
+                                                        borderRadius: BorderRadius.only(
+                                                          topLeft: Radius.circular(30.0),
+                                                          topRight: Radius.circular(30.0),
+                                                        ),
+                                                      ),
+                                                      child: Padding(
+                                                        padding: const EdgeInsets.symmetric(horizontal: 30),
+                                                        child: SingleChildScrollView(
+                                                          child: Column(
+                                                            children: [
+                                                              Padding(
+                                                                      padding: const EdgeInsets.only(right: 120, left: 120, top: 15, bottom: 20),
+                                                                      child: GestureDetector(
+                                                                        onTap: () => Navigator.pop(context),
+                                                                        child: Container(
+                                                                          decoration: BoxDecoration(
+                                                                            color: Theme.of(navigatorKey.currentContext!).dividerColor,
+                                                                            borderRadius: BorderRadius.circular(80)
+                                                                          ),
+                                                                          height: 6,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                              
+                                                              GestureDetector(
+                                                                onTap: () => alertaPaso_noSalio(abc, index),
+                                                                child: Row(
+                                                                  children: [
+                                                                    SizedBox(width: size.width/4.8),
+                                                                    Container(
+                                                                      width: 16,
+                                                                      height: 16,
+                                                                      decoration: BoxDecoration(
+                                                                        shape: BoxShape.circle,
+                                                                        border: Border.all(color: Theme.of(navigatorKey.currentContext!).primaryIconTheme.color!, width: 1),
+                                                                      ),
+                                                                      child: Center(
+                                                                        child: Container(
+                                                                          width: 9,
+                                                                          height: 9,
+                                                                          decoration: BoxDecoration(
+                                                                            shape: BoxShape.circle,
+                                                                            color: abc.data!.trips![0].tripAgent![index].commentDriver == 'Pasé por él (ella) y no salió'? Theme.of(navigatorKey.currentContext!).primaryIconTheme.color!: Colors.transparent,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    SizedBox(width: 5),
+                                                                    Text(
+                                                                      'Se pasó y no salió',
+                                                                      style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 20),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                              SizedBox(height: 20),
+                                                              GestureDetector(
+                                                                onTap: () => alertaCancelo(abc, index),
+                                                                child: Row(
+                                                                  children: [
+                                                                    SizedBox(width: size.width/4.8),
+                                                                    Container(
+                                                                      width: 16,
+                                                                      height: 16,
+                                                                      decoration: BoxDecoration(
+                                                                        shape: BoxShape.circle,
+                                                                        border: Border.all(color: Theme.of(navigatorKey.currentContext!).primaryIconTheme.color!, width: 1),
+                                                                      ),
+                                                                      child: Center(
+                                                                        child: Container(
+                                                                          width: 9,
+                                                                          height: 9,
+                                                                          decoration: BoxDecoration(
+                                                                            shape: BoxShape.circle,
+                                                                            color:abc.data!.trips![0].tripAgent![index].commentDriver == 'Canceló transporte'? Theme.of(navigatorKey.currentContext!).primaryIconTheme.color!: Colors.transparent,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    SizedBox(width: 5),
+                                                                    Text(
+                                                                      'Cancelo transporte',
+                                                                      style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 20),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                              SizedBox(height: 20),
+                                                              GestureDetector(
+                                                                onTap: () async {
                           http.Response response =
                               await http.get(Uri.parse(
                                   '$ip/apis/getDriverComment/${abc.data!.trips![0].tripAgent![index].agentId}/${abc.data!.trips![0].tripAgent![index].tripId}'));
@@ -2181,25 +2195,30 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                     textStyle: TextStyle(color: Colors.white), // foreground
                                                     backgroundColor: Gradiant2),
                                                 onPressed:
-                                                    () =>
+                                                    () async{
                                                         {
                                                           if(check2[index].text.isEmpty){
-                                                            Navigator.pop(context),
+                                                            Navigator.pop(context);
                                                             WarningSuccessDialog().show(
                                                               context,
                                                               title: "No puede ir vacío la observación",
                                                               tipo: 1,
                                                               onOkay: () {},
-                                                            ),
+                                                            );
                                                           }else{
-                                                          fetchRegisterCommentAgent(
+                                                            Navigator.pop(context);
+                                                            bool val = await fetchRegisterCommentAgent(
                                                               abc.data!.trips![0].tripAgent![index].agentId.toString(),
                                                               prefs.tripId,
-                                                              check2[index].text),
-                                                          Navigator.pop(
-                                                              context),
+                                                              check2[index].text
+                                                            );
+                                                              
+                                                            if(val)
+                                                              setState(() {
+                                                                abc.data!.trips![0].tripAgent![index].commentDriver = check2[index].text;
+                                                              });
                                                           }
-                                                },
+                                                }},
                                                 child: Text(
                                                     'Guardar',
                                                     style: TextStyle(
@@ -2258,80 +2277,83 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                 return Text('');
                               });
                         },
-                        child: Text('Observaciones',
-                            style: TextStyle(
-                              color: backgroundColor,
-                              fontWeight:
-                                  FontWeight.bold,
-                            )),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            SizedBox(height: 15.0),
+                                                                child: Column(
+                                                                  children: [
+                                                                    Row(
+                                                                      children: [
+                                                                        SizedBox(width: size.width/4.8),
+                                                                        Container(
+                                                                          width: 16,
+                                                                          height: 16,
+                                                                          decoration: BoxDecoration(
+                                                                            shape: BoxShape.circle,
+                                                                            border: Border.all(color: Theme.of(navigatorKey.currentContext!).primaryIconTheme.color!, width: 1),
+                                                                          ),
+                                                                          child: Center(
+                                                                            child: Container(
+                                                                              width: 9,
+                                                                              height: 9,
+                                                                              decoration: BoxDecoration(
+                                                                                shape: BoxShape.circle,
+                                                                                color: abc.data!.trips![0].tripAgent![index].commentDriver != 'Canceló transporte'? abc.data!.trips![0].tripAgent![index].commentDriver != 'Pasé por él (ella) y no salió'? Theme.of(navigatorKey.currentContext!).primaryIconTheme.color!: Colors.transparent: Colors.transparent,
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                        SizedBox(width: 5),
+                                                                        Text(
+                                                                          'Comentario',
+                                                                          style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 20),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+
+                                                                    if(abc.data!.trips![0].tripAgent![index].commentDriver != 'Canceló transporte' && abc.data!.trips![0].tripAgent![index].commentDriver != 'Pasé por él (ella) y no salió')...{
+                                                                    SizedBox(height: 10),
+                                                                    Container(
+                                                                      decoration: BoxDecoration(
+                                                                        borderRadius: BorderRadius.circular(10),
+                                                                        border: Border.all(
+                                                                          color: Theme.of(context).dividerColor,
+                                                                          width: 1
+                                                                        ) // Radio de la esquina
+                                                                      ),
+                                                                      child: Padding(
+                                                                        padding: const EdgeInsets.all(10),
+                                                                        child: Text(
+                                                                          abc.data!.trips![0].tripAgent![index].commentDriver == null ?'Sin comentario' :'${abc.data!.trips![0].tripAgent![index].commentDriver}',
+                                                                          style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 18),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  },
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                              
+                                                              SizedBox(height: 20),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                            transitionDuration: Duration(milliseconds: 200),
+                                            barrierDismissible: true,
+                                            barrierLabel: '',
+                                            context: context,
+                                            pageBuilder: (context, animation1, animation2) {
+                                              return widget;
+                                            },
+                                          );                               
+                                        },
+                                        child: Text('Observaciones',
+                                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold)),
+                                      ),
             
-            if (abc.data!.trips![0].tripAgent![index].commentDriver=='Canceló transporte') ...{
-              Text('Canceló transporte',
-                style: TextStyle(
-                  color: Colors.orangeAccent,
-                  fontWeight: FontWeight.normal,
-                  fontSize: 15
-                )
-              )
-            } else ...{
-              Container(
-                height: 40,
-                decoration:
-                BoxDecoration(boxShadow: [
-                  BoxShadow(
-                    blurStyle:
-                    BlurStyle.normal,
-                    color: Colors.white.withOpacity(0.2),
-                                blurRadius: 15,
-                                spreadRadius: -10,
-                                offset: Offset(-15, -6)),
-                            BoxShadow(
-                                blurStyle:
-                                    BlurStyle.normal,
-                                color: Colors.black
-                                    .withOpacity(0.6),
-                                blurRadius: 30,
-                                spreadRadius: -15,
-                                offset: Offset(18, 5)),
-                          ]),
-                          child: TextButton(
-                            style: TextButton.styleFrom(
-                              textStyle: TextStyle(
-                                  color: Colors.white),
-                              backgroundColor: Colors.red,
-                              shape:
-                                  RoundedRectangleBorder(
-                                      side: BorderSide(
-                                          style:
-                                              BorderStyle
-                                                  .none),
-                                      borderRadius:
-                                          BorderRadius
-                                              .circular(
-                                                  20)),
-                            ),
-                            onPressed: () {
-                              alertaCancelo(abc, index);
-                            },
-                            child:
-                                Text('Canceló transporte',
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      color: Colors.white,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                    )),
-                          ),
-                        ),
-              SizedBox(height: 20.0),
-            }
             }else
             Container(
               width: 150,
