@@ -14,6 +14,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:record/record.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import '../../../components/warning_dialog.dart';
@@ -729,11 +731,31 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                               ),
                               child: IconButton(
                                 onPressed: () async {
+                                  
                                   bool permiso= await checkAudioPermission();
                           
-                                  if(permiso){
+                                  if(permiso){                                   
                                     if(!activateMic){
-                                      startRecording();
+                                      await QuickAlert.show(
+                                        context: context,
+                                        type: QuickAlertType.confirm,
+                                        text: "¿Está seguro que desea grabar un audio?",
+                                        confirmBtnText: "Confirmar",
+                                        cancelBtnText: "Cancelar",
+                                        title: '¿Está seguro?',
+                                        showCancelBtn: true,
+                                        confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
+                                        cancelBtnTextStyle: TextStyle(
+                                            color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
+                                        onConfirmBtnTap: () async {
+                                          startRecording();
+                                          Navigator.pop(context);
+                                        },
+                                        onCancelBtnTap: () {
+                                          Navigator.pop(context);
+                                        },
+                                      );
+                                      
                                     }else{
                                       stopRecording();
                                     }
