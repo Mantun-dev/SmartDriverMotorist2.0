@@ -479,11 +479,14 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                             },
                                               child: Row(
                                                 children: [
-                                                  Container(
-                                                            width: 18,
-                                                            height: 18,
-                                                            child: Icon(Icons.location_on_outlined, color:abc.data!.trips![0].inTrip![index].latitude==null? Colors.red :Color.fromRGBO(0, 191, 95, 1)),
-                                                          ),
+                                                  Padding(
+                                                    padding: const EdgeInsets.only(bottom: 10),
+                                                    child: Container(
+                                                              width: 15,
+                                                              height: 15,
+                                                              child: Icon(Icons.location_on_outlined, color:abc.data!.trips![0].inTrip![index].latitude==null? Colors.red :Color.fromRGBO(0, 191, 95, 1)),
+                                                            ),
+                                                  ),
                                                           SizedBox(width: 10),
                                                           Flexible(
                                                             child: Text(
@@ -496,6 +499,10 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                               ),
                                             ),
                                           ),
+                                          Container(
+                                        height: 1,
+                                        color: Theme.of(context).dividerColor,
+                                      ),
                                 SizedBox(height: 20),
                                         Padding(
                                             padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),

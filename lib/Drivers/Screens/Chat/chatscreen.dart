@@ -351,9 +351,11 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                           context,
                           MaterialPageRoute(
                               builder: (context) => ChatPage(
-                                    tripId: this.widget.idV,
-                                    tipoViaje: this.widget.tipoViaje,
-                                  )));
+                                tripId: this.widget.idV,
+                                tipoViaje: this.widget.tipoViaje,
+                              )
+                            )
+                          );
                         },
                         child: Container(
                           width: 45,
