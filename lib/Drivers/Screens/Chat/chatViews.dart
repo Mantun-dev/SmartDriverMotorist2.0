@@ -317,7 +317,7 @@ class _ChatPageState extends State<ChatPage> {
                         chatUsers[index]['TiempoUltimoM'],
                         chatUsers[index]['mensajes'].isEmpty
                             ? chatUsers[index]['mensajes']
-                            : chatUsers[index]['mensajes'][0],
+                            : chatUsers[index]['mensajes'][chatUsers[index]['mensajes'].length-1],
                         chatUsers[index]['sinleer_Motorista'],
                         chatUsers[index]['esMotorista'],
                         chatUsers[index]['ultimoM'],
@@ -336,7 +336,7 @@ class _ChatPageState extends State<ChatPage> {
                         chatUsers[index]['TiempoUltimoM'],
                         chatUsers[index]['mensajes'].isEmpty
                             ? chatUsers[index]['mensajes']
-                            : chatUsers[index]['mensajes'][0],
+                            : chatUsers[index]['mensajes'][chatUsers[index]['mensajes'].length-1],
                         chatUsers[index]['sinleer_Motorista'],
                         chatUsers[index]['esMotorista'],
                         chatUsers[index]['ultimoM'],
@@ -355,7 +355,7 @@ class _ChatPageState extends State<ChatPage> {
                         chatUsers[index]['TiempoUltimoM'],
                         chatUsers[index]['mensajes'].isEmpty
                             ? chatUsers[index]['mensajes']
-                            : chatUsers[index]['mensajes'][0],
+                            : chatUsers[index]['mensajes'][chatUsers[index]['mensajes'].length-1],
                         chatUsers[index]['sinleer_Motorista'],
                         chatUsers[index]['esMotorista'],
                         chatUsers[index]['ultimoM'],
@@ -373,7 +373,7 @@ class _ChatPageState extends State<ChatPage> {
                     chatUsers[index]['TiempoUltimoM'],
                     chatUsers[index]['mensajes'].isEmpty
                         ? chatUsers[index]['mensajes']
-                        : chatUsers[index]['mensajes'][0],
+                        : chatUsers[index]['mensajes'][chatUsers[index]['mensajes'].length-1],
                     chatUsers[index]['sinleer_Motorista'],
                     chatUsers[index]['esMotorista'],
                     chatUsers[index]['ultimoM'],
@@ -415,6 +415,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Widget contenido(String nombre, int idAg, String hora, var mensaje, int cantSinLeer, bool esMotorista, String ultimoM, String tipo){
+    print(mensaje['Leido']);
     return mensaje.isNotEmpty? GestureDetector(
                     onTap: () {
                        Navigator.push(
