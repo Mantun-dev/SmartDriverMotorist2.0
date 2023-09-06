@@ -873,7 +873,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                                 height: 18,
                                                 child: SvgPicture.asset(
                                                   "assets/icons/usuario.svg",
-                                                  color: Color.fromRGBO(213, 0, 0, 1),
+                                                  color:  abc.data!.trips![0].agentes![index].hourForTrip==null?Color.fromRGBO(213, 0, 0, 1):Theme.of(context).primaryIconTheme.color,
                                                 ),
                                               ),
                                               SizedBox(width: 10),
@@ -953,7 +953,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                                                   style: TextStyle(fontWeight: FontWeight.w500),
                                                                 ),
                                                                 TextSpan(
-                                                                  text: abc.data!.trips![0].agentes![index].hourForTrip==null?' --':
+                                                                  text: abc.data!.trips![0].agentes![index].hourForTrip==null?'--':
                                                                   '${abc.data!.trips![0].agentes![index].hourForTrip}',
                                                                   style: TextStyle(fontWeight: FontWeight.w700, color: Color.fromRGBO(40, 169, 83, 1)),
                                                                 ),
@@ -1371,7 +1371,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                                 height: 18,
                                                 child: SvgPicture.asset(
                                                   "assets/icons/usuario.svg",
-                                                  color: Color.fromRGBO(213, 0, 0, 1),
+                                                  color: abc.data!.trips![0].agentes![index].hourForTrip==null?Color.fromRGBO(213, 0, 0, 1):Theme.of(context).primaryIconTheme.color,
                                                 ),
                                               ),
                                               SizedBox(width: 10),
