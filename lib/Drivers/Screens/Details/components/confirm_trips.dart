@@ -2355,40 +2355,16 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                       ),
             
             }else
-            Container(
-              width: 150,
-              height: 40,
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    blurStyle: BlurStyle.normal,
-                    color: Colors.white.withOpacity(0.2),
-                    blurRadius: 15,
-                    spreadRadius: -10,
-                    offset: Offset(-15, -6),
-                  ),
-                  BoxShadow(
-                    blurStyle: BlurStyle.normal,
-                    color: Colors.black.withOpacity(0.6),
-                    blurRadius: 30,
-                    spreadRadius: -15,
-                    offset: Offset(18, 5),
-                  ),
-                ],
-              ),
-              child: TextButton(
-                style: TextButton.styleFrom(
-                  textStyle: TextStyle(color: backgroundColor),
-                  backgroundColor: abc.data!.trips![0].tripAgent![index].commentDriver != 'No abordó'
-                      ? Colors.red
-                      : Colors.grey,
-                  shape: RoundedRectangleBorder(
-                    side: BorderSide(style: BorderStyle.none),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                onPressed: () async {
-                  if (abc.data!.trips![0].tripAgent![index].commentDriver == 'No abordó') {
+            TextButton(
+                                        style: TextButton.styleFrom(
+                                          side: BorderSide(width: 1, color: abc.data!.trips![0].tripAgent![index].commentDriver == 'No abordó'? Colors.grey:Theme.of(context).primaryColorDark),
+                                          fixedSize: Size(150, 25),
+                                          elevation: 0,
+                                          backgroundColor: Colors.transparent,
+                                          shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
+                                        ),
+                                        onPressed: () async{
+                                          if (abc.data!.trips![0].tripAgent![index].commentDriver == 'No abordó') {
                     return;
                   }
               
@@ -2414,17 +2390,11 @@ class _DataTableExample extends State<MyConfirmAgent> {
                     abc.data!.trips![0].tripAgent![index].agentId.toString(),
                     prefs.tripId,
                     'No abordó',
-                  );
-                },
-                child: Text(
-                  'No abordó',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
+                  );                             
+                                        },
+                                        child: Text('No abordó',
+                                            style: abc.data!.trips![0].tripAgent![index].commentDriver == 'No abordó'? Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey): Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold)),
+                                      ),
             SizedBox(height: 20.0),
           ],
         ),
@@ -2432,7 +2402,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
     );
   }
 
-  Widget entrada(AsyncSnapshot<TripsList4> abc, bool traveledB(dynamic abc, dynamic index), Future<Null> alertaAbordo(dynamic abc, dynamic index, dynamic isChecked), BuildContext context, Future<Null> alertaPaso_noSalio(dynamic abc, dynamic index), List<TextEditingController> check, Future<Null> alertaCancelo(dynamic abc, dynamic index)) {
+  Widget entrada(AsyncSnapshot<TripsList4> abc, bool traveledB(dynamic abc, dynamic index), BuildContext context, List<TextEditingController> check) {
     return Column(
     children: List.generate(
       abc.data!.trips![0].tripAgent!.length,
@@ -2453,7 +2423,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
     );
   }
 
-  Widget salida(AsyncSnapshot<TripsList4> abc, bool traveledB(dynamic abc, dynamic index), Future<Null> alertaAbordo(dynamic abc, dynamic index, dynamic isChecked), BuildContext context) {
+  Widget salida(AsyncSnapshot<TripsList4> abc, bool traveledB(dynamic abc, dynamic index), BuildContext context) {
     return Column(
       children: List.generate(
         abc.data!.trips![0].tripAgent!.length,
@@ -2512,8 +2482,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
             }
             
             return abc.data!.trips![1].actualTravel!.tripType=='Salida' ?
-              salida(abc, traveledB, alertaAbordo, context) 
-            : entrada(abc, traveledB, alertaAbordo, context, alertaPaso_noSalio, check, alertaCancelo);
+              salida(abc, traveledB, context) 
+            : entrada(abc, traveledB, context, check,);
           }
         } else {
           return ColorLoader3();
