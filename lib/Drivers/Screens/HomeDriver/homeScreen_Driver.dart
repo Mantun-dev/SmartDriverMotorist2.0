@@ -243,28 +243,11 @@ class _HomeDriverScreenState extends State<HomeDriverScreen>
   }
   
   void checkLocationPermission() async {
+    // Verificar si se tiene el permiso de grabación de audio
     var status = await Permission.location.status;
 
     if (status.isGranted) {
       // Permiso concedido
-
-    } else if (status.isDenied || status.isPermanentlyDenied) {
-      // Permiso denegado anteriormente
-      QuickAlert.show(
-        context: context,
-        title: "Advertencia",
-        text: 'Usted negó el acceso a la ubicación. Esto es necesario para poder abordar agentes. Si no da acceso en configuraciones, no podrá abordar agentes.',
-        type: QuickAlertType.warning,
-        onConfirmBtnTap: () async{
-          Navigator.pop(context);
-          try{
-            AppSettings.openLocationSettings();
-          }catch(error){
-            print(error);
-          }
-        },
-      );
-
     } else {
       // No se ha solicitado el permiso, solicitarlo al usuario
       await Permission.location.request();
