@@ -942,8 +942,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                         QuickAlert.show(
                                                           context: context,
                                                           type: QuickAlertType.confirm,
-                                                          title: traveled==true ?'No abordó':'Abordó',
-                                                          text: traveled==true ?"¿Está seguro que desea marcar como no \nabordado al agente ${abc.data!.trips![0].tripAgent![index].agentFullname}?":"¿Está seguro que desea marcar como \nabordado al agente ${abc.data!.trips![0].tripAgent![index].agentFullname}?",
+                                                          title: 'Abordó',
+                                                          text: "¿Está seguro que desea marcar como \nabordado al agente ${abc.data!.trips![0].tripAgent![index].agentFullname}?",
                                                           confirmBtnText: 'Confirmar',
                                                           cancelBtnText: 'Cancelar',
                                                           showCancelBtn: true,  
@@ -954,28 +954,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                             Navigator.pop(context);
                                               
                                                             LoadingIndicatorDialog().show(context);
-                                                            if(traveled==false && abc.data!.trips![0].tripAgent![index].didntGetOut==1){
-                                                              abc.data!.trips![0].tripAgent![index].didntGetOut=0;
-                                                              fetchRegisterCommentAgent(
-                                                                abc.data!.trips![0].tripAgent![index].agentId.toString(),
-                                                                prefs.tripId,
-                                                                'No abordó'
-                                                              );  
-                                                              waypointsAbordados.removeWhere((element) => element == abc.data!.trips![0].tripAgent![index].agentId.toString());
-                                                              totalAbordado--;
-                                                              totalNoAbordado++;
-                                                            }
                                               
-                                                            if(abc.data!.trips![0].tripAgent![index].commentDriver=="Canceló transporte"){
-                                                              abc.data!.trips![0].tripAgent![index].commentDriver="";
-                                              
-                                                              fetchRegisterCommentAgent(
-                                                                abc.data!.trips![0].tripAgent![index].agentId.toString(),
-                                                                prefs.tripId,
-                                                                ''
-                                                              );   
-                                                              
-                                                            }
                                                             Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
                                                                     
                                                             traveled = !traveled;
@@ -991,7 +970,12 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                             
                                                             http.Response response2 = await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
                                                             final resp2 = json.decode(response2.body);
-                                                            Navigator.pop(context);
+                                                                                                                      agentEmployeeId.text='';
+                                                          abc.data!.trips![0].tripAgent![index].commentDriver=null;                                                         
+                                                          totalAbordado++;
+                                                          totalNoAbordado--;
+                                                          waypointsAbordados.add(abc.data!.trips![0].tripAgent![index].agentId.toString());
+                                                           
                                                             LoadingIndicatorDialog().dismiss();
                                                             
                                               
@@ -1001,11 +985,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                       tipo: 2,
                                                                       onOkay: () {},
                                                                     );  
-                                                          agentEmployeeId.text='';
-                                                          abc.data!.trips![0].tripAgent![index].commentDriver=null;
-                                                          totalAbordado++;
-                                                          totalNoAbordado--;
-                                                          waypointsAbordados.add(abc.data!.trips![0].tripAgent![index].agentId.toString());
                                                           setState(() { });
                                                           },
                                                           onCancelBtnTap: () {
@@ -1310,8 +1289,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                     QuickAlert.show(
                                       context: navigatorKey.currentContext!,
                                       type: QuickAlertType.confirm,
-                                      title: traveled==true ?'No abordó':'Abordó',
-                                      text: traveled==true ?"¿Está seguro que desea marcar como no \nabordado al agente ${abc.data!.trips![0].tripAgent![index].agentFullname}?":"¿Está seguro que desea marcar como \nabordado al agente ${abc.data!.trips![0].tripAgent![index].agentFullname}?",
+                                      title: 'Abordó',
+                                      text: "¿Está seguro que desea marcar como \nabordado al agente ${abc.data!.trips![0].tripAgent![index].agentFullname}?",
                                       confirmBtnText: 'Confirmar',
                                       cancelBtnText: 'Cancelar',
                                       showCancelBtn: true,  
@@ -1322,27 +1301,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                         Navigator.pop(navigatorKey.currentContext!);
 
                                         LoadingIndicatorDialog().show(context);
-                                        if(traveled==false && abc.data!.trips![0].tripAgent![index].didntGetOut==1){
-                                          abc.data!.trips![0].tripAgent![index].didntGetOut=0;
-                                          fetchRegisterCommentAgent(
-                                          abc.data!.trips![0].tripAgent![index].agentId.toString(),
-                                          prefs.tripId,
-                                          'No abordó'
-                                        );  
-                                        waypointsAbordados.removeWhere((element) => element == abc.data!.trips![0].tripAgent![index].agentId.toString());
-                                        totalAbordado--;
-                                        totalNoAbordado++;
-                                        }
 
-                                        if(abc.data!.trips![0].tripAgent![index].commentDriver=="Canceló transporte"){
-                                          abc.data!.trips![0].tripAgent![index].commentDriver="";
-
-                                          fetchRegisterCommentAgent(
-                                            abc.data!.trips![0].tripAgent![index].agentId.toString(),
-                                            prefs.tripId,
-                                            ''
-                                          );   
-                                        }
                                         Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
   
                                         traveled = !traveled;
@@ -1361,17 +1320,17 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
                                         LoadingIndicatorDialog().dismiss();
                                         
-
+                                        abc.data!.trips![0].tripAgent![index].commentDriver=null;
+                                        totalAbordado++;
+                                        totalNoAbordado--;
+                                        waypointsAbordados.add(abc.data!.trips![0].tripAgent![index].agentId.toString());
                                         WarningSuccessDialog().show(
-                                                                      context,
-                                                                      title: "El agente ${abc.data!.trips![0].tripAgent![index].agentFullname} ha abordado.",
-                                                                      tipo: 2,
-                                                                      onOkay: () {},
-                                                                    );
-                                      abc.data!.trips![0].tripAgent![index].commentDriver=null;
-                                      totalAbordado++;
-                                      totalNoAbordado--;
-                                      waypointsAbordados.add(abc.data!.trips![0].tripAgent![index].agentId.toString());
+                                          context,
+                                          title: "El agente ${abc.data!.trips![0].tripAgent![index].agentFullname} ha abordado.",
+                                          tipo: 2,
+                                          onOkay: () {},
+                                        );
+
                                       setState(() { });
                                       },
                                       onCancelBtnTap: () {
@@ -1772,72 +1731,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
                       : false;
     }
 
-    alertaAbordo(abc, index, isChecked)async{
-      await QuickAlert.show(
-        context: context,
-        type: QuickAlertType.confirm,          
-        text: isChecked==false ?"¿Está seguro que desea marcar como no \nabordado al agente?":"¿Está seguro que desea marcar como \nabordado al agente?",
-        confirmBtnText: "Confirmar",
-        cancelBtnText: "Cancelar",
-        title: isChecked==false ?'No abordó':'Abordó',
-        showCancelBtn: true,  
-        confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
-        cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ), 
-        onConfirmBtnTap: () {
-
-          if(traveled==false && abc.data!.trips![0].tripAgent![index].didntGetOut==1){
-            abc.data!.trips![0].tripAgent![index].didntGetOut=0;
-            fetchRegisterCommentAgent(
-            abc.data!.trips![0].tripAgent![index].agentId.toString(),
-            prefs.tripId,
-            'No abordó'
-          );  
-          }
-
-          if(abc.data!.trips![0].tripAgent![index].commentDriver=="Canceló transporte"){
-            abc.data!.trips![0].tripAgent![index].commentDriver="";
-
-            fetchRegisterCommentAgent(
-            abc.data!.trips![0].tripAgent![index].agentId.toString(),
-            prefs.tripId,
-            ''
-          );   
-          }
-
-          traveled = isChecked!;
-          abc.data!.trips![0].tripAgent![index].traveled = traveled;
-          if (isChecked == true) {
-            //print('subio');
-            abc.data!.trips![0].tripAgent![index].commentDriver='';
-            fetchCheckAgentTrip(abc.data!.trips![0].tripAgent![index].agentId.toString());
-            totalAbordado++;
-            totalNoAbordado--;
-            waypointsAbordados.add(abc.data!.trips![0].tripAgent![index].agentId.toString());
-            //print('////////');
-          } else if (isChecked == false) {
-            //print('bajo');
-            fetchCheckAgentTrip(abc.data!.trips![0].tripAgent![index].agentId.toString());
-            //print('////////');
-            abc.data!.trips![0].tripAgent![index].commentDriver='No abordó';
-            waypointsAbordados.removeWhere((element) => element == abc.data!.trips![0].tripAgent![index].agentId.toString());
-            totalAbordado--;
-            totalNoAbordado++;
-            fetchRegisterCommentAgent(
-              abc.data!.trips![0].tripAgent![index].agentId.toString(),
-              prefs.tripId,
-              'No abordó'
-            );  
-          }
-          Navigator.pop(context);
-        },
-        onCancelBtnTap: () {
-          Navigator.pop(context);
-        },
-      ); 
-      
-      setState(() {});
-    }
-
     // ignore: non_constant_identifier_names
     alertaPaso_noSalio(abc, index) async {
       QuickAlert.show(
@@ -1880,6 +1773,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
           }
 
           if(abordo){
+            traveled = !traveled;
+            abc.data!.trips![0].tripAgent![index].traveled = 0;
             totalAbordado--;
             totalNoAbordado++;
           }
@@ -1928,6 +1823,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
           }
 
           if(abordo){
+            traveled = !traveled;
+            abc.data!.trips![0].tripAgent![index].traveled = 0;
             totalAbordado--;
             totalNoAbordado++;
           }
