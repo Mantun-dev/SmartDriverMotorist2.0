@@ -2667,7 +2667,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                             style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold)),
                                       ),
             
-            }else
+            }else...{
             TextButton(
                                         style: TextButton.styleFrom(
                                           side: BorderSide(width: 1, color: abc.data!.trips![0].tripAgent![index].commentDriver == 'No abordó'? Colors.grey:Theme.of(context).primaryColorDark),
@@ -2704,11 +2704,31 @@ class _DataTableExample extends State<MyConfirmAgent> {
                     prefs.tripId,
                     'No abordó'
                   );                             
-                                        },
-                                        child: Text('No abordó',
-                                            style: abc.data!.trips![0].tripAgent![index].commentDriver == 'No abordó'? Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey): Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold)),
-                                      ),
-            SizedBox(height: 20.0),
+                },
+                child: Text('No abordó',
+                  style: abc.data!.trips![0].tripAgent![index].commentDriver == 'No abordó'? Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey): Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold)),
+                ),
+            SizedBox(height: 10.0),
+            if(abc.data!.trips![0].tripAgent![index].latitude==null)...{
+              TextButton(
+                style: TextButton.styleFrom(
+                  side: BorderSide(width: 1, color: abc.data!.trips![0].tripAgent![index].commentDriver == 'No abordó'? Colors.grey:Theme.of(context).primaryColorDark),
+                  fixedSize: Size(150, 25),
+                  elevation: 0,
+                  backgroundColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
+                ),
+                onPressed: () {
+                  
+                },
+                child: Text(
+                  'Guardar Ubicación',
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold)
+                )
+              ),
+              SizedBox(height: 20.0),
+            }
+            }
           ],
         ),
                     ),
