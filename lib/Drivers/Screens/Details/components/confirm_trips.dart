@@ -222,7 +222,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
   }
 
   Future<bool> fetchRegisterCommentAgent(
-      String agentId, String tripId, String comment, bool enViaje) async {
+      String agentId, String tripId, String comment) async {
         LoadingIndicatorDialog().show(context);
     Map datas = {'agentId': agentId, 'tripId': tripId};
     Map datas2 = {
@@ -240,14 +240,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
     if (responses.statusCode == 200 &&
         si.ok == true &&
         responses.statusCode == 200) {
-      if(enViaje)
-        WarningSuccessDialog().show(
-          context,
-          title: "${si.message}",
-          tipo: 2,
-          onOkay: () {},
-        );
-      
+
       return true;
     } else if (si.ok != true) {
       WarningSuccessDialog().show(
@@ -270,12 +263,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
     final si = Driver.fromJson(json.decode(responses.body));
 
     if (responses.statusCode == 200 && si.ok!) {
-      WarningSuccessDialog().show(
-        context,
-        title: "${si.message}",
-        tipo: 2,
-        onOkay: () {},
-      );
+
     } else if (si.ok != true) {
       WarningSuccessDialog().show(
         context,
@@ -585,7 +573,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
         child: Column(
           children: [
             ingresarVehiculo(),
-            SizedBox(height: 30.0),
             escanearAgente(),
             SizedBox(height: 20.0),
             Align(
@@ -675,24 +662,39 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                   return Transform.scale(scale: a1.value,
                                     child: Opacity(opacity: a1.value,
                                       child: AlertDialog(
-                                        backgroundColor: backgroundColor,
+                                        backgroundColor: Theme.of(navigatorKey.currentContext!).cardColor,
                                         shape: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(16.0)),
-                                        title: Center(child: Text('Buscar Agente',style: TextStyle(color: GradiantV_2, fontSize: 20.0),)),
+                                          borderRadius: BorderRadius.circular(15.0),
+                                          borderSide: BorderSide(
+                                            color: Theme.of(navigatorKey.currentContext!).dividerColor, // Cambia el color de los bordes aquí
+                                            width: 1.0, // Cambia el ancho de los bordes aquí
+                                          ),
+                                        ),
+                                        
+                                        title: Center(child: Text('Buscar Agente',style: Theme.of(navigatorKey.currentContext!).textTheme.labelMedium!.copyWith(fontSize: 20, fontWeight: FontWeight.normal))),
                                         content: Container(
                                           decoration: BoxDecoration(
-                                            borderRadius:BorderRadius.all(Radius.circular(15)),
-                                            boxShadow: [
-                                              BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0,0), ),
-                                              BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0,0),                                 ),
-                                            ],
+                                            color: Theme.of(context).cardTheme.color,
+                                            borderRadius: BorderRadius.circular(10),
+                                            border: Border.all(
+                                              color: Theme.of(context).dividerColor,
+                                              width: 1
+                                            ) // Radio de la esquina
                                           ),
                                           child: Padding(
                                             padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                            child: TextField(style: TextStyle(color: Colors.white),
+                                            child: TextField(
                                               controller: agentEmployeeId,
-                                              decoration: InputDecoration(border: InputBorder.none,labelText: 'Escriba aqui',labelStyle: TextStyle(color: Colors.white.withOpacity(0.5),fontSize: 15.0)),
+                                              style: TextStyle(
+                                                color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal
+                                              ),
+                                              decoration: InputDecoration(
+                                                border: InputBorder.none,
+                                                hintText: 'Buscar Agente',
+                                                hintStyle: TextStyle(
+                                                  color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal
+                                                ),
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -700,40 +702,72 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                           Row(
                                             mainAxisAlignment: MainAxisAlignment.center,
                                             children: [
-                                              Container(width: 100,
-                                                child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: backgroundColor,),backgroundColor: Gradiant2,),
+                                              Expanded(
+                                                child: TextButton(
+                                                  style: ButtonStyle(
+                                                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                                      RoundedRectangleBorder(
+                                                        borderRadius: BorderRadius.circular(10.0),
+                                                        side: BorderSide(color: Colors.black),
+                                                      ),
+                                                    ),
+                                                    backgroundColor: MaterialStateProperty.all(Colors.transparent),
+                                                  ),
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: Text(
+                                                    'Cerrar',
+                                                    style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 15, fontWeight: FontWeight.bold)
+                                                  ),
+                                                ),
+                                              ),
+                                          
+                                              SizedBox(width: 10.0),
+                                              
+                                              Expanded(
+                                                child: TextButton(
+                                                  style: ButtonStyle(
+                                                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                                      RoundedRectangleBorder(
+                                                        borderRadius: BorderRadius.circular(10.0),
+                                                        side: BorderSide(color: Color.fromRGBO(40, 93, 169, 1)),
+                                                      ),
+                                                    ),
+                                                    backgroundColor: MaterialStateProperty.all(Color.fromRGBO(40, 93, 169, 1)),
+                                                  ),
                                                   onPressed: () async{
                                                     permiso = await checkLocationPermission();
                                                       if (!permiso!) {
                                                         WarningSuccessDialog().show(
-                                    context,
-                                    title: "Usted negó el acceso a la ubicación. Esto es necesario para poder abordar agentes. Si no da acceso en configuraciones, no podrá abordar agentes.",
-                                    tipo: 1,
-                                    onOkay: () async {
-                                      Navigator.pop(context);
-                                      try {
-                                        AppSettings.openLocationSettings();
-                                      } catch (error) {
-                                        print(error);
-                                      }
-                                    },
-                                  ); 
+                                                          context,
+                                                          title: "Usted negó el acceso a la ubicación. Esto es necesario para poder abordar agentes. Si no da acceso en configuraciones, no podrá abordar agentes.",
+                                                          tipo: 1,
+                                                          onOkay: () async {
+                                                            Navigator.pop(context);
+                                                            try {
+                                                              AppSettings.openLocationSettings();
+                                                            } catch (error) {
+                                                              print(error);
+                                                            }
+                                                          },
+                                                        ); 
                                                         return;
                                                       }
                                                    
                                                       LoadingIndicatorDialog().show(context);
-
+                                              
                                                       Map data =   {
                                                         'agentUser':agentEmployeeId.text, 
                                                         'tripId':tripId.toString(),
                                                         'itsManualSearch':"1"
                                                       };
-
+                                              
                                                       http.Response response = await http
                                                           .post(Uri.parse('https://driver.smtdriver.com/apis/agents/validateCheckIn'), body: data);
-
+                                              
                                                       final resp = json.decode(response.body);
-
+                                              
                                                       if(mounted){
                                                         LoadingIndicatorDialog().dismiss();
                                                         if(resp['type']=='error'){
@@ -745,7 +779,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                           ); 
                                                           return;
                                                         } 
-
+                                              
                                                         if(resp['allow']==0){
                                                           if(abc.data!.trips![1].actualTravel!.tripType!='Salida'){
                                                             
@@ -772,22 +806,22 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                               confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
                                                               cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ),
                                                               onConfirmBtnTap: () async{
-
+                                              
                                                                 LoadingIndicatorDialog().show(context);
-
+                                              
                                                                  Map datas = {
                                                                   "companyId": abc.data!.trips![1].actualTravel!.companyId.toString(),
                                                                   "agentEmployeeId": agentEmployeeId.text
                                                                 };
-
+                                              
                                                                 http.Response responsed =
                                                                     await http.post(Uri.parse('$ip/apis/searchAgent'), body: datas);
                                                                 final data1 = Search.fromJson(json.decode(responsed.body));
-
-
+                                              
+                                              
                                                                 if(data1.agent!.msg!=null){
                                                                   LoadingIndicatorDialog().dismiss();
-
+                                              
                                                                   if(data1.ok==true){
                                                                     Navigator.pop(context);
                                                                     Navigator.pop(context);
@@ -797,26 +831,26 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                       tipo: 1,
                                                                       onOkay: () {},
                                                                     ); 
-
+                                              
                                                                     return;
                                                                   }
                                                                 }
-
+                                              
                                                                 Map datas2 = {
                                                                   "agentId": data1.agent!.agentId.toString(),
                                                                   "tripId": abc.data!.trips![1].actualTravel!.tripId.toString(),
                                                                   "tripHour": abc.data!.trips![1].actualTravel!.tripHour.toString()
                                                                 };
-
+                                              
                                                                 final sendDatas = await http.post(Uri.parse('$ip/apis/registerAgentTripEntryByDriver'),body: datas2);
-
+                                              
                                                                 final dataR = json.decode(sendDatas.body);
-
-
+                                              
+                                              
                                                                 if(dataR['type']=='error'){
-
+                                              
                                                                   LoadingIndicatorDialog().dismiss();
-
+                                              
                                                                   if(mounted){
                                                                     Navigator.pop(context);
                                                                     Navigator.pop(context);
@@ -827,24 +861,23 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                       onOkay: () {},
                                                                     ); 
                                                                   }
-
+                                              
                                                                 return;
-
+                                              
                                                                 }else{
                                                                   var itemAbordaje = await fetchAgentsTripInProgress();
-
+                                              
                                                                   int indexP = await addAgente(resp['agentId'], itemAbordaje);
                                                                   abc.data!.trips![0].tripAgent=itemAbordaje.trips![0].tripAgent;
-
+                                              
                                                                   fetchRegisterCommentAgent(
                                                                     abc.data!.trips![0].tripAgent![indexP].agentId.toString(),
                                                                     prefs.tripId,
-                                                                    '',
-                                                                    false
+                                                                    ''
                                                                   ); 
-
+                                              
                                                                   Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-  
+                                                
                                                                   traveled = !traveled;
                                                                   abc.data!.trips![0].tripAgent![indexP].traveled = traveled;
                                                                   
@@ -861,7 +894,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                   LoadingIndicatorDialog().dismiss();
                                                                   if(mounted){
                                                                     Navigator.push(context,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
-
+                                              
                                                                     WarningSuccessDialog().show(
                                                                       context,
                                                                       title: 'Se agrego el agente ${itemAbordaje.trips![0].tripAgent![indexP].agentFullname} al viaje.',
@@ -871,7 +904,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                     
                                                                   } 
                                                                 }
-
+                                              
                                                               },
                                                               onCancelBtnTap: () {
                                                                 Navigator.pop(context);
@@ -890,12 +923,12 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                           }
                                                         }
                                                         }
-
+                                              
                                                         int index = 0;
-
+                                              
                                                         for (int i = 0; i < abc.data!.trips![0].tripAgent!.length; i++) {  
                                                           if(abc.data!.trips![0].tripAgent![i].agentId==resp['agentId']){
-
+                                              
                                                             if(abc.data!.trips![0].tripAgent![i].traveled == 1){
                                                               traveled = true;
                                                             }else{
@@ -904,7 +937,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                             index = i;
                                                           }
                                                         }
-
+                                              
                                                         LoadingIndicatorDialog().dismiss();
                                                         QuickAlert.show(
                                                           context: context,
@@ -917,34 +950,34 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                           confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
                                                           cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ),
                                                           onConfirmBtnTap: () async{
-
+                                              
                                                             Navigator.pop(context);
-
+                                              
                                                             LoadingIndicatorDialog().show(context);
                                                             if(traveled==false && abc.data!.trips![0].tripAgent![index].didntGetOut==1){
                                                               abc.data!.trips![0].tripAgent![index].didntGetOut=0;
                                                               fetchRegisterCommentAgent(
                                                                 abc.data!.trips![0].tripAgent![index].agentId.toString(),
                                                                 prefs.tripId,
-                                                                'No abordó', true
+                                                                'No abordó'
                                                               );  
                                                               waypointsAbordados.removeWhere((element) => element == abc.data!.trips![0].tripAgent![index].agentId.toString());
                                                               totalAbordado--;
                                                               totalNoAbordado++;
                                                             }
-
+                                              
                                                             if(abc.data!.trips![0].tripAgent![index].commentDriver=="Canceló transporte"){
                                                               abc.data!.trips![0].tripAgent![index].commentDriver="";
-
+                                              
                                                               fetchRegisterCommentAgent(
                                                                 abc.data!.trips![0].tripAgent![index].agentId.toString(),
                                                                 prefs.tripId,
-                                                                '', false
+                                                                ''
                                                               );   
                                                               
                                                             }
                                                             Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-                      
+                                                                    
                                                             traveled = !traveled;
                                                             abc.data!.trips![0].tripAgent![index].traveled = traveled;
                                                             
@@ -961,7 +994,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                             Navigator.pop(context);
                                                             LoadingIndicatorDialog().dismiss();
                                                             
-
+                                              
                                                             WarningSuccessDialog().show(
                                                                       context,
                                                                       title: 'El agente ${abc.data!.trips![0].tripAgent![index].agentFullname} ha abordado.',
@@ -969,7 +1002,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                       onOkay: () {},
                                                                     );  
                                                           agentEmployeeId.text='';
-                                                          abc.data!.trips![0].tripAgent![index].commentDriver='';
+                                                          abc.data!.trips![0].tripAgent![index].commentDriver=null;
                                                           totalAbordado++;
                                                           totalNoAbordado--;
                                                           waypointsAbordados.add(abc.data!.trips![0].tripAgent![index].agentId.toString());
@@ -983,18 +1016,18 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                       }
                                                     
                                                   },
-                                                  child: Text('Abordar',style: TextStyle(color: backgroundColor,fontSize: 15.0)),
+                                                  child: Text(
+                                                    'Abordar',
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 15
+                                                    ),
+                                                  ),
                                                 ),
                                               ),
-                                              SizedBox(width: 10.0),
-                                              Container(width: 100,
-                                                child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: Colors.white,),backgroundColor: Colors.red,),
-                                                  onPressed: () => {
-                                                    Navigator.pop(context),
-                                                  },
-                                                  child: Text('Cerrar',style: TextStyle(color: Colors.white,fontSize: 15.0)),
-                                                ),
-                                              ),
+                                          
+                                              
                                             ],
                                           ),
                                         ],
@@ -1205,7 +1238,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                   fetchRegisterCommentAgent(
                                                                     abc.data!.trips![0].tripAgent![indexP].agentId.toString(),
                                                                     prefs.tripId,
-                                                                    '', true
+                                                                    ''
                                                                   ); 
 
 
@@ -1294,7 +1327,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                           fetchRegisterCommentAgent(
                                           abc.data!.trips![0].tripAgent![index].agentId.toString(),
                                           prefs.tripId,
-                                          'No abordó', true
+                                          'No abordó'
                                         );  
                                         waypointsAbordados.removeWhere((element) => element == abc.data!.trips![0].tripAgent![index].agentId.toString());
                                         totalAbordado--;
@@ -1307,7 +1340,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                           fetchRegisterCommentAgent(
                                             abc.data!.trips![0].tripAgent![index].agentId.toString(),
                                             prefs.tripId,
-                                            '', true
+                                            ''
                                           );   
                                         }
                                         Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
@@ -1335,7 +1368,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                       tipo: 2,
                                                                       onOkay: () {},
                                                                     );
-                                      abc.data!.trips![0].tripAgent![index].commentDriver='';
+                                      abc.data!.trips![0].tripAgent![index].commentDriver=null;
                                       totalAbordado++;
                                       totalNoAbordado--;
                                       waypointsAbordados.add(abc.data!.trips![0].tripAgent![index].agentId.toString());
@@ -1757,7 +1790,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
             fetchRegisterCommentAgent(
             abc.data!.trips![0].tripAgent![index].agentId.toString(),
             prefs.tripId,
-            'No abordó', true
+            'No abordó'
           );  
           }
 
@@ -1767,7 +1800,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
             fetchRegisterCommentAgent(
             abc.data!.trips![0].tripAgent![index].agentId.toString(),
             prefs.tripId,
-            '', true
+            ''
           );   
           }
 
@@ -1792,7 +1825,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
             fetchRegisterCommentAgent(
               abc.data!.trips![0].tripAgent![index].agentId.toString(),
               prefs.tripId,
-              'No abordó', true
+              'No abordó'
             );  
           }
           Navigator.pop(context);
@@ -1807,7 +1840,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
     // ignore: non_constant_identifier_names
     alertaPaso_noSalio(abc, index) async {
-      await QuickAlert.show(
+      QuickAlert.show(
         context: context,
         type: QuickAlertType.confirm,
         text: "¿Está seguro que desea marcar como no salio el agente?",
@@ -1819,7 +1852,9 @@ class _DataTableExample extends State<MyConfirmAgent> {
         cancelBtnTextStyle: TextStyle(
             color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
         onConfirmBtnTap: () async {
+          Navigator.pop(context);
           LoadingIndicatorDialog().show(context);
+          bool abordo = traveledB(abc, index);
           //fetchRegisterAgentDidntGetOut(abc.data!.trips![0].tripAgent![index].agentId.toString(),prefs.tripId);
           Position position = await Geolocator.getCurrentPosition(
               desiredAccuracy: LocationAccuracy.high);
@@ -1844,19 +1879,21 @@ class _DataTableExample extends State<MyConfirmAgent> {
             traveled = abc.data!.trips![0].tripAgent![index].traveled;
           }
 
-          if (abc.data!.trips![0].tripAgent![index].commentDriver ==
-              "Canceló transporte") {
-            abc.data!.trips![0].tripAgent![index].commentDriver =
-                "Pasé por él (ella) y no salió";
+          if(abordo){
+            totalAbordado--;
+            totalNoAbordado++;
           }
-          Navigator.pop(context);
+          
+          setState(() {      
+            abc.data!.trips![0].tripAgent![index].commentDriver = "Pasé por él (ella) y no salió";
+          });
+          
         },
         onCancelBtnTap: () {
           Navigator.pop(context);
         },
       );
 
-      setState(() {});
     }
 
     alertaCancelo(abc, index) async {
@@ -1873,10 +1910,11 @@ class _DataTableExample extends State<MyConfirmAgent> {
             color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
         onConfirmBtnTap: () {
           Navigator.pop(context);
+          bool abordo = traveledB(abc, index);
           fetchRegisterCommentAgent(
               abc.data!.trips![0].tripAgent![index].agentId.toString(),
               prefs.tripId,
-              'Canceló transporte', true);
+              'Canceló transporte');
           if (abc.data!.trips![0].tripAgent![index].didntGetOut == 1) {
             abc.data!.trips![0].tripAgent![index].didntGetOut = 0;
           }
@@ -1889,9 +1927,13 @@ class _DataTableExample extends State<MyConfirmAgent> {
                 abc.data!.trips![0].tripAgent![index].agentId.toString());
           }
 
+          if(abordo){
+            totalAbordado--;
+            totalNoAbordado++;
+          }
+          
           setState(() {
-            abc.data!.trips![0].tripAgent![index].commentDriver =
-                'Canceló transporte';
+            abc.data!.trips![0].tripAgent![index].commentDriver = 'Canceló transporte';         
           });
           
         },
@@ -1900,7 +1942,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
         },
       );
 
-      setState(() {});
     }
 
   Widget datosAgentes(bool traveledB(dynamic abc, dynamic index), AsyncSnapshot<TripsList4> abc, int index, BuildContext context, var check2) {
@@ -2369,7 +2410,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                     ),
                                                               
                                                               GestureDetector(
-                                                                onTap: () => alertaPaso_noSalio(abc, index),
+                                                                onTap: () => abc.data!.trips![0].tripAgent![index].commentDriver == 'Pasé por él (ella) y no salió'? null :alertaPaso_noSalio(abc, index),
                                                                 child: Row(
                                                                   children: [
                                                                     SizedBox(width: size.width/4.8),
@@ -2401,7 +2442,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                               ),
                                                               SizedBox(height: 20),
                                                               GestureDetector(
-                                                                onTap: () => alertaCancelo(abc, index),
+                                                                onTap: () => abc.data!.trips![0].tripAgent![index].commentDriver == 'Canceló transporte'?null:alertaCancelo(abc, index),
                                                                 child: Row(
                                                                   children: [
                                                                     SizedBox(width: size.width/4.8),
@@ -2585,7 +2626,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                             bool val = await fetchRegisterCommentAgent(
                                                               abc.data!.trips![0].tripAgent![index].agentId.toString(),
                                                               prefs.tripId,
-                                                              check2[index].text, true
+                                                              check2[index].text
                                                             );
                                                               
                                                             if(val)
@@ -2764,7 +2805,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                   fetchRegisterCommentAgent(
                     abc.data!.trips![0].tripAgent![index].agentId.toString(),
                     prefs.tripId,
-                    'No abordó',true
+                    'No abordó'
                   );                             
                                         },
                                         child: Text('No abordó',
