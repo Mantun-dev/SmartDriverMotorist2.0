@@ -377,12 +377,13 @@ class _ProcessState extends State<Process> {
                                         abc.data![index].departmentId,
                                         abc.data![index].departamento
                                         );
-                                        WarningSuccessDialog().show(
-                                              context,
-                                              title: "No olvide escanear el código QR del agente antes de que suba a la unidad",
-                                              tipo: 4,
-                                              onOkay: () {},
-                                            );
+                                        if(abc.data![index].tipo=='Entrada')
+                                          WarningSuccessDialog().show(
+                                                context,
+                                                title: "No olvide escanear el código QR del agente antes de que suba a la unidad",
+                                                tipo: 4,
+                                                onOkay: () {},
+                                              );
                                   },
                                 ),
                                 SizedBox(height: 10.0),                                      
