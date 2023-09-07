@@ -8,6 +8,7 @@ import 'package:flutter_svg/svg.dart';
 import '../../../../components/AppBarPosterior.dart';
 import '../../../../components/AppBarSuperior.dart';
 import '../../../../components/backgroundB.dart';
+import '../../../../components/warning_dialog.dart';
 
 void main() => runApp(Process());
 
@@ -369,13 +370,19 @@ class _ProcessState extends State<Process> {
                                   shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
                                 ),
                                 child: Text('Ver viaje',style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white, fontSize: 16)),
-                                  onPressed: () {
+                                  onPressed: () {                                           
                                     fetchAgentsAsigmentChekc(abc
                                         .data![index].tripId
                                         .toString(),
                                         abc.data![index].departmentId,
                                         abc.data![index].departamento
                                         );
+                                        WarningSuccessDialog().show(
+                                              context,
+                                              title: "No olvide escanear el código QR del agente antes de que suba a la unidad",
+                                              tipo: 4,
+                                              onOkay: () {},
+                                            );
                                   },
                                 ),
                                 SizedBox(height: 10.0),                                      

@@ -3022,7 +3022,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                 WarningSuccessDialog().show(
                   context,
                   title: "Tiene que ingresar un veiculo",
-                  tipo: 1,
+                  tipo: 3,
                   onOkay: () {},
                 );
                 return;

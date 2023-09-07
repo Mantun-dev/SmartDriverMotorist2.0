@@ -29,6 +29,9 @@ class WarningSuccessDialog {
       : tipo == 2?
         "assets/icons/check.svg"
       : 
+      tipo == 4?
+        "assets/icons/QR.svg"
+      : 
         "assets/icons/info.svg";
     Size size = MediaQuery.of(context).size;
 
