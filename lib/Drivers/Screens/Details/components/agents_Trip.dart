@@ -1049,7 +1049,6 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                 }
                               ],
                             ),
-                              trailing: SizedBox(),
                               children: [
                                 
                               Padding(

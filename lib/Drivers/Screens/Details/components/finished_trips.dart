@@ -621,7 +621,6 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                 }
                               ],
                             ),
-                              trailing: SizedBox(),
                               children: [
                                 
                               Padding(
@@ -1209,7 +1208,6 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                 }
                               ],
                             ),
-                              trailing: SizedBox(),
                               children: [
                                 
                               Padding(

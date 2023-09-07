@@ -2110,7 +2110,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                 }
                               ],
                             ),
-          trailing: SizedBox(),
+
           children: [
             Padding(
                                 padding: const EdgeInsets.only(right: 10, left: 10),
