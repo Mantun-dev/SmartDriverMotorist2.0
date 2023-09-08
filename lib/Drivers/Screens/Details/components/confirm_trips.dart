@@ -644,7 +644,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
             crossAxisAlignment:CrossAxisAlignment.start,
             children: [
               SizedBox(height: 15.0),
-              Center(child: Text('Escanee el codigo del agente', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 12),)),
+              Center(child: Text('Marcar abordaje', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 12),)),
               SizedBox(height: 5),
               Row(
                 children: [
@@ -686,7 +686,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                       ),
                                       decoration: InputDecoration(
                                         border: InputBorder.none,
-                                        hintText: 'Buscar Agente',
+                                        hintText: 'Número de empleado o identidad',
                                         hintStyle: TextStyle(
                                           color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal
                                         ),
@@ -1045,7 +1045,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                 ),
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
-                                  hintText: 'Abordar Agente',
+                                  hintText: 'Número de empleado o identidad',
                                   hintStyle: TextStyle(
                                     color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal
                                   ),

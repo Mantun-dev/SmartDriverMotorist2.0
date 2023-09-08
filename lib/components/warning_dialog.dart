@@ -59,27 +59,27 @@ class WarningSuccessDialog {
                       ),
                       color: containerC,
                     ),
-                    child: tipo == 1? Container(
-                      padding: EdgeInsets.only(top:30, bottom: 30),
+                    child: tipo == 1? 
+                    Padding(
+                      padding: const EdgeInsets.only(top: 50, bottom: 50),
                       child: SvgPicture.asset(
                         iconAsset,
-                        height: 100,
+                        height: 60,
                         color: Colors.white,
                       ),
                     ): 
                     Padding(
-                      padding: const EdgeInsets.only(right: 100.0, left: 100, bottom: 30, top: 30),
-                      child: CircleAvatar(
-                        backgroundColor: Colors.transparent,
-                        radius: 40.0, // Cambiado a 40.0 para mantener el radio original
-                        child: Container(
-                          padding: EdgeInsets.all(15.0),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 4.0), // Borde blanco
-                          ),
+                      padding: const EdgeInsets.only(top: 30, bottom: 30),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 4.0), // Borde blanco
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
                           child: SvgPicture.asset(
                             iconAsset,
+                            height: 60,
                             color: Colors.white,
                           ),
                         ),
@@ -103,7 +103,7 @@ class WarningSuccessDialog {
                         child: Text(
                           title,
                           textAlign: TextAlign.center,
-                          style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 16, fontWeight: FontWeight.w500)
+                          style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.w500)
                         ),
                       ),
                       Padding(
@@ -127,7 +127,7 @@ class WarningSuccessDialog {
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
-                              fontSize: 16
+                              fontSize: 14
                             ),
                           ),
                         ),

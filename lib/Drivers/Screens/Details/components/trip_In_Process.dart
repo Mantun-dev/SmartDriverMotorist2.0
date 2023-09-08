@@ -380,7 +380,7 @@ class _ProcessState extends State<Process> {
                                         if(abc.data![index].tipo=='Entrada')
                                           WarningSuccessDialog().show(
                                                 context,
-                                                title: "No olvide escanear el código QR del agente antes de que suba a la unidad",
+                                                title: "No olvide escanear el código QR del agente antes de que suba a la unidad para que podamos guardar la ubicación del punto de encuentro. Este mensaje se mostrará hasta guardar los puntos de encuentro.",
                                                 tipo: 4,
                                                 onOkay: () {},
                                               );
