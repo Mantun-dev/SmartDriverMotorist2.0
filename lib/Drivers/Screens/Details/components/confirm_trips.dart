@@ -652,7 +652,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                   title: "Usted negó el acceso a la ubicación. Esto es necesario para poder abordar agentes. Si no da acceso en configuraciones, no podrá abordar agentes.",
                                                   tipo: 1,
                                                   onOkay: () async {
-                                                    Navigator.pop(context);
                                                     try {
                                                       AppSettings.openLocationSettings();
                                                     } catch (error) {
@@ -993,7 +992,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
                             title: "Usted negó el acceso a la ubicación. Esto es necesario para poder abordar agentes. Si no da acceso en configuraciones, no podrá abordar agentes.",
                             tipo: 1,
                             onOkay: () async {
-                              Navigator.pop(context);
                               try {
                                 AppSettings.openLocationSettings();
                               } catch (error) {
@@ -2867,7 +2865,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
                           title: "Usted negó el acceso a la ubicación. Esto es necesario para poder abordar agentes. Si no da acceso en configuraciones, no podrá abordar agentes.",
                           tipo: 1,
                          onOkay: () async {
-                          Navigator.pop(context);
                             try {
                               AppSettings.openLocationSettings();
                             } catch (error) {
