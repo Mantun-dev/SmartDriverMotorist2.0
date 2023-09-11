@@ -83,16 +83,9 @@ class _DataTableExample extends State<MyConfirmAgent> {
   bool noabordaron = false;
 
   String apiKey = 'AIzaSyBJJYIS4G4n-3AP93am08XyDyDiA-vgPmM';
-  var latidudeInicial;
-  var longitudInicial;
-
-  var latidudeFinal;
-  var longitudFinal;
-
-  List<String> waypoints = [];  
-  List<String> waypointsAbordados= [];  
 
   bool flagEOS = false;
+  List<bool> enRuta = [];
 
   List<TextEditingController> check = [];
   List<TextEditingController> comment = new List.empty(growable: true);
@@ -104,7 +97,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
   bool cargarInfoViaje = false;
   bool cargarL = false;
   bool cargarTotal = false;
-
+  List<String> waypoints = [];
   Future<Message> fetchCheckAgentTrip(String agentId) async {
     int flag = (traveled) ? 1 : 0;
 
@@ -140,11 +133,12 @@ class _DataTableExample extends State<MyConfirmAgent> {
     
     for (int i = 0; i < lista.trips![0].tripAgent!.length; i++) {
       if (traveledB(lista, i)) {
-        waypointsAbordados.add( lista.trips![0].tripAgent![i].agentId.toString());
         totalAbordado++;
       }else{
         totalNoAbordado++;
       }
+
+      enRuta.add(false);
     }
     cargarTotal = true;
     setState(() {});
@@ -335,102 +329,20 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
   void getLocation() async{
 
-    var lat = '';
-    var long = '';
-
-    //print(this.widget.departmentId);
-    //print(this.widget.departmentName);
-    //15.561147, -88.020942 san pedro
-    //15.773001, -86.792570 ceiba
-    //14.046092, -87.174631 tegus
-    if(prefs.companyId==comp.toString()){
-      lat = '15.561147';
-      long = '-88.020942';
-    }
-    if(prefs.companyId==comp2.toString()){
-      lat = '14.046092';
-      long = '-87.174631';
-    }
-    if(prefs.companyId==starteTGU.toString()){
-      lat = '14.046092';
-      long = '-87.174631';
-    }
-    if(prefs.companyId==startekSPS.toString()){
-      lat = '15.561147';
-      long = '-88.020942';
-    }
-    if(prefs.companyId==aloricaSPS.toString()){
-      lat = '15.561147';
-      long = '-88.020942';
-    }
-    if(prefs.companyId==resultTgu.toString()){
-      //14.083637, -87.185030
-      lat = '14.083637';
-      long = '-87.185030';
-    }
-    if(prefs.companyId==itelSPS.toString()){
-      lat = '15.561147';
-      long = '-88.020942';
-    }
-    if(prefs.companyId == zerovarianceSPS.toString()){
-      lat = '15.561147';
-      long = '-88.020942';
-    }
-    if(prefs.companyId == aloricaCeiba.toString()){
-      lat = '15.773001';
-      long = '-86.792570';
-    }
-
     await fetchAgentsTripInProgress().then((value) => {
 
       //print(value.trips![1].actualTravel!.tripType),
 
       if(value.trips![1].actualTravel!.tripType=='Entrada'){
         flagEOS = true,
-        for(var i = 0; i < value.trips![0].tripAgent!.length; i++){
-
-          if(i==0){
-            latidudeInicial = value.trips![0].tripAgent![i].latitude,
-            longitudInicial = value.trips![0].tripAgent![i].longitude,
-          },
-
-          waypoints.add('${value.trips![0].tripAgent![i].latitude},${value.trips![0].tripAgent![i].longitude}')
-        },
-
-        waypoints.add('$lat,$long'),
         cargarL = true,
         setState(() {})
       }else{
-        latidudeFinal = lat,
-        longitudFinal = long,
         flagEOS = false,
-
-        for(var i = 0; i < value.trips![0].tripAgent!.length; i++){
-          
-          waypoints.add('${value.trips![0].tripAgent![i].latitude},${value.trips![0].tripAgent![i].longitude}')
-        },
-        //waypoints.add('$lat,$long'),
         cargarL = true,
-        setState(() {
-          //print(waypoints);
-        })
+        setState(() {})
       },
       
-    });
-    //print(waypoints);
-  }
-
-  void obtenerUbicacion() async{
-     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-
-    setState(() {      
-     var latitudM = position.latitude;
-     var longitudM = position.longitude;
-      latidudeInicial = latitudM;
-      longitudInicial = longitudM;
-      // print('khee');
-      // print(latitudM);
-      // print(longitudM);
     });
   }
 
@@ -440,14 +352,14 @@ class _DataTableExample extends State<MyConfirmAgent> {
     await launchUrl(Uri.parse(url));
   }
 
- Future<void> launchGoogleMapsx(String apiKey, String startLat, String startLng, List<String> waypoints) async {
+ Future<void> launchGoogleMapsx(String apiKey, String startLat, String startLng, List<String> waypoints1) async {
     String baseUrl = 'https://maps.googleapis.com/maps/api/directions/json';
     String origin = '$startLat,$startLng';
     
     if (!flagEOS) {      
       var distances = [];
-      for (var i = 0; i < waypoints.length; i++) {      
-        String urlDistance = '$baseUrl?origin=$origin&destination=${waypoints[i]}&key=$apiKey';
+      for (var i = 0; i < waypoints1.length; i++) {      
+        String urlDistance = '$baseUrl?origin=$origin&destination=${waypoints1[i]}&key=$apiKey';
         final responseDistance = await http.get(Uri.parse(urlDistance));
         if (responseDistance.statusCode == 200) {
           final dataDistance = json.decode(responseDistance.body);
@@ -464,14 +376,14 @@ class _DataTableExample extends State<MyConfirmAgent> {
           maxIndex = i;
         }
       }
-      if (maxIndex >= 0 && maxIndex< waypoints.length) {
-        String elementoMovido = waypoints.removeAt(maxIndex);
-        waypoints.add(elementoMovido);
+      if (maxIndex >= 0 && maxIndex< waypoints1.length) {
+        String elementoMovido = waypoints1.removeAt(maxIndex);
+        waypoints1.add(elementoMovido);
       } else {
         print('Posición inválida');
       }
-      String destination = waypoints.last;
-      String waypointsString = waypoints.join('|');    
+      String destination = waypoints1.last;
+      String waypointsString = waypoints1.join('|');    
       String url = '$baseUrl?origin=$origin&destination=$destination&waypoints=optimize:true|$waypointsString&key=$apiKey';
 
       // ignore: avoid_print
@@ -481,7 +393,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
           final data = json.decode(response.body);
 
           List<dynamic> sortedWaypoints = data['routes'][0]['waypoint_order']
-            .map((index) => waypoints[index])
+            .map((index) => waypoints1[index])
             .toList();
       
           print('******* ruta');
@@ -503,7 +415,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
         }
     }else{
       LoadingIndicatorDialog().dismiss();
-      String destination = waypoints.last;
+      String destination = waypoints1.last;
       String url = 'google.navigation:q=$destination&mode=d';
       await launchUrl(Uri.parse(url));
     }
@@ -2683,7 +2595,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
               
                   setState(() {
                     if (traveledB(abc, index)) {
-                      waypointsAbordados.removeWhere((element) => element == abc.data!.trips![0].tripAgent![index].agentId.toString());
                       totalAbordado--;
                       totalNoAbordado++;
                     }
@@ -2925,82 +2836,225 @@ class _DataTableExample extends State<MyConfirmAgent> {
   }
 
   Widget _buttonsRuta() {
-    return TextButton(
-      style: TextButton.styleFrom(
-        fixedSize: Size(150, 25),
-        elevation: 0,
-        backgroundColor: Theme.of(context).primaryColor,
-        shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
-      ),
-      child: Row(
-        children: [
-          SvgPicture.asset(  
-            "assets/icons/navegacion-gps.svg",
-            color: Colors.white,
-            height: 20,
-            width: 20,
-          ),
-          SizedBox(width: 8),
-          Text('Generar ruta',style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white, fontSize: 16)),
-        ],
-      ),
-      onPressed: () async{
+    return FutureBuilder<TripsList4>(
+      future: item,
+      builder: (BuildContext context, abc) {
+        if (abc.connectionState == ConnectionState.done) {                 
+            return TextButton(
+              style: TextButton.styleFrom(
+                fixedSize: Size(150, 25),
+                elevation: 0,
+                backgroundColor: Theme.of(context).primaryColor,
+                shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
+              ),
+              child: Row(
+                children: [
+                  SvgPicture.asset(  
+                    "assets/icons/navegacion-gps.svg",
+                    color: Colors.white,
+                    height: 20,
+                    width: 20,
+                  ),
+                  SizedBox(width: 8),
+                  Text('Generar ruta',style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white, fontSize: 16)),
+                ],
+              ),
+              onPressed: () async{
+                      permiso = await checkLocationPermission();
+                      if (!permiso!) {
+                        WarningSuccessDialog().show(
+                          context,
+                          title: "Usted negó el acceso a la ubicación. Esto es necesario para poder abordar agentes. Si no da acceso en configuraciones, no podrá abordar agentes.",
+                          tipo: 1,
+                         onOkay: () async {
+                          Navigator.pop(context);
+                            try {
+                              AppSettings.openLocationSettings();
+                            } catch (error) {
+                              print(error);
+                            }
+                          },
+                        ); 
+                        return;
+                      }
 
-              permiso = await checkLocationPermission();
-              if (!permiso!) {
-                WarningSuccessDialog().show(
-                                    context,
-                                    title: "Usted negó el acceso a la ubicación. Esto es necesario para poder abordar agentes. Si no da acceso en configuraciones, no podrá abordar agentes.",
-                                    tipo: 1,
-                                    onOkay: () async {
-                                      Navigator.pop(context);
-                                      try {
-                                        AppSettings.openLocationSettings();
-                                      } catch (error) {
-                                        print(error);
-                                      }
-                                    },
-                                  ); 
-                return;
-              }
+                      showGeneralDialog(
+                        barrierColor: Colors.black.withOpacity(0.5),
+                        transitionBuilder: (context, a1, a2, widget) {
+                          return StatefulBuilder(
+                            builder: (context, setState){
+                              return Transform.scale(scale: a1.value,
+                            child: Opacity(opacity: a1.value,
+                              child: AlertDialog(
+                                backgroundColor: Theme.of(navigatorKey.currentContext!).cardColor,
+                                shape: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  borderSide: BorderSide(
+                                    color: Theme.of(navigatorKey.currentContext!).dividerColor, // Cambia el color de los bordes aquí
+                                    width: 1.0, // Cambia el ancho de los bordes aquí
+                                  ),
+                                ),
+                                
+                                title: Text(
+                                  'Seleccionar agentes para la ruta',
+                                  style: Theme.of(navigatorKey.currentContext!).textTheme.labelMedium!.copyWith(fontSize: 18, fontWeight: FontWeight.normal),
+                                  textAlign: TextAlign.center,
+                                ),
+                                content: SingleChildScrollView(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: List.generate(
+                                      abc.data!.trips![0].tripAgent!.length,
+                                      (index) {
+                                        return Padding(
+                                          padding: const EdgeInsets.only(bottom: 10),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Flexible(
+                                                child: Text(
+                                                  '${abc.data!.trips![0].tripAgent![index].agentFullname}',
+                                                  style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 16),
+                                                  textAlign: TextAlign.left,
+                                                ),
+                                              ),
+                                                                                
+                                              
+                                                TextButton(
+                                                  style: ButtonStyle(
+                                                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                                      RoundedRectangleBorder(
+                                                        borderRadius: BorderRadius.circular(10.0),
+                                                      ),
+                                                    ),
+                                                    backgroundColor: enRuta[index]==false? MaterialStateProperty.all(Colors.green) : MaterialStateProperty.all(Colors.red),
+                                                  ),
+                                                  onPressed:() {
+                                                    setState(() {
+                                                      enRuta[index]=!enRuta[index];
+                                                      if(enRuta[index]==true){
+                                                        waypoints.add('${abc.data!.trips![0].tripAgent![index].latitude},${abc.data!.trips![0].tripAgent![index].longitude}');
+                                                      }else{
+                                                        final targetString = '${abc.data!.trips![0].tripAgent![index].latitude},${abc.data!.trips![0].tripAgent![index].longitude}';
+                                                        waypoints.remove(targetString);
+                                                      }
+                                                    });
+                                                  },
+                                                  child: Text(
+                                                    enRuta[index]==false? 'Agregar': 'Quitar',
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 15
+                                                    ),
+                                                  ),
+                                                ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                actions: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: TextButton(
+                                          style: ButtonStyle(
+                                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                              RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(10.0),
+                                                side: BorderSide(color: Colors.black),
+                                              ),
+                                            ),
+                                            backgroundColor: MaterialStateProperty.all(Colors.transparent),
+                                          ),
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text(
+                                            'Cerrar',
+                                            style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 15, fontWeight: FontWeight.bold)
+                                          ),
+                                        ),
+                                      ),
+                                  
+                                      SizedBox(width: 10.0),
+                                      
+                                      Expanded(
+                                        child: TextButton(
+                                          style: ButtonStyle(
+                                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                              RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(10.0),
+                                                side: BorderSide(color: Color.fromRGBO(40, 93, 169, 1)),
+                                              ),
+                                            ),
+                                            backgroundColor: MaterialStateProperty.all(Color.fromRGBO(40, 93, 169, 1)),
+                                          ),
+                                          onPressed: () async{
 
-              obtenerUbicacion();
-              llenarArreglo();
-              LoadingIndicatorDialog().show(context);
-              Future.delayed(const Duration(seconds: 2), () {
-                launchGoogleMapsx(apiKey,latidudeInicial.toString(), longitudInicial.toString(), waypoints);
-              });
-              
-            },
+                                            if(waypoints.length==0){
+                                              WarningSuccessDialog().show(
+                                                context,
+                                                title: "Tiene que agregar un agente o mas.",
+                                                tipo: 1,
+                                                onOkay: () {},
+                                              );
+                                              return;
+                                            }
+
+                                            LoadingIndicatorDialog().show(context);
+                                            var latitudM;
+                                            var longitudM;
+                                            Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+                          
+                                            latitudM = position.latitude;
+                                            longitudM = position.longitude;
+                                            
+                                            if(latitudM!=null && longitudM!=null){
+                                              launchGoogleMapsx(apiKey,latitudM.toString(), longitudM.toString(), waypoints);
+                                            }
+                                          },
+                                          child: Text(
+                                            'Generar Ruta',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 15
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                  
+                                      
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                            }
+                          );
+                        },
+                        transitionDuration: Duration(milliseconds: 200),
+                        barrierDismissible: true,
+                        barrierLabel: '',
+                        context: context,
+                        pageBuilder: (context, animation1, animation2) {
+                          return Text('');
+                        });
+                    
+                    },
+            );
+
+        } else {
+          return ColorLoader3();
+        }
+      },
     );
-  }
-
-  void llenarArreglo() async{
-    var verificarAbordado;
-    await fetchAgentsTripInProgress().then((value) async{
-
-
-              if(value.trips![1].actualTravel!.tripType!='Entrada'){
-                waypoints.clear();
-                
-                for(var i = 0; i < value.trips![0].tripAgent!.length; i++){
-                  
-                  verificarAbordado = waypointsAbordados.where((element) => element == value.trips![0].tripAgent![i].agentId.toString());
-
-                  if(verificarAbordado.isNotEmpty)
-                    waypoints.add('${value.trips![0].tripAgent![i].latitude},${value.trips![0].tripAgent![i].longitude}');
-                }
-
-                setState(() {});
-              }else{
-                Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-                latidudeInicial = position.latitude;
-                longitudInicial = position.longitude;
-
-              }
-              
-    });
-            
   }
 
   Widget _buttonsAgents() {
