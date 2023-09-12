@@ -415,7 +415,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Widget contenido(String nombre, int idAg, String hora, var mensaje, int cantSinLeer, bool esMotorista, String ultimoM, String tipo){
-    print(mensaje['Leido']);
+
     return mensaje.isNotEmpty? GestureDetector(
                     onTap: () {
                        Navigator.push(
