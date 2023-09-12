@@ -1370,7 +1370,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                                 height: 18,
                                                 child: SvgPicture.asset(
                                                   "assets/icons/usuario.svg",
-                                                  color: abc.data!.trips![0].agentes![index].hourForTrip==null?Color.fromRGBO(213, 0, 0, 1):Theme.of(context).primaryIconTheme.color,
+                                                  color: abc.data!.trips![1].noConfirmados![index].hourForTrip==null?Color.fromRGBO(213, 0, 0, 1):Theme.of(context).primaryIconTheme.color,
                                                 ),
                                               ),
                                               SizedBox(width: 10),
