@@ -87,7 +87,7 @@ class ChatApis {
     Map sendNotification = {
       "receiverId": idR,
       "receiverRole": "agente",
-      "textMessage": message,
+      "textMessage": '$nameDriver: $message',
       "hourMessage": formattedHour,
       "nameSender": nameDriver
     };
