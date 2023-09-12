@@ -411,7 +411,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                 });
               },
             ),
-            Expanded(child: SizedBox()),
+
             Padding(
               padding: const EdgeInsets.only(right: 10, left: 10),
               child: TextButton(
@@ -432,7 +432,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                 },
               ),
             ),
-            Expanded(child: SizedBox()),
+
             TextButton(
               style: TextButton.styleFrom(
                 side: BorderSide(width: 1, color: Theme.of(context).primaryColorDark),
