@@ -389,11 +389,12 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
     );
   }
 
-  Row opcionesBotones() {
-    return Row(
-        children: [
-          Expanded(
-            child: TextButton(
+  Widget opcionesBotones() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+          children: [
+            TextButton(
               style: TextButton.styleFrom(
                 side: BorderSide(width: 1, color: Theme.of(context).primaryColorDark),
                 fixedSize: Size(150, 25),
@@ -410,31 +411,29 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                 });
               },
             ),
-          ),
-
-          Padding(
-            padding: const EdgeInsets.only(right: 10, left: 10),
-            child: TextButton(
-              style: TextButton.styleFrom(
-                side: BorderSide(width: 1, color: Theme.of(context).primaryColorDark),
-                fixedSize: Size(150, 25),
-                elevation: 0,
-                backgroundColor: noconfirmados!=true?Colors.transparent:Theme.of(context).primaryColorDark,
-                shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
+            Expanded(child: SizedBox()),
+            Padding(
+              padding: const EdgeInsets.only(right: 10, left: 10),
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  side: BorderSide(width: 1, color: Theme.of(context).primaryColorDark),
+                  fixedSize: Size(150, 25),
+                  elevation: 0,
+                  backgroundColor: noconfirmados!=true?Colors.transparent:Theme.of(context).primaryColorDark,
+                  shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
+                ),
+                child: Text('No confirmados',style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold, color: noconfirmados==true?Theme.of(context).primaryColorLight:Theme.of(context).primaryColorDark)),
+                onPressed: noconfirmados==true?null:() {
+                  setState(() {
+                    confirmados = false;
+                    noconfirmados = true;
+                    cancelados = false;
+                  });
+                },
               ),
-              child: Text('No confirmados',style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold, color: noconfirmados==true?Theme.of(context).primaryColorLight:Theme.of(context).primaryColorDark)),
-              onPressed: noconfirmados==true?null:() {
-                setState(() {
-                  confirmados = false;
-                  noconfirmados = true;
-                  cancelados = false;
-                });
-              },
             ),
-          ),
-
-          Expanded(
-            child: TextButton(
+            Expanded(child: SizedBox()),
+            TextButton(
               style: TextButton.styleFrom(
                 side: BorderSide(width: 1, color: Theme.of(context).primaryColorDark),
                 fixedSize: Size(150, 25),
@@ -451,9 +450,9 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                 });
               },
             ),
-          ),
-        ],
-      );
+          ],
+        ),
+    );
   }
 
   Widget ingresarVehiculo() {
