@@ -1492,12 +1492,12 @@ class _DataTableExample extends State<MyConfirmAgent> {
   AlertDialog vehiculoE(resp, BuildContext context) {
     var size = MediaQuery.of(context).size;
     return AlertDialog(
-      backgroundColor: backgroundColor,
+      backgroundColor: Theme.of(navigatorKey.currentContext!).cardColor,
       shape: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
       title: Center(
           child: Text(
         'Vehículo Encontrado',
-        style: TextStyle(color: GradiantV_2, fontSize: 20.0),
+        style: Theme.of(context).textTheme.labelMedium!.copyWith(fontSize: 20),
       )),
       content: Container(
         height: 130,
@@ -1505,117 +1505,121 @@ class _DataTableExample extends State<MyConfirmAgent> {
           children: [
             const SizedBox(height: 8.0),
             Text('Descripcion:',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold)),
+                style:  Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18, fontWeight: FontWeight.bold)),
             SizedBox(
               height: 5,
             ),
             Text(resp['vehicle']['name'],
-                style: TextStyle(color: Colors.white, fontSize: 18.0)),
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18)),
             SizedBox(
               height: 15,
             ),
             Text('Placa:',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold)),
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18, )),
             SizedBox(
               height: 10,
             ),
             Text(resp['vehicle']['registrationNumber'],
-                style: TextStyle(color: Colors.white, fontSize: 18.0)),
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18)),
           ],
         ),
       ),
       actions: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 100,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                  textStyle: TextStyle(
-                    color: backgroundColor,
-                  ),
-                  backgroundColor: Gradiant2,
-                ),
-                onPressed: () async {
-                  LoadingIndicatorDialog().show(context);
-                  http.Response responses = await http.get(Uri.parse(
-                      '$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
-                  final data2 =
-                      DriverData.fromJson(json.decode(responses.body));
-                  Map data = {
-                    "driverId": data2.driverId.toString(),
-                    "tripId": prefs.tripId.toString(),
-                    "vehicleId": resp['vehicle']['_id'],
-                    "tripVehicle":
-                        "${resp['vehicle']['name']} [${resp['vehicle']['registrationNumber']}]"
-                  };
-                  http.Response responsed = await http.post(
-                      Uri.parse(
-                          'https://driver.smtdriver.com/apis/editTripVehicle'),
-                      body: data);
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: TextButton(
+                                          style: ButtonStyle(
+                                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                              RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(10.0),
+                                                side: BorderSide(color: Colors.black),
+                                              ),
+                                            ),
+                                            backgroundColor: MaterialStateProperty.all(Colors.transparent),
+                                          ),
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text(
+                                            'Cancelar',
+                                            style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 15, fontWeight: FontWeight.bold)
+                                          ),
+                                        ),
+                                      ),
+                                  
+                                      SizedBox(width: 10.0),
+                                      
+                                      Expanded(
+                                        child: TextButton(
+                                          style: ButtonStyle(
+                                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                              RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(10.0),
+                                                side: BorderSide(color: Color.fromRGBO(40, 93, 169, 1)),
+                                              ),
+                                            ),
+                                            backgroundColor: MaterialStateProperty.all(Color.fromRGBO(40, 93, 169, 1)),
+                                          ),
+                                          onPressed: () async{
+                                            LoadingIndicatorDialog().show(context);
+                                            http.Response responses = await http.get(Uri.parse(
+                                                '$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
+                                            final data2 =
+                                                DriverData.fromJson(json.decode(responses.body));
+                                            Map data = {
+                                              "driverId": data2.driverId.toString(),
+                                              "tripId": prefs.tripId.toString(),
+                                              "vehicleId": resp['vehicle']['_id'],
+                                              "tripVehicle":
+                                                  "${resp['vehicle']['name']} [${resp['vehicle']['registrationNumber']}]"
+                                            };
+                                            http.Response responsed = await http.post(
+                                                Uri.parse(
+                                                    'https://driver.smtdriver.com/apis/editTripVehicle'),
+                                                body: data);
 
-                  final resp2 = json.decode(responsed.body);
-                  LoadingIndicatorDialog().dismiss();
-                  if (resp2['type'] == 'success') {
-                    if (mounted) {
-                      Navigator.pop(context);
-                      WarningSuccessDialog().show(
-                        context,
-                        title: "$resp2['message']}",
-                        tipo: 2,
-                        onOkay: () {},
-                      ); 
-                      setState(() {
-                        tripVehicle =
-                            "${resp['vehicle']['name']} [${resp['vehicle']['registrationNumber']}]";
-                        vehicleController.text = tripVehicle;
-                      });
-                    }
-                  } else {
-                    WarningSuccessDialog().show(
-                        context,
-                        title: "$resp2['message']}",
-                        tipo: 1,
-                        onOkay: () {},
-                      ); 
-                  }
-                },
-                child: Text('Agregar',
-                    style: TextStyle(color: backgroundColor, fontSize: 15.0)),
-              ),
-            ),
-            SizedBox(width: 10.0),
-            Container(
-              width: 100,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                  textStyle: TextStyle(
-                    color: Colors.white,
-                  ),
-                  backgroundColor: Colors.red,
-                ),
-                onPressed: () => {
-                  Navigator.pop(context),
-                },
-                child: Text('Cancelar',
-                    style: TextStyle(color: Colors.white, fontSize: 15.0)),
-              ),
-            ),
-          ],
-        ),
+                                            final resp2 = json.decode(responsed.body);
+                                            LoadingIndicatorDialog().dismiss();
+                                            if (resp2['type'] == 'success') {
+                                              if (mounted) {
+                                                Navigator.pop(context);
+                                                WarningSuccessDialog().show(
+                                                  context,
+                                                  title: "${resp2['message']}",
+                                                  tipo: 2,
+                                                  onOkay: () {},
+                                                ); 
+                                                setState(() {
+                                                  tripVehicle =
+                                                      "${resp['vehicle']['name']} [${resp['vehicle']['registrationNumber']}]";
+                                                  vehicleController.text = tripVehicle;
+                                                });
+                                              }
+                                            } else {
+                                              WarningSuccessDialog().show(
+                                                  context,
+                                                  title: "${resp2['message']}",
+                                                  tipo: 1,
+                                                  onOkay: () {},
+                                                ); 
+                                            }
+                                          },
+                                          child: Text(
+                                            'Agregar',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 15
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                  
+                                      
+                                    ],
+                                  ),
       ],
     );
   }
