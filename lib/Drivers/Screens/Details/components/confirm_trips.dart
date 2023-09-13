@@ -778,7 +778,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                           abc.data!.trips![0].tripAgent=itemAbordaje.trips![0].tripAgent;
                                       
                                                           fetchRegisterCommentAgent(
-                                                            abc.data!.trips![0].tripAgent![indexP].agentId.toString(),
+                                                            itemAbordaje.trips![0].tripAgent![indexP].agentId.toString(),
                                                             prefs.tripId,
                                                             ''
                                                           ); 
@@ -1119,7 +1119,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                           abc.data!.trips![0].tripAgent=itemAbordaje.trips![0].tripAgent;
 
                                                           fetchRegisterCommentAgent(
-                                                            abc.data!.trips![0].tripAgent![indexP].agentId.toString(),
+                                                            itemAbordaje.trips![0].tripAgent![indexP].agentId.toString(),
                                                             prefs.tripId,
                                                             ''
                                                           ); 
