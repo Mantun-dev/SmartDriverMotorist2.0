@@ -825,7 +825,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                       child: Column(
                         children: [
                           SizedBox(height: 20),
-                        Padding(
+                          Padding(
                                       padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
                                       child: Row(
                                         children: [

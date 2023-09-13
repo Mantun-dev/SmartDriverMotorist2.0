@@ -857,7 +857,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                   confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
                                                   cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ),
                                                   onConfirmBtnTap: () async{
-                                      
                                                     Navigator.pop(context);
                                       
                                                     LoadingIndicatorDialog().show(context);
@@ -2617,14 +2616,41 @@ class _DataTableExample extends State<MyConfirmAgent> {
             if(abc.data!.trips![0].tripAgent![index].latitude==null)...{
               TextButton(
                 style: TextButton.styleFrom(
-                  side: BorderSide(width: 1, color: abc.data!.trips![0].tripAgent![index].commentDriver == 'No abordó'? Colors.grey:Theme.of(context).primaryColorDark),
+                  side: BorderSide(width: 1, color: Theme.of(context).primaryColorDark),
                   fixedSize: Size(150, 25),
                   elevation: 0,
                   backgroundColor: Colors.transparent,
                   shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
                 ),
-                onPressed: () {
+                onPressed: () async{
+                
+                  LoadingIndicatorDialog().show(context);
                   
+                  http.Response response = await http.get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
+                  final data = DriverData.fromJson(json.decode(response.body));
+
+                  var latitudM;
+                  var longitudM;
+                  Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+                  latitudM = position.latitude;
+                  longitudM = position.longitude;
+
+                  Map datos =   {
+
+                    'agentId': abc.data!.trips![0].tripAgent![index].agentId.toString(), 
+                    'tripId': tripId.toString(),
+                    'latitude': latitudM,
+                    'longitude': longitudM,
+                    'userId': data.driverId,
+                    'userAgent': "mobile"
+                  };
+
+                  LoadingIndicatorDialog().dismiss();
+
+                  http.Response responses = await http.post(Uri.parse('https://admin.smtdriver.com/registerUbicationFromTrip'), body: datos);
+                   final resp = json.decode(responses.body);
+
+                   print(responses.body);
                 },
                 child: Text(
                   'Guardar Ubicación',
