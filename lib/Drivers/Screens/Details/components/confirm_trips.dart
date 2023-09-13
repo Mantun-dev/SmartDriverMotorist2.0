@@ -2924,154 +2924,197 @@ class _DataTableExample extends State<MyConfirmAgent> {
                             builder: (context, setState){
                               return Transform.scale(scale: a1.value,
                             child: Opacity(opacity: a1.value,
-                              child: AlertDialog(
-                                backgroundColor: Theme.of(navigatorKey.currentContext!).cardColor,
-                                shape: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                  borderSide: BorderSide(
-                                    color: Theme.of(navigatorKey.currentContext!).dividerColor, // Cambia el color de los bordes aquí
-                                    width: 1.0, // Cambia el ancho de los bordes aquí
-                                  ),
-                                ),
-                                
-                                title: Text(
-                                  'Seleccionar agentes para la ruta',
-                                  style: Theme.of(navigatorKey.currentContext!).textTheme.labelMedium!.copyWith(fontSize: 18, fontWeight: FontWeight.normal),
-                                  textAlign: TextAlign.center,
-                                ),
-                                content: SingleChildScrollView(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: List.generate(
-                                      abc.data!.trips![0].tripAgent!.length,
-                                      (index) {
-                                        return Padding(
-                                          padding: const EdgeInsets.only(bottom: 10),
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Flexible(
-                                                child: Text(
-                                                  '${abc.data!.trips![0].tripAgent![index].agentFullname}',
-                                                  style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 16),
-                                                  textAlign: TextAlign.left,
-                                                ),
-                                              ),
-                                                                                
-                                              
-                                                TextButton(
-                                                  style: ButtonStyle(
-                                                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                                      RoundedRectangleBorder(
-                                                        borderRadius: BorderRadius.circular(10.0),
-                                                      ),
-                                                    ),
-                                                    backgroundColor: enRuta[index]==false? MaterialStateProperty.all(Colors.green) : MaterialStateProperty.all(Colors.red),
-                                                  ),
-                                                  onPressed:() {
-                                                    setState(() {
-                                                      enRuta[index]=!enRuta[index];
-                                                      if(enRuta[index]==true){
-                                                        waypoints.add('${abc.data!.trips![0].tripAgent![index].latitude},${abc.data!.trips![0].tripAgent![index].longitude}');
-                                                      }else{
-                                                        final targetString = '${abc.data!.trips![0].tripAgent![index].latitude},${abc.data!.trips![0].tripAgent![index].longitude}';
-                                                        waypoints.remove(targetString);
-                                                      }
-                                                    });
-                                                  },
-                                                  child: Text(
-                                                    enRuta[index]==false? 'Agregar': 'Quitar',
-                                                    style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontWeight: FontWeight.bold,
-                                                      fontSize: 15
-                                                    ),
-                                                  ),
-                                                ),
-                                            ],
-                                          ),
-                                        );
-                                      },
+                              child: Padding(
+                                padding: const EdgeInsets.only(top:40, bottom: 40),
+                                child: AlertDialog(
+                                  backgroundColor: Theme.of(navigatorKey.currentContext!).cardColor,
+                                  shape: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    borderSide: BorderSide(
+                                      color: Theme.of(navigatorKey.currentContext!).dividerColor, // Cambia el color de los bordes aquí
+                                      width: 1.0, // Cambia el ancho de los bordes aquí
                                     ),
                                   ),
-                                ),
-                                actions: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: TextButton(
-                                          style: ButtonStyle(
-                                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                              RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(10.0),
-                                                side: BorderSide(color: Colors.black),
-                                              ),
-                                            ),
-                                            backgroundColor: MaterialStateProperty.all(Colors.transparent),
-                                          ),
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: Text(
-                                            'Cerrar',
-                                            style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 15, fontWeight: FontWeight.bold)
-                                          ),
-                                        ),
-                                      ),
                                   
-                                      SizedBox(width: 10.0),
-                                      
-                                      Expanded(
-                                        child: TextButton(
-                                          style: ButtonStyle(
-                                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                              RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(10.0),
-                                                side: BorderSide(color: Color.fromRGBO(40, 93, 169, 1)),
-                                              ),
-                                            ),
-                                            backgroundColor: MaterialStateProperty.all(Color.fromRGBO(40, 93, 169, 1)),
-                                          ),
-                                          onPressed: () async{
-
-                                            if(waypoints.length==0){
-                                              WarningSuccessDialog().show(
-                                                context,
-                                                title: "Debe agregar al menos 1 agente para generar la ruta",
-                                                tipo: 1,
-                                                onOkay: () {},
-                                              );
-                                              return;
-                                            }
-
-                                            LoadingIndicatorDialog().show(context);
-                                            var latitudM;
-                                            var longitudM;
-                                            Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-                          
-                                            latitudM = position.latitude;
-                                            longitudM = position.longitude;
-                                            
-                                            if(latitudM!=null && longitudM!=null){
-                                              launchGoogleMapsx(apiKey,latitudM.toString(), longitudM.toString(), waypoints);
-                                            }
-                                          },
-                                          child: Text(
-                                            'Generar Ruta',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 15
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                  
-                                      
-                                    ],
+                                  title: Text(
+                                    'Seleccionar agentes para la ruta',
+                                    style: Theme.of(navigatorKey.currentContext!).textTheme.labelMedium!.copyWith(fontSize: 18, fontWeight: FontWeight.normal),
+                                    textAlign: TextAlign.center,
                                   ),
-                                ],
+                                  content: SingleChildScrollView(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: List.generate(
+                                        abc.data!.trips![0].tripAgent!.length,
+                                        (index) {
+                                          return Padding(
+                                            padding: const EdgeInsets.only(bottom: 10),
+                                            child: Column(
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    Flexible(
+                                                      child: Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          RichText(
+                                                            text: TextSpan(
+                                                              style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 14),
+                                                              children: [
+                                                                TextSpan(
+                                                                  text: 'Nombre: ',
+                                                                  style: TextStyle(fontWeight: FontWeight.w500),
+                                                                ),
+                                                                TextSpan(
+                                                                  text: '${abc.data!.trips![0].tripAgent![index].agentFullname}',
+                                                                  style: TextStyle(fontWeight: FontWeight.normal),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                      SizedBox(height: 5),
+                                                      RichText(
+                                                        text: TextSpan(
+                                                          style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 14),
+                                                          children: [
+                                                            TextSpan(
+                                                              text: 'Dirección: ',
+                                                              style: TextStyle(fontWeight: FontWeight.w500),
+                                                            ),
+                                                            TextSpan(
+                                                              text: abc.data!.trips![0].tripAgent![index].agentReferencePoint==null
+                                                              ||abc.data!.trips![0].tripAgent![index].agentReferencePoint==""
+                                                              ?"${abc.data!.trips![0].tripAgent![index].neighborhoodName}, ${abc.data!.trips![0].tripAgent![index].townName}":'${abc.data!.trips![0].tripAgent![index].agentReferencePoint}, ${abc.data!.trips![0].tripAgent![index].neighborhoodName}, ${abc.data!.trips![0].tripAgent![index].townName},',
+                                                              style: TextStyle(fontWeight: FontWeight.normal),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                      SizedBox(width: 5),                                                                                    
+                                                      TextButton(
+                                                        style: ButtonStyle(
+                                                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                                            RoundedRectangleBorder(
+                                                              borderRadius: BorderRadius.circular(10.0),
+                                                            ),
+                                                          ),
+                                                          backgroundColor: enRuta[index]==false? MaterialStateProperty.all(Colors.green) : MaterialStateProperty.all(Colors.red),
+                                                        ),
+                                                        onPressed:() {
+                                                          setState(() {
+                                                            enRuta[index]=!enRuta[index];
+                                                            if(enRuta[index]==true){
+                                                              waypoints.add('${abc.data!.trips![0].tripAgent![index].latitude},${abc.data!.trips![0].tripAgent![index].longitude}');
+                                                            }else{
+                                                              final targetString = '${abc.data!.trips![0].tripAgent![index].latitude},${abc.data!.trips![0].tripAgent![index].longitude}';
+                                                              waypoints.remove(targetString);
+                                                            }
+                                                          });
+                                                        },
+                                                        child: Text(
+                                                          enRuta[index]==false? 'Agregar': 'Quitar',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight: FontWeight.bold,
+                                                            fontSize: 15
+                                                          ),
+                                                        ),
+                                                      ),
+                                                  ],
+                                                ),
+                                                Container(
+                                                  height: 1,
+                                                  color: Theme.of(context).dividerColor,
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                  actions: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Expanded(
+                                          child: TextButton(
+                                            style: ButtonStyle(
+                                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                                RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(10.0),
+                                                  side: BorderSide(color: Theme.of(navigatorKey.currentContext!).primaryColorDark),
+                                                ),
+                                              ),
+                                              backgroundColor: MaterialStateProperty.all(Colors.transparent),
+                                            ),
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text(
+                                              'Cerrar',
+                                              style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 15, fontWeight: FontWeight.bold)
+                                            ),
+                                          ),
+                                        ),
+                                    
+                                        SizedBox(width: 10.0),
+                                        
+                                        Expanded(
+                                          child: TextButton(
+                                            style: ButtonStyle(
+                                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                                RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(10.0),
+                                                  side: BorderSide(color: Color.fromRGBO(40, 93, 169, 1)),
+                                                ),
+                                              ),
+                                              backgroundColor: MaterialStateProperty.all(Color.fromRGBO(40, 93, 169, 1)),
+                                            ),
+                                            onPressed: () async{
+                              
+                                              if(waypoints.length==0){
+                                                WarningSuccessDialog().show(
+                                                  context,
+                                                  title: "Debe agregar al menos 1 agente para generar la ruta",
+                                                  tipo: 1,
+                                                  onOkay: () {},
+                                                );
+                                                return;
+                                              }
+                              
+                                              LoadingIndicatorDialog().show(context);
+                                              var latitudM;
+                                              var longitudM;
+                                              Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+                                                        
+                                              latitudM = position.latitude;
+                                              longitudM = position.longitude;
+                                              
+                                              if(latitudM!=null && longitudM!=null){
+                                                launchGoogleMapsx(apiKey,latitudM.toString(), longitudM.toString(), waypoints);
+                                              }
+                                            },
+                                            child: Text(
+                                              'Generar Ruta',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 15
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                    
+                                        
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           );

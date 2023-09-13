@@ -116,102 +116,101 @@ class _DataTableExample extends State<MyFinishedTrips> {
   }
 
   Widget infoViaje() {
-    return cargarData==true? Row(
-        children: [
-    
-          Container(
-            width: 115,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: Theme.of(context).dividerColor,
-                width: 1
-              ) // Radio de la esquina
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                children: [
-                  SvgPicture.asset(
-                    "assets/icons/viajaron.svg",
-                    color: Theme.of(context).primaryIconTheme.color,
-                    width: 25,
-                    height: 25,
-                  ),
-                  SizedBox(height: 5),
-                  Text(
-                    'Viajaron: $totalViajaron',
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 10),
-                  )
-                ],
+    return cargarData==true? SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+          children: [
+      
+            Container(
+              width: 115,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Theme.of(context).dividerColor,
+                  width: 1
+                ) // Radio de la esquina
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  children: [
+                    SvgPicture.asset(
+                      "assets/icons/viajaron.svg",
+                      color: Theme.of(context).primaryIconTheme.color,
+                      width: 25,
+                      height: 25,
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      'Viajaron: $totalViajaron',
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 10),
+                    )
+                  ],
+                ),
               ),
             ),
-          ),
-    
-          Expanded(child: SizedBox()),
-    
-          Container(
-            width: 115,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: Theme.of(context).dividerColor,
-                width: 1
-              ) // Radio de la esquina
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                children: [
-                  SvgPicture.asset(
-                    "assets/icons/viajaron.svg",
-                    color: Theme.of(context).primaryIconTheme.color,
-                    width: 25,
-                    height: 25,
-                  ),
-                  SizedBox(height: 5),
-                  Text(
-                    'No viajaron: $totalNoViajaron',
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 10),
-                  )
-                ],
+            SizedBox(width: 5),
+            Container(
+              width: 115,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Theme.of(context).dividerColor,
+                  width: 1
+                ) // Radio de la esquina
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  children: [
+                    SvgPicture.asset(
+                      "assets/icons/viajaron.svg",
+                      color: Theme.of(context).primaryIconTheme.color,
+                      width: 25,
+                      height: 25,
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      'No viajaron: $totalNoViajaron',
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 10),
+                    )
+                  ],
+                ),
               ),
             ),
-          ),
-    
-          Expanded(child: SizedBox()),
-    
-          Container(
-            width: 115,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: Theme.of(context).dividerColor,
-                width: 1
-              ) // Radio de la esquina
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                children: [
-                  SvgPicture.asset(
-                    "assets/icons/agentes.svg",
-                    color: Theme.of(context).primaryIconTheme.color,
-                    width: 25,
-                    height: 25,
-                  ),
-                  SizedBox(height: 5),
-                  Text(
-                    'Total de agentes: ${datos[0].inTrip!.length+datos[1].cancelAgent!.length}',
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 10),
-                  )
-                ],
+            SizedBox(width: 5),
+            Container(
+              width: 115,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Theme.of(context).dividerColor,
+                  width: 1
+                ) // Radio de la esquina
               ),
-            ),
-          )
-    
-        ]
-      ):
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  children: [
+                    SvgPicture.asset(
+                      "assets/icons/agentes.svg",
+                      color: Theme.of(context).primaryIconTheme.color,
+                      width: 25,
+                      height: 25,
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      'Total de agentes: ${datos[0].inTrip!.length+datos[1].cancelAgent!.length}',
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 10),
+                    )
+                  ],
+                ),
+              ),
+            )
+      
+          ]
+        ),
+    ):
       WillPopScope(
       onWillPop: () async => false,
       child: Center(
