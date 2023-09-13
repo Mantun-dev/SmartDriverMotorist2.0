@@ -2308,15 +2308,13 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                             horizontal:
                                                 25.0),
                                         child: Text(
-                                            '¿Razón por la cual no ingresó a la unidad?',
-                                            style: TextStyle(
-                                                color:
-                                                    GradiantV_2,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                                fontSize:
-                                                    20)),
+                                          '¿Razón por la cual no ingresó a la unidad?',
+                                          style: TextStyle(
+                                            color: GradiantV_2,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20
+                                          )
+                                        ),
                                       ),
                                       content:
                                           Container(
@@ -2639,18 +2637,32 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
                     'agentId': abc.data!.trips![0].tripAgent![index].agentId.toString(), 
                     'tripId': tripId.toString(),
-                    'latitude': latitudM,
-                    'longitude': longitudM,
-                    'userId': data.driverId,
+                    'latitude': latitudM.toString(),
+                    'longitude': longitudM.toString(),
+                    'userId': data.driverId.toString(),
                     'userAgent': "mobile"
                   };
-
-                  LoadingIndicatorDialog().dismiss();
-
+                  
                   http.Response responses = await http.post(Uri.parse('https://admin.smtdriver.com/registerUbicationFromTrip'), body: datos);
                    final resp = json.decode(responses.body);
 
-                   print(responses.body);
+                  LoadingIndicatorDialog().dismiss();
+                   if(resp['ok']==true){
+                      WarningSuccessDialog().show(
+                        context,
+                        title: "${resp['db'][0]['msg']}",
+                         tipo: 2,
+                        onOkay: () {},
+                      ); 
+                   }else{
+                    WarningSuccessDialog().show(
+                      context,
+                       title: "${resp['message']}",
+                        tipo: 1,
+                      onOkay: () {},
+                    ); 
+                   }                
+
                 },
                 child: Text(
                   'Guardar Ubicación',
