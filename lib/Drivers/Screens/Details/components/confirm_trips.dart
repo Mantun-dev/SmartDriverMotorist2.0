@@ -193,6 +193,9 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
   Future<Driver> fetchRegisterCommentAgent(
       String agentId, String tripId, String comment) async {
+        
+        if(comment=='')
+          LoadingIndicatorDialog().show(context);
     Map datas = {'agentId': agentId, 'tripId': tripId};
     Map datas2 = {
       'agentId': agentId,
@@ -205,23 +208,30 @@ class _DataTableExample extends State<MyConfirmAgent> {
     final si = Driver.fromJson(json.decode(responses.body));
       await http.post(Uri.parse('$ip/apis/agentTripSetComment'), body: datas2);
 
+  
     if (responses.statusCode == 200 &&
         si.ok == true &&
         responses.statusCode == 200) {
-      QuickAlert.show(
-        context: context,
-        type: QuickAlertType.success,
-        title: 'Enviado',
-        text: si.message,
-      );
-      Navigator.pop(context);
+          if(comment=='')
+            LoadingIndicatorDialog().dismiss();
+          if(comment=='')
+            QuickAlert.show(
+              context: context,
+              type: QuickAlertType.success,
+              title: 'Enviado',
+              text: si.message,
+            );
+
     } else if (si.ok != true) {
-      QuickAlert.show(
-        context: context,
-        type: QuickAlertType.error,
-        title: si.title,
-        text: si.message,
-      );
+      if(comment=='')
+        LoadingIndicatorDialog().dismiss();
+      if(comment=='')
+        QuickAlert.show(
+          context: context,
+          type: QuickAlertType.error,
+          title: si.title,
+          text: si.message,
+        );
     }
     return Driver.fromJson(json.decode(responses.body));
   }
@@ -604,7 +614,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                   child: Column(
                     crossAxisAlignment:CrossAxisAlignment.start,
                     children: [
-                      Text('Escanee el codigo del agente', style: TextStyle(color: Colors.white70,fontWeight: FontWeight.normal,fontSize: 15.0),),
+                      Text('Marcar abordaje', style: TextStyle(color: Colors.white70,fontWeight: FontWeight.normal,fontSize: 15.0),),
                       SizedBox(height: 5),
                       Row(
                         children: [
@@ -870,7 +880,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                                 'No abordó'
                                                               );  
                                                               waypointsAbordados.removeWhere((element) => element == abc.data!.trips![0].tripAgent![index].agentId.toString());
-                                                              totalAbordado--;
                                                             }
 
                                                             if(abc.data!.trips![0].tripAgent![index].commentDriver=="Canceló transporte"){
@@ -898,7 +907,13 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                             
                                                             http.Response response2 = await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
                                                             final resp2 = json.decode(response2.body);
-                                                            Navigator.pop(context);
+                                                            agentEmployeeId.text='';
+                                                          abc.data!.trips![0].tripAgent![index].commentDriver='';
+                                                          print(totalAbordado);
+                                                          totalAbordado++;
+                                                          print('***********************************');
+                                                          print(totalAbordado);
+                                                          waypointsAbordados.add(abc.data!.trips![0].tripAgent![index].agentId.toString());
                                                             LoadingIndicatorDialog().dismiss();
                                                             
 
@@ -908,10 +923,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                             text: "El agente ${abc.data!.trips![0].tripAgent![index].agentFullname} ha abordado.",
                                                             type: QuickAlertType.success,
                                                           ); 
-                                                          agentEmployeeId.text='';
-                                                          abc.data!.trips![0].tripAgent![index].commentDriver='';
-                                                          totalAbordado++;
-                                                          waypointsAbordados.add(abc.data!.trips![0].tripAgent![index].agentId.toString());
+                                                          
                                                           setState(() { });
                                                           },
                                                           onCancelBtnTap: () {
@@ -964,9 +976,11 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                    children: [
                                     Icon(Icons.person,color: thirdColor,size: 30.0,),
                                     SizedBox(width: 10.0),
-                                     Text(
-                                       'Abordar Agente',
-                                       style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 15),
+                                     Flexible(
+                                       child: Text(
+                                         'Número de empleado o identidad',
+                                         style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 15),
+                                       ),
                                      ),
                                    ],
                                  ),
@@ -1215,7 +1229,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                           'No abordó'
                                         );  
                                         waypointsAbordados.removeWhere((element) => element == abc.data!.trips![0].tripAgent![index].agentId.toString());
-                                        totalAbordado--;
                                         }
 
                                         if(abc.data!.trips![0].tripAgent![index].commentDriver=="Canceló transporte"){
@@ -1242,7 +1255,12 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
                                         http.Response response2 = await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
                                         final resp2 = json.decode(response2.body);
-
+                                        abc.data!.trips![0].tripAgent![index].commentDriver='';
+                                        print(totalAbordado);
+                                        totalAbordado++;
+                                        print('***********************************');
+                                        print(totalAbordado);
+                                        waypointsAbordados.add(abc.data!.trips![0].tripAgent![index].agentId.toString());
                                         LoadingIndicatorDialog().dismiss();
                                         
 
@@ -1252,9 +1270,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                         text: "El agente ${abc.data!.trips![0].tripAgent![index].agentFullname} ha abordado.",
                                         type: QuickAlertType.success,
                                       ); 
-                                      abc.data!.trips![0].tripAgent![index].commentDriver='';
-                                      totalAbordado++;
-                                      waypointsAbordados.add(abc.data!.trips![0].tripAgent![index].agentId.toString());
+                                      
                                       setState(() { });
                                       },
                                       onCancelBtnTap: () {
@@ -1740,6 +1756,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
         cancelBtnTextStyle: TextStyle(
             color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
         onConfirmBtnTap: () async {
+          Navigator.pop(context);
           LoadingIndicatorDialog().show(context);
           //fetchRegisterAgentDidntGetOut(abc.data!.trips![0].tripAgent![index].agentId.toString(),prefs.tripId);
           Position position = await Geolocator.getCurrentPosition(
@@ -1765,22 +1782,25 @@ class _DataTableExample extends State<MyConfirmAgent> {
             traveled = abc.data!.trips![0].tripAgent![index].traveled;
           }
 
-          if (abc.data!.trips![0].tripAgent![index].commentDriver ==
-              "Canceló transporte") {
-            abc.data!.trips![0].tripAgent![index].commentDriver =
-                "Pasé por él (ella) y no salió";
-          }
-          Navigator.pop(context);
+          setState(() {
+            if (abc.data!.trips![0].tripAgent![index].commentDriver != "Canceló transporte")
+              totalAbordado--;
+            else if (abc.data!.trips![0].tripAgent![index].commentDriver != "No abordó")
+              totalAbordado--;
+
+            abc.data!.trips![0].tripAgent![index].commentDriver = "Pasé por él (ella) y no salió";
+          });
         },
         onCancelBtnTap: () {
           Navigator.pop(context);
         },
       );
 
-      setState(() {});
+      
     }
 
     alertaCancelo(abc, index) async {
+      
       await QuickAlert.show(
         context: context,
         type: QuickAlertType.confirm,
@@ -1793,6 +1813,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
         cancelBtnTextStyle: TextStyle(
             color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
         onConfirmBtnTap: () {
+          Navigator.pop(context);
+
           fetchRegisterCommentAgent(
               abc.data!.trips![0].tripAgent![index].agentId.toString(),
               prefs.tripId,
@@ -1810,17 +1832,21 @@ class _DataTableExample extends State<MyConfirmAgent> {
           }
 
           setState(() {
-            abc.data!.trips![0].tripAgent![index].commentDriver =
-                'Canceló transporte';
+            if(abc.data!.trips![0].tripAgent![index].commentDriver != "Pasé por él (ella) y no salió")
+              totalAbordado--;
+            else if (abc.data!.trips![0].tripAgent![index].commentDriver != "No abordó")
+              totalAbordado--;      
+            abc.data!.trips![0].tripAgent![index].commentDriver = 'Canceló transporte';
+             
           });
-          Navigator.pop(context);
+          
         },
         onCancelBtnTap: () {
           Navigator.pop(context);
         },
       );
 
-      setState(() {});
+      
     }
 
     //Size size = MediaQuery.of(context).size;
@@ -2361,28 +2387,33 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                   Row(
                                     //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                     children: [                                      
-                                      RoundCheckBox(
-                                          border: Border.all(
-                                              style: BorderStyle.none),
-                                          animationDuration:
-                                              Duration(seconds: 1),
-                                          uncheckedColor: Colors.red,
-                                          uncheckedWidget: Icon(
-                                            Icons.close,
-                                            color: backgroundColor,
-                                            size: 15,
-                                          ),
-                                          checkedColor: firstColor,
-                                          checkedWidget: Icon(
-                                            Icons.check,
-                                            color: backgroundColor,
-                                            size: 15,
-                                          ),
-                                          size: 20,
-                                          isChecked: traveledB(abc,index),
-                                          onTap: (bool? isChecked) {
-                                            alertaAbordo(abc, index, isChecked);
-                                          }),
+                                      traveledB(abc, index)
+                                          ? RoundCheckBox(
+                                              border: Border.all(style: BorderStyle.none),
+                                              animationDuration: Duration(seconds: 1),
+                                              uncheckedColor: Colors.red,
+                                              uncheckedWidget: Icon(
+                                                Icons.close,
+                                                color: backgroundColor,
+                                                size: 15,
+                                              ),
+                                              checkedColor: firstColor,
+                                              checkedWidget: Icon(
+                                                Icons.check,
+                                                color: backgroundColor,
+                                                size: 15,
+                                              ),
+                                              size: 20,
+                                              isChecked: traveledB(abc, index),
+                                              onTap: (bool? isChecked) {
+                                                alertaAbordo(abc, index, isChecked);
+                                              },
+                                            )
+                                          : Icon(
+                                              Icons.close,
+                                              color: Colors.red,
+                                              size: 15,
+                                            ),
                                       SizedBox(width: 15.0),
                                       Text('Abordó ',
                                           style: TextStyle(

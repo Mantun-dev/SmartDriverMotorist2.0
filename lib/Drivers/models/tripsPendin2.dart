@@ -45,7 +45,9 @@ class TripsInProgress {
         this.empresa,
         this.agentes,
         this.tipo,
-        this.conductor
+        this.conductor,
+        this.departmentId,
+        this.departamento
     );
 
     int tripId;
@@ -55,6 +57,8 @@ class TripsInProgress {
     int agentes;
     String tipo;
     String conductor;
+    dynamic departmentId;
+    dynamic departamento;
 
 }
 

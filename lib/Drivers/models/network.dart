@@ -108,7 +108,7 @@ Future<List<TripsInProgress>> fetchTripsInProgress() async {
 
   for (var u in jsonData) {
     TripsInProgress trip = TripsInProgress(u["tripId"], u["Fecha"], u["Hora"],
-        u["Empresa"], u["Agentes"], u['Tipo'], u['conductor']);
+        u["Empresa"], u["Agentes"], u['Tipo'], u['conductor'], u['departmentId'], u['departamento']);
     trips.add(trip);
   }
   return trips;
