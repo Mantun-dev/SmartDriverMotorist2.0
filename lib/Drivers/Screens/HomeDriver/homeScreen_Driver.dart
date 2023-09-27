@@ -11,7 +11,7 @@ import 'package:flutter_auth/Drivers/models/DriverData.dart';
 import 'package:flutter_auth/Drivers/models/countNotify.dart';
 import 'package:flutter_auth/Drivers/models/network.dart';
 import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
-import 'package:flutter_auth/components/backgroundH.dart';
+
 import 'package:flutter_auth/main.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:quickalert/quickalert.dart';
@@ -22,7 +22,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' show json;
 import 'dart:async';
 import 'package:permission_handler/permission_handler.dart';
-//import 'package:app_settings/app_settings.dart';
 //import 'package:showcaseview/showcaseview.dart';
 
 class HomeDriverScreen extends StatefulWidget {
@@ -243,11 +242,32 @@ class _HomeDriverScreenState extends State<HomeDriverScreen>
   }
   
   void checkLocationPermission() async {
+
     // Verificar si se tiene el permiso de grabación de audio
+
     var status = await Permission.location.status;
 
     if (status.isGranted) {
       // Permiso concedido
+
+
+    } else if (status.isDenied) {
+      // Permiso denegado anteriormente
+      QuickAlert.show(
+        context: context,
+        title: "Advertencia",
+        text: 'Usted negó el acceso a la ubicación. Esto es necesario para poder abordar agentes. Si no da acceso en configuraciones, no podrá abordar agentes.',
+        type: QuickAlertType.warning,
+        onConfirmBtnTap: () async{
+          Navigator.pop(context);
+          try{
+            AppSettings.openLocationSettings();
+          }catch(error){
+            print(error);
+          }
+        },
+      );
+
     } else {
       // No se ha solicitado el permiso, solicitarlo al usuario
       await Permission.location.request();

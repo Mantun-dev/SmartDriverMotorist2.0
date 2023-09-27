@@ -70,7 +70,9 @@ class _AudioContainerState extends State<AudioContainer> {
                     });
                   },
                   icon: !audioPlaying
+
                       ? Icon(Icons.play_arrow, color: colorIcono)
+
                       : Icon(Icons.stop, color: Colors.red),
                 ),
           if (audioDuration != null)
@@ -78,6 +80,7 @@ class _AudioContainerState extends State<AudioContainer> {
               children: [
                 Text(
                   '${audioPosition?.inMinutes ?? 0}:${(audioPosition?.inSeconds ?? 0).toString().padLeft(2, '0')}',
+
                   style: TextStyle(fontSize: 10, color: colorIcono),
                 ),
                 Text(
@@ -87,6 +90,7 @@ class _AudioContainerState extends State<AudioContainer> {
                 Text(
                   '${audioDuration!.inMinutes}:${(audioDuration!.inSeconds % 60).toString().padLeft(2, '0')}',
                   style: TextStyle(fontSize: 10, color: colorIcono),
+
                 ),
                 Icon(
                   Icons.done,

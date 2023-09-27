@@ -56,8 +56,10 @@ class TripsInProgress {
     int agentes;
     String tipo;
     String conductor;
+
     int departmentId;
     String departamento;
+
 
 }
 

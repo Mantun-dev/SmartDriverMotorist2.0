@@ -11,7 +11,9 @@ import 'package:flutter_auth/Drivers/Screens/Details/components/databases.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/history_TripDriver.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/process_Trip.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
-//import 'package:flutter_auth/Drivers/components/loader.dart';
+
+import 'package:flutter_auth/Drivers/components/loader.dart';
+
 import 'package:flutter_auth/Drivers/components/progress_indicator.dart';
 import 'package:flutter_auth/Drivers/models/DriverData.dart';
 import 'package:flutter_auth/Drivers/models/company.dart';
@@ -24,7 +26,9 @@ import 'package:flutter_auth/Drivers/models/tripToSolid.dart';
 import 'package:flutter_auth/Drivers/models/tripsPendin2.dart';
 import 'package:flutter_auth/main.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+
 import 'package:flutter_svg/svg.dart';
+
 //import 'package:geolocator/geolocator.dart';
 //import 'package:localstorage/localstorage.dart';
 //import 'package:searchable_dropdown/searchable_dropdown.dart';
@@ -195,12 +199,14 @@ class _DriverDescriptionState extends State<DriverDescription>
       return;
     }
     loadingDialog.show(context);
+
     http.Response responses = await http.get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
     final data = DriverData.fromJson(json.decode(responses.body));
     int? statusCodex;
     final Database db = await handler!.initializeDB();
     final tables = await db.rawQuery('SELECT * FROM userX ;');
     if (tables.length == 0) {
+
       loadingDialog.dismiss();
       if(mounted){
         Navigator.pop(context);      
@@ -214,6 +220,7 @@ class _DriverDescriptionState extends State<DriverDescription>
     } 
 
     
+
     if(prefs.vehiculo.isNotEmpty && tables.length != 0){
       if (data.driverCoord == true) {                
         Map datas = {
@@ -262,7 +269,9 @@ class _DriverDescriptionState extends State<DriverDescription>
         String sendData2 = json.encode(datas3);
 
         await http.post(Uri.parse('https://apichat.smtdriver.com/api/salas'),body: sendData2, headers: {"Content-Type": "application/json"});
+
         loadingDialog.dismiss();
+
         validationLastToPassProgres(statusCodex, prefs.tripId, send.title, send.message);        
       } else {
         Map datas = {'companyId': prefs.companyId,'driverId': data.driverId.toString(),'tripVehicle': prefs.vehiculo,'vehicleId': prefs.vehiculoId,};
@@ -282,7 +291,9 @@ class _DriverDescriptionState extends State<DriverDescription>
             statusCodex = dataResp.statusCode;
           });
         }
+
         loadingDialog.dismiss();
+
         validationLastToPassProgres(statusCodex, prefs.tripId, send.title, send.message,);
       }
     }
@@ -294,12 +305,14 @@ class _DriverDescriptionState extends State<DriverDescription>
       Navigator.pop(context);
       Navigator.push(context,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
       prefs.removeIdCompanyAndVehicle();
+
       WarningSuccessDialog().show(
         context,
         title: message,
         tipo: 2,
         onOkay: () {},
       ); 
+
       this.handler!.cleanTable();
     } else {
         throw Exception('Failed to load Data');
@@ -1480,6 +1493,7 @@ class _DriverDescriptionState extends State<DriverDescription>
   Widget _mostrarTerceraVentana(BuildContext context) {
 
     return SingleChildScrollView(
+
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -1489,6 +1503,7 @@ class _DriverDescriptionState extends State<DriverDescription>
             _crearDropdown(context),
             SizedBox(height: 30.0),
             FutureBuilder<DriverData>(
+
               future: itemx,
               builder: (BuildContext context, abc) {
                 if (abc.connectionState == ConnectionState.done) {
@@ -1559,13 +1574,14 @@ class _DriverDescriptionState extends State<DriverDescription>
                                     "assets/icons/QR.svg",
                                     color: Theme.of(context).primaryColorDark,
                                   ),
+
                               onPressed: () async{
                                 String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);
                         
                                   if (codigoQR == "-1") {
                                     return;
                                   } else {
-      
+
                                     LoadingIndicatorDialog().show(context);
                                     http.Response responseSala = await http.get(Uri.parse('https://app.mantungps.com/3rd/vehicles/$codigoQR'),headers: {"Content-Type": "application/json", "x-api-key": 'a10xhq0p21h3fb9y86hh1oxp66c03f'});
                                     final resp = json.decode(responseSala.body);
@@ -1580,12 +1596,14 @@ class _DriverDescriptionState extends State<DriverDescription>
                                       }
                                     }else{
                                       if(mounted){
+
                                         WarningSuccessDialog().show(
                                           context,
                                           title: "Vehículo no valido",
                                           tipo: 1,
                                           onOkay: () {},
                                         );
+
                                       }
                                     }
                                   }
@@ -1597,6 +1615,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                     ],
                   );
                 } else {
+
                   return WillPopScope(
                       onWillPop: () async => false,
                       child: SimpleDialog(
@@ -1624,6 +1643,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                         ] ,
                       ),
                     );
+
                 }
               },
             ),
@@ -1791,6 +1811,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                                               Navigator.pop(context);
                                             },
                                           ),
+
                                         ),
                                         SizedBox(width: 10.0),
                                         Container(width: 100,
@@ -2096,6 +2117,42 @@ class _DriverDescriptionState extends State<DriverDescription>
                                 ],
                                                         ),
                               ),
+
+                            )
+                          },
+                          Center(
+                            child: Column(
+                              children: [
+                                SizedBox(height: 20.0),
+                                Container(
+                                  decoration: BoxDecoration(boxShadow: [
+                                    BoxShadow(blurStyle: BlurStyle.normal,color: Colors.white.withOpacity(0.2),blurRadius: 15,spreadRadius: -30,offset: Offset(-25, -25)),
+                                    BoxShadow(blurStyle: BlurStyle.normal,color: Colors.black.withOpacity(0.6),blurRadius: 30,spreadRadius: -45,offset: Offset(20, -15)),
+                                  ]),
+                                  child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10.0)),backgroundColor: thirdColor,padding: EdgeInsets.symmetric(vertical: 5, horizontal: 22)),
+                                      child: Icon(Icons.save,color: backgroundColor, size: 25.0),
+                                      onPressed: () async {                                      
+                                        showGeneralDialog(
+                                          context: context,transitionBuilder:(context, a1, a2, widget) {
+                                            return Center( child: ColorLoader3());
+                                          },
+                                          transitionDuration:Duration(milliseconds: 200),
+                                          barrierDismissible: false,
+                                          barrierLabel: '',
+                                          pageBuilder: (context, animation1,animation2) {
+                                            return Text('');
+                                          }
+                                        );
+                                        await fetchAgentsLeftPastToProgres(hourOut.text, vehicule.text);
+                                        if(prefs.vehiculo != "" || nameController.text != ""){
+                                          setState(() {
+                                            this.handler!.cleanTable();
+                                          });
+                                        }
+                                      }),
+                                ),
+                              ],
+
                             ),
                           )
                         },
@@ -2128,7 +2185,6 @@ class _DriverDescriptionState extends State<DriverDescription>
   }
 
   AlertDialog vehiculoE(resp, BuildContext context, codigoQR) {
-
     return AlertDialog(
       backgroundColor: backgroundColor,
       shape: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
@@ -2233,6 +2289,7 @@ class _DriverDescriptionState extends State<DriverDescription>
   }
 
   Widget getSearchableDropdown(BuildContext context) {
+
     Size size = MediaQuery.of(context).size;
     return Stack(
       children: [
@@ -2301,6 +2358,7 @@ class _DriverDescriptionState extends State<DriverDescription>
           ),
         ),
       ],
+
     );
   }
 
@@ -2441,6 +2499,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                       ),
                     ),
                   },
+
         
                   SvgPicture.asset(  
                     "assets/icons/flecha_hacia_abajo.svg",

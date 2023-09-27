@@ -1,6 +1,7 @@
 //import 'package:back_button_interceptor/back_button_interceptor.dart';
 //import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
+
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
 import 'package:flutter_auth/Drivers/models/DriverData.dart';
@@ -10,7 +11,9 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter_auth/Drivers/models/registerTripAsCompleted.dart';
 import 'package:flutter_auth/main.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+
 import 'package:flutter_svg/svg.dart';
+
 import 'package:intl/intl.dart';
 //import 'package:quickalert/quickalert.dart';
 import '../../../../components/AppBarPosterior.dart';
@@ -61,6 +64,19 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
   final prefs = new PreferenciasUsuario();
   String ip = "https://driver.smtdriver.com";
   dynamic flagalert;
+  
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if(AppLifecycleState.resumed==state){
+      if(mounted){
+        if(gerRecargar()==0){
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (_) => MyAgent()))
+          .then((_) => MyAgent());
+        }
+      }
+    }
+    
+  }
 
   bool confirmados = true;
   bool noconfirmados = false;
@@ -103,6 +119,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
 
     if (response.statusCode == 200 && resp.ok == true && agentTripHour != "") {
       //print(response.body);
+
       LoadingIndicatorDialog().dismiss();    
       confirmationDialog.dismiss();  
       if(mounted){
@@ -115,6 +132,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
 
         _refresh();
       }
+
     } else if (response.statusCode == 200 && resp.ok != true) {
       LoadingIndicatorDialog().dismiss();    
       confirmationDialog.dismiss();   
@@ -149,6 +167,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
           LoadingIndicatorDialog().dismiss();
           confirmationDialog.dismiss();
           //print(response.body);
+
           if(mounted){
             WarningSuccessDialog().show(
           navigatorKey.currentContext!,
@@ -159,6 +178,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
           }
 
           _refresh();
+
 
         } else if (response.statusCode == 500) {
           LoadingIndicatorDialog().dismiss();
@@ -184,7 +204,9 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
         .get(Uri.parse('$ip/apis/passTripToProgress/${prefs.tripId}'));
     final resp = Driver.fromJson(json.decode(response.body));
     LoadingIndicatorDialog().dismiss();
+
     confirmationDialog.dismiss();
+
     //print(response.body);
     if (response.statusCode == 200 && resp.ok == true) {
       //print(response.body);
@@ -193,12 +215,14 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
               builder: (BuildContext context) => HomeDriverScreen()),
           (Route<dynamic> route) => false);
 
+
           WarningSuccessDialog().show(
           navigatorKey.currentContext!,
           title: 'Su viaje está en proceso',
           tipo: 2,
           onOkay: () {},
         );
+
       //   SweetAlert.show(context,
       //   title: resp.title,
       //   subtitle: resp.message,
@@ -339,6 +363,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     contextP = context;
+
     return BackgroundBody(
       child: SafeArea(
         child: Scaffold(
@@ -791,6 +816,251 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                                                 ],
                                                               ),
                                                             ],
+
+    );
+  }
+
+  Widget ingresarVehiculo() {
+    return FutureBuilder<TripsList2>(
+      future: item,
+      builder: (BuildContext context, abc) {
+        if (abc.connectionState == ConnectionState.done) {
+          return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: FutureBuilder<DriverData>(
+              future: driverData,
+              builder: (BuildContext context, abc) {
+                if (abc.connectionState == ConnectionState.done) {
+                  DriverData? data = abc.data;
+                  return Column(
+                    crossAxisAlignment:CrossAxisAlignment.start,
+                    children: [
+                      if(data?.driverType=='Motorista')
+                        Text('Escanee el codigo qr del vehículo', style: TextStyle(color: Colors.white.withOpacity(0.5)),),
+                      if(data?.driverType=='Motorista')
+                        SizedBox(height: 5,),
+                      Row(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(Radius.circular(15)),
+                              boxShadow: [
+                                BoxShadow(color: Colors.black.withOpacity(0.2),spreadRadius: 0,blurStyle: BlurStyle.solid,blurRadius: 10,offset: Offset(0, 0), ),
+                                BoxShadow(color: Colors.white.withOpacity(0.1),spreadRadius: 0,blurRadius: 5,blurStyle: BlurStyle.inner,offset: Offset(0, 0), ),
+                              ],
+                            ),
+                            width: 200,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left:10.0, right: 10),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.emoji_transportation,color: thirdColor,size: 30.0,),
+                                  SizedBox(width: 10.0),
+                                  Flexible(
+                                    child: TextField(
+                                      enabled: data?.driverType=='Motorista'?false:true,
+                                      style: TextStyle(color: Colors.white),
+                                      controller: vehicleController,
+                                      decoration: InputDecoration(
+                                        border: InputBorder.none,
+                                        hintText: 'Vehículo',
+                                        hintStyle: TextStyle(color: Colors.white.withOpacity(0.5),
+                                        fontSize: 15.0)
+                                      ),
+                                      onChanged: (value) => tripVehicle,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          if(data?.driverType!='Motorista')
+                            SizedBox(width: 10,),
+
+                          if(data?.driverType!='Motorista')
+                            Container(
+                            decoration: BoxDecoration(
+                              color: firstColor,
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: IconButton(
+                              icon: Icon(Icons.save_outlined),
+                              color: backgroundColor,
+                              iconSize: 30.0,
+                              onPressed: vehicleL==false?null:() async{
+                                LoadingIndicatorDialog().show(context);
+                                http.Response responses = await http.get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
+                                final data2 = DriverData.fromJson(json.decode(responses.body));
+                                Map data = {
+                                  "driverId": data2.driverId.toString(),
+                                  "tripId": prefs.tripId.toString(),
+                                  "vehicleId": "",
+                                  "tripVehicle": vehicleController.text
+                                };
+                                http.Response responsed = await http.post(Uri.parse('https://driver.smtdriver.com/apis/editTripVehicle'), body: data);
+
+                                final resp2 = json.decode(responsed.body);
+                                LoadingIndicatorDialog().dismiss();
+                                if(resp2['type']=='success'){
+                                  if(mounted){
+                                    QuickAlert.show(context: context,title: "Exito",text: resp2['message'],type: QuickAlertType.success,);
+                                    setState(() {
+                                      tripVehicle = vehicleController.text;
+                                    });
+                                  }      
+
+                                }else{
+                                  QuickAlert.show(context: context,title: "Alerta",text: resp2['message'],type: QuickAlertType.error,);
+                                }
+                              }
+                            ),
+                          ),
+
+                          SizedBox(width: 10,),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: firstColor,
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: IconButton(
+                              icon: Icon(Icons.qr_code),
+                              color: backgroundColor,
+                              iconSize: 30.0,
+                              onPressed: vehicleL==false?null:() async{
+                                setRecargar(-1);
+                                String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);
+                      
+                                if (codigoQR == "-1") {
+                                  setRecargar(0);
+                                  return;
+                                } else {
+                                  LoadingIndicatorDialog().show(context);
+                                  http.Response responseSala = await http.get(Uri.parse('https://app.mantungps.com/3rd/vehicles/$codigoQR'),headers: {"Content-Type": "application/json", "x-api-key": 'a10xhq0p21h3fb9y86hh1oxp66c03f'});
+                                  final resp = json.decode(responseSala.body);
+                                  LoadingIndicatorDialog().dismiss();
+                                  if(resp['type']=='success'){
+                                    print(responseSala.body);
+                                    print('###########################');
+                                    if(mounted){
+                                      showDialog(
+                                              context: context,
+                                              builder: (context) => vehiculoE(resp, context),);
+                                    }
+                                  }else{
+                                    if(mounted){
+                                      QuickAlert.show(context: context,title: "Alerta",text: "Vehículo no valido",type: QuickAlertType.error,); 
+                                    }
+                                  }
+                                  setRecargar(0);
+                                }
+                              }
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                } else {
+                  return ColorLoader3();
+                }
+              },
+                ),
+            );
+        } else {
+          return ColorLoader3();
+        }
+      },
+    );
+  }
+
+  AlertDialog vehiculoE(resp, BuildContext context) {
+    //var size = MediaQuery.of(context).size;
+    return AlertDialog(
+      backgroundColor: backgroundColor,
+      shape: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
+      title: Center(
+          child: Text(
+        'Vehículo Encontrado',
+        style: TextStyle(color: GradiantV_2, fontSize: 20.0),
+      )),
+      content: Container(
+        height: 130,
+        child: Column(
+          children: [
+                const SizedBox(height: 8.0),
+                Text('Descripcion:',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold)),
+                SizedBox(
+                  height: 5,
+                ),
+                Text(resp['vehicle']['name'],
+                    style: TextStyle(color: Colors.white, fontSize: 18.0)),
+                SizedBox(
+                  height: 15,
+                ),
+                Text('Placa:',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold)),
+                SizedBox(
+                  height: 10,
+                ),
+                Text(resp['vehicle']['registrationNumber'],
+                    style: TextStyle(color: Colors.white, fontSize: 18.0)),
+              ],
+        ),
+      ),
+      actions: [
+                                                              Row(mainAxisAlignment: MainAxisAlignment.center,
+                                                                children: [
+                                                                  Container(width: 100,
+                                                                    child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: backgroundColor,),backgroundColor: Gradiant2,),
+                                                                      onPressed: () async{
+                                                                        LoadingIndicatorDialog().show(context);
+                                                                        http.Response responses = await http.get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
+                                                                        final data2 = DriverData.fromJson(json.decode(responses.body));
+                                                                        Map data = {
+                                                                          "driverId": data2.driverId.toString(),
+                                                                          "tripId": prefs.tripId.toString(),
+                                                                          "vehicleId": resp['vehicle']['_id'],
+                                                                          "tripVehicle": "${resp['vehicle']['name']} [${resp['vehicle']['registrationNumber']}]"
+                                                                        };
+                                                                        http.Response responsed = await http.post(Uri.parse('https://driver.smtdriver.com/apis/editTripVehicle'), body: data);
+                                                                        
+                                                                        final resp2 = json.decode(responsed.body);
+                                                                        LoadingIndicatorDialog().dismiss();
+                                                                        if(resp2['type']=='success'){
+                                                                          if(mounted){
+                                                                            Navigator.pop(context);
+                                                                            QuickAlert.show(context: context,title: "Exito",text: resp2['message'],type: QuickAlertType.success,);
+                                                                            setState(() {
+                                                                              tripVehicle = "${resp['vehicle']['name']} [${resp['vehicle']['registrationNumber']}]";
+                                                                              vehicleController.text=tripVehicle;  
+                                                                            });
+                                                                          }
+                                                                        }else{
+                                                                          QuickAlert.show(context: context,title: "Alerta",text: resp2['message'],type: QuickAlertType.error,);
+                                                                        }
+                                                                      },
+                                                                      child: Text('Agregar',style: TextStyle(color: backgroundColor,fontSize: 15.0)),
+                                                                    ),
+                                                                  ),
+                                                                  SizedBox(width: 10.0),
+                                                                  Container(width: 100,
+                                                                    child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: Colors.white,),backgroundColor: Colors.red,),
+                                                                      onPressed: () => {
+                                                                        Navigator.pop(context),
+                                                                      },
+                                                                      child: Text('Cancelar',style: TextStyle(color: Colors.white,fontSize: 15.0)),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ],
     );
   }
 
@@ -1060,6 +1330,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                             padding: const EdgeInsets.only(right: 15, left: 20, bottom: 4),
                                             child: Row(
                                               children: [
+
                                                 Container(
                                                           width: 18,
                                                           height: 18,
@@ -1096,6 +1367,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                           color: Theme.of(context).dividerColor,
                                         ),
                                       ),
+
 
                               
                               SizedBox(height: 20),
@@ -1369,6 +1641,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                                   "assets/icons/usuario.svg",
                                                   color: abc.data!.trips![1].noConfirmados![index].hourForTrip==null?Color.fromRGBO(213, 0, 0, 1):Theme.of(context).primaryIconTheme.color,
                                                 ),
+
                                               ),
                                               SizedBox(width: 10),
                                               Flexible(
@@ -1385,8 +1658,10 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                                         style: TextStyle(fontWeight: FontWeight.normal),
                                                       ),
                                                     ],
+
                                                   ),
                                                 ),
+
                                               )                   
                                     ],
                                   ),
@@ -1425,6 +1700,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                                     )                   
                                           ],
                                         ),
+
                                       ),
                                       Container(
                                         height: 1,
@@ -2089,6 +2365,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
 
 //Buttons
   Widget _buttonsAgents() {
+
     return Align(
       alignment: Alignment.topRight,
       child: TextButton(
@@ -2112,6 +2389,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
               new Future.delayed(new Duration(seconds: 2), () {
                   fetchPastInProgress();
                 });
+
             },
             onCancel: () {},
           );

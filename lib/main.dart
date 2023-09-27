@@ -10,6 +10,9 @@ import 'package:flutter_auth/components/splashView.dart';
 import 'package:flutter_auth/providers/chat.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+
+import 'package:quickalert/quickalert.dart';
+
 import 'package:upgrader/upgrader.dart';
 import 'Drivers/SharePreferences/preferencias_usuario.dart';
 import 'components/Tema.dart';
@@ -127,3 +130,4 @@ class ThemeChangeEvent {
 
   ThemeChangeEvent(this.newTheme);
 }
+

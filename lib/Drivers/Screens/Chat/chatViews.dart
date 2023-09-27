@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:flutter/material.dart';
+
 //import 'package:flutter_auth/Drivers/Screens/Chat/chatapis.dart';
 import 'package:flutter_svg/svg.dart';
 //import 'package:flutter_auth/Drivers/Screens/Details/components/agents_Trip.dart';
@@ -11,6 +12,7 @@ import '../../../components/AppBarPosterior.dart';
 import '../../../components/AppBarSuperior.dart';
 import '../../../components/backgroundB.dart';
 import 'chatscreen.dart';
+
 
 class ChatPage extends StatefulWidget {
   final String? tripId;
@@ -89,6 +91,7 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
+
     //Size size = MediaQuery.of(context).size;
     return BackgroundBody(
       child: Scaffold(
@@ -164,6 +167,7 @@ class _ChatPageState extends State<ChatPage> {
               },
             ),
     
+
             Padding(
               padding: const EdgeInsets.only(right: 10, left: 10),
               child: TextButton(
@@ -636,3 +640,4 @@ class _ChatPageState extends State<ChatPage> {
                   );
   }
 }
+

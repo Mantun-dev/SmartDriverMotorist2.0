@@ -14,8 +14,10 @@ import 'package:flutter_svg/svg.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
+
 import 'package:record/record.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import '../../../components/warning_dialog.dart';
@@ -408,6 +410,47 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                   ],
                 ),
               ),
+
+        backgroundColor: backgroundColor,
+        shadowColor: Colors.black87,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_circle_left,
+            color: secondColor,
+          ),
+          onPressed: () {
+            streamSocket.socket!.emit('salir');
+            streamSocket.socket!.disconnect();
+            streamSocket.socket!.close();
+            streamSocket.socket!.dispose();
+            deleteAllTempAudioFiles();
+            recargar=-1;
+            Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ChatPage(
+                      tripId: prefs.tripId,
+                    )));
+          },
+        ),
+        elevation: 10,
+        iconTheme: IconThemeData(color: secondColor, size: 35),
+        actions: <Widget>[
+          IconButton(
+            icon: SvgPicture.asset(
+              "assets/icons/user.svg",
+              width: 100,
+            ),
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return DriverProfilePage();
+              }));
+            },
+          ),
+          SizedBox(width: kDefaultPadding / 2)
+        ],
+      ),
+
       body: isloading == true
           ? Column(
               children: [
@@ -473,7 +516,46 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                                         : Theme.of(context).cardColor,
                                     child: Padding(
                                       padding: const EdgeInsets.all(8.0),
-                                      child: Column(
+
+                                      child: Text(hoy_ayer('${message.mes}/${message.dia}/${message.ao}'), style: TextStyle(color: Colors.white, fontSize: 17)),
+                                    ),
+                                  ),
+                                ) : null,
+                              ),
+                              Card(
+                                color: message.user!.toUpperCase() ==
+                                        widget.nombre!.toUpperCase()
+                                    ? thirdColor
+                                    : chatBubbleColor,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        message.user!.toUpperCase() ==
+                                                widget.nombre!.toUpperCase()
+                                            ? CrossAxisAlignment.end
+                                            : CrossAxisAlignment.start,
+                                    children: [
+                                      if (message.mensaje != null) ...{
+                                        message.tipo=='AUDIO'?
+                                        AudioContainer(
+                                                audioName: message.mensaje!,
+                                                colorIcono: message.id == widget.id
+                                                    ? Colors.white
+                                                    : Theme.of(context).primaryColorDark,
+                                                    idSala: int.parse(message.sala),
+                                              )
+                                        :
+                                        Text(
+                                          message.mensaje!,
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 17),
+                                        )
+                                      },
+                                      Row(
+
                                         mainAxisSize: MainAxisSize.min,
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
@@ -719,8 +801,21 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                               ),
                             ),
                           ),
-                          
-                          Padding(
+
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            if (_messageInputController.text
+                                .trim()
+                                .isNotEmpty) {
+                              _sendMessage();
+                            }
+                          },
+                          icon: const Icon(Icons.send),
+                        ),
+
+                        Padding(
+
                             padding: const EdgeInsets.only(left: 10),
                             child: Container(
                               width: 48,
@@ -731,10 +826,11 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                               ),
                               child: IconButton(
                                 onPressed: () async {
-                                  
+                            
                                   bool permiso= await checkAudioPermission();
                           
                                   if(permiso){                                   
+
                                     if(!activateMic){
                                       await QuickAlert.show(
                                         context: context,
@@ -755,11 +851,11 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                                           Navigator.pop(context);
                                         },
                                       );
-                                      
                                     }else{
                                       stopRecording();
                                     }
                                   }else{
+
                                     WarningSuccessDialog().show(
                                           context,
                                           title: "No dio permiso del uso del microfono",
@@ -772,15 +868,18 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                                             }
                                           },
                                         ); 
+
                                   }
                                 },
                                 icon: !activateMic ? Icon(Icons.mic, color: Colors.white) : Icon(Icons.mic_off, color: Colors.red),
                               ),
                             ),
                           )
+
                         ],
                       ),
                     )
+
 
                   ),
               ],

@@ -39,21 +39,39 @@ class PlantillaDriverTitleWithImage extends StatelessWidget {
                   ],
                 ),
               ),
-              Container(
-                width: 100,
-                child: Column(
-                  children: [
-                    Hero(
-                      tag: "${plantillaDriver.id}",
-                      child: SvgPicture.asset(
-                        plantillaDriver.imageMain!,
-                        fit: BoxFit.contain,
-                        height: 140,
+              if(plantillaDriver.id == 1)...{
+                Container(
+                  width: 75,
+                  child: Column(
+                    children: [
+                      Hero(
+                        tag: "${plantillaDriver.id}",
+                        child: SvgPicture.asset(
+                          plantillaDriver.imageMain!,
+                          fit: BoxFit.contain,
+                          height: 140,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
+              }else...{
+                Container(
+                  width: 100,
+                  child: Column(
+                    children: [
+                      Hero(
+                        tag: "${plantillaDriver.id}",
+                        child: SvgPicture.asset(
+                          plantillaDriver.imageMain!,
+                          fit: BoxFit.contain,
+                          height: 140,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              },
             ],
           )
         ],

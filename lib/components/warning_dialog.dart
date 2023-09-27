@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_auth/main.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -16,11 +17,13 @@ class WarningSuccessDialog {
   show(BuildContext context, {
     required String title,
     required int tipo,
+
     required VoidCallback onOkay,
   }) {
     if (isDisplayed) {
       return;
     }
+
     Color containerC = Color.fromRGBO(40, 93, 169, 1);
     
     String iconAsset = 
@@ -34,6 +37,7 @@ class WarningSuccessDialog {
       : 
         "assets/icons/info.svg";
     Size size = MediaQuery.of(context).size;
+
 
     showDialog<void>(
       context: context,
@@ -52,11 +56,13 @@ class WarningSuccessDialog {
                 children: [
                   Container(
                     width: size.width*0.9,
+
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(10.0),
                         topRight: Radius.circular(10.0),
                       ),
+
                       color: containerC,
                     ),
                     child: tipo == 1? 
@@ -82,19 +88,21 @@ class WarningSuccessDialog {
                             height: 60,
                             color: Colors.white,
                           ),
+
                         ),
                       ),
                     ),
                   ),
 
-
                   Container(
                     width: size.width*0.9,
+
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.only(
                         bottomLeft: Radius.circular(10.0),
                         bottomRight: Radius.circular(10.0),
                       ),
+
                       color: Theme.of(navigatorKey.currentContext!).cardColor, 
                     ),
                     child: Column(children: [
@@ -104,6 +112,7 @@ class WarningSuccessDialog {
                           title,
                           textAlign: TextAlign.center,
                           style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.w500)
+
                         ),
                       ),
                       Padding(
@@ -130,6 +139,7 @@ class WarningSuccessDialog {
                               fontSize: 14
                             ),
                           ),
+
                         ),
                       ),
                     ]),

@@ -2,6 +2,7 @@
 
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
+
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
 import 'package:flutter_auth/Drivers/components/loader.dart';
@@ -14,7 +15,9 @@ import 'package:flutter_auth/Drivers/models/network.dart';
 import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 import 'package:flutter_auth/Drivers/models/registerTripAsCompleted.dart';
 import 'package:flutter_auth/main.dart';
+
 import 'package:flutter_svg/svg.dart';
+
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
@@ -26,10 +29,12 @@ import 'package:quickalert/quickalert.dart';
 import 'package:url_launcher/url_launcher.dart';
 //import 'package:roundcheckbox/roundcheckbox.dart';
 
+
 import '../../../../components/AppBarPosterior.dart';
 import '../../../../components/AppBarSuperior.dart';
 import '../../../../components/backgroundB.dart';
 import '../../../../components/warning_dialog.dart';
+
 import '../../../components/progress_indicator.dart';
 import '../../../models/search.dart';
 //import 'details_TripProgress.dart';
@@ -54,8 +59,10 @@ class MyConfirmAgent extends StatefulWidget {
 
 class _DataTableExample extends State<MyConfirmAgent> {
   int totalAbordado = 0;
+
   int totalAgente = 0;
   int totalNoAbordado = 0;
+
   Future<TripsList4>? item;
   Future<DriverData>? driverData;
   bool traveled = false;
@@ -77,6 +84,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
   final int aloricaCeiba = 13;
   final int itelSPS = 10;
   bool cargarCoordenadas = false;
+
   String tipoViaje = '';
 
   bool abordados = true;
@@ -87,10 +95,12 @@ class _DataTableExample extends State<MyConfirmAgent> {
   bool flagEOS = false;
   List<bool> enRuta = [];
 
+
   List<TextEditingController> check = [];
   List<TextEditingController> comment = new List.empty(growable: true);
   TextEditingController vehicleController = new TextEditingController();
   TextEditingController agentEmployeeId = new TextEditingController();
+
 
   var tripVehicle = '';
   bool vehicleL = false;
@@ -115,11 +125,13 @@ class _DataTableExample extends State<MyConfirmAgent> {
     if (response.statusCode == 200 && resp.ok == true) {
       
     } else if (response.statusCode == 500) {
+
       WarningSuccessDialog().show(
         context,
         title: "${resp.message}",
         tipo: 1,
         onOkay: () {},
+
       );
     }
 
@@ -128,6 +140,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
   void gettotalAbordado() async {
     var lista = await item;
+
     totalAgente = lista!.trips![0].tripAgent!.length;
     tipoViaje = lista.trips![1].actualTravel!.tripType!;
     
@@ -142,6 +155,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
     }
     cargarTotal = true;
     setState(() {});
+
 
   }
 
@@ -176,6 +190,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
             (Route<dynamic> route) => false);
       });
       if (mounted) {
+
         WarningSuccessDialog().show(
           context,
           title: "Su viaje ha sido completado",
@@ -189,6 +204,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
         title: "${si.message}",
         tipo: 1,
         onOkay: () {},
+
       );
     }
     Map data2 = {"Estado": 'FINALIZADO'};
@@ -213,6 +229,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
         }
     }
 
+
     return Driver2.fromJson(json.decode(responses.body));
     //throw Exception('Failed to load Data');
   }
@@ -220,6 +237,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
   Future<bool> fetchRegisterCommentAgent(
       String agentId, String tripId, String comment) async {
         LoadingIndicatorDialog().show(context);
+
     Map datas = {'agentId': agentId, 'tripId': tripId};
     Map datas2 = {
       'agentId': agentId,
@@ -245,6 +263,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
         tipo: 1,
         onOkay: () {},
       );
+
     }
     return false;
   }
@@ -266,6 +285,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
         title: "${si.message}",
         tipo: 1,
         onOkay: () {},
+
       );
     }
     return Driver.fromJson(json.decode(responses.body));
@@ -286,11 +306,13 @@ class _DataTableExample extends State<MyConfirmAgent> {
               builder: (BuildContext context) => HomeDriverScreen()),
           (Route<dynamic> route) => false);
     } else if (response.statusCode == 500) {
+
       WarningSuccessDialog().show(
         context,
         title: "${resp.message}",
         tipo: 1,
         onOkay: () {},
+
       );
     }
 
@@ -331,6 +353,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
   void getLocation() async{
 
+
     await fetchAgentsTripInProgress().then((value) => {
 
       //print(value.trips![1].actualTravel!.tripType),
@@ -346,6 +369,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
       },
       
     });
+
   }
 
   launchSalidasMaps(lat,lng)async{
@@ -355,6 +379,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
   }
 
  Future<void> launchGoogleMapsx(String apiKey, String startLat, String startLng, List<String> waypoints1) async {
+
     String baseUrl = 'https://maps.googleapis.com/maps/api/directions/json';
     String origin = '$startLat,$startLng';
     
@@ -366,6 +391,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
         if (responseDistance.statusCode == 200) {
           final dataDistance = json.decode(responseDistance.body);
           print(responseDistance.body);
+
           double distanceValue = double.parse(dataDistance['routes'][0]['legs'][0]['distance']['value'].toString());
           distances.add(distanceValue);
         }
@@ -378,6 +404,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
           maxIndex = i;
         }
       }
+
       if (maxIndex >= 0 && maxIndex< waypoints1.length) {
         String elementoMovido = waypoints1.removeAt(maxIndex);
         waypoints1.add(elementoMovido);
@@ -386,6 +413,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
       }
       String destination = waypoints1.last;
       String waypointsString = waypoints1.join('|');    
+
       String url = '$baseUrl?origin=$origin&destination=$destination&waypoints=optimize:true|$waypointsString&key=$apiKey';
 
       // ignore: avoid_print
@@ -395,7 +423,9 @@ class _DataTableExample extends State<MyConfirmAgent> {
           final data = json.decode(response.body);
 
           List<dynamic> sortedWaypoints = data['routes'][0]['waypoint_order']
+
             .map((index) => waypoints1[index])
+
             .toList();
       
           print('******* ruta');
@@ -416,8 +446,10 @@ class _DataTableExample extends State<MyConfirmAgent> {
           // }
         }
     }else{
+
       LoadingIndicatorDialog().dismiss();
       String destination = waypoints1.last;
+
       String url = 'google.navigation:q=$destination&mode=d';
       await launchUrl(Uri.parse(url));
     }
@@ -432,6 +464,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
     if (mounted) {
       if (infoViaje[3]['viajeActual']['tripVehicle'] != null) {
         cargarInfoViaje=true;
+
         setState(() {
           tripVehicle = infoViaje[3]['viajeActual']['tripVehicle'];
           vehicleL = true;
@@ -439,9 +472,11 @@ class _DataTableExample extends State<MyConfirmAgent> {
           tripId = infoViaje[3]['viajeActual']['tripId'];
         });
       } else {
+
         cargarInfoViaje=true;
         setState(() {
           
+
           tripVehicle = '';
           vehicleL = true;
           vehicleController.text = tripVehicle;
@@ -453,6 +488,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
   @override
   Widget build(BuildContext context) {
+
     return BackgroundBody(
       child: SafeArea(
         child: Scaffold(
@@ -518,6 +554,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
           ],
         ),
       )
+
     );
     else return WillPopScope(
                       onWillPop: () async => false,
@@ -555,6 +592,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
       builder: (BuildContext context, abc) {
         if (abc.connectionState == ConnectionState.done) {
           return Column(
+
             crossAxisAlignment:CrossAxisAlignment.start,
             children: [
               SizedBox(height: 15.0),
@@ -619,10 +657,12 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                               RoundedRectangleBorder(
                                                 borderRadius: BorderRadius.circular(10.0),
                                                 side: BorderSide(color: Colors.black),
+
                                               ),
                                             ),
                                             backgroundColor: MaterialStateProperty.all(Colors.transparent),
                                           ),
+
                                           onPressed: () {
                                             Navigator.pop(context);
                                           },
@@ -3060,6 +3100,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                               'Cerrar',
                                               style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 15, fontWeight: FontWeight.bold)
                                             ),
+
                                           ),
                                         ),
                                     
@@ -3116,6 +3157,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                     ),
                                   ],
                                 ),
+
                               ),
                             ),
                           );
@@ -3132,6 +3174,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                     
                     },
             );
+
 
         } else {
           return ColorLoader3();
@@ -3184,6 +3227,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
             },
           );
       },
+
     );
   }
 }

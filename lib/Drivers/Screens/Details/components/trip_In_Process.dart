@@ -3,7 +3,9 @@ import 'package:flutter_auth/Drivers/Screens/Details/components/confirm_trips.da
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
 import 'package:flutter_auth/Drivers/models/network.dart';
 import 'package:flutter_auth/Drivers/models/tripsPendin2.dart';
+
 import 'package:flutter_svg/svg.dart';
+
 
 import '../../../../components/AppBarPosterior.dart';
 import '../../../../components/AppBarSuperior.dart';
@@ -354,6 +356,7 @@ class _ProcessState extends State<Process> {
                                       ),
                                     )
                                   ],
+
                                 ),
                               ),
                               Container(

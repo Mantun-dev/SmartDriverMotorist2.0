@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+
 class LoadingIndicatorDialog {
   static final LoadingIndicatorDialog _singleton = LoadingIndicatorDialog._internal();
   late BuildContext _context;
@@ -38,7 +39,9 @@ class LoadingIndicatorDialog {
                         padding: const EdgeInsets.all(16),
                         child: Text(
                           text, 
+
                           style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18),
+
                           ),
                       )
                     ],

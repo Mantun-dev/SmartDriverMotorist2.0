@@ -420,6 +420,7 @@ class _DataTableExample extends State<MyFinishedTrips> {
                                             color: Colors.white,
                                             width: 2,
                                             height: 2,
+
                                           ),
                                         ),
                                       ):
