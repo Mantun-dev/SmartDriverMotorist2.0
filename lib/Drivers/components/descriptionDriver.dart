@@ -1,9 +1,9 @@
 //import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 //import 'dart:developer';
 
-import 'dart:ui';
+// import 'dart:ui';
 
-import 'package:dropdown_search/dropdown_search.dart';
+// import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/asignar_Horas.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/confirm_trips.dart';
@@ -11,7 +11,7 @@ import 'package:flutter_auth/Drivers/Screens/Details/components/databases.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/history_TripDriver.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/process_Trip.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
-import 'package:flutter_auth/Drivers/components/loader.dart';
+//import 'package:flutter_auth/Drivers/components/loader.dart';
 import 'package:flutter_auth/Drivers/components/progress_indicator.dart';
 import 'package:flutter_auth/Drivers/models/DriverData.dart';
 import 'package:flutter_auth/Drivers/models/company.dart';
@@ -29,7 +29,7 @@ import 'package:flutter_svg/svg.dart';
 //import 'package:localstorage/localstorage.dart';
 //import 'package:searchable_dropdown/searchable_dropdown.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:quickalert/quickalert.dart';
+//import 'package:quickalert/quickalert.dart';
 import '../../components/ConfirmationDialog.dart';
 import '../../components/warning_dialog.dart';
 import '../../constants.dart';
@@ -773,7 +773,7 @@ class _DriverDescriptionState extends State<DriverDescription>
           onOkay: () {},
         );  
     } else if (responsed.statusCode == 200 && data1.ok == true) {
-      Size size = MediaQuery.of(context).size;
+     // Size size = MediaQuery.of(context).size;
       showDialog<void>(
       context: context,
       barrierDismissible: false,

@@ -24,7 +24,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:quickalert/quickalert.dart';
 
 import 'package:url_launcher/url_launcher.dart';
-import 'package:roundcheckbox/roundcheckbox.dart';
+//import 'package:roundcheckbox/roundcheckbox.dart';
 
 import '../../../../components/AppBarPosterior.dart';
 import '../../../../components/AppBarSuperior.dart';
@@ -203,12 +203,14 @@ class _DataTableExample extends State<MyConfirmAgent> {
     if(tipoViaje == 'Salida'){
       http.Response responseSala = await http.get(Uri.parse('https://apichat.smtdriver.com/api/salas/Tripid/${prefs.tripId}'));
       final respS = json.decode(responseSala.body);
-
-      for(int i = 0; i<respS['salas']['Agentes'].length; i++){
-        Map data2 = {"idU": respS['salas']['Agentes'][i]['agenteId'].toString(), "Estado": 'CONFIRMADO'};
-        String sendData2 = json.encode(data2);
-        await http.put(Uri.parse('https://apichat.smtdriver.com/api/salas/${prefs.tripId}'), body: sendData2, headers: {"Content-Type": "application/json"});
-      }
+       // print(respS);
+        if (respS['salas']!=null) {          
+          for(int i = 0; i<respS['salas']['Agentes'].length; i++){
+            Map data2 = {"idU": respS['salas']['Agentes'][i]['agenteId'].toString(), "Estado": 'CONFIRMADO'};
+            String sendData2 = json.encode(data2);
+            await http.put(Uri.parse('https://apichat.smtdriver.com/api/salas/${prefs.tripId}'), body: sendData2, headers: {"Content-Type": "application/json"});
+          }
+        }
     }
 
     return Driver2.fromJson(json.decode(responses.body));
@@ -874,8 +876,9 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                       'actionName':'Abordaje'
                                                     };
                                                     
-                                                    http.Response response2 = await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
-                                                    final resp2 = json.decode(response2.body);
+                                                    //http.Response response2 = 
+                                                    await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
+                                                    //final resp2 = json.decode(response2.body);
                                                                                                               agentEmployeeId.text='';
                                                   abc.data!.trips![0].tripAgent![index].commentDriver=null;                                                         
                                                   totalAbordado++;
@@ -1219,8 +1222,9 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                   'actionName':'Abordaje'
                                 };
 
-                                http.Response response2 = await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
-                                final resp2 = json.decode(response2.body);
+                                //http.Response response2 = 
+                                await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
+                                //final resp2 = json.decode(response2.body);
 
                                 LoadingIndicatorDialog().dismiss();
                                 
@@ -1489,7 +1493,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
   }
 
   AlertDialog vehiculoE(resp, BuildContext context) {
-    var size = MediaQuery.of(context).size;
+    //var size = MediaQuery.of(context).size;
     return AlertDialog(
       backgroundColor: Theme.of(navigatorKey.currentContext!).cardColor,
       shape: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
@@ -1574,11 +1578,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                               "tripVehicle":
                                                   "${resp['vehicle']['name']} [${resp['vehicle']['registrationNumber']}]"
                                             };
-                                            http.Response responsed = await http.post(
-                                                Uri.parse(
-                                                    'https://driver.smtdriver.com/apis/editTripVehicle'),
-                                                body: data);
-
+                                            http.Response responsed = await http.post(Uri.parse('https://driver.smtdriver.com/apis/editTripVehicle'),body: data);
                                             final resp2 = json.decode(responsed.body);
                                             LoadingIndicatorDialog().dismiss();
                                             if (resp2['type'] == 'success') {
@@ -1664,7 +1664,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
             'actionName': 'No salió'
           };
 
-          http.Response response = await http.post(
+          //http.Response response = 
+          await http.post(
               Uri.parse(
                   'https://driver.smtdriver.com/apis/agents/registerTripAction'),
               body: data);

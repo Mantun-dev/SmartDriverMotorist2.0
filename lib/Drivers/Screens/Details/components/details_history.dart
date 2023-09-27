@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/bodyDriver_Details.dart';
 
-import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
+//import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
-import 'package:flutter_auth/Drivers/components/menu_lateralDriver.dart';
+//import 'package:flutter_auth/Drivers/components/menu_lateralDriver.dart';
 
 import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
-import 'package:flutter_auth/constants.dart';
+//import 'package:flutter_auth/constants.dart';
 
 import '../../../../components/AppBarPosterior.dart';
 import '../../../../components/AppBarSuperior.dart';

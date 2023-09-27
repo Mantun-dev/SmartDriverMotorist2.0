@@ -13,7 +13,7 @@ import 'package:provider/provider.dart';
 import 'package:upgrader/upgrader.dart';
 import 'Drivers/SharePreferences/preferencias_usuario.dart';
 import 'components/Tema.dart';
-import 'components/warning_dialog.dart';
+//import 'components/warning_dialog.dart';
 
 class MyHttpoverrides extends HttpOverrides {
   @override

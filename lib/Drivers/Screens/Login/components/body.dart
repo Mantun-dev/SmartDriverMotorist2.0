@@ -9,7 +9,7 @@ import 'package:flutter_auth/Drivers/models/messageDriver.dart';
 
 import 'package:flutter_svg/svg.dart';
 import 'package:lottie/lottie.dart';
-import 'package:quickalert/quickalert.dart';
+//import 'package:quickalert/quickalert.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' show json;
 import '../../../../components/progress_indicator.dart';

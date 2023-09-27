@@ -1,10 +1,10 @@
 
 import 'package:flutter/material.dart';
-import 'package:flutter_auth/components/progress_indicator.dart';
+//import 'package:flutter_auth/components/progress_indicator.dart';
 import 'package:flutter_auth/components/warning_dialog.dart';
 import 'package:flutter_auth/main.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:quickalert/quickalert.dart';
+//import 'package:quickalert/quickalert.dart';
 
 import '../Drivers/Screens/Chat/listaChas.dart';
 import '../Drivers/Screens/Details/components/detailsDriver_assignHour.dart';

@@ -8,7 +8,7 @@ import 'package:flutter_auth/Drivers/Screens/Chat/chatViews.dart';
 
 import 'package:flutter_auth/Drivers/Screens/Chat/chatapis.dart';
 
-import 'package:flutter_auth/constants.dart';
+//import 'package:flutter_auth/constants.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:path_provider/path_provider.dart';
@@ -25,7 +25,7 @@ import '../../../providers/chat.dart';
 import '../../SharePreferences/preferencias_usuario.dart';
 import '../../models/message_chat.dart';
 //import '../Details/components/agents_Trip.dart';
-import '../DriverProfile/driverProfile.dart';
+//import '../DriverProfile/driverProfile.dart';
 //import 'package:intl/intl.dart';
 
 import 'component/audio.dart';

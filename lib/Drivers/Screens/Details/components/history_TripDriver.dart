@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/finished_trips.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
-import 'package:flutter_auth/Drivers/components/loader.dart';
+//import 'package:flutter_auth/Drivers/components/loader.dart';
 import 'package:flutter_auth/Drivers/models/AgentTripCompleted.dart';
 import 'package:flutter_auth/Drivers/models/tripsPendin2.dart';
-import 'package:flutter_auth/constants.dart';
+//import 'package:flutter_auth/constants.dart';
 import 'package:flutter_auth/Drivers/models/network.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;

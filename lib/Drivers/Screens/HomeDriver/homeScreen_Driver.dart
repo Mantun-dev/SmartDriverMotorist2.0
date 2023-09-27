@@ -22,7 +22,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' show json;
 import 'dart:async';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:app_settings/app_settings.dart';
+//import 'package:app_settings/app_settings.dart';
 //import 'package:showcaseview/showcaseview.dart';
 
 class HomeDriverScreen extends StatefulWidget {

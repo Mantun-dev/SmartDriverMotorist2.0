@@ -58,9 +58,9 @@ class _ChatsListState extends State<ChatsList> {
           'Viaje': resp['salas'][i]['id'],
           'Fecha': resp['salas'][i]['Fecha'],
           'Company': getCompany(resp['salas'][i]['Company']),
-          'Hora': resp2['trip']['tripHour'],
+          'Hora': resp2['trip']!= null ?resp2['trip']['tripHour']:"",
           'Agentes': getCantAgentes(resp['salas'][i]['Agentes']),
-          'Tipo': resp2['trip']['tripType'] == true ? 'Entrada' : 'Salida'
+          'Tipo': resp2['trip']!= null ?(resp2['trip']['tripType'] == true ? 'Entrada' : 'Salida'):""
         }
       );
     }
@@ -116,7 +116,7 @@ class _ChatsListState extends State<ChatsList> {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
+    //Size size = MediaQuery.of(context).size;
     return BackgroundBody(
       child: Scaffold(
         backgroundColor: Colors.transparent,

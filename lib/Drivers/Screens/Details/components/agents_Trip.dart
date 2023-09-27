@@ -12,7 +12,7 @@ import 'package:flutter_auth/main.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
-import 'package:quickalert/quickalert.dart';
+//import 'package:quickalert/quickalert.dart';
 import '../../../../components/AppBarPosterior.dart';
 import '../../../../components/AppBarSuperior.dart';
 import '../../../../components/ConfirmationDialog.dart';
@@ -698,7 +698,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
 
   AlertDialog vehiculoE(resp, BuildContext context) {
     return AlertDialog(
-      backgroundColor: backgroundColor,
+      backgroundColor: Theme.of(navigatorKey.currentContext!).cardColor,
       shape: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
       title: Center(
           child: Text(
@@ -711,28 +711,22 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
           children: [
                 const SizedBox(height: 8.0),
                 Text('Descripcion:',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold)),
+                  style:  Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18, fontWeight: FontWeight.bold)),
                 SizedBox(
                   height: 5,
                 ),
                 Text(resp['vehicle']['name'],
-                    style: TextStyle(color: Colors.white, fontSize: 18.0)),
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18)),
                 SizedBox(
                   height: 15,
                 ),
                 Text('Placa:',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold)),
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18, )),
                 SizedBox(
                   height: 10,
                 ),
                 Text(resp['vehicle']['registrationNumber'],
-                    style: TextStyle(color: Colors.white, fontSize: 18.0)),
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18)),
               ],
         ),
       ),
@@ -778,7 +772,11 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                                                             );
                                                                         }
                                                                       },
-                                                                      child: Text('Agregar',style: TextStyle(color: backgroundColor,fontSize: 15.0)),
+                                                                      child: Text('Agregar',style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 15
+                                            ),),
                                                                     ),
                                                                   ),
                                                                   SizedBox(width: 10.0),
@@ -787,7 +785,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                                                       onPressed: () => {
                                                                         Navigator.pop(context),
                                                                       },
-                                                                      child: Text('Cancelar',style: TextStyle(color: Colors.white,fontSize: 15.0)),
+                                                                      child: Text('Cancelar',style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 15, fontWeight: FontWeight.bold)),
                                                                     ),
                                                                   ),
                                                                 ],

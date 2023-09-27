@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
-import 'package:flutter_auth/Drivers/components/loader.dart';
-import 'package:flutter_auth/Drivers/components/menu_lateralDriver.dart';
+// import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
+// import 'package:flutter_auth/Drivers/components/loader.dart';
+// import 'package:flutter_auth/Drivers/components/menu_lateralDriver.dart';
 import 'package:flutter_auth/Drivers/models/network.dart';
 import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 import 'package:flutter_auth/Drivers/models/profile.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:flutter_rounded_progress_bar/flutter_rounded_progress_bar.dart';
-import 'package:flutter_rounded_progress_bar/rounded_progress_bar_style.dart';
+// import 'package:flutter_rounded_progress_bar/flutter_rounded_progress_bar.dart';
+// import 'package:flutter_rounded_progress_bar/rounded_progress_bar_style.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../../../components/AppBarPosterior.dart';
 import '../../../components/AppBarSuperior.dart';
 import '../../../components/backgroundB.dart';
-import '../../../constants.dart';
+//import '../../../constants.dart';
 
 void main() {
   runApp(DriverProfilePage());
