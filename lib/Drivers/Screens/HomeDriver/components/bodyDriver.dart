@@ -307,7 +307,7 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                                   crossAxisCount: 2,
                                   shrinkWrap: true,
                                   physics: NeverScrollableScrollPhysics(),
-                                    children: List.generate(5, (index) {
+                                    children: List.generate(4, (index) {
                                       return ItemDriverCard(
                                           plantillaDriver: plantillaDriver[index],
                                           press: () {

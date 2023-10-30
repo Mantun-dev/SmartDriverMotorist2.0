@@ -137,7 +137,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     _audioRecord = Record();
     recargar=0;
     WidgetsBinding.instance.addObserver(this);
-    ChatApis().dataLogin(widget.id!, widget.rol!, widget.nombre!, prefs.tripId,
+    ChatApis().dataLogin(widget.id!, widget.rol!, widget.nombre!, widget.idV!,
         widget.nombreAgent!, widget.idAgent!);
 
        
@@ -146,10 +146,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       //print("**********************************************actTarget");
       getUpdateT(data);
     });
-    getMessages(widget.id!, widget.idAgent!, prefs.tripId);
+    getMessages(widget.id!, widget.idAgent!, widget.idV!);
     //inicializador del botón de android para manejarlo manual
     BackButtonInterceptor.add(myInterceptor);
-    ChatApis().notificationCounter(prefs.tripId);
+    ChatApis().notificationCounter(widget.idV!);
   }
 
   void getUpdateT(dynamic data) {
@@ -161,7 +161,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     Provider.of<ChatProvider>(context, listen: false).mensaje2.clear();
     final response = await BaseClient().get(
-        RestApis.messages + "/$sala" + "/$idE" + "/$idR",
+        RestApis.messages + "/${widget.idV}" + "/$idE" + "/$idR",
         {"Content-Type": "application/json"});
   if (response == null) return null;
     final data = jsonDecode(response);    
@@ -181,7 +181,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     });
     controllerLoading(true);
 
-    ChatApis().readMessage(prefs.tripId, widget.idAgent!, widget.id!); 
+    ChatApis().readMessage(widget.idV!, widget.idAgent!, widget.id!); 
     arrayStructure.forEach((result) {
       if (mounted) {
         Provider.of<ChatProvider>(context, listen: false)
@@ -238,7 +238,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         if (mounted) {
           Provider.of<ChatProvider>(context, listen: false)
               .addNewMessage(MessageDriver.fromJson(data));
-          ChatApis().readMessage( prefs.tripId, widget.idAgent!, widget.id!);
+          ChatApis().readMessage( widget.idV!, widget.idAgent!, widget.id!);
           // ChatApis().sendReadOnline(
           //     data["sala"].toString(), data["_id"].toString(), widget.id!);
         }
@@ -277,7 +277,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         context,
         MaterialPageRoute(
             builder: (context) => ChatPage(
-                  tripId: prefs.tripId,
+                  tripId: widget.idV!,
                   tipoViaje: this.widget.tipoViaje,
                 )));
 

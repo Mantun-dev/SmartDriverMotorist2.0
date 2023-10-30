@@ -63,8 +63,13 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
   dynamic flagalert;
 
   bool confirmados = true;
+  var confirmVal = 0;
+  
   bool noconfirmados = false;
+  var noConfirmVal = 0;
+
   bool cancelados = false;
+  var cancelVal = 0;
 
   ConfirmationLoadingDialog loadingDialog = ConfirmationLoadingDialog();
   ConfirmationDialog confirmationDialog = ConfirmationDialog();
@@ -304,6 +309,17 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
     item = fetchAgentsInTravel2();
     driverData = fetchRefres();
     getInfoViaje();
+    getNumberToElement();
+  }
+
+  void getNumberToElement(){
+    fetchAgentsInTravel2().then((value) =>{
+      setState((){
+        confirmVal = value.trips![0].agentes!.length;
+        noConfirmVal = value.trips![1].noConfirmados!.length;
+        cancelVal = value.trips![2].cancelados!.length;
+      })
+    });
   }
 
   void getInfoViaje() async{
@@ -402,7 +418,28 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                 backgroundColor: confirmados!=true?Colors.transparent:Theme.of(context).primaryColorDark,
                 shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
               ),
-              child: Text('Confirmados',style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold, color: confirmados==true?Theme.of(context).primaryColorLight:Theme.of(context).primaryColorDark)),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Confirmados',style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold, color: confirmados==true?Theme.of(context).primaryColorLight:Theme.of(context).primaryColorDark)),
+                  SizedBox(width: 5),                      
+                  Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: confirmados == false ? Theme.of(context).unselectedWidgetColor : Theme.of(context).primaryColorLight,
+                    ),
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Text(
+                          '$confirmVal',
+                          style: Theme.of(context).textTheme.labelSmall!.copyWith(color: confirmados == true ? Theme.of(context).unselectedWidgetColor : Theme.of(context).primaryColorLight, fontSize: 9)
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               onPressed: confirmados==true?null:() {
                 setState(() {
                   confirmados = true;
@@ -422,7 +459,28 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                   backgroundColor: noconfirmados!=true?Colors.transparent:Theme.of(context).primaryColorDark,
                   shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
                 ),
-                child: Text('No confirmados',style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold, color: noconfirmados==true?Theme.of(context).primaryColorLight:Theme.of(context).primaryColorDark)),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('No confirmados',style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold, color: noconfirmados==true?Theme.of(context).primaryColorLight:Theme.of(context).primaryColorDark)),
+                    SizedBox(width: 5),                      
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: noconfirmados == false ? Theme.of(context).unselectedWidgetColor : Theme.of(context).primaryColorLight,
+                      ),
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: Text(
+                            '$noConfirmVal',
+                            style: Theme.of(context).textTheme.labelSmall!.copyWith(color: noconfirmados == true ? Theme.of(context).unselectedWidgetColor : Theme.of(context).primaryColorLight, fontSize: 9)
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
                 onPressed: noconfirmados==true?null:() {
                   setState(() {
                     confirmados = false;
@@ -441,7 +499,28 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                 backgroundColor: cancelados!=true?Colors.transparent:Theme.of(context).primaryColorDark,
                 shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
               ),
-              child: Text('Cancelados',style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold, color: cancelados==true?Theme.of(context).primaryColorLight:Theme.of(context).primaryColorDark)),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Cancelados',style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold, color: cancelados==true?Theme.of(context).primaryColorLight:Theme.of(context).primaryColorDark)),
+                  SizedBox(width: 5),                      
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: cancelados == false ? Theme.of(context).unselectedWidgetColor : Theme.of(context).primaryColorLight,
+                      ),
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: Text(
+                            '$cancelVal',
+                            style: Theme.of(context).textTheme.labelSmall!.copyWith(color: cancelados == true ? Theme.of(context).unselectedWidgetColor : Theme.of(context).primaryColorLight, fontSize: 9)
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
               onPressed: cancelados==true?null:() {
                 setState(() {
                   confirmados = false;
