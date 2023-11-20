@@ -18,6 +18,7 @@ import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:record/record.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:url_launcher/url_launcher.dart';
 import '../../../components/warning_dialog.dart';
 import '../../../helpers/base_client.dart';
 import '../../../helpers/res_apis.dart';
@@ -284,6 +285,11 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     return true;
   }
 
+ launchSalidasMaps(lat,lng)async{
+    String destination = '$lat,$lng';
+    String url = 'google.navigation:q=$destination&mode=d';
+    await launchUrl(Uri.parse(url));
+  }
   @override
   Widget build(BuildContext context) {
 
@@ -478,7 +484,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           if (message.mensaje != null) ...{
-                                            message.tipo=='AUDIO'?
+                                            if (message.tipo == 'AUDIO')... {
                                               AudioContainer(
                                                 audioName: message.mensaje!,
                                                 colorIcono: message.id == widget.id
@@ -486,16 +492,34 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                                                     : Theme.of(context).primaryColorDark,
                                                     idSala: int.parse(message.sala),
                                               )
-                                            :
-                                            Text(
-                                              message.mensaje!,
-                                              style: TextStyle(
-                                                  color: message.id ==
-                                                      widget.id
-                                                  ? Colors.white
-                                                  : Theme.of(context).primaryColorDark,
-                                                  fontSize: 17),
-                                            ),
+                                            }else...{
+                                              if(message.mensaje!.contains('position'))...{
+                                                TextButton(
+                                                  onPressed: () {
+                                                    final match;
+                                                    final regex = RegExp(r'position:\s*{\s*(-?\d+\.\d+),\s*(-?\d+\.\d+)\s*}');
+                                            
+                                                    match = regex.firstMatch(message.mensaje!);
+                                                    //final position = match!.group(0);  // La cadena completa "position: {14.0647665, -87.1870787}"
+                                                    final lat = double.parse(match!.group(1)!);  // Latitud como un número decimal
+                                                    final lon = double.parse(match!.group(2)!); 
+                                                   // print("$lat $lon");
+                                                    launchSalidasMaps(lat, lon);
+                                                  },
+                                                  child: Text('Mostrar posición'),
+                                                )
+                                              }else...{
+                                                Text(
+                                                  message.mensaje!,
+                                                  style: TextStyle(
+                                                      color: message.id ==
+                                                          widget.id
+                                                      ? Colors.white
+                                                      : Theme.of(context).primaryColorDark,
+                                                      fontSize: 17),
+                                                ),
+                                              }
+                                            },                                                                                        
                                             Row(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [

@@ -57,12 +57,11 @@ Future<List<TripsHistory>> fetchTripsHistory() async {
       await http.get(Uri.parse('$ip/apis/tripsCompleted/${data.driverId}'));
 
   var jsonData = json.decode(responses.body);
-
   List<TripsHistory> trips = [];
 
   for (var u in jsonData) {
     TripsHistory trip = TripsHistory(u["tripId"], u["Fecha"], u["Hora"],
-        u["Empresa"], u["Agentes"], u['Tipo'], u["conductor"]);
+        u["Empresa"], u["Agentes"], u['Tipo'], u["conductor"], u["Vehiculo"]);
     trips.add(trip);
   }
   return trips;

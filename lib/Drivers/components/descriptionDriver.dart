@@ -2452,9 +2452,9 @@ class _DriverDescriptionState extends State<DriverDescription>
               )
             ),
           ),
-          onTap: () {
+          onTap: () {            
             setState(() {
-              seleccionarCompany = !seleccionarCompany;
+              seleccionarCompany = !seleccionarCompany;              
             });
           },
         ),
@@ -2495,6 +2495,7 @@ class _DriverDescriptionState extends State<DriverDescription>
                       prefs.companyPrueba = nameCompany;
 
                       if (prefs.companyId != prefs.companyIdAgent) {
+                        this.handler!.cleanTable();
                         if (handleerrror == 'khe') {
                           this.handler!.cleanTable();
                           this.handler!.cleanTableAgent();

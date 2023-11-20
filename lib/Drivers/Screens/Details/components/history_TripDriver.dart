@@ -227,6 +227,44 @@ class _HistoryTripDriverState extends State<HistoryTripDriver> {
                                 height: 1,
                                 color: Theme.of(context).dividerColor,
                               ),
+    
+                              SizedBox(height: 20),
+                              Padding(
+                                padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 18,
+                                      height: 18,
+                                      child: SvgPicture.asset(
+                                        "assets/icons/vehiculo.svg",
+                                        color: Theme.of(context).primaryIconTheme.color,
+                                      ),
+                                    ),
+                                    Flexible(
+                                      child: RichText(
+                                        text: TextSpan(
+                                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                          children: [
+                                            TextSpan(
+                                              text: '  Vehículo: ',
+                                              style: TextStyle(fontWeight: FontWeight.w500),
+                                            ),
+                                            TextSpan(
+                                              text: '${abc.data![index].vehiculo}',
+                                              style: TextStyle(fontWeight: FontWeight.normal),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                height: 1,
+                                color: Theme.of(context).dividerColor,
+                              ),
       
                               SizedBox(height: 20),
                               Padding(

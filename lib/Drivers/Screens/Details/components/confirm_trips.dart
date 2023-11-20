@@ -315,14 +315,17 @@ class _DataTableExample extends State<MyConfirmAgent> {
   }
 
   Future<int> addAgente(var idAgente, var lista) async {
-
+    //print(idAgente);
     for (int i = 0; i < lista.trips![0].tripAgent!.length; i++) { 
-      if(lista.trips![0].tripAgent![i].agentId==idAgente){
+      //print('khe we');
+      if(lista.trips![0].tripAgent![i].agentId.toString()==idAgente){
+        //print('Entraste we?');
         if(lista.trips![0].tripAgent![i].traveled == 1){
           traveled = true;
         }else{
           traveled = false;
         }
+        //print(i);
         return i;
       }
     }
@@ -676,7 +679,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                   .post(Uri.parse('https://driver.smtdriver.com/apis/agents/validateCheckIn'), body: data);
                                       
                                               final resp = json.decode(response.body);
-                                      
+                                              print(resp);
                                               if(mounted){
                                                 LoadingIndicatorDialog().dismiss();
                                                 if(resp['type']=='error'){
@@ -776,7 +779,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                         }else{
                                                           var itemAbordaje = await fetchAgentsTripInProgress();
                                       
-                                                          int indexP = await addAgente(resp['agentId'], itemAbordaje);
+                                                          int indexP = await addAgente(data1.agent!.agentId.toString(), itemAbordaje);
                                                           abc.data!.trips![0].tripAgent=itemAbordaje.trips![0].tripAgent;
                                       
                                                           fetchRegisterCommentAgent(
@@ -802,11 +805,13 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                           
                                                           LoadingIndicatorDialog().dismiss();
                                                           if(mounted){
+                                                            //print('el uno we');
+                                                            //print(itemAbordaje.trips![0].tripAgent![indexP].agentFullname);
                                                             Navigator.push(context,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
                                       
                                                             WarningSuccessDialog().show(
                                                               context,
-                                                              title: 'Se agrego el agente ${itemAbordaje.trips![0].tripAgent![indexP].agentFullname} al viaje.',
+                                                              title: 'Se agregó el agente ${itemAbordaje.trips![0].tripAgent![indexP].agentFullname} al viaje.',
                                                               tipo: 2,
                                                               onOkay: () {},
                                                             );  
@@ -1147,10 +1152,11 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                           if(mounted){
                                                             Navigator.pop(navigatorKey.currentContext!);
                                                             Navigator.push(navigatorKey.currentContext!,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
-
+                                                            print('el dos we');
+                                                            print(itemAbordaje.trips![0].tripAgent![indexP].agentFullname);
                                                            WarningSuccessDialog().show(
                                                               context,
-                                                              title: "Se agrego el agente ${itemAbordaje.trips![0].tripAgent![indexP].agentFullname} al viaje.",
+                                                              title: "Se agregó el agente ${itemAbordaje.trips![0].tripAgent![indexP].agentFullname} al viaje.",
                                                               tipo: 2,
                                                               onOkay: () {},
                                                             );
@@ -1747,7 +1753,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
     }
 
-  Widget datosAgentes(bool traveledB(dynamic abc, dynamic index), AsyncSnapshot<TripsList4> abc, int index, BuildContext context, var check2) {
+  Widget datosAgentes(bool traveledB(dynamic abc, dynamic index), AsyncSnapshot<TripsList4> abc, int index, BuildContext context, var check2, salidaOEntrada) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
       child: Container(
@@ -2045,7 +2051,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                               style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
                                                               children: [
                                                                 TextSpan(
-                                                                  text: 'Entrada: ',
+                                                                  text: salidaOEntrada=='salida'?"Salida: ":"Entrada: ",
                                                                   style: TextStyle(fontWeight: FontWeight.w500),
                                                                 ),
                                                                 TextSpan(
@@ -2161,7 +2167,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                       ), 
                                       SizedBox(height: 20.0),
                                       if(tipoViaje=='Entrada')...{
-             
               TextButton(
                                         style: TextButton.styleFrom(
                                           side: BorderSide(width: 1, color: Theme.of(context).primaryColorDark),
@@ -2686,12 +2691,12 @@ class _DataTableExample extends State<MyConfirmAgent> {
       (index) {
         if(abordados){
           if(traveledB(abc,index))
-            return datosAgentes(traveledB, abc, index, context, check);
+            return datosAgentes(traveledB, abc, index, context, check, "entrada");
           else
             return SizedBox();
         }else{
           if(!traveledB(abc,index))
-            return datosAgentes(traveledB, abc, index, context, check);
+            return datosAgentes(traveledB, abc, index, context, check, "entrada");
           else
             return SizedBox();
         }
@@ -2707,12 +2712,12 @@ class _DataTableExample extends State<MyConfirmAgent> {
         (index) {
           if(abordados){
           if(traveledB(abc,index))
-            return datosAgentes(traveledB, abc, index, context, check);
+            return datosAgentes(traveledB, abc, index, context, check, "salida");
           else
             return SizedBox();
         }else{
           if(!traveledB(abc,index))
-            return datosAgentes(traveledB, abc, index, context, check);
+            return datosAgentes(traveledB, abc, index, context, check,"salida");
           else
             return SizedBox();
         }

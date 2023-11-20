@@ -24,7 +24,8 @@ class TripsHistory {
         this.empresa,
         this.agentes,
         this.tipo,
-        this.conductor
+        this.conductor,
+        this.vehiculo
     );
 
     int tripId;
@@ -34,6 +35,7 @@ class TripsHistory {
     int agentes;
     String tipo;
     String conductor;
+    String vehiculo;
 }
 
 class TripsInProgress {

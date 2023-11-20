@@ -938,7 +938,6 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                             tilePadding: const EdgeInsets.only(right: 10, left: 10),
                               title: Column(
                               children: [
-
                                 SizedBox(height: 20),
                                 Padding(
                                   padding: const EdgeInsets.only(right: 10, left: 10),
