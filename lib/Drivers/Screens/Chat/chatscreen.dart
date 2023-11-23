@@ -40,8 +40,9 @@ class ChatScreen extends StatefulWidget {
   final String? idAgent;
   final String? tipoViaje;
   final String? idV;
+  final bool? pantalla;
   const ChatScreen(
-      {Key? key, this.nombre, this.id, this.rol, this.nombreAgent, this.idAgent, this.tipoViaje, this.idV})
+      {Key? key, this.nombre, this.id, this.rol, this.nombreAgent, this.idAgent, this.tipoViaje, this.idV, this.pantalla})
       : super(key: key);
 
   @override
@@ -355,15 +356,20 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                           streamSocket.socket!.dispose();
                           deleteAllTempAudioFiles();
                           recargar=-1;
-                          Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ChatPage(
-                                tripId: this.widget.idV,
-                                tipoViaje: this.widget.tipoViaje,
+
+                          if (widget.pantalla==false) {                            
+                            Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ChatPage(
+                                  tripId: this.widget.idV,
+                                  tipoViaje: this.widget.tipoViaje,
+                                )
                               )
-                            )
-                          );
+                            );
+                          }else{
+                            Navigator.pop(context);
+                          }
                         },
                         child: Container(
                           width: 45,

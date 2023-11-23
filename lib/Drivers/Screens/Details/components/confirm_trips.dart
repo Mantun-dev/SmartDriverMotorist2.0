@@ -2,6 +2,7 @@
 
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_auth/Drivers/Screens/Chat/chatscreen.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
 import 'package:flutter_auth/Drivers/components/loader.dart';
@@ -97,6 +98,11 @@ class _DataTableExample extends State<MyConfirmAgent> {
   bool cargarInfoViaje = false;
   bool cargarL = false;
   bool cargarTotal = false;
+
+  int? idMotorista;
+  String? nombreMotorista;
+
+  var arrayMessaje=[];
   List<String> waypoints = [];
   Future<Message> fetchCheckAgentTrip(String agentId) async {
     int flag = (traveled) ? 1 : 0;
@@ -144,6 +150,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
     setState(() {});
 
   }
+
+
 
   bool traveledB(lista, index) {
     return (lista!.trips![0].tripAgent![index].traveled == 0)
@@ -306,12 +314,39 @@ class _DataTableExample extends State<MyConfirmAgent> {
     super.initState();
     setUb(2);
     item = fetchAgentsTripInProgress();
+  
     getLocation();
     comment = new List<TextEditingController>.empty(growable: true);
     check = [];
     driverData = fetchRefres();
     gettotalAbordado();
     getInfoViaje();
+    Future.delayed(const Duration(seconds: 1), () {
+      setState(() {        
+        getCounterNotification(prefs.tripId);
+      });
+    });
+  }
+
+  void getCounterNotification(String tripId) async {
+    
+    http.Response responses = await http.get(Uri.parse('https://apichat.smtdriver.com/api/mensajes/$tripId'));
+    var getData = json.decode(responses.body);
+    idMotorista = getData['Motorista']['Id'];
+    nombreMotorista = getData['Motorista']['Nombre'];
+
+    if (getData.isNotEmpty) {
+      for(var i=0;i<getData['Agentes'].length;i++){
+       print(getData['Agentes'][i]);
+          setState(() {
+            arrayMessaje.add({
+              "nombreAgent": getData['Agentes'][i]['Nombre'],
+              "cantMessage": getData['Agentes'][i]['sinleer_Motorista']
+            });   
+          });
+      }
+    }
+        //print(arrayMessaje);
   }
 
   Future<int> addAgente(var idAgente, var lista) async {
@@ -494,16 +529,11 @@ class _DataTableExample extends State<MyConfirmAgent> {
             SizedBox(height: 20.0),
             Align(
               alignment: Alignment.bottomLeft,
-              child: Text(
-                'Total de agentes: $totalAgente',
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 12),
-              ),
+              child: Text('Total de agentes: $totalAgente',style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 12),),
             ),
             SizedBox(height: 10.0),
-            Padding(
-              padding: const EdgeInsets.only(top: 2.0, bottom: 2, right: 8, left: 8),
-              child: Row(
-                 mainAxisAlignment: MainAxisAlignment.center,
+            Padding(padding: const EdgeInsets.only(top: 2.0, bottom: 2, right: 8, left: 8),
+              child: Row(mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   _buttonsAgents(),
                   if(tipoViaje!='Entrada')...{
@@ -523,32 +553,23 @@ class _DataTableExample extends State<MyConfirmAgent> {
       )
     );
     else return WillPopScope(
-                      onWillPop: () async => false,
-                      child: SimpleDialog(
-                        elevation: 20,
-                        backgroundColor: Theme.of(context).cardColor,
-                        children: [
-                          Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Padding(
-                                  padding: EdgeInsets.only(left: 16, top: 16, right: 16),
-                                  child: CircularProgressIndicator(),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(16),
-                                  child: Text(
-                                    'Cargando...', 
-                                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18),
-                                    ),
-                                )
-                              ],
-                            ),
-                          )
-                        ] ,
-                      ),
-                    );
+      onWillPop: () async => false,
+      child: SimpleDialog(elevation: 20,backgroundColor: Theme.of(context).cardColor,
+        children: [
+          Center(
+          child: Column(mainAxisSize: MainAxisSize.min,
+            children: [
+              const Padding(padding: EdgeInsets.only(left: 16, top: 16, right: 16),
+                child: CircularProgressIndicator(),),
+                  Padding(padding: const EdgeInsets.all(16),
+                    child: Text('Cargando...',style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18),),
+              )
+            ],
+          ),
+        )
+      ] ,
+    ),
+  );
   }
 
   Widget escanearAgente() {
@@ -563,89 +584,61 @@ class _DataTableExample extends State<MyConfirmAgent> {
               SizedBox(height: 15.0),
               Center(child: Text('Marcar abordaje', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 12),)),
               SizedBox(height: 5),
-              Row(
-                children: [
-                   Expanded(
+              Row(children: [
+                Expanded(
                   child: GestureDetector(
-                    onTap: () {
-                      
-                      showGeneralDialog(
-                        barrierColor: Colors.black.withOpacity(0.5),
-                        transitionBuilder: (context, a1, a2, widget) {
-                          return Transform.scale(scale: a1.value,
-                            child: Opacity(opacity: a1.value,
-                              child: AlertDialog(
-                                backgroundColor: Theme.of(navigatorKey.currentContext!).cardColor,
-                                shape: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                  borderSide: BorderSide(
-                                    color: Theme.of(navigatorKey.currentContext!).dividerColor, // Cambia el color de los bordes aquí
-                                    width: 1.0, // Cambia el ancho de los bordes aquí
+                  onTap: () {                      
+                    showGeneralDialog(
+                      barrierColor: Colors.black.withOpacity(0.5),
+                      transitionBuilder: (context, a1, a2, widget) {
+                        return Transform.scale(scale: a1.value,
+                          child: Opacity(opacity: a1.value,
+                            child: AlertDialog(
+                              backgroundColor: Theme.of(navigatorKey.currentContext!).cardColor,
+                              shape: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15.0),
+                                borderSide: BorderSide(color: Theme.of(navigatorKey.currentContext!).dividerColor,width: 1.0,),
+                              ),                            
+                              title: Center(child: Text('Buscar Agente',style: Theme.of(navigatorKey.currentContext!).textTheme.labelMedium!.copyWith(fontSize: 20, fontWeight: FontWeight.normal))),
+                              content: Container(
+                                decoration: BoxDecoration(color: Theme.of(context).cardTheme.color,
+                                  borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(color: Theme.of(context).dividerColor,width: 1) // Radio de la esquina
                                   ),
-                                ),
-                                
-                                title: Center(child: Text('Buscar Agente',style: Theme.of(navigatorKey.currentContext!).textTheme.labelMedium!.copyWith(fontSize: 20, fontWeight: FontWeight.normal))),
-                                content: Container(
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context).cardTheme.color,
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(
-                                      color: Theme.of(context).dividerColor,
-                                      width: 1
-                                    ) // Radio de la esquina
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                    child: TextField(
-                                      controller: agentEmployeeId,
-                                      style: TextStyle(
-                                        color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal
-                                      ),
+                                  child: Padding(padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                    child: TextField(controller: agentEmployeeId,
+                                      style: TextStyle(color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal),
                                       decoration: InputDecoration(
                                         border: InputBorder.none,
                                         hintText: 'Número de empleado o identidad',
-                                        hintStyle: TextStyle(
-                                          color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal
-                                        ),
+                                        hintStyle: TextStyle(color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal),
                                       ),
                                     ),
                                   ),
                                 ),
                                 actions: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                                  Row(mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Expanded(
                                         child: TextButton(
                                           style: ButtonStyle(
                                             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                              RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(10.0),
-                                                side: BorderSide(color: Colors.black),
-                                              ),
+                                              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0),side: BorderSide(color: Colors.black),),
                                             ),
                                             backgroundColor: MaterialStateProperty.all(Colors.transparent),
                                           ),
                                           onPressed: () {
                                             Navigator.pop(context);
                                           },
-                                          child: Text(
-                                            'Cerrar',
-                                            style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 15, fontWeight: FontWeight.bold)
-                                          ),
+                                          child: Text('Cerrar',style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 15, fontWeight: FontWeight.bold)),
                                         ),
-                                      ),
-                                  
-                                      SizedBox(width: 10.0),
-                                      
+                                      ),                                  
+                                      SizedBox(width: 10.0),                                      
                                       Expanded(
                                         child: TextButton(
                                           style: ButtonStyle(
                                             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                              RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(10.0),
-                                                side: BorderSide(color: Color.fromRGBO(40, 93, 169, 1)),
-                                              ),
+                                              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0),side: BorderSide(color: Color.fromRGBO(40, 93, 169, 1)),),
                                             ),
                                             backgroundColor: MaterialStateProperty.all(Color.fromRGBO(40, 93, 169, 1)),
                                           ),
@@ -665,21 +658,12 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                   },
                                                 ); 
                                                 return;
-                                              }
-                                           
-                                              LoadingIndicatorDialog().show(context);
-                                      
-                                              Map data =   {
-                                                'agentUser':agentEmployeeId.text, 
-                                                'tripId':tripId.toString(),
-                                                'itsManualSearch':"1"
-                                              };
-                                      
-                                              http.Response response = await http
-                                                  .post(Uri.parse('https://driver.smtdriver.com/apis/agents/validateCheckIn'), body: data);
-                                      
-                                              final resp = json.decode(response.body);
-                                              print(resp);
+                                              }                                           
+                                              LoadingIndicatorDialog().show(context);                                      
+                                              Map data =   {'agentUser':agentEmployeeId.text, 'tripId':tripId.toString(),'itsManualSearch':"1"};                                      
+                                              http.Response response = await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/validateCheckIn'), body: data);
+
+                                              final resp = json.decode(response.body);                                             
                                               if(mounted){
                                                 LoadingIndicatorDialog().dismiss();
                                                 if(resp['type']=='error'){
@@ -693,8 +677,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                 } 
                                       
                                                 if(resp['allow']==0){
-                                                  if(abc.data!.trips![1].actualTravel!.tripType!='Salida'){
-                                                    
+                                                  if(abc.data!.trips![1].actualTravel!.tripType!='Salida'){                                                    
                                                     LoadingIndicatorDialog().dismiss();
                                                     WarningSuccessDialog().show(
                                                       context,
@@ -702,8 +685,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                       tipo: 1,
                                                       onOkay: () {},
                                                     ); 
-                                                    return;
-                                                  
+                                                    return;                                                  
                                                   }else{
                                                   if(resp['msg']=='Agente no se encuentra registrado en este viaje.'){
                                                     LoadingIndicatorDialog().dismiss();
@@ -721,19 +703,13 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                       
                                                         LoadingIndicatorDialog().show(context);
                                       
-                                                         Map datas = {
-                                                          "companyId": abc.data!.trips![1].actualTravel!.companyId.toString(),
-                                                          "agentEmployeeId": agentEmployeeId.text
-                                                        };
+                                                        Map datas = {"companyId": abc.data!.trips![1].actualTravel!.companyId.toString(),"agentEmployeeId": agentEmployeeId.text};
                                       
-                                                        http.Response responsed =
-                                                            await http.post(Uri.parse('$ip/apis/searchAgent'), body: datas);
+                                                        http.Response responsed = await http.post(Uri.parse('$ip/apis/searchAgent'), body: datas);
                                                         final data1 = Search.fromJson(json.decode(responsed.body));
-                                      
-                                      
+                                                                            
                                                         if(data1.agent!.msg!=null){
-                                                          LoadingIndicatorDialog().dismiss();
-                                      
+                                                          LoadingIndicatorDialog().dismiss();                                      
                                                           if(data1.ok==true){
                                                             Navigator.pop(context);
                                                             Navigator.pop(context);
@@ -742,27 +718,18 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                               title: '${data1.agent!.msg!}',
                                                               tipo: 1,
                                                               onOkay: () {},
-                                                            ); 
-                                      
+                                                            );                                       
                                                             return;
                                                           }
                                                         }
                                       
-                                                        Map datas2 = {
-                                                          "agentId": data1.agent!.agentId.toString(),
-                                                          "tripId": abc.data!.trips![1].actualTravel!.tripId.toString(),
-                                                          "tripHour": abc.data!.trips![1].actualTravel!.tripHour.toString()
-                                                        };
+                                                        Map datas2 = {"agentId": data1.agent!.agentId.toString(),"tripId": abc.data!.trips![1].actualTravel!.tripId.toString(),"tripHour": abc.data!.trips![1].actualTravel!.tripHour.toString()};
                                       
-                                                        final sendDatas = await http.post(Uri.parse('$ip/apis/registerAgentTripEntryByDriver'),body: datas2);
-                                      
+                                                        final sendDatas = await http.post(Uri.parse('$ip/apis/registerAgentTripEntryByDriver'),body: datas2);                                      
                                                         final dataR = json.decode(sendDatas.body);
-                                      
-                                      
-                                                        if(dataR['type']=='error'){
-                                      
-                                                          LoadingIndicatorDialog().dismiss();
-                                      
+                                                                            
+                                                        if(dataR['type']=='error'){                                      
+                                                          LoadingIndicatorDialog().dismiss();                                      
                                                           if(mounted){
                                                             Navigator.pop(context);
                                                             Navigator.pop(context);
@@ -772,21 +739,14 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                               tipo: 1,
                                                               onOkay: () {},
                                                             ); 
-                                                          }
-                                      
-                                                        return;
-                                      
+                                                          }                                      
+                                                          return;                                      
                                                         }else{
-                                                          var itemAbordaje = await fetchAgentsTripInProgress();
-                                      
+                                                          var itemAbordaje = await fetchAgentsTripInProgress();                                      
                                                           int indexP = await addAgente(data1.agent!.agentId.toString(), itemAbordaje);
                                                           abc.data!.trips![0].tripAgent=itemAbordaje.trips![0].tripAgent;
                                       
-                                                          fetchRegisterCommentAgent(
-                                                            itemAbordaje.trips![0].tripAgent![indexP].agentId.toString(),
-                                                            prefs.tripId,
-                                                            ''
-                                                          ); 
+                                                          fetchRegisterCommentAgent(itemAbordaje.trips![0].tripAgent![indexP].agentId.toString(),prefs.tripId,''); 
                                       
                                                           Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
                                         
@@ -804,18 +764,14 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                           await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
                                                           
                                                           LoadingIndicatorDialog().dismiss();
-                                                          if(mounted){
-                                                            //print('el uno we');
-                                                            //print(itemAbordaje.trips![0].tripAgent![indexP].agentFullname);
-                                                            Navigator.push(context,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
-                                      
+                                                          if(mounted){                                                            
+                                                            Navigator.push(context,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));                                      
                                                             WarningSuccessDialog().show(
                                                               context,
                                                               title: 'Se agregó el agente ${itemAbordaje.trips![0].tripAgent![indexP].agentFullname} al viaje.',
                                                               tipo: 2,
                                                               onOkay: () {},
-                                                            );  
-                                                            
+                                                            );                                                              
                                                           } 
                                                         }
                                       
@@ -828,11 +784,11 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                   }else{
                                                     LoadingIndicatorDialog().dismiss();
                                                     WarningSuccessDialog().show(
-                                                              context,
-                                                              title: '${resp['msg']}',
-                                                              tipo: 1,
-                                                              onOkay: () {},
-                                                            ); 
+                                                      context,
+                                                      title: '${resp['msg']}',
+                                                      tipo: 1,
+                                                      onOkay: () {},
+                                                    ); 
                                                     return;
                                                   }
                                                 }
@@ -841,8 +797,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                 int index = 0;
                                       
                                                 for (int i = 0; i < abc.data!.trips![0].tripAgent!.length; i++) {  
-                                                  if(abc.data!.trips![0].tripAgent![i].agentId==resp['agentId']){
-                                      
+                                                  if(abc.data!.trips![0].tripAgent![i].agentId==resp['agentId']){                                      
                                                     if(abc.data!.trips![0].tripAgent![i].traveled == 1){
                                                       traveled = true;
                                                     }else{
@@ -881,23 +836,21 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                       'actionName':'Abordaje'
                                                     };
                                                     
-                                                    //http.Response response2 = 
-                                                    await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
-                                                    //final resp2 = json.decode(response2.body);
-                                                                                                              agentEmployeeId.text='';
+                                                  
+                                                  await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
+                                                  agentEmployeeId.text='';
                                                   abc.data!.trips![0].tripAgent![index].commentDriver=null;                                                         
                                                   totalAbordado++;
                                                   totalNoAbordado--;
-                                                   
-                                                    LoadingIndicatorDialog().dismiss();
-                                                    
-                                      
-                                                    WarningSuccessDialog().show(
-                                                              context,
-                                                              title: 'El agente ${abc.data!.trips![0].tripAgent![index].agentFullname} ha abordado.',
-                                                              tipo: 2,
-                                                              onOkay: () {},
-                                                            );  
+                                                  
+                                                  LoadingIndicatorDialog().dismiss();
+                                                                                          
+                                                  WarningSuccessDialog().show(
+                                                    context,
+                                                    title: 'El agente ${abc.data!.trips![0].tripAgent![index].agentFullname} ha abordado.',
+                                                    tipo: 2,
+                                                    onOkay: () {},
+                                                  );  
                                                   setState(() { });
                                                   },
                                                   onCancelBtnTap: () {
@@ -949,24 +902,16 @@ class _DataTableExample extends State<MyConfirmAgent> {
                         child: Row(
                           children: [
                             SvgPicture.asset(  
-                                "assets/icons/usuario.svg",
-                                color: Theme.of(context).primaryIconTheme.color,
-                                width: 15,
-                                height: 15,
-                              ),
-                              SizedBox(width: 6),
+                              "assets/icons/usuario.svg",color: Theme.of(context).primaryIconTheme.color,width: 15,height: 15,
+                            ),
+                            SizedBox(width: 6),
                             Flexible(
                               child: TextField(
                                 enabled: false,
-                                style: TextStyle(
-                                  color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal
-                                ),
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
+                                style: TextStyle(color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal),
+                                decoration: InputDecoration(border: InputBorder.none,
                                   hintText: 'Número de empleado o identidad',
-                                  hintStyle: TextStyle(
-                                    color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal
-                                  ),
+                                  hintStyle: TextStyle(color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal),
                                 ),
                               ),
                             ),
@@ -981,16 +926,11 @@ class _DataTableExample extends State<MyConfirmAgent> {
                   decoration: BoxDecoration(
                     color: Colors.transparent,
                     borderRadius: BorderRadius.circular(10.0),
-                    border: Border.all(
-                      color: Theme.of(context).primaryColorDark,
-                      width: 1
-                    )
+                    border: Border.all(color: Theme.of(context).primaryColorDark,width: 1)
                   ),
                   child: IconButton(
                     icon: SvgPicture.asset(  
-                              "assets/icons/QR.svg",
-                              color: Theme.of(context).primaryColorDark,
-                            ),
+                      "assets/icons/QR.svg", color: Theme.of(context).primaryColorDark,),
                     onPressed: () async{
                       permiso = await checkLocationPermission();
                         if (!permiso!) {
@@ -1009,186 +949,155 @@ class _DataTableExample extends State<MyConfirmAgent> {
                           return;
                         }
                         
-                        String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);
-              
+                        String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);              
                         if (codigoQR == "-1") {
                           return;
                         } else {
                           LoadingIndicatorDialog().show(context);
-
-                          Map data =   {
-                            'agentUser':codigoQR, 
-                            'tripId':tripId.toString()
-                          };
-
-                          http.Response response = await http
-                              .post(Uri.parse('https://driver.smtdriver.com/apis/agents/validateCheckIn'), body: data);
+                          Map data =   {'agentUser':codigoQR,'tripId':tripId.toString()};
+                          http.Response response = await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/validateCheckIn'), body: data);
 
                           final resp = json.decode(response.body);
 
                           if(mounted){
-                                                LoadingIndicatorDialog().dismiss();
-                                                if(resp['type']=='error'){
-                                                  WarningSuccessDialog().show(
-                                                    context,
-                                                    title: "${resp['msg']}",
-                                                    tipo: 1,
-                                                    onOkay: () {},
-                                                  );
-                                                  return;
-                                                } 
+                            LoadingIndicatorDialog().dismiss();
+                            if(resp['type']=='error'){
+                              WarningSuccessDialog().show(
+                                context,
+                                title: "${resp['msg']}",
+                                tipo: 1,
+                                onOkay: () {},
+                              );
+                              return;
+                            } 
 
-                                                if(resp['allow']==0){
-                                                  if(abc.data!.trips![1].actualTravel!.tripType!='Salida'){
-                                                    
-                                                    LoadingIndicatorDialog().dismiss();
-                                                    WarningSuccessDialog().show(
-                                                    context,
-                                                    title: "${resp['msg']}",
-                                                    tipo: 1,
-                                                    onOkay: () {},
-                                                  );
-                                                    return;
-                                                  
-                                                  }else{
-                                                  if(resp['msg']=='Agente no se encuentra registrado en este viaje.'){
-                                                    LoadingIndicatorDialog().dismiss();
-                                                    QuickAlert.show(
-                                                      context: navigatorKey.currentContext!,
-                                                      type: QuickAlertType.warning,
-                                                      title: '¡Alerta!',
-                                                      text: 'Agente no se encuentra registrado en este viaje. Desea agregarlo al viaje?',
-                                                      confirmBtnText: 'Confirmar',
-                                                      cancelBtnText: 'Cancelar',
-                                                      showCancelBtn: true,  
-                                                      confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
-                                                      cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ),
-                                                      onConfirmBtnTap: () async{
+                            if(resp['allow']==0){
+                              if(abc.data!.trips![1].actualTravel!.tripType!='Salida'){
+                                
+                                LoadingIndicatorDialog().dismiss();
+                                WarningSuccessDialog().show(
+                                context,
+                                title: "${resp['msg']}",
+                                tipo: 1,
+                                onOkay: () {},
+                              );
+                                return;
+                              
+                              }else{
+                              if(resp['msg']=='Agente no se encuentra registrado en este viaje.'){
+                                LoadingIndicatorDialog().dismiss();
+                                QuickAlert.show(
+                                  context: navigatorKey.currentContext!,
+                                  type: QuickAlertType.warning,
+                                  title: '¡Alerta!',
+                                  text: 'Agente no se encuentra registrado en este viaje. Desea agregarlo al viaje?',
+                                  confirmBtnText: 'Confirmar',
+                                  cancelBtnText: 'Cancelar',
+                                  showCancelBtn: true,  
+                                  confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
+                                  cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ),
+                                  onConfirmBtnTap: () async{
 
-                                                        LoadingIndicatorDialog().show(navigatorKey.currentContext!);
+                                    LoadingIndicatorDialog().show(navigatorKey.currentContext!);
 
-                                                         Map datas = {
-                                                          "companyId": abc.data!.trips![1].actualTravel!.companyId.toString(),
-                                                          "agentEmployeeId": codigoQR
-                                                        };
+                                    Map datas = {"companyId": abc.data!.trips![1].actualTravel!.companyId.toString(),"agentEmployeeId": codigoQR};
 
-                                                        http.Response responsed =
-                                                            await http.post(Uri.parse('$ip/apis/searchAgent'), body: datas);
-                                                        final data1 = Search.fromJson(json.decode(responsed.body));
+                                    http.Response responsed =await http.post(Uri.parse('$ip/apis/searchAgent'), body: datas);
+                                    final data1 = Search.fromJson(json.decode(responsed.body));
 
+                                    if(data1.agent!.msg!=null){
+                                      LoadingIndicatorDialog().dismiss();
+                                      if(data1.ok==true){
+                                        Navigator.pop(navigatorKey.currentContext!);
+                                        WarningSuccessDialog().show(
+                                          context,
+                                          title: "${data1.agent!.msg!}",
+                                          tipo: 1,
+                                          onOkay: () {},
+                                        );
+                                        return;
+                                      }
+                                    }
 
-                                                        if(data1.agent!.msg!=null){
-                                                          LoadingIndicatorDialog().dismiss();
+                                    Map datas2 = {"agentId": data1.agent!.agentId.toString(),"tripId": abc.data!.trips![1].actualTravel!.tripId.toString(),"tripHour": abc.data!.trips![1].actualTravel!.tripHour.toString()};
 
-                                                          if(data1.ok==true){
-                                                            Navigator.pop(navigatorKey.currentContext!);
-                                                            WarningSuccessDialog().show(
-                                                              context,
-                                                              title: "${data1.agent!.msg!}",
-                                                              tipo: 1,
-                                                              onOkay: () {},
-                                                            );
+                                    final sendDatas = await http.post(Uri.parse('$ip/apis/registerAgentTripEntryByDriver'),body: datas2);
 
-                                                            return;
-                                                          }
-                                                        }
+                                    final dataR = json.decode(sendDatas.body);
 
-                                                        Map datas2 = {
-                                                          "agentId": data1.agent!.agentId.toString(),
-                                                          "tripId": abc.data!.trips![1].actualTravel!.tripId.toString(),
-                                                          "tripHour": abc.data!.trips![1].actualTravel!.tripHour.toString()
-                                                        };
+                                    if(dataR['type']=='error'){
+                                      LoadingIndicatorDialog().dismiss();
+                                      
+                                      if(mounted){
+                                        Navigator.pop(navigatorKey.currentContext!);
+                                        Navigator.pop(navigatorKey.currentContext!);
+                                        WarningSuccessDialog().show(
+                                          context,
+                                          title: "${dataR['message']}",
+                                          tipo: 1,
+                                          onOkay: () {},
+                                        );
+                                      }
 
-                                                        final sendDatas = await http.post(Uri.parse('$ip/apis/registerAgentTripEntryByDriver'),body: datas2);
+                                      return;
+                                      }else{
+                                        var itemAbordaje = await fetchAgentsTripInProgress();
+                                        int indexP = await addAgente(resp['agentId'], itemAbordaje);
+                                        abc.data!.trips![0].tripAgent=itemAbordaje.trips![0].tripAgent;
 
-                                                        final dataR = json.decode(sendDatas.body);
+                                        fetchRegisterCommentAgent(itemAbordaje.trips![0].tripAgent![indexP].agentId.toString(),prefs.tripId,''); 
 
-                                                        if(dataR['type']=='error'){
-                                                          LoadingIndicatorDialog().dismiss();
-                                                          
-                                                          if(mounted){
-                                                            Navigator.pop(navigatorKey.currentContext!);
-                                                            Navigator.pop(navigatorKey.currentContext!);
-                                                            WarningSuccessDialog().show(
-                                                              context,
-                                                              title: "${dataR['message']}",
-                                                              tipo: 1,
-                                                              onOkay: () {},
-                                                            );
-                                                          }
-
-                                                        return;
-
-                                                        }else{
-
-                                                          var itemAbordaje = await fetchAgentsTripInProgress();
-
-                                                          int indexP = await addAgente(resp['agentId'], itemAbordaje);
-                                                          abc.data!.trips![0].tripAgent=itemAbordaje.trips![0].tripAgent;
-
-                                                          fetchRegisterCommentAgent(
-                                                            itemAbordaje.trips![0].tripAgent![indexP].agentId.toString(),
-                                                            prefs.tripId,
-                                                            ''
-                                                          ); 
-
-
-                                                          Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+                                        Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
   
-                                                          traveled = !traveled;
-                                                          abc.data!.trips![0].tripAgent![indexP].traveled = traveled;
+                                        traveled = !traveled;
+                                        abc.data!.trips![0].tripAgent![indexP].traveled = traveled;
                                                           
-                                                          Map data =   {
-                                                            'agentId':data1.agent!.agentId.toString(), 
-                                                            'tripId':abc.data!.trips![1].actualTravel!.tripId.toString(),
-                                                            'latitude':position.latitude.toString(),
-                                                            'longitude':position.longitude.toString(),
-                                                            'actionName':'Abordaje'
-                                                          };
-                                                        
-                                                          await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
+                                        Map data =   {
+                                          'agentId':data1.agent!.agentId.toString(), 
+                                          'tripId':abc.data!.trips![1].actualTravel!.tripId.toString(),
+                                          'latitude':position.latitude.toString(),
+                                          'longitude':position.longitude.toString(),
+                                          'actionName':'Abordaje'
+                                        };
+                                        await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
                                                             
-                                                          LoadingIndicatorDialog().dismiss();
-                                                          if(mounted){
-                                                            Navigator.pop(navigatorKey.currentContext!);
-                                                            Navigator.push(navigatorKey.currentContext!,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));
-                                                            print('el dos we');
-                                                            print(itemAbordaje.trips![0].tripAgent![indexP].agentFullname);
-                                                           WarningSuccessDialog().show(
-                                                              context,
-                                                              title: "Se agregó el agente ${itemAbordaje.trips![0].tripAgent![indexP].agentFullname} al viaje.",
-                                                              tipo: 2,
-                                                              onOkay: () {},
-                                                            );
-                                                            
-                                                          } 
-                                                        }
-
-                                                      },
-                                                      onCancelBtnTap: () {
-                                                        Navigator.pop(navigatorKey.currentContext!);
-                                                      },
-                                                    );
-                                                  return;
-                                                  }else{
-                                                    LoadingIndicatorDialog().dismiss();
-                                                    WarningSuccessDialog().show(
-                                                              context,
-                                                              title: "${resp['msg']}",
-                                                              tipo: 1,
-                                                              onOkay: () {},
-                                                            );
-                                                    return;
-                                                  }
-                                                }
-                                                }
+                                        LoadingIndicatorDialog().dismiss();
+                                        if(mounted){
+                                          Navigator.pop(navigatorKey.currentContext!);
+                                          Navigator.push(navigatorKey.currentContext!,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));                                                                              
+                                          WarningSuccessDialog().show(
+                                            context,
+                                            title: "Se agregó el agente ${itemAbordaje.trips![0].tripAgent![indexP].agentFullname} al viaje.",
+                                            tipo: 2,
+                                            onOkay: () {},
+                                          );
+                                          
+                                        } 
+                                      }
+                                          },
+                                          onCancelBtnTap: () {
+                                            Navigator.pop(navigatorKey.currentContext!);
+                                          },
+                                        );
+                                      return;
+                                    }else{
+                                      LoadingIndicatorDialog().dismiss();
+                                      WarningSuccessDialog().show(
+                                        context,
+                                        title: "${resp['msg']}",
+                                        tipo: 1,
+                                        onOkay: () {},
+                                      );
+                                      return;
+                                    }
+                                }
+                              }
                             
 
                             int index = 0;
 
                             for (int i = 0; i < abc.data!.trips![0].tripAgent!.length; i++) {  
                               if(abc.data!.trips![0].tripAgent![i].agentId==resp['agentId']){
-
                                 if(abc.data!.trips![0].tripAgent![i].traveled == 1){
                                   traveled = true;
                                 }else{
@@ -1210,13 +1119,9 @@ class _DataTableExample extends State<MyConfirmAgent> {
                               confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
                               cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ),
                               onConfirmBtnTap: () async{
-
                                 Navigator.pop(navigatorKey.currentContext!);
-
                                 LoadingIndicatorDialog().show(context);
-
-                                Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-  
+                                Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);  
                                 traveled = !traveled;
                                 abc.data!.trips![0].tripAgent![index].traveled = traveled;
                                 
@@ -1228,12 +1133,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                   'actionName':'Abordaje'
                                 };
 
-                                //http.Response response2 = 
                                 await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
-                                //final resp2 = json.decode(response2.body);
-
-                                LoadingIndicatorDialog().dismiss();
-                                
+                                LoadingIndicatorDialog().dismiss();                              
                                 abc.data!.trips![0].tripAgent![index].commentDriver=null;
                                 totalAbordado++;
                                 totalNoAbordado--;
@@ -1244,8 +1145,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                   tipo: 2,
                                   onOkay: () {},
                                 );
-
-                              setState(() { });
+                                setState(() { });
                               },
                               onCancelBtnTap: () {
                                 Navigator.pop(navigatorKey.currentContext!);
@@ -1270,15 +1170,9 @@ class _DataTableExample extends State<MyConfirmAgent> {
                     },
                     child: Container(
                       padding: EdgeInsets.all(8.0),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color:  Theme.of(context).primaryIconTheme.color!, width: 2.0), // Borde blanco
-                      ),
+                      decoration: BoxDecoration(shape: BoxShape.circle,border: Border.all(color:  Theme.of(context).primaryIconTheme.color!, width: 2.0),),
                       child: SvgPicture.asset(
-                        "assets/icons/info.svg",
-                        color: Theme.of(context).primaryIconTheme.color,
-                        height: 14,
-                        width: 14,
+                        "assets/icons/info.svg",color: Theme.of(context).primaryIconTheme.color,height: 14,width: 14,
                       ),
                     ),
                   )
@@ -1295,7 +1189,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
   Future<bool> checkLocationPermission() async {
     var status = await Permission.location.status;
-
     if (status.isGranted) {
       return true;
     } else {
@@ -1316,12 +1209,10 @@ class _DataTableExample extends State<MyConfirmAgent> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
                     if(data?.driverType=='Motorista')
                       Center(child: Text('Escanee el código QR del vehículo', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 12),)),
                     if(data?.driverType=='Motorista')
                       SizedBox(height: 6,),
-
                     Row(
                       children: [
                         Expanded(
@@ -1329,35 +1220,25 @@ class _DataTableExample extends State<MyConfirmAgent> {
                             decoration: BoxDecoration(
                               color: Theme.of(context).cardTheme.color,
                               borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: Theme.of(context).dividerColor,
-                                width: 1
-                              ) // Radio de la esquina
+                              border: Border.all(color: Theme.of(context).dividerColor,width: 1) // Radio de la esquina
                             ),
                             child: Padding(
                               padding: const EdgeInsets.only(left:20.0, right: 10),
                               child: Row(
                                 children: [
                                   SvgPicture.asset(  
-                                      "assets/icons/vehiculo.svg",
-                                      color: Theme.of(context).primaryIconTheme.color,
-                                      width: 15,
-                                      height: 15,
-                                    ),
-                                    SizedBox(width: 6),
+                                    "assets/icons/vehiculo.svg",color: Theme.of(context).primaryIconTheme.color,width: 15,height: 15,
+                                  ),
+                                  SizedBox(width: 6),
                                   Flexible(
                                     child: TextField(
                                       enabled: data?.driverType=='Motorista'?false:true,
-                                      style: TextStyle(
-                                        color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal
-                                      ),
+                                      style: TextStyle(color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal),
                                       controller: vehicleController,
                                       decoration: InputDecoration(
                                         border: InputBorder.none,
                                         hintText: 'Vehículo',
-                                        hintStyle: TextStyle(
-                                          color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal
-                                        ),
+                                        hintStyle: TextStyle(color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal),
                                       ),
                                       onChanged: (value) => tripVehicle,
                                     ),
@@ -1372,21 +1253,15 @@ class _DataTableExample extends State<MyConfirmAgent> {
                           decoration: BoxDecoration(
                             color: Colors.transparent,
                             borderRadius: BorderRadius.circular(10.0),
-                            border: Border.all(
-                              color: Theme.of(context).primaryColorDark,
-                              width: 1
-                            )
+                            border: Border.all(color: Theme.of(context).primaryColorDark,width: 1)
                           ),
                           child: IconButton(
                             icon: SvgPicture.asset(  
-                                      "assets/icons/QR.svg",
-                                      color: Theme.of(context).primaryColorDark,
-                                    ),
+                              "assets/icons/QR.svg",color: Theme.of(context).primaryColorDark,
+                            ),
                             onPressed: vehicleL==false?null:() async{
                               String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);
-                    
                               if (codigoQR == "-1") {
-
                                 return;
                               } else {
                                 LoadingIndicatorDialog().show(context);
@@ -1395,9 +1270,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                 LoadingIndicatorDialog().dismiss();
                                 if(resp['type']=='success'){
                                   if(mounted){
-                                    showDialog(
-                                            context: context,
-                                            builder: (context) => vehiculoE(resp, context),);
+                                    showDialog(context: context,builder: (context) => vehiculoE(resp, context),);
                                   }
                                 }else{
                                   if(mounted){
@@ -1413,73 +1286,54 @@ class _DataTableExample extends State<MyConfirmAgent> {
                             }
                           ),
                         ),
-
                         if (data?.driverType != 'Motorista')
-                          SizedBox(
-                            width: 10,
-                          ),
+                          SizedBox(width: 10,),
                         if (data?.driverType != 'Motorista')
-                          Container(
-                        decoration: BoxDecoration(
-                          color: Colors.transparent,
-                          borderRadius: BorderRadius.circular(10.0),
-                          border: Border.all(
-                            color: Theme.of(context).primaryColorDark,
-                            width: 1
-                          )
-                        ),
-                        child: IconButton(
-                          icon: SvgPicture.asset(  
-                                    "assets/icons/Guardar.svg",
-                                    color: Theme.of(context).primaryColorDark,
-                                  ),
-                          onPressed: vehicleL==false?null:() async{
-                                        LoadingIndicatorDialog()
-                                            .show(context);
-                                        http.Response responses =
-                                            await http.get(Uri.parse(
-                                                '$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
-                                        final data2 = DriverData.fromJson(
-                                            json.decode(responses.body));
-                                        Map data = {
-                                          "driverId":
-                                              data2.driverId.toString(),
-                                          "tripId": prefs.tripId.toString(),
-                                          "vehicleId": "",
-                                          "tripVehicle":
-                                              vehicleController.text
-                                        };
-                                        http.Response responsed = await http.post(
-                                            Uri.parse(
-                                                'https://driver.smtdriver.com/apis/editTripVehicle'),
-                                            body: data);
-
-                                        final resp2 =
-                                            json.decode(responsed.body);
-                                        LoadingIndicatorDialog().dismiss();
-                                        if (resp2['type'] == 'success') {
-                                          if (mounted) {
-                                            WarningSuccessDialog().show(
-                                                                      navigatorKey.currentContext!,
-                                                                      title: '${resp2['message']}',
-                                                                      tipo: 2,
-                                                                      onOkay: () {},
-                                                                    );
-                                            setState(() {
-                                              tripVehicle =
-                                                  vehicleController.text;
-                                            });
-                                          }
-                                          //getCurrentLocation();
-                                        } else {
-                                          WarningSuccessDialog().show(
-                                                                      navigatorKey.currentContext!,
-                                                                      title: '${resp2['message']}',
-                                                                      tipo: 1,
-                                                                      onOkay: () {},
-                                                                    );
-                                        }
-                                      }
+                          Container(decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(10.0),
+                            border: Border.all(color: Theme.of(context).primaryColorDark,width: 1)
+                            ),
+                            child: IconButton(
+                            icon: SvgPicture.asset(  
+                              "assets/icons/Guardar.svg",color: Theme.of(context).primaryColorDark,
+                            ),
+                            onPressed: vehicleL==false?null:() async{
+                              LoadingIndicatorDialog().show(context);
+                              http.Response responses = await http.get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
+                              final data2 = DriverData.fromJson(json.decode(responses.body));
+                              Map data = {
+                                "driverId":data2.driverId.toString(),
+                                "tripId": prefs.tripId.toString(),
+                                "vehicleId": "",
+                                "tripVehicle": vehicleController.text
+                              };
+                              http.Response responsed = await http.post(Uri.parse('https://driver.smtdriver.com/apis/editTripVehicle'),body: data);
+                              final resp2 = json.decode(responsed.body);
+                              LoadingIndicatorDialog().dismiss();
+                              if (resp2['type'] == 'success') {
+                                if (mounted) {
+                                  WarningSuccessDialog().show(
+                                    navigatorKey.currentContext!,
+                                    title: '${resp2['message']}',
+                                    tipo: 2,
+                                    onOkay: () {},
+                                  );
+                                  setState(() {
+                                    tripVehicle =
+                                        vehicleController.text;
+                                  });
+                                }
+                                //getCurrentLocation();
+                              } else {
+                                WarningSuccessDialog().show(
+                                  navigatorKey.currentContext!,
+                                  title: '${resp2['message']}',
+                                  tipo: 1,
+                                  onOkay: () {},
+                                );
+                              }
+                            }
                         ),
                       ),
                       ],
@@ -1513,118 +1367,92 @@ class _DataTableExample extends State<MyConfirmAgent> {
         child: Column(
           children: [
             const SizedBox(height: 8.0),
-            Text('Descripcion:',
-                style:  Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18, fontWeight: FontWeight.bold)),
-            SizedBox(
-              height: 5,
-            ),
-            Text(resp['vehicle']['name'],
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18)),
-            SizedBox(
-              height: 15,
-            ),
-            Text('Placa:',
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18, )),
-            SizedBox(
-              height: 10,
-            ),
-            Text(resp['vehicle']['registrationNumber'],
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18)),
+            Text('Descripcion:',style:  Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18, fontWeight: FontWeight.bold)),
+            SizedBox(height: 5,),
+            Text(resp['vehicle']['name'],style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18)),
+            SizedBox(height: 15,),
+            Text('Placa:',style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18, )),
+            SizedBox(height: 10,),
+            Text(resp['vehicle']['registrationNumber'],style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18)),
           ],
         ),
       ),
       actions: [
         Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: TextButton(
-                                          style: ButtonStyle(
-                                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                              RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(10.0),
-                                                side: BorderSide(color: Colors.black),
-                                              ),
-                                            ),
-                                            backgroundColor: MaterialStateProperty.all(Colors.transparent),
-                                          ),
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: Text(
-                                            'Cancelar',
-                                            style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 15, fontWeight: FontWeight.bold)
-                                          ),
-                                        ),
-                                      ),
-                                  
-                                      SizedBox(width: 10.0),
-                                      
-                                      Expanded(
-                                        child: TextButton(
-                                          style: ButtonStyle(
-                                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                              RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(10.0),
-                                                side: BorderSide(color: Color.fromRGBO(40, 93, 169, 1)),
-                                              ),
-                                            ),
-                                            backgroundColor: MaterialStateProperty.all(Color.fromRGBO(40, 93, 169, 1)),
-                                          ),
-                                          onPressed: () async{
-                                            LoadingIndicatorDialog().show(context);
-                                            http.Response responses = await http.get(Uri.parse(
-                                                '$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
-                                            final data2 =
-                                                DriverData.fromJson(json.decode(responses.body));
-                                            Map data = {
-                                              "driverId": data2.driverId.toString(),
-                                              "tripId": prefs.tripId.toString(),
-                                              "vehicleId": resp['vehicle']['_id'],
-                                              "tripVehicle":
-                                                  "${resp['vehicle']['name']} [${resp['vehicle']['registrationNumber']}]"
-                                            };
-                                            http.Response responsed = await http.post(Uri.parse('https://driver.smtdriver.com/apis/editTripVehicle'),body: data);
-                                            final resp2 = json.decode(responsed.body);
-                                            LoadingIndicatorDialog().dismiss();
-                                            if (resp2['type'] == 'success') {
-                                              if (mounted) {
-                                                Navigator.pop(context);
-                                                WarningSuccessDialog().show(
-                                                  context,
-                                                  title: "${resp2['message']}",
-                                                  tipo: 2,
-                                                  onOkay: () {},
-                                                ); 
-                                                setState(() {
-                                                  tripVehicle =
-                                                      "${resp['vehicle']['name']} [${resp['vehicle']['registrationNumber']}]";
-                                                  vehicleController.text = tripVehicle;
-                                                });
-                                              }
-                                            } else {
-                                              WarningSuccessDialog().show(
-                                                  context,
-                                                  title: "${resp2['message']}",
-                                                  tipo: 1,
-                                                  onOkay: () {},
-                                                ); 
-                                            }
-                                          },
-                                          child: Text(
-                                            'Agregar',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 15
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                  
-                                      
-                                    ],
-                                  ),
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: TextButton(
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0),side: BorderSide(color: Colors.black),),
+                    ),
+                    backgroundColor: MaterialStateProperty.all(Colors.transparent),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    'Cancelar',
+                    style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 15, fontWeight: FontWeight.bold)
+                  ),
+                ),
+              ),
+              SizedBox(width: 10.0),
+              Expanded(
+                child: TextButton(
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0),side: BorderSide(color: Color.fromRGBO(40, 93, 169, 1)),),
+                    ),
+                    backgroundColor: MaterialStateProperty.all(Color.fromRGBO(40, 93, 169, 1)),
+                  ),
+                  onPressed: () async{
+                    LoadingIndicatorDialog().show(context);
+                    http.Response responses = await http.get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
+                    final data2 = DriverData.fromJson(json.decode(responses.body));
+                    Map data = {
+                      "driverId": data2.driverId.toString(),
+                      "tripId": prefs.tripId.toString(),
+                      "vehicleId": resp['vehicle']['_id'],
+                      "tripVehicle":"${resp['vehicle']['name']} [${resp['vehicle']['registrationNumber']}]"
+                    };
+                    http.Response responsed = await http.post(Uri.parse('https://driver.smtdriver.com/apis/editTripVehicle'),body: data);
+                    final resp2 = json.decode(responsed.body);
+                    LoadingIndicatorDialog().dismiss();
+                    if (resp2['type'] == 'success') {
+                      if (mounted) {
+                        Navigator.pop(context);
+                        WarningSuccessDialog().show(
+                          context,
+                          title: "${resp2['message']}",
+                          tipo: 2,
+                          onOkay: () {},
+                        ); 
+                        setState(() {
+                          tripVehicle =
+                              "${resp['vehicle']['name']} [${resp['vehicle']['registrationNumber']}]";
+                          vehicleController.text = tripVehicle;
+                        });
+                      }
+                    } else {
+                      WarningSuccessDialog().show(
+                        context,
+                        title: "${resp2['message']}",
+                        tipo: 1,
+                        onOkay: () {},
+                      ); 
+                    }
+                  },
+                  child: Text('Agregar',
+                    style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 15),
+                  ),
+                ),
+              ),
+          
+              
+            ],
+          ),
       ],
     );
   }
@@ -1669,12 +1497,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
             'longitude': position.longitude.toString(),
             'actionName': 'No salió'
           };
-
-          //http.Response response = 
-          await http.post(
-              Uri.parse(
-                  'https://driver.smtdriver.com/apis/agents/registerTripAction'),
-              body: data);
+          
+          await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'),body: data);
 
           LoadingIndicatorDialog().dismiss();
 
@@ -1683,14 +1507,12 @@ class _DataTableExample extends State<MyConfirmAgent> {
             abc.data!.trips![0].tripAgent![index].traveled = false;
             traveled = abc.data!.trips![0].tripAgent![index].traveled;
           }
-
           if(abordo){
             traveled = !traveled;
             abc.data!.trips![0].tripAgent![index].traveled = 0;
             totalAbordado--;
             totalNoAbordado++;
-          }
-          
+          }          
           setState(() {      
             abc.data!.trips![0].tripAgent![index].commentDriver = "Pasé por él (ella) y no salió";
           });
@@ -1765,857 +1587,832 @@ class _DataTableExample extends State<MyConfirmAgent> {
           iconColor: Theme.of(context).primaryIconTheme.color,
           tilePadding: const EdgeInsets.only(right: 10, left: 10),
           title: Column(
+            children: [
+              SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.only(right: 10, left: 10),
+                child: Row(
+                  children: [
+                    traveledB(abc, index)
+                    ? Container(
+                      width: 18,
+                      height: 18,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Color.fromRGBO(0, 191, 95, 1), // Borde blanco
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(3.0),
+                        child: SvgPicture.asset(
+                          "assets/icons/check.svg",
+                          color: Colors.white,
+                          width: 2,
+                          height: 2,
+                        ),
+                      ),
+                    )
+                    : Container(
+                      width: 18,
+                      height: 18,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Color.fromRGBO(178, 13, 13, 1), // Borde blanco
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(3.0),
+                        child: Center(child: Text('X', style: TextStyle(color: Colors.white, fontSize: 12))),
+                      ),
+                    ),
+                            SizedBox(width: 10),
+                            Flexible(
+                              child: RichText(
+                                text: TextSpan(
+                                  style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                  children: [
+                                    TextSpan(
+                                      text: 'Nombre: ',
+                                      style: TextStyle(fontWeight: FontWeight.w500),
+                                    ),
+                                    TextSpan(
+                                      text: '${abc.data!.trips![0].tripAgent![index].agentFullname}',
+                                      style: TextStyle(fontWeight: FontWeight.normal),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )                   
+                  ],
+                ),
+              ),
+              
+              SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.only(right: 10, left: 10),
+                child: InkWell(
+                    onTap: () {
+                      if (abc.data!.trips![0].tripAgent![index].latitude==null) {
+                        WarningSuccessDialog().show(
+                          context,
+                          title: "Este agente no cuenta con ubicación",
+                          tipo: 1,
+                          onOkay: () {},
+                        ); 
+                      }else{
+                        launchSalidasMaps(abc.data!.trips![0].tripAgent![index].latitude,abc.data!.trips![0].tripAgent![index].longitude);                                          
+                      }
+                      //print('Dirección we');
+                    },
+                    child:  Row(
                               children: [
-
-                                SizedBox(height: 20),
                                 Padding(
-                                  padding: const EdgeInsets.only(right: 10, left: 10),
-                                  child: Row(
-                                    children: [
-                                      traveledB(abc, index)
-                                      ? Container(
-                                        width: 18,
-                                        height: 18,
-
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: Color.fromRGBO(0, 191, 95, 1), // Borde blanco
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(3.0),
-                                          child: SvgPicture.asset(
-                                            "assets/icons/check.svg",
-                                            color: Colors.white,
-                                            width: 2,
-                                            height: 2,
+                                  padding: const EdgeInsets.only(bottom: 10),
+                                  child: Container(
+                                    width: 15,
+                                    height: 15,
+                                    child: Icon(Icons.location_on_outlined, color:abc.data!.trips![0].tripAgent![index].latitude==null? Colors.red :Color.fromRGBO(0, 191, 95, 1)),
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                Flexible(
+                                  child: Text(
+                                    'Ubicación',
+                                    style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                  ),
+                                ),                                                           
+                              ],
+                            ),
+                  ),
+                  ),
+                  Container(
+                    height: 1,
+                    color: Theme.of(context).dividerColor,
+                  ),
+                  SizedBox(height: 20),
+                        if (abc.data!.trips![0].tripAgent![index].hourForTrip == "00:00") ...{
+                          Padding(
+                              padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
+                              child: Row(
+                                children: [
+                                  Container(
+                                            width: 18,
+                                            height: 18,
+                                            child: SvgPicture.asset(
+                                              "assets/icons/hora.svg",
+                                              color: Theme.of(context).primaryIconTheme.color,
+                                            ),
                                           ),
+                                          SizedBox(width: 10),
+                                          Flexible(
+                                            child: RichText(
+                                              text: TextSpan(
+                                                style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                children: [
+                                                  TextSpan(
+                                                    text: 'Hora de encuentro: ',
+                                                    style: TextStyle(fontWeight: FontWeight.w500),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          )                   
+                                ],
+                              ),
+                            ),
+                        } else ...{
+                          Padding(
+                            padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
+                            child: Row(
+                              children: [
+                                Container(width: 18,height: 18,
+                                  child: SvgPicture.asset("assets/icons/hora.svg",color: Theme.of(context).primaryIconTheme.color,),
+                                ),
+                              SizedBox(width: 10),
+                              Flexible(
+                                child: RichText(
+                                  text: TextSpan(
+                                    style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                    children: [
+                                      TextSpan(text: 'Hora de encuentro: ',style: TextStyle(fontWeight: FontWeight.w500),),
+                                      TextSpan(text: abc.data!.trips![0].tripAgent![index].hourForTrip==null?' --':'${abc.data!.trips![0].tripAgent![index].hourForTrip}',style: TextStyle(fontWeight: FontWeight.w700, color: Color.fromRGBO(40, 169, 83, 1)),),
+                                    ],
+                                  ),
+                                ),
+                              )                   
+                                ],
+                              ),
+                            ),
+                        },
+                        Container(height: 1,color: Theme.of(context).dividerColor,),
+                        SizedBox(height: 20),
+                        Padding(
+                            padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
+                            child: Row(
+                              children: [
+                                Container(width: 18,height: 18,child: SvgPicture.asset("assets/icons/Casa.svg",color: Theme.of(context).primaryIconTheme.color,),),
+                                SizedBox(width: 10),
+                                Flexible(
+                                  child: RichText(
+                                    text: TextSpan(
+                                      style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                      children: [
+                                        TextSpan(
+                                          text: 'Dirección: ',
+                                          style: TextStyle(fontWeight: FontWeight.w500),
                                         ),
-                                      )
-                                      : Container(
-                                        width: 18,
-                                        height: 18,
+                                        TextSpan(
+                                          text: abc.data!.trips![0].tripAgent![index].agentReferencePoint==null
+                                          ||abc.data!.trips![0].tripAgent![index].agentReferencePoint==""
+                                          ?"${abc.data!.trips![0].tripAgent![index].neighborhoodName}, ${abc.data!.trips![0].tripAgent![index].townName}":'${abc.data!.trips![0].tripAgent![index].agentReferencePoint}, ${abc.data!.trips![0].tripAgent![index].neighborhoodName}, ${abc.data!.trips![0].tripAgent![index].townName},',
+                                          style: TextStyle(fontWeight: FontWeight.normal),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )                   
+                              ],
+                            ),
+                          ),
+                          if (abc.data!.trips![0].tripAgent![index].neighborhoodReferencePoint != null)... {
+                            Container(height: 1,color: Theme.of(context).dividerColor,),
+                            SizedBox(height: 20),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
+                              child: Row(
+                                children: [
+                                  Container(width: 18,height: 18,child: SvgPicture.asset("assets/icons/warning.svg",color: Theme.of(context).primaryIconTheme.color,),),
+                                  SizedBox(width: 10),
+                                  Flexible(
+                                    child: RichText(
+                                      text: TextSpan(
+                                        style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                        children: [
+                                          TextSpan(
+                                            text: 'Acceso autorizado: ',
+                                            style: TextStyle(fontWeight: FontWeight.w500),
+                                          ),
+                                          TextSpan(
+                                            text: '${abc.data!.trips![0].tripAgent![index].neighborhoodReferencePoint}',
+                                            style: TextStyle(fontWeight: FontWeight.normal),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  )                   
+                                ],
+                              ),
+                            ),
+                          }
+                              ],
+                            ),
 
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: Color.fromRGBO(178, 13, 13, 1), // Borde blanco
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(3.0),
-                                          child: Center(child: Text('X', style: TextStyle(color: Colors.white, fontSize: 12))),
+                      children: [
+                        Padding(padding: const EdgeInsets.only(right: 10, left: 10),
+                          child: Container(height: 1,color: Theme.of(context).dividerColor,)),
+                            SizedBox(height: 20),
+                            Padding(padding: const EdgeInsets.only(right: 15, left: 20, bottom: 4),
+                              child: Row(
+                                children: [
+                                  Container(width: 18,height: 18,child: SvgPicture.asset("assets/icons/hora.svg",color: Theme.of(context).primaryIconTheme.color,),),
+                                  SizedBox(width: 10),
+                                  Flexible(
+                                    child: RichText(
+                                      text: TextSpan(
+                                        style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                        children: [
+                                          TextSpan(
+                                            text: salidaOEntrada=='salida'?"Salida: ":"Entrada: ",
+                                            style: TextStyle(fontWeight: FontWeight.w500),
+                                          ),
+                                          TextSpan(
+                                            text: '${abc.data!.trips![0].tripAgent![index].hourIn}',
+                                            style: TextStyle(fontWeight: FontWeight.w700, color: Color.fromRGBO(40, 169, 83, 1)),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  )                   
+                              ],),
+                            ),
+                            Padding(padding: const EdgeInsets.only(right: 10, left: 10),
+                              child: Container(height: 1,color: Theme.of(context).dividerColor,),
+                            ),
+
+                            SizedBox(height: 20),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 15, left: 20, bottom: 4),
+                              child: Row(
+                                children: [
+                                  Container(width: 18,height: 18,child: SvgPicture.asset("assets/icons/telefono_num.svg",color: Theme.of(context).primaryIconTheme.color,),),
+                                  SizedBox(width: 10),
+                                  Flexible(
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        launchUrl(Uri.parse(
+                                          'tel://${abc.data!.trips![0].tripAgent![index].agentPhone}',
+                                        ));
+                                      },
+                                      child: RichText(
+                                        text: TextSpan(
+                                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                          children: [
+                                            TextSpan(
+                                              text: 'Teléfono: ',
+                                              style: TextStyle(fontWeight: FontWeight.w500),
+                                            ),
+                                            TextSpan(
+                                              text: '${abc.data!.trips![0].tripAgent![index].agentPhone}',
+                                              style: TextStyle(fontWeight: FontWeight.normal),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                              SizedBox(width: 10),
-                                              Flexible(
-                                                child: RichText(
-                                                  text: TextSpan(
-                                                    style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
-                                                    children: [
-                                                      TextSpan(
-                                                        text: 'Nombre: ',
-                                                        style: TextStyle(fontWeight: FontWeight.w500),
-                                                      ),
-                                                      TextSpan(
-                                                        text: '${abc.data!.trips![0].tripAgent![index].agentFullname}',
-                                                        style: TextStyle(fontWeight: FontWeight.normal),
-                                                      ),
-                                                    ],
+                                    ),
+                                  )                   
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 10, left: 10),
+                              child: Container(height: 1,color: Theme.of(context).dividerColor,),
+                            ),
+                            SizedBox(height: 20),
+                            Padding(
+                            padding: const EdgeInsets.only(right: 15, left: 20, bottom: 4),
+                            child: Row(
+                              children: [
+                                Container(width: 18,height: 18,child: SvgPicture.asset("assets/icons/compania.svg",color: Theme.of(context).primaryIconTheme.color,),),
+                                SizedBox(width: 10),
+                                Flexible(
+                                  child: RichText(
+                                    text: TextSpan(
+                                      style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                      children: [
+                                        TextSpan(
+                                          text: 'Empresa: ',
+                                          style: TextStyle(fontWeight: FontWeight.w500),
+                                        ),
+                                        TextSpan(
+                                          text: '${abc.data!.trips![0].tripAgent![index].companyName}',
+                                          style: TextStyle(fontWeight: FontWeight.normal),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )                   
+                                ],
+                              ),
+                            ),
+
+                            Padding(padding: const EdgeInsets.only(right: 10, left: 10),
+                              child: Container(height: 1,color: Theme.of(context).dividerColor,),
+                            ), 
+                                      SizedBox(height: 20.0),
+                            if(tipoViaje=='Entrada')...{
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: [
+                                  TextButton(style: TextButton.styleFrom(side: BorderSide(width: 1, color: Theme.of(context).primaryColorDark),fixedSize: Size(150, 25),elevation: 0,backgroundColor: Colors.transparent,shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),),
+                                    onPressed: () async{
+                                      Size size = MediaQuery.of(context).size;
+                                      showGeneralDialog(
+                                        barrierColor: Colors.black.withOpacity(0.6),
+                                        transitionBuilder: (context, a1, a2, widget) {
+                                          final curvedValue = Curves.easeInOut.transform(a1.value);
+                                          return Transform.translate(
+                                            offset: Offset(0.0, (1 - curvedValue) * size.height / 2),
+                                            child: Opacity(opacity: a1.value,
+                                              child: Align(alignment: Alignment.bottomCenter,
+                                                child: Container(height: size.height/3,width: size.width,decoration: BoxDecoration(color: prefs.tema ? Color.fromRGBO(47, 46, 65, 1) : Colors.white,borderRadius: BorderRadius.only(topLeft: Radius.circular(30.0),topRight: Radius.circular(30.0),),),
+                                                  child: Padding(padding: const EdgeInsets.symmetric(horizontal: 30),
+                                                    child: SingleChildScrollView(
+                                                      child: Column(
+                                                        children: [
+                                                          Padding(
+                                                            padding: const EdgeInsets.only(right: 120, left: 120, top: 15, bottom: 20),
+                                                            child: GestureDetector(
+                                                              onTap: () => Navigator.pop(context),
+                                                              child: Container(
+                                                                decoration: BoxDecoration(
+                                                                  color: Theme.of(navigatorKey.currentContext!).dividerColor,
+                                                                  borderRadius: BorderRadius.circular(80)
+                                                                ),
+                                                                height: 6,
+                                                              ),
+                                                            ),
+                                                          ),                                                      
+                                        GestureDetector(
+                                          onTap: () => abc.data!.trips![0].tripAgent![index].commentDriver == 'Pasé por él (ella) y no salió'? null :alertaPaso_noSalio(abc, index),
+                                          child: Row(
+                                            children: [
+                                              SizedBox(width: size.width/4.8),
+                                              Container(width: 16,height: 16,
+                                                decoration: BoxDecoration(shape: BoxShape.circle,border: Border.all(color: Theme.of(navigatorKey.currentContext!).primaryIconTheme.color!, width: 1),),
+                                                child: Center(
+                                                  child: Container(width: 9,height: 9,
+                                                    decoration: BoxDecoration(shape: BoxShape.circle,color: abc.data!.trips![0].tripAgent![index].commentDriver == 'Pasé por él (ella) y no salió'? Theme.of(navigatorKey.currentContext!).primaryIconTheme.color!: Colors.transparent,),
                                                   ),
                                                 ),
-                                              )                   
+                                              ),
+                                              SizedBox(width: 5),
+                                              Text('Se pasó y no salió',style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 20),),
+                                            ],
+                                          ),
+                                        ),
+                                        SizedBox(height: 20),
+                                        GestureDetector(
+                                          onTap: () => abc.data!.trips![0].tripAgent![index].commentDriver == 'Canceló transporte'?null:alertaCancelo(abc, index),
+                                          child: Row(
+                                            children: [
+                                              SizedBox(width: size.width/4.8),
+                                              Container(
+                                                width: 16,
+                                                height: 16,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  border: Border.all(color: Theme.of(navigatorKey.currentContext!).primaryIconTheme.color!, width: 1),
+                                                ),
+                                                child: Center(
+                                                  child: Container(
+                                                    width: 9,
+                                                    height: 9,
+                                                    decoration: BoxDecoration(
+                                                      shape: BoxShape.circle,
+                                                      color:abc.data!.trips![0].tripAgent![index].commentDriver == 'Canceló transporte'? Theme.of(navigatorKey.currentContext!).primaryIconTheme.color!: Colors.transparent,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(width: 5),
+                                              Text(
+                                                'Cancelo transporte',
+                                                style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 20),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        SizedBox(height: 20),
+                                        GestureDetector(
+                                          onTap: () async {
+                                            http.Response response = await http.get(Uri.parse('$ip/apis/getDriverComment/${abc.data!.trips![0].tripAgent![index].agentId}/${abc.data!.trips![0].tripAgent![index].tripId}'));
+                                            final send = Comment.fromJson(json.decode(response.body));
+                                            check2[index].text = send.comment!.commentDriver;
+                                            showGeneralDialog(barrierColor: Colors.black.withOpacity(0.5),
+                                              transitionBuilder:(context, a1, a2, widget) {
+                                                return Transform.scale(scale: a1.value,
+                                                  child: Opacity(opacity: a1.value,
+                                                    child: AlertDialog(backgroundColor:backgroundColor,
+                                                    shape: OutlineInputBorder(borderRadius:BorderRadius.circular(16.0)),
+                                                    title: Padding(padding: const EdgeInsets.symmetric(horizontal:25.0),
+                                                    child: Text('¿Razón por la cual no ingresó a la unidad?',
+                                                    style: TextStyle(color: GradiantV_2,fontWeight: FontWeight.bold,fontSize: 20
+                                                )
+                                            ),
+                                          ),
+                                          content:
+                                              Container(decoration:BoxDecoration(borderRadius:BorderRadius.all(Radius.circular(15)),
+                                              boxShadow: [
+                                                BoxShadow(color: Colors.black.withOpacity(0.2),
+                                                  spreadRadius: 0,
+                                                  blurStyle:BlurStyle.solid,
+                                                  blurRadius:10,
+                                                  offset: Offset(0,0), // changes position of shadow
+                                                ),
+                                                BoxShadow(
+                                                  color: Colors.white.withOpacity(0.1),
+                                                  spreadRadius:0,
+                                                  blurRadius:5,
+                                                  blurStyle:BlurStyle.inner,
+                                                  offset: Offset(0,0), // changes position of shadow
+                                                ),
+                                              ],
+                                            ),
+                                            child: Padding(
+                                              padding: const EdgeInsets.symmetric(horizontal:15.0),
+                                              child:TextField(
+                                                cursorColor:firstColor,
+                                                style: TextStyle(color: Colors.white),
+                                                decoration: InputDecoration(border: InputBorder.none,
+                                                hintText:'Escriba aquí',
+                                                hintStyle:TextStyle(color: Colors.white70)),
+                                                controller:check2[index],
+                                              ),
+                                            ),
+                                          ),
+                                          actions: [        
+                                            Row(crossAxisAlignment:CrossAxisAlignment.center,
+                                              mainAxisAlignment:MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                Container(
+                                                  decoration:BoxDecoration(borderRadius: BorderRadius.circular(15)),width: 95,height:40,
+                                                  child:ElevatedButton(
+                                                    style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30), ),elevation: 10,textStyle: TextStyle(color: Colors.white),backgroundColor: Gradiant2),
+                                                    onPressed: () async{
+                                                            {
+                                                              if(check2[index].text.isEmpty){
+                                                                Navigator.pop(context);
+                                                                WarningSuccessDialog().show(
+                                                                  context,
+                                                                  title: "No puede ir vacío la observación",
+                                                                  tipo: 1,
+                                                                  onOkay: () {},
+                                                                );
+                                                              }else{
+                                                                Navigator.pop(context);
+                                                                bool val = await fetchRegisterCommentAgent(
+                                                                  abc.data!.trips![0].tripAgent![index].agentId.toString(),
+                                                                  prefs.tripId,
+                                                                  check2[index].text
+                                                                );
+                                                                  
+                                                                if(val)
+                                                                  setState(() {
+                                                                    abc.data!.trips![0].tripAgent![index].commentDriver = check2[index].text;
+                                                                  });
+                                                              }
+                                                    }},
+                                                    child: Text(
+                                                        'Guardar',
+                                                        style: TextStyle(
+                                                            color: backgroundColor,
+                                                            fontWeight: FontWeight.bold,
+                                                            fontSize: 15)),
+                                                  ),
+                                                ),
+                                                Container(
+                                                  width: 95,
+                                                  height:
+                                                      40,
+                                                  child:
+                                                      ElevatedButton(
+                                                    style: ElevatedButton.styleFrom(
+                                                        shape: RoundedRectangleBorder(
+                                                          borderRadius: BorderRadius.circular(30), // <-- Radius
+                                                        ),
+                                                        textStyle: TextStyle(color: Colors.white), // foreground
+                                                        // foreground
+                                                        backgroundColor: Colors.red),
+                                                    onPressed:
+                                                        () =>
+                                                            {
+                                                      Navigator.pop(
+                                                          context),
+                                                    },
+                                                    child: Text(
+                                                        'Cerrar',
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight: FontWeight.bold,
+                                                            fontSize: 15)),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            SizedBox(
+                                                height:
+                                                    10.0),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  transitionDuration:
+                                      Duration(
+                                          milliseconds:
+                                              200),
+                                  barrierDismissible: true,
+                                  barrierLabel: '',
+                                  context: context,
+                                  pageBuilder: (context,
+                                      animation1,
+                                      animation2) {
+                                    return Text('');
+                                  });
+                            },
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    SizedBox(width: size.width/4.8),
+                                    Container(
+                                      width: 16,
+                                      height: 16,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(color: Theme.of(navigatorKey.currentContext!).primaryIconTheme.color!, width: 1),
+                                      ),
+                                      child: Center(
+                                        child: Container(
+                                          width: 9,
+                                          height: 9,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: abc.data!.trips![0].tripAgent![index].commentDriver != 'Canceló transporte'? abc.data!.trips![0].tripAgent![index].commentDriver != 'Pasé por él (ella) y no salió'? Theme.of(navigatorKey.currentContext!).primaryIconTheme.color!: Colors.transparent: Colors.transparent,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(width: 5),
+                                    Text(
+                                      'Comentario',
+                                      style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 20),
+                                    ),
+                                  ],
+                                ),
+
+                                if(abc.data!.trips![0].tripAgent![index].commentDriver != 'Canceló transporte' && abc.data!.trips![0].tripAgent![index].commentDriver != 'Pasé por él (ella) y no salió')...{
+                                      SizedBox(height: 10),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(10),
+                                          border: Border.all(
+                                            color: Theme.of(context).dividerColor,
+                                            width: 1
+                                          ) // Radio de la esquina
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(10),
+                                          child: Text(
+                                            abc.data!.trips![0].tripAgent![index].commentDriver == null ?'Sin comentario' :'${abc.data!.trips![0].tripAgent![index].commentDriver}',
+                                            style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 18),
+                                          ),
+                                        ),
+                                      ),
+                                    },
                                     ],
                                   ),
                                 ),
                                 
                                 SizedBox(height: 20),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 10, left: 10),
-                                  child: InkWell(
-                                      onTap: () {
-                                        if (abc.data!.trips![0].tripAgent![index].latitude==null) {
-                                          WarningSuccessDialog().show(
-                                            context,
-                                            title: "Este agente no cuenta con ubicación",
-                                            tipo: 1,
-                                            onOkay: () {},
-                                          ); 
-                                        }else{
-                                          launchSalidasMaps(abc.data!.trips![0].tripAgent![index].latitude,abc.data!.trips![0].tripAgent![index].longitude);                                          
-                                        }
-                                        //print('Dirección we');
-                                      },
-                                      child:  Row(
-                                                children: [
-                                                  Padding(
-                                                    padding: const EdgeInsets.only(bottom: 10),
-                                                    child: Container(
-                                                      width: 15,
-                                                      height: 15,
-                                                      child: Icon(Icons.location_on_outlined, color:abc.data!.trips![0].tripAgent![index].latitude==null? Colors.red :Color.fromRGBO(0, 191, 95, 1)),
-                                                    ),
-                                                  ),
-                                                  SizedBox(width: 10),
-                                                  Flexible(
-                                                    child: Text(
-                                                      'Ubicación',
-                                                      style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
-                                                    ),
-                                                  ),
-                                                                             
-                                                ],
-                                              ),
-                                    ),
+                                    ],
+                                  ),
                                 ),
-                                Container(
-                                  height: 1,
-                                  color: Theme.of(context).dividerColor,
-                                ),
-
-                                SizedBox(height: 20),
-
-                                      if (abc.data!.trips![0].tripAgent![index].hourForTrip == "00:00") ...{
-                                        Padding(
-                                            padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
-                                            child: Row(
-                                              children: [
-                                                Container(
-                                                          width: 18,
-                                                          height: 18,
-                                                          child: SvgPicture.asset(
-                                                            "assets/icons/hora.svg",
-                                                            color: Theme.of(context).primaryIconTheme.color,
-                                                          ),
-                                                        ),
-                                                        SizedBox(width: 10),
-                                                        Flexible(
-                                                          child: RichText(
-                                                            text: TextSpan(
-                                                              style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
-                                                              children: [
-                                                                TextSpan(
-                                                                  text: 'Hora de encuentro: ',
-                                                                  style: TextStyle(fontWeight: FontWeight.w500),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        )                   
-                                              ],
-                                            ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                    transitionDuration: Duration(milliseconds: 200),
+                    barrierDismissible: true,
+                    barrierLabel: '',
+                    context: context,
+                    pageBuilder: (context, animation1, animation2) {
+                      return widget;
+                    },
+                  );                               
+                },
+                child: Text('Observaciones',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold)),
+              ),
+                                  InkWell(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        PageRouteBuilder(
+                                          transitionDuration: Duration(milliseconds: 200 ), // Adjust the animation duration as needed
+                                          pageBuilder: (_, __, ___) => ChatScreen(
+                                            idAgent: abc.data!.trips![0].tripAgent![index].agentId.toString(),
+                                            nombreAgent: abc.data!.trips![0].tripAgent![index].agentFullname,
+                                            nombre: "$nombreMotorista",
+                                            id: '$idMotorista',
+                                            rol: "MOTORISTA",
+                                            tipoViaje: tipoViaje,
+                                            idV: abc.data!.trips![0].tripAgent![index].tripId.toString(),
+                                            pantalla: true,
                                           ),
-                                      } else ...{
-                                        Padding(
-                                            padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
-                                            child: Row(
-                                              children: [
-                                                Container(
-                                                          width: 18,
-                                                          height: 18,
-                                                          child: SvgPicture.asset(
-                                                            "assets/icons/hora.svg",
-                                                            color: Theme.of(context).primaryIconTheme.color,
-                                                          ),
-                                                        ),
-                                                        SizedBox(width: 10),
-                                                        Flexible(
-                                                          child: RichText(
-                                                            text: TextSpan(
-                                                              style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
-                                                              children: [
-                                                                TextSpan(
-                                                                  text: 'Hora de encuentro: ',
-                                                                  style: TextStyle(fontWeight: FontWeight.w500),
-                                                                ),
-                                                                TextSpan(
-                                                                  text: abc.data!.trips![0].tripAgent![index].hourForTrip==null?' --':
-                                                                  '${abc.data!.trips![0].tripAgent![index].hourForTrip}',
-                                                                  style: TextStyle(fontWeight: FontWeight.w700, color: Color.fromRGBO(40, 169, 83, 1)),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        )                   
-                                              ],
-                                            ),
-                                          ),
-                                      },
-                                      Container(
-                                        height: 1,
-                                        color: Theme.of(context).dividerColor,
-                                      ),
-
-                                      SizedBox(height: 20),
-                                      Padding(
-                                        padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
-                                        child: Row(
-                                          children: [
-                                            Container(
-                                                      width: 18,
-                                                      height: 18,
-                                                      child: SvgPicture.asset(
-                                                        "assets/icons/Casa.svg",
-                                                        color: Theme.of(context).primaryIconTheme.color,
-                                                      ),
-                                                    ),
-                                                    SizedBox(width: 10),
-                                                    Flexible(
-                                                      child: RichText(
-                                                        text: TextSpan(
-                                                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
-                                                          children: [
-                                                            TextSpan(
-                                                              text: 'Dirección: ',
-                                                              style: TextStyle(fontWeight: FontWeight.w500),
-                                                            ),
-                                                            TextSpan(
-                                                              text: abc.data!.trips![0].tripAgent![index].agentReferencePoint==null
-                                                              ||abc.data!.trips![0].tripAgent![index].agentReferencePoint==""
-                                                              ?"${abc.data!.trips![0].tripAgent![index].neighborhoodName}, ${abc.data!.trips![0].tripAgent![index].townName}":'${abc.data!.trips![0].tripAgent![index].agentReferencePoint}, ${abc.data!.trips![0].tripAgent![index].neighborhoodName}, ${abc.data!.trips![0].tripAgent![index].townName},',
-                                                              style: TextStyle(fontWeight: FontWeight.normal),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    )                   
-                                          ],
+                                          transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                            return SlideTransition(
+                                              position: Tween<Offset>(
+                                                begin: Offset(1.0, 0.0),
+                                                end: Offset.zero,
+                                              ).animate(animation),
+                                              child: child,
+                                            );
+                                          },
                                         ),
-                                      ),
-
-                                      if (abc.data!.trips![0].tripAgent![index].neighborhoodReferencePoint != null)... {
-                                        Container(
-                                          height: 1,
-                                          color: Theme.of(context).dividerColor,
-                                        ),
-                                        SizedBox(height: 20),
+                                      );
+                                    },
+                                    child: Stack(
+                                      children: [
                                         Padding(
-                                          padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
-                                          child: Row(
+                                          padding: const EdgeInsets.only(top:10, right: 18),
+                                          child: Column(
                                             children: [
                                               Container(
-                                                        width: 18,
-                                                        height: 18,
-                                                        child: SvgPicture.asset(
-                                                          "assets/icons/warning.svg",
-                                                          color: Theme.of(context).primaryIconTheme.color,
-                                                        ),
+                                                width: 28,
+                                                height: 28,
+                                                child: SvgPicture.asset(
+                                                  "assets/icons/chats.svg",
+                                                  color: Theme.of(context).hintColor,
+                                                ),
+                                              ),
+                                                              
+                                              Text(
+                                                "Chat",
+                                                style: TextStyle(
+                                                        color: Theme.of(context).hintColor, fontSize: 10, fontFamily: 'Roboto'
                                                       ),
-                                                      SizedBox(width: 10),
-                                                      Flexible(
-                                                        child: RichText(
-                                                          text: TextSpan(
-                                                            style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
-                                                            children: [
-                                                              TextSpan(
-                                                                text: 'Acceso autorizado: ',
-                                                                style: TextStyle(fontWeight: FontWeight.w500),
-                                                              ),
-                                                              TextSpan(
-                                                                text: '${abc.data!.trips![0].tripAgent![index].neighborhoodReferencePoint}',
-                                                                style: TextStyle(fontWeight: FontWeight.normal),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      )                   
+                                              )
                                             ],
                                           ),
                                         ),
-                                }
-                              ],
-                            ),
-
-          children: [
-            Padding(
-                                padding: const EdgeInsets.only(right: 10, left: 10),
-                                child: Container(
-                                  height: 1,
-                                  color: Theme.of(context).dividerColor,
-                                ),
-                              ),
-                              SizedBox(height: 20),
-                              Padding(
-                                            padding: const EdgeInsets.only(right: 15, left: 20, bottom: 4),
-                                            child: Row(
-                                              children: [
-                                                Container(
-                                                          width: 18,
-                                                          height: 18,
-                                                          child: SvgPicture.asset(
-                                                            "assets/icons/hora.svg",
-                                                            color: Theme.of(context).primaryIconTheme.color,
-                                                          ),
-                                                        ),
-                                                        SizedBox(width: 10),
-                                                        Flexible(
-                                                          child: RichText(
-                                                            text: TextSpan(
-                                                              style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
-                                                              children: [
-                                                                TextSpan(
-                                                                  text: salidaOEntrada=='salida'?"Salida: ":"Entrada: ",
-                                                                  style: TextStyle(fontWeight: FontWeight.w500),
-                                                                ),
-                                                                TextSpan(
-                                                                  text: '${abc.data!.trips![0].tripAgent![index].hourIn}',
-                                                                  style: TextStyle(fontWeight: FontWeight.w700, color: Color.fromRGBO(40, 169, 83, 1)),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        )                   
-                                              ],
-                                            ),
-                                          ),
-                                          Padding(
-                                        padding: const EdgeInsets.only(right: 10, left: 10),
-                                        child: Container(
-                                          height: 1,
-                                          color: Theme.of(context).dividerColor,
-                                        ),
-                                      ),
-
-                              
-                              SizedBox(height: 20),
-                                      Padding(
-                                        padding: const EdgeInsets.only(right: 15, left: 20, bottom: 4),
-                                        child: Row(
-                                          children: [
-                                            Container(
-                                                      width: 18,
-                                                      height: 18,
-                                                      child: SvgPicture.asset(
-                                                        "assets/icons/telefono_num.svg",
-                                                        color: Theme.of(context).primaryIconTheme.color,
-                                                      ),
-                                                    ),
-                                                    SizedBox(width: 10),
-                                                    Flexible(
-                                                      child: GestureDetector(
-                                                        onTap: () {
-                                                          launchUrl(Uri.parse(
-                                                            'tel://${abc.data!.trips![0].tripAgent![index].agentPhone}',
-                                                          ));
-                                                        },
-                                                        child: RichText(
-                                                          text: TextSpan(
-                                                            style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
-                                                            children: [
-                                                              TextSpan(
-                                                                text: 'Teléfono: ',
-                                                                style: TextStyle(fontWeight: FontWeight.w500),
-                                                              ),
-                                                              TextSpan(
-                                                                text: '${abc.data!.trips![0].tripAgent![index].agentPhone}',
-                                                                style: TextStyle(fontWeight: FontWeight.normal),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    )                   
-                                          ],
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(right: 10, left: 10),
-                                        child: Container(
-                                          height: 1,
-                                          color: Theme.of(context).dividerColor,
-                                        ),
-                                      ),
-
-                                      SizedBox(height: 20),
-                                      Padding(
-                                        padding: const EdgeInsets.only(right: 15, left: 20, bottom: 4),
-                                        child: Row(
-                                          children: [
-                                            Container(
-                                                      width: 18,
-                                                      height: 18,
-                                                      child: SvgPicture.asset(
-                                                        "assets/icons/compania.svg",
-                                                        color: Theme.of(context).primaryIconTheme.color,
-                                                      ),
-                                                    ),
-                                                    SizedBox(width: 10),
-                                                    Flexible(
-                                                      child: RichText(
-                                                        text: TextSpan(
-                                                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
-                                                          children: [
-                                                            TextSpan(
-                                                              text: 'Empresa: ',
-                                                              style: TextStyle(fontWeight: FontWeight.w500),
-                                                            ),
-                                                            TextSpan(
-                                                              text: '${abc.data!.trips![0].tripAgent![index].companyName}',
-                                                              style: TextStyle(fontWeight: FontWeight.normal),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    )                   
-                                          ],
-                                        ),
-                                      ),
-
-                                      Padding(
-                                        padding: const EdgeInsets.only(right: 10, left: 10),
-                                        child: Container(
-                                          height: 1,
-                                          color: Theme.of(context).dividerColor,
-                                        ),
-                                      ), 
-                                      SizedBox(height: 20.0),
-                                      if(tipoViaje=='Entrada')...{
-              TextButton(
-                                        style: TextButton.styleFrom(
-                                          side: BorderSide(width: 1, color: Theme.of(context).primaryColorDark),
-                                          fixedSize: Size(150, 25),
-                                          elevation: 0,
-                                          backgroundColor: Colors.transparent,
-                                          shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
-                                        ),
-                                        onPressed: () async{
-
-                                          Size size = MediaQuery.of(context).size;
-                                          showGeneralDialog(
-                                            barrierColor: Colors.black.withOpacity(0.6),
-                                            transitionBuilder: (context, a1, a2, widget) {
-                                              final curvedValue = Curves.easeInOut.transform(a1.value);
-                                              return Transform.translate(
-                                                offset: Offset(0.0, (1 - curvedValue) * size.height / 2),
-                                                child: Opacity(
-                                                  opacity: a1.value,
-                                                  child: Align(
-                                                    alignment: Alignment.bottomCenter,
-                                                    child: Container(
-                                                      height: size.height/3,
-                                                      width: size.width,
-                                                      decoration: BoxDecoration(
-                                                        color: prefs.tema ? Color.fromRGBO(47, 46, 65, 1) : Colors.white,
-                                                        borderRadius: BorderRadius.only(
-                                                          topLeft: Radius.circular(30.0),
-                                                          topRight: Radius.circular(30.0),
-                                                        ),
-                                                      ),
-                                                      child: Padding(
-                                                        padding: const EdgeInsets.symmetric(horizontal: 30),
-                                                        child: SingleChildScrollView(
-                                                          child: Column(
-                                                            children: [
-                                                              Padding(
-                                                                      padding: const EdgeInsets.only(right: 120, left: 120, top: 15, bottom: 20),
-                                                                      child: GestureDetector(
-                                                                        onTap: () => Navigator.pop(context),
-                                                                        child: Container(
-                                                                          decoration: BoxDecoration(
-                                                                            color: Theme.of(navigatorKey.currentContext!).dividerColor,
-                                                                            borderRadius: BorderRadius.circular(80)
-                                                                          ),
-                                                                          height: 6,
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                              
-                                                              GestureDetector(
-                                                                onTap: () => abc.data!.trips![0].tripAgent![index].commentDriver == 'Pasé por él (ella) y no salió'? null :alertaPaso_noSalio(abc, index),
-                                                                child: Row(
-                                                                  children: [
-                                                                    SizedBox(width: size.width/4.8),
-                                                                    Container(
-                                                                      width: 16,
-                                                                      height: 16,
-                                                                      decoration: BoxDecoration(
-                                                                        shape: BoxShape.circle,
-                                                                        border: Border.all(color: Theme.of(navigatorKey.currentContext!).primaryIconTheme.color!, width: 1),
-                                                                      ),
-                                                                      child: Center(
-                                                                        child: Container(
-                                                                          width: 9,
-                                                                          height: 9,
-                                                                          decoration: BoxDecoration(
-                                                                            shape: BoxShape.circle,
-                                                                            color: abc.data!.trips![0].tripAgent![index].commentDriver == 'Pasé por él (ella) y no salió'? Theme.of(navigatorKey.currentContext!).primaryIconTheme.color!: Colors.transparent,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                    SizedBox(width: 5),
-                                                                    Text(
-                                                                      'Se pasó y no salió',
-                                                                      style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 20),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                              SizedBox(height: 20),
-                                                              GestureDetector(
-                                                                onTap: () => abc.data!.trips![0].tripAgent![index].commentDriver == 'Canceló transporte'?null:alertaCancelo(abc, index),
-                                                                child: Row(
-                                                                  children: [
-                                                                    SizedBox(width: size.width/4.8),
-                                                                    Container(
-                                                                      width: 16,
-                                                                      height: 16,
-                                                                      decoration: BoxDecoration(
-                                                                        shape: BoxShape.circle,
-                                                                        border: Border.all(color: Theme.of(navigatorKey.currentContext!).primaryIconTheme.color!, width: 1),
-                                                                      ),
-                                                                      child: Center(
-                                                                        child: Container(
-                                                                          width: 9,
-                                                                          height: 9,
-                                                                          decoration: BoxDecoration(
-                                                                            shape: BoxShape.circle,
-                                                                            color:abc.data!.trips![0].tripAgent![index].commentDriver == 'Canceló transporte'? Theme.of(navigatorKey.currentContext!).primaryIconTheme.color!: Colors.transparent,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                    SizedBox(width: 5),
-                                                                    Text(
-                                                                      'Cancelo transporte',
-                                                                      style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 20),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                              SizedBox(height: 20),
-                                                              GestureDetector(
-                                                                onTap: () async {
-                          http.Response response =
-                              await http.get(Uri.parse(
-                                  '$ip/apis/getDriverComment/${abc.data!.trips![0].tripAgent![index].agentId}/${abc.data!.trips![0].tripAgent![index].tripId}'));
-                          final send = Comment.fromJson(
-                              json.decode(
-                                  response.body));
-                              check2[index].text = send.comment!.commentDriver;
-                          showGeneralDialog(
-                              barrierColor: Colors.black
-                                  .withOpacity(0.5),
-                              transitionBuilder:
-                                  (context, a1, a2,
-                                      widget) {
-                                return Transform.scale(
-                                  scale: a1.value,
-                                  child: Opacity(
-                                    opacity: a1.value,
-                                    child: AlertDialog(
-                                      backgroundColor:
-                                          backgroundColor,
-                                      shape: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius
-                                                  .circular(
-                                                      16.0)),
-                                      title: Padding(
-                                        padding: const EdgeInsets
-                                                .symmetric(
-                                            horizontal:
-                                                25.0),
-                                        child: Text(
-                                          '¿Razón por la cual no ingresó a la unidad?',
-                                          style: TextStyle(
-                                            color: GradiantV_2,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 20
-                                          )
-                                        ),
-                                      ),
-                                      content:
-                                          Container(
-                                        decoration:
-                                            BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.all(
-                                                  Radius.circular(
-                                                      15)),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors
-                                                  .black
-                                                  .withOpacity(
-                                                      0.2),
-                                              spreadRadius:
-                                                  0,
-                                              blurStyle:
-                                                  BlurStyle
-                                                      .solid,
-                                              blurRadius:
-                                                  10,
-                                              offset: Offset(
-                                                  0,
-                                                  0), // changes position of shadow
-                                            ),
-                                            BoxShadow(
-                                              color: Colors
-                                                  .white
-                                                  .withOpacity(
-                                                      0.1),
-                                              spreadRadius:
-                                                  0,
-                                              blurRadius:
-                                                  5,
-                                              blurStyle:
-                                                  BlurStyle
-                                                      .inner,
-                                              offset: Offset(
-                                                  0,
-                                                  0), // changes position of shadow
-                                            ),
-                                          ],
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets
-                                                  .symmetric(
-                                              horizontal:
-                                                  15.0),
-                                          child:
-                                              TextField(
-                                            cursorColor:
-                                                firstColor,
-                                            style: TextStyle(
-                                                color: Colors
-                                                    .white),
-                                            decoration: InputDecoration(
-                                                border: InputBorder
-                                                    .none,
-                                                hintText:
-                                                    'Escriba aquí',
-                                                hintStyle:
-                                                    TextStyle(color: Colors.white70)),
-                                            controller:
-                                                check2[
-                                                    index],
-                                          ),
-                                        ),
-                                      ),
-                                      actions: [
-        
-                                        Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment
-                                                  .center,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment
-                                                  .spaceEvenly,
-                                          children: [
-                                            Container(
-                                              decoration:
-                                                  BoxDecoration(
-                                                      borderRadius: BorderRadius.circular(15)),
-                                              width: 95,
-                                              height:
-                                                  40,
-                                              child:
-                                                  ElevatedButton(
-                                                style: ElevatedButton.styleFrom(
-                                                    shape: RoundedRectangleBorder(
-                                                      borderRadius: BorderRadius.circular(30), // <-- Radius
-                                                    ),
-                                                    elevation: 10,
-                                                    textStyle: TextStyle(color: Colors.white), // foreground
-                                                    backgroundColor: Gradiant2),
-                                                onPressed:
-                                                    () async{
-                                                        {
-                                                          if(check2[index].text.isEmpty){
-                                                            Navigator.pop(context);
-                                                            WarningSuccessDialog().show(
-                                                              context,
-                                                              title: "No puede ir vacío la observación",
-                                                              tipo: 1,
-                                                              onOkay: () {},
-                                                            );
-                                                          }else{
-                                                            Navigator.pop(context);
-                                                            bool val = await fetchRegisterCommentAgent(
-                                                              abc.data!.trips![0].tripAgent![index].agentId.toString(),
-                                                              prefs.tripId,
-                                                              check2[index].text
-                                                            );
-                                                              
-                                                            if(val)
-                                                              setState(() {
-                                                                abc.data!.trips![0].tripAgent![index].commentDriver = check2[index].text;
-                                                              });
-                                                          }
-                                                }},
-                                                child: Text(
-                                                    'Guardar',
-                                                    style: TextStyle(
-                                                        color: backgroundColor,
-                                                        fontWeight: FontWeight.bold,
-                                                        fontSize: 15)),
+                                          for(var i=0; i< arrayMessaje.length; i++)...{
+                                            if(arrayMessaje[i]['nombreAgent']== abc.data!.trips![0].tripAgent![index].agentFullname!.toUpperCase())...{
+                                              Positioned(
+                                              top: 5,
+                                              left: 25,
+                                              child: Container(
+                                                width: 20,
+                                                height: 20,
+                                                child: Container(
+                                                  
+                                                  decoration: BoxDecoration(
+                                                      shape: BoxShape.circle,
+                                                      color: Colors.transparent,
+                                                      border: Border.all(color: Theme.of(context).hoverColor, width: 1.5)),
+                                                  child: Center(
+                                                    child:  Text(
+                                                    "${arrayMessaje[i]['cantMessage']}",
+                                                    style: Theme.of(context).textTheme.labelSmall!.copyWith(color: Theme.of(context).hoverColor)
+                                                  ),
+                                                  ),
+                                                ),
                                               ),
                                             ),
-                                            Container(
-                                              width: 95,
-                                              height:
-                                                  40,
-                                              child:
-                                                  ElevatedButton(
-                                                style: ElevatedButton.styleFrom(
-                                                    shape: RoundedRectangleBorder(
-                                                      borderRadius: BorderRadius.circular(30), // <-- Radius
-                                                    ),
-                                                    textStyle: TextStyle(color: Colors.white), // foreground
-                                                    // foreground
-                                                    backgroundColor: Colors.red),
-                                                onPressed:
-                                                    () =>
-                                                        {
-                                                  Navigator.pop(
-                                                      context),
-                                                },
-                                                child: Text(
-                                                    'Cerrar',
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontWeight: FontWeight.bold,
-                                                        fontSize: 15)),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                            height:
-                                                10.0),
+                                            },                          
+                                          },
+                                          
                                       ],
                                     ),
                                   ),
-                                );
-                              },
-                              transitionDuration:
-                                  Duration(
-                                      milliseconds:
-                                          200),
-                              barrierDismissible: true,
-                              barrierLabel: '',
-                              context: context,
-                              pageBuilder: (context,
-                                  animation1,
-                                  animation2) {
-                                return Text('');
-                              });
-                        },
-                                                                child: Column(
-                                                                  children: [
-                                                                    Row(
-                                                                      children: [
-                                                                        SizedBox(width: size.width/4.8),
-                                                                        Container(
-                                                                          width: 16,
-                                                                          height: 16,
-                                                                          decoration: BoxDecoration(
-                                                                            shape: BoxShape.circle,
-                                                                            border: Border.all(color: Theme.of(navigatorKey.currentContext!).primaryIconTheme.color!, width: 1),
-                                                                          ),
-                                                                          child: Center(
-                                                                            child: Container(
-                                                                              width: 9,
-                                                                              height: 9,
-                                                                              decoration: BoxDecoration(
-                                                                                shape: BoxShape.circle,
-                                                                                color: abc.data!.trips![0].tripAgent![index].commentDriver != 'Canceló transporte'? abc.data!.trips![0].tripAgent![index].commentDriver != 'Pasé por él (ella) y no salió'? Theme.of(navigatorKey.currentContext!).primaryIconTheme.color!: Colors.transparent: Colors.transparent,
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                        SizedBox(width: 5),
-                                                                        Text(
-                                                                          'Comentario',
-                                                                          style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 20),
-                                                                        ),
-                                                                      ],
-                                                                    ),
-
-                                                                    if(abc.data!.trips![0].tripAgent![index].commentDriver != 'Canceló transporte' && abc.data!.trips![0].tripAgent![index].commentDriver != 'Pasé por él (ella) y no salió')...{
-                                                                    SizedBox(height: 10),
-                                                                    Container(
-                                                                      decoration: BoxDecoration(
-                                                                        borderRadius: BorderRadius.circular(10),
-                                                                        border: Border.all(
-                                                                          color: Theme.of(context).dividerColor,
-                                                                          width: 1
-                                                                        ) // Radio de la esquina
-                                                                      ),
-                                                                      child: Padding(
-                                                                        padding: const EdgeInsets.all(10),
-                                                                        child: Text(
-                                                                          abc.data!.trips![0].tripAgent![index].commentDriver == null ?'Sin comentario' :'${abc.data!.trips![0].tripAgent![index].commentDriver}',
-                                                                          style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 18),
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                  },
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                              
-                                                              SizedBox(height: 20),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                            transitionDuration: Duration(milliseconds: 200),
-                                            barrierDismissible: true,
-                                            barrierLabel: '',
-                                            context: context,
-                                            pageBuilder: (context, animation1, animation2) {
-                                              return widget;
-                                            },
-                                          );                               
-                                        },
-                                        child: Text('Observaciones',
-                                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold)),
-                                      ),
-            
+                                ],
+                              ),
             }else...{
-            TextButton(
-                                        style: TextButton.styleFrom(
-                                          side: BorderSide(width: 1, color: abc.data!.trips![0].tripAgent![index].commentDriver == 'No abordó'? Colors.grey:Theme.of(context).primaryColorDark),
-                                          fixedSize: Size(150, 25),
-                                          elevation: 0,
-                                          backgroundColor: Colors.transparent,
-                                          shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
-                                        ),
-                                        onPressed: () async{
-                                          if (abc.data!.trips![0].tripAgent![index].commentDriver == 'No abordó') {
-                    return;
-                  }
-              
-                  Map<String, String> datas = {
-                    'agentId': abc.data!.trips![0].tripAgent![index].agentId.toString(),
-                    'tripId': prefs.tripId.toString(),
-                    'traveled': '0',
-                  };
-              
-                  await http.post(Uri.parse('$ip/apis/agentCheckIn'), body: datas);                
-              
-                  setState(() {
-                    if (traveledB(abc, index)) {
-                      totalAbordado--;
-                      totalNoAbordado++;
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  TextButton(
+                    style: TextButton.styleFrom(
+                    side: BorderSide(width: 1, color: abc.data!.trips![0].tripAgent![index].commentDriver == 'No abordó'? Colors.grey:Theme.of(context).primaryColorDark),
+                    fixedSize: Size(150, 25),
+                    elevation: 0,
+                    backgroundColor: Colors.transparent,
+                    shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
+                    ),
+                    onPressed: () async{
+                    if (abc.data!.trips![0].tripAgent![index].commentDriver == 'No abordó') {
+                      return;
                     }
-                    abc.data!.trips![0].tripAgent![index].commentDriver = 'No abordó';
-                    abc.data!.trips![0].tripAgent![index].traveled = 0;
-                  });
-              
-                  fetchRegisterCommentAgent(
-                    abc.data!.trips![0].tripAgent![index].agentId.toString(),
-                    prefs.tripId,
-                    'No abordó'
-                  );                             
-                },
-                child: Text('No abordó',
-                  style: abc.data!.trips![0].tripAgent![index].commentDriver == 'No abordó'? Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey): Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold)),
-                ),
+                    
+                    Map<String, String> datas = {
+                      'agentId': abc.data!.trips![0].tripAgent![index].agentId.toString(),
+                      'tripId': prefs.tripId.toString(),
+                      'traveled': '0',
+                    };
+                    
+                    await http.post(Uri.parse('$ip/apis/agentCheckIn'), body: datas);                
+                    
+                      setState(() {
+                        if (traveledB(abc, index)) {
+                          totalAbordado--;
+                          totalNoAbordado++;
+                        }
+                        abc.data!.trips![0].tripAgent![index].commentDriver = 'No abordó';
+                        abc.data!.trips![0].tripAgent![index].traveled = 0;
+                      });
+                      fetchRegisterCommentAgent(
+                        abc.data!.trips![0].tripAgent![index].agentId.toString(),
+                        prefs.tripId,
+                        'No abordó'
+                      );                             
+                    },
+                    child: Text('No abordó',
+                      style: abc.data!.trips![0].tripAgent![index].commentDriver == 'No abordó'? Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey): Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold)),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                          transitionDuration: Duration(milliseconds: 200 ), // Adjust the animation duration as needed
+                          pageBuilder: (_, __, ___) => ChatScreen(
+                            idAgent: abc.data!.trips![0].tripAgent![index].agentId.toString(),
+                            nombreAgent: abc.data!.trips![0].tripAgent![index].agentFullname,
+                            nombre: "$nombreMotorista",
+                            id: '$idMotorista',
+                            rol: "MOTORISTA",
+                            tipoViaje: tipoViaje,
+                            idV: abc.data!.trips![0].tripAgent![index].tripId.toString(),
+                            pantalla: true,
+                          ),
+                          transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                            return SlideTransition(
+                              position: Tween<Offset>(
+                                begin: Offset(1.0, 0.0),
+                                end: Offset.zero,
+                              ).animate(animation),
+                              child: child,
+                            );
+                          },
+                        ),
+                      );
+                    },
+                    child: Stack(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top:10, right: 18),
+                          child: Column(
+                            children: [
+                              Container(
+                                width: 28,
+                                height: 28,
+                                child: SvgPicture.asset(
+                                  "assets/icons/chats.svg",
+                                  color: Theme.of(context).hintColor,
+                                ),
+                              ),
+                              
+                              Text(
+                                "Chat",
+                                style: TextStyle(
+                                        color: Theme.of(context).hintColor, fontSize: 10, fontFamily: 'Roboto'
+                                      ),
+                              )
+                            ],
+                          ),
+                        ),
+                          for(var i=0; i< arrayMessaje.length; i++)...{
+                            if(arrayMessaje[i]['nombreAgent']== abc.data!.trips![0].tripAgent![index].agentFullname!.toUpperCase())...{
+                              Positioned(
+                              top: 5,
+                              left: 25,
+                              child: Container(
+                                width: 20,
+                                height: 20,
+                                child: Container(
+                                  
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.transparent,
+                                      border: Border.all(color: Theme.of(context).hoverColor, width: 1.5)),
+                                  child: Center(
+                                    child:  Text(
+                                    "${arrayMessaje[i]['cantMessage']}",
+                                    style: Theme.of(context).textTheme.labelSmall!.copyWith(color: Theme.of(context).hoverColor)
+                                  ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            },                          
+                          },
+                          
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            
             SizedBox(height: 10.0),
             if(abc.data!.trips![0].tripAgent![index].latitude==null)...{
               TextButton(

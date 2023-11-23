@@ -1,6 +1,7 @@
 //import 'package:back_button_interceptor/back_button_interceptor.dart';
 //import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_auth/Drivers/Screens/Chat/chatscreen.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
 import 'package:flutter_auth/Drivers/models/DriverData.dart';
@@ -70,6 +71,11 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
 
   bool cancelados = false;
   var cancelVal = 0;
+
+  int? idMotorista;
+  String? nombreMotorista;
+
+  var arrayMessaje=[];
 
   ConfirmationLoadingDialog loadingDialog = ConfirmationLoadingDialog();
   ConfirmationDialog confirmationDialog = ConfirmationDialog();
@@ -310,6 +316,11 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
     driverData = fetchRefres();
     getInfoViaje();
     getNumberToElement();
+    Future.delayed(const Duration(seconds: 1), () {
+      setState(() {        
+        getCounterNotification(prefs.tripId);
+      });
+    });
   }
 
   void getNumberToElement(){
@@ -320,6 +331,27 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
         cancelVal = value.trips![2].cancelados!.length;
       })
     });
+  }
+
+  void getCounterNotification(String tripId) async {
+    
+    http.Response responses = await http.get(Uri.parse('https://apichat.smtdriver.com/api/mensajes/$tripId'));
+    var getData = json.decode(responses.body);
+    idMotorista = getData['Motorista']['Id'];
+    nombreMotorista = getData['Motorista']['Nombre'];
+
+    if (getData.isNotEmpty) {
+      for(var i=0;i<getData['Agentes'].length;i++){
+       //print(getData['Agentes'][i]);
+          setState(() {
+            arrayMessaje.add({
+              "nombreAgent": getData['Agentes'][i]['Nombre'],
+              "cantMessage": getData['Agentes'][i]['sinleer_Motorista']
+            });   
+          });
+      }
+    }
+        //print(arrayMessaje);
   }
 
   void getInfoViaje() async{
@@ -1267,34 +1299,120 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                 ),
                               ), 
                                       SizedBox(height: 20.0),
-                                      TextButton(
-                                        style: TextButton.styleFrom(
-                                          side: BorderSide(width: 1, color: Theme.of(context).primaryColorDark),
-                                          fixedSize: Size(150, 25),
-                                          elevation: 0,
-                                          backgroundColor: Colors.transparent,
-                                          shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
-                                        ),
-                                        onPressed: () async{
-                                          var time =await showTimePicker(context: context,initialTime:TimeOfDay.now(),);                                                 
-                                          validateHour(abc.data!.trips![0].agentes![index].agentId.toString(), abc.data!.trips![0].agentes![index].tripId.toString(), time);
-                                          DateTimeField.convert(flagalert);                                           
-                                        },
-                                        child: Row(
-                                          children: [
-                                            SvgPicture.asset( 
-                                              "assets/icons/cambia_hora.svg",
-                                              color: Theme.of(context).primaryColorDark,
-                                              width: 20,
-                                              height: 20,
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                        children: [
+                                          TextButton(
+                                            style: TextButton.styleFrom(
+                                              side: BorderSide(width: 1, color: Theme.of(context).primaryColorDark),
+                                              fixedSize: Size(150, 25),
+                                              elevation: 0,
+                                              backgroundColor: Colors.transparent,
+                                              shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
                                             ),
-                                            SizedBox(width: 5),
-                                            Flexible(
-                                              child: Text('Cambiar hora',
-                                                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold)),
+                                            onPressed: () async{
+                                              var time =await showTimePicker(context: context,initialTime:TimeOfDay.now(),);                                                 
+                                              validateHour(abc.data!.trips![0].agentes![index].agentId.toString(), abc.data!.trips![0].agentes![index].tripId.toString(), time);
+                                              DateTimeField.convert(flagalert);                                           
+                                            },
+                                            child: Row(
+                                              children: [
+                                                SvgPicture.asset( 
+                                                  "assets/icons/cambia_hora.svg",
+                                                  color: Theme.of(context).primaryColorDark,
+                                                  width: 20,
+                                                  height: 20,
+                                                ),
+                                                SizedBox(width: 5),
+                                                Flexible(
+                                                  child: Text('Cambiar hora',
+                                                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold)),
+                                                ),
+                                              ],
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                          InkWell(
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                PageRouteBuilder(
+                                                  transitionDuration: Duration(milliseconds: 200 ), // Adjust the animation duration as needed
+                                                  pageBuilder: (_, __, ___) => ChatScreen(
+                                                    idAgent: abc.data!.trips![0].agentes![index].agentId.toString(),
+                                                    nombreAgent: abc.data!.trips![0].agentes![index].agentFullname,
+                                                    nombre: "$nombreMotorista",
+                                                    id: '$idMotorista',
+                                                    rol: "MOTORISTA",
+                                                    tipoViaje: 'entrada',
+                                                    idV: abc.data!.trips![0].agentes![index].tripId.toString(),
+                                                    pantalla: true,
+                                                  ),
+                                                  transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                                    return SlideTransition(
+                                                      position: Tween<Offset>(
+                                                        begin: Offset(1.0, 0.0),
+                                                        end: Offset.zero,
+                                                      ).animate(animation),
+                                                      child: child,
+                                                    );
+                                                  },
+                                                ),
+                                              );
+                                              },
+                                              child: Stack(
+                                                children: [
+                                                  Padding(
+                                                    padding: const EdgeInsets.only(top:10, right: 18),
+                                                    child: Column(
+                                                      children: [
+                                                        Container(
+                                                          width: 28,
+                                                          height: 28,
+                                                          child: SvgPicture.asset(
+                                                            "assets/icons/chats.svg",
+                                                            color: Theme.of(context).hintColor,
+                                                          ),
+                                                        ),
+                                                        
+                                                        Text(
+                                                          "Chat",
+                                                          style: TextStyle(
+                                                                  color: Theme.of(context).hintColor, fontSize: 10, fontFamily: 'Roboto'
+                                                                ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ),
+                                                    for(var i=0; i< arrayMessaje.length; i++)...{
+                                                      if(arrayMessaje[i]['nombreAgent']== abc.data!.trips![0].agentes![index].agentFullname!.toUpperCase())...{
+                                                        Positioned(
+                                                        top: 5,
+                                                        left: 25,
+                                                        child: Container(
+                                                          width: 20,
+                                                          height: 20,
+                                                          child: Container(
+                                                            
+                                                            decoration: BoxDecoration(
+                                                                shape: BoxShape.circle,
+                                                                color: Colors.transparent,
+                                                                border: Border.all(color: Theme.of(context).hoverColor, width: 1.5)),
+                                                            child: Center(
+                                                              child:  Text(
+                                                              "${arrayMessaje[i]['cantMessage']}",
+                                                              style: Theme.of(context).textTheme.labelSmall!.copyWith(color: Theme.of(context).hoverColor)
+                                                            ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      },                          
+                                                    },
+                                                    
+                                                ],
+                                              ),
+                                      )
+                                      ],
                                       ),
                                       SizedBox(height: 10.0),
                                       // Usamos una fila para ordenar los botones del card
@@ -1688,29 +1806,114 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                 ),
                               ), 
                                       SizedBox(height: 20.0),
-                                      TextButton(
-                                        style: TextButton.styleFrom(
-                                          side: BorderSide(width: 1, color: Theme.of(context).primaryColorDark),
-                                          fixedSize: Size(150, 25),
-                                          elevation: 0,
-                                          backgroundColor: Colors.transparent,
-                                          shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
-                                        ),
-                                        onPressed: () {
-                                          confirmationDialog.show(
-                                                      context,
-                                                      title: '¿Está seguro que desea marcar como no confirmado al agente?',
-                                                      type: "0",
-                                                      onConfirm: () async {
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                        children: [
+                                          TextButton(
+                                            style: TextButton.styleFrom(
+                                              side: BorderSide(width: 1, color: Theme.of(context).primaryColorDark),
+                                              fixedSize: Size(150, 25),
+                                              elevation: 0,
+                                              backgroundColor: Colors.transparent,
+                                              shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
+                                            ),
+                                            onPressed: () {
+                                              confirmationDialog.show(
+                                                          context,
+                                                          title: '¿Está seguro que desea marcar como no confirmado al agente?',
+                                                          type: "0",
+                                                          onConfirm: () async {
+                                                        
+                                                fetchNoConfirm(abc.data!.trips![1].noConfirmados![index].agentId.toString(),abc.data!.trips![1].noConfirmados![index].tripId.toString());                                                               
+                                                
+                                              },
+                                            onCancel: () {},
+                                            );                                                
+                                            },
+                                            child: Text('No confirmó',
+                                                style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold)),
+                                          ),
+                                          InkWell(
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                PageRouteBuilder(
+                                                  transitionDuration: Duration(milliseconds: 200 ), // Adjust the animation duration as needed
+                                                  pageBuilder: (_, __, ___) => ChatScreen(
+                                                    idAgent: abc.data!.trips![1].noConfirmados![index].agentId.toString(),
+                                                    nombreAgent: abc.data!.trips![1].noConfirmados![index].agentFullname,
+                                                    nombre: "$nombreMotorista",
+                                                    id: '$idMotorista',
+                                                    rol: "MOTORISTA",
+                                                    tipoViaje: 'entrada',
+                                                    idV: abc.data!.trips![1].noConfirmados![index].tripId.toString(),
+                                                    pantalla: true,
+                                                  ),
+                                                  transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                                    return SlideTransition(
+                                                      position: Tween<Offset>(
+                                                        begin: Offset(1.0, 0.0),
+                                                        end: Offset.zero,
+                                                      ).animate(animation),
+                                                      child: child,
+                                                    );
+                                                  },
+                                                ),
+                                              );
+                                              },
+                                              child: Stack(
+                                                children: [
+                                                  Padding(
+                                                    padding: const EdgeInsets.only(top:10, right: 18),
+                                                    child: Column(
+                                                      children: [
+                                                        Container(
+                                                          width: 28,
+                                                          height: 28,
+                                                          child: SvgPicture.asset(
+                                                            "assets/icons/chats.svg",
+                                                            color: Theme.of(context).hintColor,
+                                                          ),
+                                                        ),
+                                                        
+                                                        Text(
+                                                          "Chat",
+                                                          style: TextStyle(
+                                                                  color: Theme.of(context).hintColor, fontSize: 10, fontFamily: 'Roboto'
+                                                                ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ),
+                                                    for(var i=0; i< arrayMessaje.length; i++)...{
+                                                      if(arrayMessaje[i]['nombreAgent']== abc.data!.trips![1].noConfirmados![index].agentFullname!.toUpperCase())...{
+                                                        Positioned(
+                                                        top: 5,
+                                                        left: 25,
+                                                        child: Container(
+                                                          width: 20,
+                                                          height: 20,
+                                                          child: Container(
+                                                            
+                                                            decoration: BoxDecoration(
+                                                                shape: BoxShape.circle,
+                                                                color: Colors.transparent,
+                                                                border: Border.all(color: Theme.of(context).hoverColor, width: 1.5)),
+                                                            child: Center(
+                                                              child:  Text(
+                                                              "${arrayMessaje[i]['cantMessage']}",
+                                                              style: Theme.of(context).textTheme.labelSmall!.copyWith(color: Theme.of(context).hoverColor)
+                                                            ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      },                          
+                                                    },
                                                     
-                                            fetchNoConfirm(abc.data!.trips![1].noConfirmados![index].agentId.toString(),abc.data!.trips![1].noConfirmados![index].tripId.toString());                                                               
-                                            
-                                          },
-                                        onCancel: () {},
-                                        );                                                
-                                        },
-                                        child: Text('No confirmó',
-                                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.bold)),
+                                                ],
+                                              ),
+                                      )],
                                       ),
                                       SizedBox(height: 10.0),
                                       // Usamos una fila para ordenar los botones del card
@@ -2120,6 +2323,87 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                       ),
                                       
                                       },
+                                      InkWell(
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                PageRouteBuilder(
+                                                  transitionDuration: Duration(milliseconds: 200 ), // Adjust the animation duration as needed
+                                                  pageBuilder: (_, __, ___) => ChatScreen(
+                                                    idAgent: abc.data!.trips![2].cancelados![index].agentId.toString(),
+                                                    nombreAgent: abc.data!.trips![2].cancelados![index].agentFullname,
+                                                    nombre: "$nombreMotorista",
+                                                    id: '$idMotorista',
+                                                    rol: "MOTORISTA",
+                                                    tipoViaje: 'entrada',
+                                                    idV: abc.data!.trips![2].cancelados![index].tripId.toString(),
+                                                    pantalla: true,
+                                                  ),
+                                                  transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                                    return SlideTransition(
+                                                      position: Tween<Offset>(
+                                                        begin: Offset(1.0, 0.0),
+                                                        end: Offset.zero,
+                                                      ).animate(animation),
+                                                      child: child,
+                                                    );
+                                                  },
+                                                ),
+                                              );
+                                              },
+                                              child: Stack(
+                                                children: [
+                                                  Padding(
+                                                    padding: const EdgeInsets.only(top:10, right: 18),
+                                                    child: Column(
+                                                      children: [
+                                                        Container(
+                                                          width: 28,
+                                                          height: 28,
+                                                          child: SvgPicture.asset(
+                                                            "assets/icons/chats.svg",
+                                                            color: Theme.of(context).hintColor,
+                                                          ),
+                                                        ),
+                                                        
+                                                        Text(
+                                                          "Chat",
+                                                          style: TextStyle(
+                                                                  color: Theme.of(context).hintColor, fontSize: 10, fontFamily: 'Roboto'
+                                                                ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ),
+                                                    for(var i=0; i< arrayMessaje.length; i++)...{
+                                                      if(arrayMessaje[i]['nombreAgent']== abc.data!.trips![2].cancelados![index].agentFullname!.toUpperCase())...{
+                                                        Positioned(
+                                                        top: 5,
+                                                        left: 25,
+                                                        child: Container(
+                                                          width: 20,
+                                                          height: 20,
+                                                          child: Container(
+                                                            
+                                                            decoration: BoxDecoration(
+                                                                shape: BoxShape.circle,
+                                                                color: Colors.transparent,
+                                                                border: Border.all(color: Theme.of(context).hoverColor, width: 1.5)),
+                                                            child: Center(
+                                                              child:  Text(
+                                                              "${arrayMessaje[i]['cantMessage']}",
+                                                              style: Theme.of(context).textTheme.labelSmall!.copyWith(color: Theme.of(context).hoverColor)
+                                                            ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      },                          
+                                                    },
+                                                    
+                                                ],
+                                              ),
+                                      ),
 
                               SizedBox(height: 20.0),
   
