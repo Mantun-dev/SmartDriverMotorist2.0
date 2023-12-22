@@ -57,7 +57,9 @@ class Agente {
         this.notTraveled,
         this.hourIn,
         this.hourForTrip,
-        this.neighborhoodReferencePoint
+        this.neighborhoodReferencePoint,
+        this.latitude,
+        this.longitude
     });
 
     int? tripId;
@@ -79,7 +81,9 @@ class Agente {
     dynamic notTraveled;
     String? hourIn;
     dynamic hourForTrip;
-    String? neighborhoodReferencePoint;  
+    String? neighborhoodReferencePoint; 
+    dynamic latitude;
+    dynamic longitude;
 
     factory Agente.fromJson(Map<String, dynamic> json) => Agente(
         tripId: json["tripId"],
@@ -101,7 +105,9 @@ class Agente {
         notTraveled: json["notTraveled"],
         hourIn: json["hourIn"],
         hourForTrip: json["hourForTrip"],
-        neighborhoodReferencePoint: json["neighborhoodReferencePoint"]
+        neighborhoodReferencePoint: json["neighborhoodReferencePoint"],
+        latitude: json["latitude"],
+        longitude: json["longitude"]
     );
 
     Map<String, dynamic> toJson() => {
@@ -124,7 +130,9 @@ class Agente {
         "notTraveled": notTraveled,
         "hourIn": hourIn,
         "hourForTrip": hourForTrip,
-        "neighborhoodReferencePoint" : neighborhoodReferencePoint
+        "neighborhoodReferencePoint" : neighborhoodReferencePoint,
+        "latitude": latitude,
+        "longitude": longitude
     };
 }
 

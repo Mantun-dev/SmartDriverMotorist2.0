@@ -143,10 +143,7 @@ class _AsignarHorasState extends State<AsignarHoras> {
                                               child: SvgPicture.asset("assets/images/Grupo11.svg"),
                                             ),
                                           },
-                                          if (abc.data![index].companyId ==
-                                                  2 ||
-                                              abc.data![index].companyId ==
-                                                  3) ...{
+                                          if (abc.data![index].companyId == 2 || abc.data![index].companyId == 3) ...{
                                             Container(
                                               height: 50,
                                               child: Image.asset(
@@ -154,8 +151,7 @@ class _AsignarHorasState extends State<AsignarHoras> {
                                               ),
                                             ),
                                           },
-                                          if (abc.data![index].companyId ==
-                                              6) ...{
+                                          if (abc.data![index].companyId == 6 || abc.data![index].companyId == 13) ...{
                                             Container(
                                               height: 50,
                                               child: Image.asset(
@@ -188,6 +184,14 @@ class _AsignarHorasState extends State<AsignarHoras> {
                                               height: 50,
                                               child: Image.asset(
                                                   'assets/images/itel.jpg'),
+                                            ),
+                                          },
+
+                                          if (abc.data![index].companyId == 11) ...{
+                                            Container(
+                                              height: 50,
+                                              child: Image.asset(
+                                                  'assets/images/results.png'),
                                             ),
                                           }
                                         ],

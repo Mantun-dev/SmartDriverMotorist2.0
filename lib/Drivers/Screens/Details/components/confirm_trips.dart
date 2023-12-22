@@ -572,6 +572,59 @@ class _DataTableExample extends State<MyConfirmAgent> {
   );
   }
 
+  permisoGeolocalizacion()async{
+    permiso = await checkLocationPermission();
+    if (!permiso!) {
+      WarningSuccessDialog().show(
+        context,
+        title: "Usted negó el acceso a la ubicación. Esto es necesario para poder abordar agentes. Si no da acceso en configuraciones, no podrá abordar agentes.",
+        tipo: 1,
+        onOkay: () async {
+          try {
+            AppSettings.openLocationSettings();
+          } catch (error) {
+            print(error);
+          }
+        },
+      ); 
+      return;
+    } 
+  }
+
+  respError(resp){
+    LoadingIndicatorDialog().dismiss();
+    if(resp['type']=='error'){
+      WarningSuccessDialog().show(
+        context,
+        title: '${resp['msg']}',
+        tipo: 1,
+        onOkay: () {},
+      ); 
+      return;
+    } 
+  }
+
+  respMsg(resp){
+    LoadingIndicatorDialog().dismiss();
+    WarningSuccessDialog().show(
+      context,
+      title: '${resp['msg']}',
+      tipo: 1,
+      onOkay: () {},
+    );
+  }
+
+  data1Msg(msg, context){
+    Navigator.pop(context);
+    Navigator.pop(context);
+    WarningSuccessDialog().show(
+      context,
+      title: '$msg',
+      tipo: 1,
+      onOkay: () {},
+    ); 
+  }
+
   Widget escanearAgente() {
 
     return FutureBuilder<TripsList4>(
@@ -643,48 +696,18 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                             backgroundColor: MaterialStateProperty.all(Color.fromRGBO(40, 93, 169, 1)),
                                           ),
                                           onPressed: () async{
-                                            permiso = await checkLocationPermission();
-                                              if (!permiso!) {
-                                                WarningSuccessDialog().show(
-                                                  context,
-                                                  title: "Usted negó el acceso a la ubicación. Esto es necesario para poder abordar agentes. Si no da acceso en configuraciones, no podrá abordar agentes.",
-                                                  tipo: 1,
-                                                  onOkay: () async {
-                                                    try {
-                                                      AppSettings.openLocationSettings();
-                                                    } catch (error) {
-                                                      print(error);
-                                                    }
-                                                  },
-                                                ); 
-                                                return;
-                                              }                                           
+                                              permisoGeolocalizacion();                                                                                      
                                               LoadingIndicatorDialog().show(context);                                      
                                               Map data =   {'agentUser':agentEmployeeId.text, 'tripId':tripId.toString(),'itsManualSearch':"1"};                                      
                                               http.Response response = await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/validateCheckIn'), body: data);
 
                                               final resp = json.decode(response.body);                                             
                                               if(mounted){
-                                                LoadingIndicatorDialog().dismiss();
-                                                if(resp['type']=='error'){
-                                                  WarningSuccessDialog().show(
-                                                    context,
-                                                    title: '${resp['msg']}',
-                                                    tipo: 1,
-                                                    onOkay: () {},
-                                                  ); 
-                                                  return;
-                                                } 
+                                                respError(resp);
                                       
                                                 if(resp['allow']==0){
                                                   if(abc.data!.trips![1].actualTravel!.tripType!='Salida'){                                                    
-                                                    LoadingIndicatorDialog().dismiss();
-                                                    WarningSuccessDialog().show(
-                                                      context,
-                                                      title: '${resp['msg']}',
-                                                      tipo: 1,
-                                                      onOkay: () {},
-                                                    ); 
+                                                    respMsg(resp);
                                                     return;                                                  
                                                   }else{
                                                   if(resp['msg']=='Agente no se encuentra registrado en este viaje.'){
@@ -711,14 +734,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                         if(data1.agent!.msg!=null){
                                                           LoadingIndicatorDialog().dismiss();                                      
                                                           if(data1.ok==true){
-                                                            Navigator.pop(context);
-                                                            Navigator.pop(context);
-                                                            WarningSuccessDialog().show(
-                                                              context,
-                                                              title: '${data1.agent!.msg!}',
-                                                              tipo: 1,
-                                                              onOkay: () {},
-                                                            );                                       
+                                                            data1Msg(data1.agent!.msg!, context);
                                                             return;
                                                           }
                                                         }
@@ -932,22 +948,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                     icon: SvgPicture.asset(  
                       "assets/icons/QR.svg", color: Theme.of(context).primaryColorDark,),
                     onPressed: () async{
-                      permiso = await checkLocationPermission();
-                        if (!permiso!) {
-                          WarningSuccessDialog().show(
-                            context,
-                            title: "Usted negó el acceso a la ubicación. Esto es necesario para poder abordar agentes. Si no da acceso en configuraciones, no podrá abordar agentes.",
-                            tipo: 1,
-                            onOkay: () async {
-                              try {
-                                AppSettings.openLocationSettings();
-                              } catch (error) {
-                                print(error);
-                              }
-                            },
-                          ); 
-                          return;
-                        }
+                        permisoGeolocalizacion(); 
                         
                         String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);              
                         if (codigoQR == "-1") {
@@ -960,27 +961,11 @@ class _DataTableExample extends State<MyConfirmAgent> {
                           final resp = json.decode(response.body);
 
                           if(mounted){
-                            LoadingIndicatorDialog().dismiss();
-                            if(resp['type']=='error'){
-                              WarningSuccessDialog().show(
-                                context,
-                                title: "${resp['msg']}",
-                                tipo: 1,
-                                onOkay: () {},
-                              );
-                              return;
-                            } 
+                            respError(resp);
 
                             if(resp['allow']==0){
-                              if(abc.data!.trips![1].actualTravel!.tripType!='Salida'){
-                                
-                                LoadingIndicatorDialog().dismiss();
-                                WarningSuccessDialog().show(
-                                context,
-                                title: "${resp['msg']}",
-                                tipo: 1,
-                                onOkay: () {},
-                              );
+                              if(abc.data!.trips![1].actualTravel!.tripType!='Salida'){                                
+                                respMsg(resp);
                                 return;
                               
                               }else{
@@ -1000,7 +985,10 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
                                     LoadingIndicatorDialog().show(navigatorKey.currentContext!);
 
-                                    Map datas = {"companyId": abc.data!.trips![1].actualTravel!.companyId.toString(),"agentEmployeeId": codigoQR};
+                                    Map datas = {
+                                      "companyId": abc.data!.trips![1].actualTravel!.companyId.toString(),
+                                      "agentEmployeeId": codigoQR
+                                    };
 
                                     http.Response responsed =await http.post(Uri.parse('$ip/apis/searchAgent'), body: datas);
                                     final data1 = Search.fromJson(json.decode(responsed.body));
@@ -1042,7 +1030,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                       return;
                                       }else{
                                         var itemAbordaje = await fetchAgentsTripInProgress();
-                                        int indexP = await addAgente(resp['agentId'], itemAbordaje);
+                                        int indexP = await addAgente(data1.agent!.agentId.toString(), itemAbordaje);
                                         abc.data!.trips![0].tripAgent=itemAbordaje.trips![0].tripAgent;
 
                                         fetchRegisterCommentAgent(itemAbordaje.trips![0].tripAgent![indexP].agentId.toString(),prefs.tripId,''); 
@@ -1647,7 +1635,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
               
               SizedBox(height: 20),
               Padding(
-                padding: const EdgeInsets.only(right: 10, left: 10),
+                padding: const EdgeInsets.only(right: 10, left: 8, bottom: 10),
                 child: InkWell(
                     onTap: () {
                       if (abc.data!.trips![0].tripAgent![index].latitude==null) {
@@ -1675,7 +1663,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                 SizedBox(width: 10),
                                 Flexible(
                                   child: Text(
-                                    'Ubicación',
+                                    ' Ubicación',
                                     style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
                                   ),
                                 ),                                                           

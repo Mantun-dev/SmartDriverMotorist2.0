@@ -2130,75 +2130,78 @@ class _DriverDescriptionState extends State<DriverDescription>
   AlertDialog vehiculoE(resp, BuildContext context, codigoQR) {
 
     return AlertDialog(
-      backgroundColor: backgroundColor,
+      backgroundColor: Theme.of(navigatorKey.currentContext!).cardColor,
       shape: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
       title: Center(
           child: Text(
         'Vehículo Encontrado',
-        style: TextStyle(color: GradiantV_2, fontSize: 20.0),
+        style: Theme.of(context).textTheme.labelMedium!.copyWith(fontSize: 20),
       )),
       content: Container(
         height: 130,
         child: Column(
           children: [
                 const SizedBox(height: 8.0),
-                Text('Descripcion:',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold)),
+                Text('Descripcion:',style:  Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18, fontWeight: FontWeight.bold)),
                 SizedBox(
                   height: 5,
                 ),
-                Text(resp['vehicle']['name'],
-                    style: TextStyle(color: Colors.white, fontSize: 18.0)),
+                Text(resp['vehicle']['name'],style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18)),
                 SizedBox(
                   height: 15,
                 ),
-                Text('Placa:',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold)),
+                Text('Placa:',style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18, )),
                 SizedBox(
                   height: 10,
                 ),
-                Text(resp['vehicle']['registrationNumber'],
-                    style: TextStyle(color: Colors.white, fontSize: 18.0)),
+                Text(resp['vehicle']['registrationNumber'],style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18)),
               ],
         ),
       ),
       actions: [
-                                                              Row(mainAxisAlignment: MainAxisAlignment.center,
-                                                                children: [
-                                                                  Container(width: 100,
-                                                                    child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: backgroundColor,),backgroundColor: Gradiant2,),
-                                                                      onPressed: () {
-                                                                        setState(() { 
-                                                                          prefs.vehiculo = "${resp['vehicle']['name']} [${resp['vehicle']['registrationNumber']}]";
-                                                                          prefs.vehiculoId=codigoQR;
-                                                                          vehicleController.text=prefs.vehiculo;
+        Row(mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(child: TextButton(
+              style: ButtonStyle(
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0),side: BorderSide(color: Color.fromRGBO(40, 93, 169, 1)),),
+                    ),
+                    backgroundColor: MaterialStateProperty.all(Color.fromRGBO(40, 93, 169, 1)),
+                  ),
+              onPressed: (){
+              setState(() { 
+                    prefs.vehiculo = "${resp['vehicle']['name']} [${resp['vehicle']['registrationNumber']}]";
+                    prefs.vehiculoId=codigoQR;
+                    vehicleController.text=prefs.vehiculo;
 
-                                                                          print(prefs.vehiculoId);
-                                                                          print(prefs.vehiculo);
-                                                                        });
-                                                                        Navigator.pop(context);
-                                                                      },
-                                                                      child: Text('Agregar',style: TextStyle(color: backgroundColor,fontSize: 15.0)),
-                                                                    ),
-                                                                  ),
-                                                                  SizedBox(width: 10.0),
-                                                                  Container(width: 100,
-                                                                    child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: Colors.white,),backgroundColor: Colors.red,),
-                                                                      onPressed: () => {
-                                                                        Navigator.pop(context),
-                                                                      },
-                                                                      child: Text('Cancelar',style: TextStyle(color: Colors.white,fontSize: 15.0)),
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ],
+                    print(prefs.vehiculoId);
+                    print(prefs.vehiculo);
+                  });
+                  Navigator.pop(context);
+            }, child: Text('Agregar',
+                    style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 15),
+                  ),)),           
+            SizedBox(width: 10.0),
+            Expanded(
+                child: TextButton(
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0),side: BorderSide(color: Colors.black),),
+                    ),
+                    backgroundColor: MaterialStateProperty.all(Colors.transparent),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    'Cancelar',
+                    style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 15, fontWeight: FontWeight.bold)
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ],
     );
   }
 

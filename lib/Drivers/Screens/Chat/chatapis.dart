@@ -89,7 +89,8 @@ class ChatApis {
       "receiverRole": "agente",
       "textMessage": message,
       "hourMessage": formattedHour,
-      "nameSender": nameDriver
+      "nameSender": nameDriver,
+      "tripId": sala
     };
 
     await BaseClient().post(
@@ -180,7 +181,8 @@ class ChatApis {
             "receiverRole": "agente",
             "textMessage": 'Mensaje de voz',
             "hourMessage": formattedHour,
-            "nameSender": nameDriver
+            "nameSender": nameDriver,
+            "tripId": sala
           };
 
           await BaseClient().post(

@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:event_bus/event_bus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_auth/Drivers/Screens/Details/components/agents_Trip.dart';
+//import 'package:flutter_auth/Drivers/Screens/Details/components/agents_Trip.dart';
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/homeScreen_Driver.dart';
 
 import 'package:flutter_auth/Drivers/SharePreferences/services.dart';
@@ -14,6 +14,7 @@ import 'package:upgrader/upgrader.dart';
 import 'Drivers/SharePreferences/preferencias_usuario.dart';
 import 'components/Tema.dart';
 //import 'components/warning_dialog.dart';
+//import 'dart:convert';
 
 class MyHttpoverrides extends HttpOverrides {
   @override
@@ -47,7 +48,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   HttpOverrides.global = new MyHttpoverrides();
   final prefs = new PreferenciasUsuario();
-  await PushNotificationServices.initializeApp();
+  await PushNotificationServices.initializeApp(navigatorKey);
   await prefs.initPrefs();
   runApp(MyApp());
 }
@@ -64,15 +65,18 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     checkAudioPermission();
-    PushNotificationServices.messageStream.listen((event) {
+      PushNotificationServices.initializeApp(navigatorKey);
+    // PushNotificationServices.messageStream.listen((event) {     
+    //   if (event['type'] != "MESSAGE_NOTIFICATION" && pantallaP  ==1) {
+    //     prefs.tripId = event.toString();
+    //     navigatorKey.currentState
+    //         ?.push(MaterialPageRoute(builder: (_) => MyAgent()));
+    //   }
 
-      if (event != "MESSAGE_NOTIFICATION" && pantallaP  ==1) {
-        prefs.tripId = event.toString();
-        //print(event);
-        navigatorKey.currentState
-            ?.push(MaterialPageRoute(builder: (_) => MyAgent()));
-      }
-    });
+    //   if (event['type'] == "MESSAGE_NOTIFICATION") {
+    //     print('agora zi da  we?');
+    //   }
+    // });
 
     eventBus.on<ThemeChangeEvent>().listen((event) {
       // Actualizar el estado o realizar acciones según el evento recibido

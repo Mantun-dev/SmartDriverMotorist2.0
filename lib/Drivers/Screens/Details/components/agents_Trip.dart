@@ -377,6 +377,12 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
     }
     
   }
+
+  launchSalidasMaps(lat,lng)async{
+    String destination = '$lat,$lng';
+    String url = 'google.navigation:q=$destination&mode=d';
+    await launchUrl(Uri.parse(url));
+  }
   
   BuildContext? contextP;
 
@@ -821,69 +827,65 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
         child: Column(
           children: [
                 const SizedBox(height: 8.0),
-                Text('Descripcion:',
-                  style:  Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text('Descripcion:',style:  Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18, fontWeight: FontWeight.bold)),
                 SizedBox(
                   height: 5,
                 ),
-                Text(resp['vehicle']['name'],
-                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18)),
+                Text(resp['vehicle']['name'],style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18)),
                 SizedBox(
                   height: 15,
                 ),
-                Text('Placa:',
-                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18, )),
+                Text('Placa:',style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18, )),
                 SizedBox(
                   height: 10,
                 ),
-                Text(resp['vehicle']['registrationNumber'],
-                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18)),
+                Text(resp['vehicle']['registrationNumber'],style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18)),
               ],
         ),
       ),
       actions: [
-                                                              Row(mainAxisAlignment: MainAxisAlignment.center,
-                                                                children: [
-                                                                  Container(width: 100,
-                                                                    child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: backgroundColor,),backgroundColor: Gradiant2,),
-                                                                      onPressed: () async{
-                                                                        LoadingIndicatorDialog().show(context);
-                                                                        http.Response responses = await http.get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
-                                                                        final data2 = DriverData.fromJson(json.decode(responses.body));
-                                                                        Map data = {
-                                                                          "driverId": data2.driverId.toString(),
-                                                                          "tripId": prefs.tripId.toString(),
-                                                                          "vehicleId": resp['vehicle']['_id'],
-                                                                          "tripVehicle": "${resp['vehicle']['name']} [${resp['vehicle']['registrationNumber']}]"
-                                                                        };
-                                                                        http.Response responsed = await http.post(Uri.parse('https://driver.smtdriver.com/apis/editTripVehicle'), body: data);
-                                                                        
-                                                                        final resp2 = json.decode(responsed.body);
-                                                                        LoadingIndicatorDialog().dismiss();
-                                                                        if(resp2['type']=='success'){
-                                                                          if(mounted){
-                                                                            Navigator.pop(context);
-                                                                            WarningSuccessDialog().show(
-                                                                              navigatorKey.currentContext!,
-                                                                              title: resp2['message'],
-                                                                              tipo: 2,
-                                                                              onOkay: () {},
-                                                                            );
-                                                                            setState(() {
-                                                                              tripVehicle = "${resp['vehicle']['name']} [${resp['vehicle']['registrationNumber']}]";
-                                                                              vehicleController.text=tripVehicle;  
-                                                                            });
-                                                                          }
-                                                                        }else{
-                                                                          WarningSuccessDialog().show(
-                                                                              navigatorKey.currentContext!,
-                                                                              title: resp2['message'],
-                                                                              tipo: 1,
-                                                                              onOkay: () {},
-                                                                            );
-                                                                        }
-                                                                      },
-                                                                      child: Text('Agregar',style: TextStyle(
+            Row(mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(width: 100,
+              child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: backgroundColor,),backgroundColor: Gradiant2,),
+                onPressed: () async{
+                  LoadingIndicatorDialog().show(context);
+                  http.Response responses = await http.get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
+                  final data2 = DriverData.fromJson(json.decode(responses.body));
+                  Map data = {
+                    "driverId": data2.driverId.toString(),
+                    "tripId": prefs.tripId.toString(),
+                    "vehicleId": resp['vehicle']['_id'],
+                    "tripVehicle": "${resp['vehicle']['name']} [${resp['vehicle']['registrationNumber']}]"
+                  };
+                  http.Response responsed = await http.post(Uri.parse('https://driver.smtdriver.com/apis/editTripVehicle'), body: data);
+                  
+                  final resp2 = json.decode(responsed.body);
+                  LoadingIndicatorDialog().dismiss();
+                  if(resp2['type']=='success'){
+                    if(mounted){
+                      Navigator.pop(context);
+                      WarningSuccessDialog().show(
+                        navigatorKey.currentContext!,
+                        title: resp2['message'],
+                        tipo: 2,
+                        onOkay: () {},
+                      );
+                      setState(() {
+                        tripVehicle = "${resp['vehicle']['name']} [${resp['vehicle']['registrationNumber']}]";
+                        vehicleController.text=tripVehicle;  
+                      });
+                    }
+                  }else{
+                    WarningSuccessDialog().show(
+                        navigatorKey.currentContext!,
+                        title: resp2['message'],
+                        tipo: 1,
+                        onOkay: () {},
+                      );
+                  }
+                },
+                child: Text('Agregar',style: TextStyle(
                                               color: Colors.white,
                                               fontWeight: FontWeight.bold,
                                               fontSize: 15
@@ -896,7 +898,8 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                                                       onPressed: () => {
                                                                         Navigator.pop(context),
                                                                       },
-                                                                      child: Text('Cancelar',style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 15, fontWeight: FontWeight.bold)),
+                                                                      child: Text('Cancelar',
+                    style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 15, fontWeight: FontWeight.bold)),
                                                                     ),
                                                                   ),
                                                                 ],
@@ -1002,6 +1005,44 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                                 ),
                                               )                   
                                     ],
+                                  ),
+                                ),
+
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 10, left: 6, top: 10),
+                                  child: InkWell(
+                                  onTap: () {
+                                    if (abc.data!.trips![0].agentes![index].latitude==null) {
+                                      WarningSuccessDialog().show(
+                                        context,
+                                        title: "Este agente no cuenta con ubicación",
+                                        tipo: 1,
+                                        onOkay: () {},
+                                      ); 
+                                    }else{
+                                      launchSalidasMaps(abc.data!.trips![0].agentes![index].latitude,abc.data!.trips![0].agentes![index].longitude);                                          
+                                    }
+                                    //print('Dirección we');
+                                  },
+                                  child:  Row(
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.only(bottom: 10),
+                                                child: Container(
+                                                  width: 15,
+                                                  height: 15,
+                                                  child: Icon(Icons.location_on_outlined, color:abc.data!.trips![0].agentes![index].latitude==null? Colors.red :Color.fromRGBO(0, 191, 95, 1)),
+                                                ),
+                                              ),
+                                              SizedBox(width: 18),
+                                              Flexible(
+                                                child: Text(
+                                                  'Ubicación',
+                                                  style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                ),
+                                              ),                                                           
+                                            ],
+                                          ),
                                   ),
                                 ),
 
@@ -1587,7 +1628,43 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                     ],
                                   ),
                                 ),
-
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 10, left: 6, top: 10),
+                                  child: InkWell(
+                                  onTap: () {
+                                    if (abc.data!.trips![1].noConfirmados![index].latitude==null) {
+                                      WarningSuccessDialog().show(
+                                        context,
+                                        title: "Este agente no cuenta con ubicación",
+                                        tipo: 1,
+                                        onOkay: () {},
+                                      ); 
+                                    }else{
+                                      launchSalidasMaps(abc.data!.trips![1].noConfirmados![index].latitude,abc.data!.trips![1].noConfirmados![index].longitude);                                          
+                                    }
+                                    //print('Dirección we');
+                                  },
+                                  child:  Row(
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.only(bottom: 10),
+                                                child: Container(
+                                                  width: 15,
+                                                  height: 15,
+                                                  child: Icon(Icons.location_on_outlined, color:abc.data!.trips![1].noConfirmados![index].latitude==null? Colors.red :Color.fromRGBO(0, 191, 95, 1)),
+                                                ),
+                                              ),
+                                              SizedBox(width: 18),
+                                              Flexible(
+                                                child: Text(
+                                                  'Ubicación',
+                                                  style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                ),
+                                              ),                                                           
+                                            ],
+                                          ),
+                                  ),
+                                ),
                                 SizedBox(height: 20),
                                       Padding(
                                         padding: const EdgeInsets.only(right: 5, left: 10, bottom: 4),
@@ -2107,6 +2184,44 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                                 ),
                                               )                   
                                     ],
+                                  ),
+                                ),
+
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 10, left: 6, top: 10),
+                                  child: InkWell(
+                                  onTap: () {
+                                    if (abc.data!.trips![2].cancelados![index].latitude==null) {
+                                      WarningSuccessDialog().show(
+                                        context,
+                                        title: "Este agente no cuenta con ubicación",
+                                        tipo: 1,
+                                        onOkay: () {},
+                                      ); 
+                                    }else{
+                                      launchSalidasMaps(abc.data!.trips![2].cancelados![index].latitude,abc.data!.trips![2].cancelados![index].longitude);                                          
+                                    }
+                                    //print('Dirección we');
+                                  },
+                                  child:  Row(
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.only(bottom: 10),
+                                                child: Container(
+                                                  width: 15,
+                                                  height: 15,
+                                                  child: Icon(Icons.location_on_outlined, color:abc.data!.trips![2].cancelados![index].latitude==null? Colors.red :Color.fromRGBO(0, 191, 95, 1)),
+                                                ),
+                                              ),
+                                              SizedBox(width: 18),
+                                              Flexible(
+                                                child: Text(
+                                                  'Ubicación',
+                                                  style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 15),
+                                                ),
+                                              ),                                                           
+                                            ],
+                                          ),
                                   ),
                                 ),
 

@@ -394,7 +394,7 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                                   crossAxisCount: 2,
                                   shrinkWrap: true,
                                   physics: NeverScrollableScrollPhysics(),
-                                children: List.generate(plantillaDriver.length, (index) {
+                                children: List.generate(plantillaDriver.length-2, (index) {
                                   return ItemDriverCard(
                                     viajeSolido: false,
                                       plantillaDriver: plantillaDriver[index],
@@ -469,9 +469,11 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                                                   },
                                                 ),
                                               );
-                                            }else if (plantillaDriver[index].id == 5) {
+                                            }
+                                            else if (plantillaDriver[index].id == 5) {
                                               _noDisponible(context);
-                                            }else if (plantillaDriver[index].id == 6) {
+                                            }
+                                            else if (plantillaDriver[index].id == 6) {
                                               Navigator.push(
                                                 context,
                                                 PageRouteBuilder(
