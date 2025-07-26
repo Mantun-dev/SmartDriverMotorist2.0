@@ -236,14 +236,24 @@ class PreferenciasUsuario {
     _prefs.setString('destinationIdAgent', value.toString());
   }
 
+  dynamic get driverCompanyId {
+    return _prefs.getString('driverCompanyId') ?? '';
+  }
+
+  set driverCompanyId( dynamic value ) {
+    _prefs.setString('driverCompanyId', value.toString());
+  }
+
   removeIdCompanyAndVehicle(){
     _prefs.remove('destinationPrueba');
     _prefs.remove('destinationIdAgent');
     _prefs.remove('vehiculoSolid');
     _prefs.remove('vehiculo');
     _prefs.remove('companyPrueba');
+    _prefs.remove('driverCompanyId');
   }
   remove(){
+    _prefs.remove('driverCompanyId');
     _prefs.remove('nombreUsuario');
     _prefs.remove('passwordUser');
   }

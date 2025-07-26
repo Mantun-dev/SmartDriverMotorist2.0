@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Welcome/welcome_screen.dart';
 import 'package:flutter_auth/constants.dart';
+import 'package:liquid_progress_indicator_v2/liquid_progress_indicator.dart';
 import 'package:video_player/video_player.dart';
-import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
+// import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({Key? key}) : super(key: key);

@@ -125,64 +125,87 @@ class _ProcessTripState extends State<ProcessTrip> {
                                     padding: const EdgeInsets.only(left: 15),
                                     child: Column(
                                       children: [
-                                        if (abc.data![index].companyId ==
-                                            1) ...{
-                                          Container(
-                                            height: 50,
-                                            child: SvgPicture.asset(
-                                                'assets/images/Grupo11.svg'),
-                                          ),
-                                        } else
-                                        if (abc.data![index].companyId ==
-                                                2 ||
-                                            abc.data![index].companyId ==
-                                                3) ...{
-                                          Container(
-                                            height: 50,
-                                            child: Image.asset(
-                                                'assets/images/startek.webp'),
-                                          ),
-                                        } else
-                                        if (abc.data![index].companyId ==
-                                            6) ...{
-                                          Container(
-                                            height: 50,
-                                            child: Image.asset(
-                                                'assets/images/Alorica_Logo.png'),
-                                          ),
-                                        } else
-                                        if (abc.data![index].companyId ==
-                                            7) ...{
-                                          Container(
-                                            height: 50,
-                                            child: Image.asset(
-                                                'assets/images/zero.png'),
-                                          ),
-                                        } else
-                                        if (abc.data![index].companyId ==
-                                            8) ...{
-                                          Container(
-                                            height: 50,
-                                            child: Image.asset(
-                                                'assets/images/emerge-bpo-largex5-logo.png'),
-                                          ),
-                                        } else
-                                        if (abc.data![index].companyId ==
-                                            9) ...{
-                                          Container(
-                                            height: 50,
-                                            child: Image.asset(
-                                                'assets/images/ibex-logo.jpg'),
-                                          ),
-                                        } else
-                                        if (abc.data![index].companyId ==
-                                            10) ...{
-                                          Container(
-                                            height: 50,
-                                            child: Image.asset(
-                                                'assets/images/itel.jpg'),
-                                          ),
-                                        }
+                                         if (abc.data![index].companyId == 1) ...{
+                                            Container(
+                                              height: 50,
+                                              child: SvgPicture.asset("assets/images/Grupo11.svg"),
+                                            ),
+                                          },
+                                          if (abc.data![index].companyId == 2 || abc.data![index].companyId == 3) ...{
+                                            Container(
+                                              height: 50,
+                                              child: Image.asset(
+                                                  'assets/images/startek.webp'
+                                              ),
+                                            ),
+                                          },
+                                          if (abc.data![index].companyId == 6 || abc.data![index].companyId == 13) ...{
+                                            Container(
+                                              height: 50,
+                                              child: Image.asset(
+                                                  'assets/images/Alorica_Logo.png'),
+                                            ),
+                                          },
+                                          if (abc.data![index].companyId == 7) ...{
+                                            Container(
+                                              height: 50,
+                                              child: Image.asset(
+                                                  'assets/images/zero.png'),
+                                            ),
+                                          },
+                                          if (abc.data![index].companyId == 8) ...{
+                                            Container(
+                                              height: 50,
+                                              child: Image.asset(
+                                                  'assets/images/emerge-bpo-largex5-logo.png'),
+                                            ),
+                                          },
+                                          if (abc.data![index].companyId == 9) ...{
+                                            Container(
+                                              height: 50,
+                                              child: Image.asset(
+                                                  'assets/images/ibex-logo.jpg'),
+                                            ),
+                                          },
+                                          if (abc.data![index].companyId == 10) ...{
+                                            Container(
+                                              height: 50,
+                                              child: Image.asset(
+                                                  'assets/images/itel.jpg'),
+                                            ),
+                                          },
+
+                                          if (abc.data![index].companyId == 11) ...{
+                                            Container(
+                                              height: 50,
+                                              child: Image.asset(
+                                                  'assets/images/results.png'),
+                                            ),
+                                          },
+
+                                          if (abc.data![index].companyId == 15) ...{
+                                            Container(
+                                              height: 50,
+                                              child: Image.asset(
+                                                  'assets/images/relaylogo.png'),
+                                            ),
+                                          },
+
+                                          if (abc.data![index].companyId == 16) ...{
+                                            Container(
+                                              height: 50,
+                                              child: Image.asset(
+                                                  'assets/images/TTEC.png'),
+                                            ),
+                                          },
+
+                                          if (abc.data![index].companyId == 18) ...{
+                                            Container(
+                                              height: 50,
+                                              child: Image.asset(
+                                                  'assets/images/GGA.webp'),
+                                            ),
+                                          }
                                         else...{
                                           Container(
                                             height: 50,

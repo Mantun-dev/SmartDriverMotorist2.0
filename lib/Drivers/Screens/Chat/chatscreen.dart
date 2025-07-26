@@ -1,15 +1,26 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:app_settings/app_settings.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:back_button_interceptor/back_button_interceptor.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Chat/chatViews.dart';
 
 import 'package:flutter_auth/Drivers/Screens/Chat/chatapis.dart';
+import 'package:flutter_auth/Drivers/Screens/calls/WebRTCCallPage.dart';
+import 'package:flutter_auth/helpers/loggers.dart';
+import 'package:flutter_auth/providers/calls.dart';
+import 'package:flutter_auth/providers/device_info.dart';
+import 'package:flutter_auth/providers/mqtt_class.dart';
+import 'package:flutter_auth/providers/providerWebRtc.dart';
+import 'package:flutter_auth/providers/provider_mqtt.dart';
+import 'package:flutter_auth/providers/webrtc_service.dart';
+import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart';
 
 //import 'package:flutter_auth/constants.dart';
-import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+// import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -22,6 +33,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../components/warning_dialog.dart';
 import '../../../helpers/base_client.dart';
 import '../../../helpers/res_apis.dart';
+import '../../../providers/JitsiCallPage.dart';
 import '../../../providers/chat.dart';
 import '../../SharePreferences/preferencias_usuario.dart';
 import '../../models/message_chat.dart';
@@ -72,35 +84,24 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   final StreamSocket streamSocket = StreamSocket(host: 'wschat.smtdriver.com');
   bool activateMic = false;
   late AudioPlayer _audioPlayer;
-  late Record _audioRecord;
+  // late Record _audioRecord;
   List<String> _audioList = [];
   String filePathP = '';
+  bool _isCalling = false;
 
-  _sendMessage() {    
+  String? msg;
+  dynamic allow;
+  
+  // MQTTManager? mqttManager;
+
+  _sendMessage() {  
+    if (streamSocket.socket!.disconnected) {
+      print('Socket desconectado, intentando reconectar...');
+      streamSocket.socket!.connect();
+    }  
     ChatApis().sendMessage(_messageInputController.text.trim(), sala.toString(),
         nameAgent!, widget.id!, nameDriver!, idDb!, widget.idAgent!);
-    // DateTime now = DateTime.now();
-    // String formattedHour = DateFormat('hh:mm a').format(now);
-    // var formatter = new DateFormat('dd');
-    // String dia = formatter.format(now);
-    // var formatter2 = new DateFormat('MM');
-    // String mes = formatter2.format(now);
-    // var formatter3 = new DateFormat('yy');
-    // String anio = formatter3.format(now);
-    // Provider.of<ChatProvider>(context, listen: false).addNewMessage(
-    //   MessageDriver.fromJson({
-    //     'mensaje': _messageInputController.text.trim(),
-    //     'sala': sala.toString(),
-    //     'user': widget.nombre,
-    //     'id': widget.id,
-    //     "hora": formattedHour,
-    //     "dia": dia,
-    //     "mes": mes,
-    //     "año": anio,
-    //     "leido": false
-    //   }),
-    // );
-    //ChatApis().rendV(modid, sala);
+
     _messageInputController.clear();
   }
 
@@ -136,13 +137,20 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     _audioPlayer = AudioPlayer();
-    _audioRecord = Record();
+    // _audioRecord = Record();
     recargar=0;
     WidgetsBinding.instance.addObserver(this);
     ChatApis().dataLogin(widget.id!, widget.rol!, widget.nombre!, widget.idV!,
         widget.nombreAgent!, widget.idAgent!);
 
-       
+    streamSocket.socket!.onDisconnect((_) {
+      print('Desconectado del chat. Intentando reconectar...');
+    });
+
+    streamSocket.socket!.onReconnect((_) {
+      print('Reconectado al chat.');
+      _reconnectEvents();
+    });
     datas();
     streamSocket.socket!.on("act_target", (data) {
       //print("**********************************************actTarget");
@@ -159,6 +167,47 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     streamSocket.socket!.emit("updateT", data);
   }
 
+  Future<Map<String, dynamic>> validateTripCall(receiverId, receiverType) async {
+  try {
+
+    var responseString = await BaseClient().get('https://admin.smtdriver.com/validateCallAvailability/$receiverId/$receiverType',{"Content-Type": "application/json"});
+    final data = jsonDecode(responseString);
+
+    // Asumiendo que la API devuelve [{allow: 1, msg: "..."}]
+    // Tu log muestra `[{allow: 1, msg: Se puede realizar la llamada}]`
+    // Esto sugiere que `data` es una lista.
+    if (data is List && data.isNotEmpty) {
+      return {'allow': data[0]['allow'], 'msg': data[0]['msg']};
+    } else {
+      // Manejar caso donde la respuesta no es la esperada
+      return {'allow': 0, 'msg': 'Respuesta inesperada del servidor.'};
+    }
+  } catch (e) {
+    print("Error en validateTripCall: $e");
+    return {'allow': 0, 'msg': 'Error de red o servidor al validar: $e'};
+  }
+}
+
+
+  void _reconnectEvents() {
+    streamSocket.socket!.on('cargarM', (listM) {
+      if (mounted) {
+        Provider.of<ChatProvider>(context, listen: false).mensaje2.clear();
+        listM.forEach((value) {
+          Provider.of<ChatProvider>(context, listen: false)
+              .addNewMessage(MessageDriver.fromJson(value));
+        });
+      }
+    });
+
+    streamSocket.socket!.on('enviar-mensaje2', (data) {
+      if (mounted) {
+        Provider.of<ChatProvider>(context, listen: false)
+            .addNewMessage(MessageDriver.fromJson(data));
+        ChatApis().readMessage( widget.idV!, widget.idAgent!, widget.id!);
+      }
+    });
+  }
   void getMessages(String idE, String idR, String sala) async {
 
     Provider.of<ChatProvider>(context, listen: false).mensaje2.clear();
@@ -259,7 +308,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   void dispose() {
     super.dispose();
     _audioPlayer.dispose();
-    _audioRecord.dispose();
+    // _audioRecord.dispose();
     _messageInputController.dispose();
 
     //creación del dispose para removerlo después del evento
@@ -413,6 +462,119 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                               ),
                             ) 
                           : Text(''),
+                          SizedBox(width: 5),
+                            InkWell(
+                              onTap: _isCalling ? null : () async {
+                              setState(() {
+                                _isCalling = true; // Mostrar indicador de carga
+                              });
+
+                              try {
+
+                                  String? deviceId = await getDeviceId();
+                                  if (deviceId == null) {
+                                    throw Exception("No se pudo obtener el ID del dispositivo.");
+                                  }
+
+                                  // Ejecutar las llamadas API en paralelo
+                                  final results = await Future.wait([
+                                    ChatApis().registerCallerAndSendNotification(sala.toString(),widget.id! ,deviceId , "driver", widget.idAgent!, "agent", widget.id!, "driver", "agente", nameDriver!
+                                    ),
+                                    ChatApis().getDeviceTargetId('agente', widget.idAgent!),
+                                  ]);
+
+                                  var roomId = results[0];
+                                  // var deviceIdTarget = results[1];
+
+                                  if (roomId == null) {
+                                    throw Exception("Error: No se obtuvo roomId o deviceIdTarget de la API.");
+                                  }
+                                  // print(roomId);
+                                  // print(deviceIdTarget);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => JitsiCallPage(roomId: roomId.toString(), name: nameDriver!),
+                                    ),
+                                  );
+                                // AWAIT la llamada a validateTripCall y OBTEN el resultado directamente
+                                // final validationResult = await validateTripCall(widget.idAgent!, 'agent');
+                                // final int currentAllow = validationResult['allow'] ?? 0; // Default to 0 if null
+                                // final String currentMsg = validationResult['msg'] ?? 'Mensaje no disponible.';
+
+                                // if (currentAllow == 1) {
+                                //   String? deviceId = await getDeviceId();
+                                //   if (deviceId == null) {
+                                //     throw Exception("No se pudo obtener el ID del dispositivo.");
+                                //   }
+
+                                //   // Ejecutar las llamadas API en paralelo
+                                //   final results = await Future.wait([
+                                //     ChatApis().registerCallerAndSendNotification(sala.toString(),widget.id! ,deviceId , "driver", widget.idAgent!, "agent", widget.id!, "driver", "agente", nameDriver!
+                                //     ),
+                                //     ChatApis().getDeviceTargetId('agente', widget.idAgent!),
+                                //   ]);
+
+                                //   var roomId = results[0];
+                                //   var deviceIdTarget = results[1];
+
+                                //   if (roomId == null || deviceIdTarget == null) {
+                                //     throw Exception("Error: No se obtuvo roomId o deviceIdTarget de la API.");
+                                //   }
+                                //   print(roomId);
+                                //   print(deviceIdTarget);
+                                //   Navigator.push(
+                                //     context,
+                                //     MaterialPageRoute(
+                                //       builder: (_) => JitsiCallPage(roomId: roomId.toString(), name: nameDriver!),
+                                //     ),
+                                //   );
+                                //   // Navigator.push(
+                                //   //   context,
+                                //   //   MaterialPageRoute(
+                                //   //     builder: (_) => WebRTCCallPage(
+                                //   //       selfId: deviceId,
+                                //   //       targetId: '$deviceIdTarget',
+                                //   //       isCaller: true,
+                                //   //       roomId: '$roomId',
+                                //   //       tripId: sala,
+                                //   //     ),
+                                //   //   ),
+                                //   // );
+                                // } else {
+                                //   // Si allow no es 1, mostrar alerta con el mensaje obtenido
+                                //   QuickAlert.show(
+                                //     context: context,
+                                //     type: QuickAlertType.warning,
+                                //     text: currentMsg, // Usar el mensaje retornado
+                                //   );
+                                // }
+                              } catch (e) {
+                                print("Error durante el proceso de llamada: $e");
+                                QuickAlert.show(
+                                  context: context,
+                                  type: QuickAlertType.error,
+                                  text: "Error al iniciar la llamada: $e",
+                                );
+                              } finally {
+                                setState(() {
+                                  _isCalling = false; // Ocultar indicador de carga
+                                });
+                              }
+                            },
+                            child: Icon(Icons.call,
+                              color: Theme.of(context).textTheme.titleMedium!.color,
+                            ),
+                          ),
+            
+          // Overlay de carga
+                        if (_isCalling)
+                          Container(
+                            color: Colors.black.withOpacity(0.5),
+                            child: Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          ),
                         ],
                       )
                     ),
@@ -611,6 +773,63 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                             padding: const EdgeInsets.all(12.0),
                             child: Text(
                               "Estoy en camino",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                          SizedBox(width: 5),
+                          NeumorphicButton(
+                            margin: EdgeInsets.only(top: 0),
+                            onPressed: () {
+                                _messageInputController.text =
+                                    "Llego en 5 minutos";
+                                if (_messageInputController.text
+                                    .trim()
+                                    .isNotEmpty) {
+                                  _sendMessage();
+                                }
+                              },
+                            style: NeumorphicStyle(
+                              color: Color.fromRGBO(40, 93, 169, 1),
+                              shape: NeumorphicShape.flat,
+                              boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(8)),
+                              depth: 0, // Quita la sombra estableciendo la profundidad en 0
+                              border: NeumorphicBorder( // Agrega un borde
+                                color: Theme.of(context).disabledColor, // Color del borde
+                                width: 1.0, // Ancho del borde
+                              ),
+                            ),
+                            padding: const EdgeInsets.all(12.0),
+                            child: Text(
+                              "Llego en 5 minutos",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+
+                          SizedBox(width: 5),
+                          NeumorphicButton(
+                            margin: EdgeInsets.only(top: 0),
+                            onPressed: () {
+                                _messageInputController.text =
+                                    "Estoy en tráfico";
+                                if (_messageInputController.text
+                                    .trim()
+                                    .isNotEmpty) {
+                                  _sendMessage();
+                                }
+                              },
+                            style: NeumorphicStyle(
+                              color: Color.fromRGBO(40, 93, 169, 1),
+                              shape: NeumorphicShape.flat,
+                              boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(8)),
+                              depth: 0, // Quita la sombra estableciendo la profundidad en 0
+                              border: NeumorphicBorder( // Agrega un borde
+                                color: Theme.of(context).disabledColor, // Color del borde
+                                width: 1.0, // Ancho del borde
+                              ),
+                            ),
+                            padding: const EdgeInsets.all(12.0),
+                            child: Text(
+                              "Estoy en tráfico",
                               style: TextStyle(color: Colors.white),
                             ),
                           ),
@@ -842,7 +1061,7 @@ Future<bool> checkAudioPermission() async {
     try {
       final cacheDir = await getTemporaryDirectory();
       String filePath = '${cacheDir.path}/${sala}_recording${_audioList.length + 1}.m4a';
-      await _audioRecord.start(path: filePath, encoder: AudioEncoder.aacLc);
+      // await _audioRecord.start(path: filePath, encoder: AudioEncoder.aacLc);
 
       setState(() {
         filePathP = filePath;
@@ -863,7 +1082,7 @@ Future<bool> checkAudioPermission() async {
 
   void stopRecording() async {
     try {
-      await _audioRecord.stop();
+      // await _audioRecord.stop();
 
       String recordedFilePath = filePathP;
 

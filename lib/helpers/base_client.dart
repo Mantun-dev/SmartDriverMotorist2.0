@@ -5,7 +5,7 @@ import 'package:flutter_auth/helpers/exception_handlers.dart';
 import 'package:http/http.dart' as http;
 
 class BaseClient {
-  static const int timeOutDuration = 35;
+  static const int timeOutDuration = 6;
   bool internet = true;
   //GET
   Future<dynamic> get(String url, dynamic header) async {
@@ -30,9 +30,7 @@ class BaseClient {
     var uri = Uri.parse(url);
     var payload = jsonEncode(payloadObj);
     try {
-      var response = await http
-          .post(uri, body: payload, headers: header)
-          .timeout(const Duration(seconds: timeOutDuration));
+      var response = await http.post(uri, body: payload, headers: header).timeout(const Duration(seconds: timeOutDuration));
       internet = true;
 
       return _processResponse(response);

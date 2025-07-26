@@ -12,8 +12,9 @@ class StreamSocket {
   StreamSocket({this.host}) {
     socket = IO.io(
         'https://$host',
-        IO.OptionBuilder().setTransports(['websocket'])
-            //.enableForceNewConnection() // for Flutter or Dart VM
+        IO.OptionBuilder().setTransports(['websocket'])            
+            .setReconnectionAttempts(5)  // Intentará reconectar hasta 5 veces
+            .setReconnectionDelay(2000)  // Esperará 2 segundos antes de intentar reconectar  
             .setExtraHeaders({'foo': 'bar'}) // optional
             .build());
 

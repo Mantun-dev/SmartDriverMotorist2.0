@@ -58,6 +58,7 @@ class Driver {
         this.friday,
         this.saturday,
         this.sunday,
+        this.licenseExpirationDate
     });
 
     int? driverId;
@@ -76,6 +77,7 @@ class Driver {
     dynamic friday;
     dynamic saturday;
     dynamic sunday;
+    dynamic licenseExpirationDate;
 
     factory Driver.fromJson(Map<String, dynamic> json) => Driver(
         driverId: json["driverId"],
@@ -94,6 +96,7 @@ class Driver {
         friday: json["friday"],
         saturday: json["saturday"],
         sunday: json["sunday"],
+        licenseExpirationDate: json["licenseExpirationDate"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -113,6 +116,7 @@ class Driver {
         "friday": friday,
         "saturday": saturday,
         "sunday": sunday,
+        "licenseExpirationDate": licenseExpirationDate
     };
 }
 

@@ -80,9 +80,9 @@ class _BodyState extends State<Body> {
         prefs.nombreUsuarioFull = si.driverFullname!;
         prefs.phone = si.driverPhone!;
         prefs.nombreUsuario = si.driverUser!;
+        prefs.driverCompanyId = si.driverCompanyId == null?"": si.driverCompanyId!;
         final claro = DataToken.fromJson(json.decode(responseToken.body));
-        prefs.tokenIdMobile = claro.data![0].token!;
-        
+        prefs.tokenIdMobile = claro.data![0].token!;        
         LoadingIndicatorDialog().dismiss();
         
         if(mounted){

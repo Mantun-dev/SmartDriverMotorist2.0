@@ -10,7 +10,8 @@ import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter_auth/Drivers/models/registerTripAsCompleted.dart';
 import 'package:flutter_auth/main.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:flutter_barcode_scanner_plus/flutter_barcode_scanner_plus.dart';
+// import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 //import 'package:quickalert/quickalert.dart';
@@ -19,7 +20,7 @@ import '../../../../components/AppBarSuperior.dart';
 import '../../../../components/ConfirmationDialog.dart';
 import '../../../../components/backgroundB.dart';
 import '../../../../components/warning_dialog.dart';
-import '../../../../constants.dart';
+//import '../../../../constants.dart';
 import '../../../components/progress_indicator.dart';
 import '../../../models/agentsInTravelModel.dart';
 import 'package:http/http.dart' as http;
@@ -314,7 +315,8 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     item = fetchAgentsInTravel2();
     driverData = fetchRefres();
-    getInfoViaje();
+    getInfoViaje();    
+    print(prefs.driverCompanyId);
     getNumberToElement();
     Future.delayed(const Duration(seconds: 1), () {
       setState(() {        
@@ -337,6 +339,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
     
     http.Response responses = await http.get(Uri.parse('https://apichat.smtdriver.com/api/mensajes/$tripId'));
     var getData = json.decode(responses.body);
+    print(getData);
     idMotorista = getData['Motorista']['Id'];
     nombreMotorista = getData['Motorista']['Nombre'];
 
@@ -585,114 +588,164 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
               return Column(
                 crossAxisAlignment:CrossAxisAlignment.start,
                 children: [
-
-                  if(data?.driverType=='Motorista')
-                    Center(child: Text('Escanee el código QR del vehículo', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 12),)),
-                  if(data?.driverType=='Motorista')
-                    SizedBox(height: 6,),
+                    if(prefs.driverCompanyId == "")...{
+                      if(data?.driverType=='Motorista')
+                        Center(child: Text('Escanee el código QR del vehículo', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 12),)),
+                      if(data?.driverType=='Motorista')
+                        SizedBox(height: 6,),
+                    },
 
                   Row(
                     children: [
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).cardTheme.color,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: Theme.of(context).dividerColor,
-                              width: 1
-                            ) // Radio de la esquina
-                          ),
-                      
-                          child: Padding(
-                            padding: const EdgeInsets.only(left:20.0, right: 10),
-                            child: Row(
-                              children: [
-                                SvgPicture.asset(  
-                                    "assets/icons/vehiculo.svg",
-                                    color: Theme.of(context).primaryIconTheme.color,
-                                    width: 15,
-                                    height: 15,
-                                  ),
-                                  SizedBox(width: 6),
-                                Flexible(
-                                  child: TextField(
-                                    enabled: data?.driverType=='Motorista'?false:true,
-                                    style: TextStyle(
-                                      color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal
+
+                      if(prefs.driverCompanyId == "")...{
+                        Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).cardTheme.color,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: Theme.of(context).dividerColor,
+                                width: 1
+                              ) // Radio de la esquina
+                            ),                      
+                            child: Padding(
+                              padding: const EdgeInsets.only(left:20.0, right: 10),
+                              child: Row(
+                                children: [
+                                  SvgPicture.asset(  
+                                      "assets/icons/vehiculo.svg",
+                                      color: Theme.of(context).primaryIconTheme.color,
+                                      width: 15,
+                                      height: 15,
                                     ),
-                                    controller: vehicleController,
-                                    decoration: InputDecoration(
-                                      border: InputBorder.none,
-                                      hintText: 'Vehículo',
-                                      hintStyle: TextStyle(
+                                    SizedBox(width: 6),
+                                  Flexible(
+                                    child: TextField(
+                                      enabled: data?.driverType=='Motorista'?false:true,
+                                      style: TextStyle(
                                         color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal
                                       ),
+                                      controller: vehicleController,
+                                      decoration: InputDecoration(
+                                        border: InputBorder.none,
+                                        hintText: 'Vehículo',
+                                        hintStyle: TextStyle(
+                                          color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal
+                                        ),
+                                      ),
+                                      onChanged: (value) => tripVehicle,
                                     ),
-                                    onChanged: (value) => tripVehicle,
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                              
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.transparent,
-                          borderRadius: BorderRadius.circular(10.0),
-                          border: Border.all(
-                            color: Theme.of(context).primaryColorDark,
-                            width: 1
-                          )
-                        ),
-                        child: IconButton(
-                          icon: SvgPicture.asset(  
-                                    "assets/icons/QR.svg",
-                                    color: Theme.of(context).primaryColorDark,
+                      }else...{
+                        Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).cardTheme.color,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: Theme.of(context).dividerColor,
+                                width: 1
+                              ) // Radio de la esquina
+                            ),                      
+                            child: Padding(
+                              padding: const EdgeInsets.only(left:20.0, right: 10),
+                              child: Row(
+                                children: [
+                                  SvgPicture.asset(  
+                                      "assets/icons/vehiculo.svg",
+                                      color: Theme.of(context).primaryIconTheme.color,
+                                      width: 15,
+                                      height: 15,
+                                    ),
+                                    SizedBox(width: 6),
+                                  Flexible(
+                                    child: TextField(
+                                      //enabled: data?.driverType=='Motorista'?false:true,
+                                      style: TextStyle(
+                                        color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal
+                                      ),
+                                      controller: vehicleController,
+                                      decoration: InputDecoration(
+                                        border: InputBorder.none,
+                                        hintText: 'Vehículo',
+                                        hintStyle: TextStyle(
+                                          color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal
+                                        ),
+                                      ),
+                                      onChanged: (value) => tripVehicle,
+                                    ),
                                   ),
-                          onPressed: vehicleL==false?null:() async{
-                            setRecargar(-1);
-                            String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);
-                  
-                            if (codigoQR == "-1") {
-                              setRecargar(0);
-                              return;
-                            } else {
-                              LoadingIndicatorDialog().show(context);
-                              http.Response responseSala = await http.get(Uri.parse('https://app.mantungps.com/3rd/vehicles/$codigoQR'),headers: {"Content-Type": "application/json", "x-api-key": 'a10xhq0p21h3fb9y86hh1oxp66c03f'});
-                              final resp = json.decode(responseSala.body);
-                              LoadingIndicatorDialog().dismiss();
-                              if(resp['type']=='success'){
-                                print(responseSala.body);
-                                print('###########################');
-                                if(mounted){
-                                  showDialog(
-                                          context: context,
-                                          builder: (context) => vehiculoE(resp, context),);
-                                }
-                              }else{
-                                if(mounted){
-                                  WarningSuccessDialog().show(
-                                    navigatorKey.currentContext!,
-                                    title: "Vehículo no valido",
-                                    tipo: 1,
-                                    onOkay: () {},
-                                  );
-                                }
-                              }
-                              setRecargar(0);
-                            }
-                          }
+                                ],
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                      },
+
+                      if(prefs.driverCompanyId == "")...{
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(10.0),
+                            border: Border.all(
+                              color: Theme.of(context).primaryColorDark,
+                              width: 1
+                            )
+                          ),
+                          child: IconButton(
+                            icon: SvgPicture.asset(  
+                                      "assets/icons/QR.svg",
+                                      width: 15,
+                                      height: 15,
+                                      color: Theme.of(context).primaryColorDark,
+                                    ),
+                            onPressed: vehicleL==false?null:() async{
+                              setRecargar(-1);
+                              String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);
+                    
+                              if (codigoQR == "-1") {
+                                setRecargar(0);
+                                return;
+                              } else {
+                                LoadingIndicatorDialog().show(context);
+                                http.Response responseSala = await http.get(Uri.parse('https://app.mantungps.com/3rd/vehicles/$codigoQR'),headers: {"Content-Type": "application/json", "x-api-key": 'a10xhq0p21h3fb9y86hh1oxp66c03f'});
+                                final resp = json.decode(responseSala.body);
+                                LoadingIndicatorDialog().dismiss();
+                                if(resp['type']=='success'){
+                                  print(responseSala.body);
+                                  print('###########################');
+                                  if(mounted){
+                                    showDialog(
+                                            context: context,
+                                            builder: (context) => vehiculoE(resp, context),);
+                                  }
+                                }else{
+                                  if(mounted){
+                                    WarningSuccessDialog().show(
+                                      navigatorKey.currentContext!,
+                                      title: "Vehículo no valido",
+                                      tipo: 1,
+                                      onOkay: () {},
+                                    );
+                                  }
+                                }
+                                setRecargar(0);
+                              }
+                            }
+                          ),
+                        ),
+                      },  
 
 
-                        if(data?.driverType!='Motorista')
-                        SizedBox(width: 10),
-
-                        if(data?.driverType!='Motorista')
+                        if (data?.driverType != 'Motorista' || prefs.driverCompanyId != "")
+                        SizedBox(width: 10,),
+                        if (data?.driverType != 'Motorista' || prefs.driverCompanyId != "")
                         Container(
                         decoration: BoxDecoration(
                           color: Colors.transparent,
@@ -706,6 +759,8 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                           icon: SvgPicture.asset(  
                                     "assets/icons/Guardar.svg",
                                     color: Theme.of(context).primaryColorDark,
+                                    width: 15,
+                                      height: 15,
                                   ),
                           onPressed: vehicleL==false?null:() async{
                             LoadingIndicatorDialog().show(context);
@@ -715,7 +770,8 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                               "driverId": data2.driverId.toString(),
                               "tripId": prefs.tripId.toString(),
                               "vehicleId": "",
-                              "tripVehicle": vehicleController.text
+                              "tripVehicle": vehicleController.text,
+                              "vehicleGroup": ""
                             };
                             http.Response responsed = await http.post(Uri.parse('https://driver.smtdriver.com/apis/editTripVehicle'), body: data);
                           
@@ -820,7 +876,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
       title: Center(
           child: Text(
         'Vehículo Encontrado',
-        style: TextStyle(color: GradiantV_2, fontSize: 20.0),
+        style: Theme.of(context).textTheme.labelMedium!.copyWith(fontSize: 20),
       )),
       content: Container(
         height: 130,
@@ -847,7 +903,13 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
             Row(mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(width: 100,
-              child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: backgroundColor,),backgroundColor: Gradiant2,),
+              child: ElevatedButton(
+                style: ButtonStyle(
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0),side: BorderSide(color: Color.fromRGBO(40, 93, 169, 1)),),
+                    ),
+                    backgroundColor: MaterialStateProperty.all(Color.fromRGBO(40, 93, 169, 1)),
+                  ),
                 onPressed: () async{
                   LoadingIndicatorDialog().show(context);
                   http.Response responses = await http.get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
@@ -856,8 +918,11 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                     "driverId": data2.driverId.toString(),
                     "tripId": prefs.tripId.toString(),
                     "vehicleId": resp['vehicle']['_id'],
-                    "tripVehicle": "${resp['vehicle']['name']} [${resp['vehicle']['registrationNumber']}]"
+                    "tripVehicle": "${resp['vehicle']['name']} [${resp['vehicle']['registrationNumber']}]",
+                    "vehicleGroup": "${resp['vehicle']['groups'].isEmpty?'':resp['vehicle']['groups'][0]['groupId']['name']}",
+                    "vehicleOwnerId": "${resp['vehicle']['driverId']==null?-1:resp['vehicle']['driverId']}"
                   };
+
                   http.Response responsed = await http.post(Uri.parse('https://driver.smtdriver.com/apis/editTripVehicle'), body: data);
                   
                   final resp2 = json.decode(responsed.body);
@@ -885,17 +950,19 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                       );
                   }
                 },
-                child: Text('Agregar',style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 15
-                                            ),),
-                                                                    ),
-                                                                  ),
-                                                                  SizedBox(width: 10.0),
-                                                                  Container(width: 100,
-                                                                    child: ElevatedButton(style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0),),textStyle: TextStyle(color: Colors.white,),backgroundColor: Colors.red,),
-                                                                      onPressed: () => {
+                child: Text('Agregar',style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 15),),
+                  ),
+                ),
+                SizedBox(width: 10.0),
+                  Container(width: 100,
+                    child: ElevatedButton(
+                      style: ButtonStyle(
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0),side: BorderSide(color: Colors.black),),
+                    ),
+                    backgroundColor: MaterialStateProperty.all(Colors.transparent),
+                  ),
+                    onPressed: () => {
                                                                         Navigator.pop(context),
                                                                       },
                                                                       child: Text('Cancelar',
@@ -1009,7 +1076,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                 ),
 
                                 Padding(
-                                  padding: const EdgeInsets.only(right: 10, left: 6, top: 10),
+                                  padding: const EdgeInsets.only(right: 10, left: 6, top: 14),
                                   child: InkWell(
                                   onTap: () {
                                     if (abc.data!.trips![0].agentes![index].latitude==null) {
@@ -1629,7 +1696,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                   ),
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.only(right: 10, left: 6, top: 10),
+                                  padding: const EdgeInsets.only(right: 10, left: 6, top: 14),
                                   child: InkWell(
                                   onTap: () {
                                     if (abc.data!.trips![1].noConfirmados![index].latitude==null) {

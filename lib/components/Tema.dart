@@ -79,7 +79,11 @@ final ThemeData appThemeDataLight = ThemeData(
       fontFamily: familyFont,
       fontWeight: FontWeight.w500
     ),
-
+    labelLarge: TextStyle(
+      color: Colors.white,
+      fontFamily: familyFont,
+      fontWeight: FontWeight.w500
+    ),
   ),
 );
 
@@ -162,7 +166,11 @@ final ThemeData appThemeDataDark = ThemeData(
       fontFamily: familyFont,
       fontWeight: FontWeight.w500
     ),
-
+    labelLarge: TextStyle(
+      color: Colors.white,
+      fontFamily: familyFont,
+      fontWeight: FontWeight.w500
+    ),
   ),
   
 );

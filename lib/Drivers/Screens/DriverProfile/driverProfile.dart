@@ -9,6 +9,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 // import 'package:flutter_rounded_progress_bar/flutter_rounded_progress_bar.dart';
 // import 'package:flutter_rounded_progress_bar/rounded_progress_bar_style.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
 
 import '../../../components/AppBarPosterior.dart';
 import '../../../components/AppBarSuperior.dart';
@@ -74,7 +75,12 @@ class _DataTableExample extends State<DriverProfilePage> {
           future: item,
           builder: (BuildContext context, abc) {
             if (abc.connectionState == ConnectionState.done) {
-              
+              DateTime myDatetime;
+              dynamic format = ""; 
+              if (abc.data!.driver!.licenseExpirationDate !=null) {
+                myDatetime = DateTime.parse(abc.data!.driver!.licenseExpirationDate.toString()).toLocal();                
+                format = DateFormat("yyyy-MM-dd").format(myDatetime);
+              }
               return Column(
                 children: [
                   Container(
@@ -208,6 +214,44 @@ class _DataTableExample extends State<DriverProfilePage> {
                                         ),
                                         TextSpan(
                                           text: '${abc.data!.driver!.driverPhone}',
+                                          style: TextStyle(fontWeight: FontWeight.normal),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          Container(
+                            height: 1,
+                            color: Color.fromRGBO(158, 158, 158, 1),
+                          ),
+
+                          SizedBox(height: 20),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 3, right: 5, left: 5),
+                            child: Row(
+                              children: [ 
+                                Container(
+                                  width: 20,
+                                  height: 20,
+                                  child: SvgPicture.asset(
+                                    "assets/icons/ID.svg",
+                                    color: Theme.of(context).primaryIconTheme.color,
+                                  ),
+                                ),
+                                Flexible(
+                                  child: RichText(
+                                    text: TextSpan(
+                                      style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 16),
+                                      children: [
+                                        TextSpan(
+                                          text: '  Expiración de licencia: ',
+                                          style: TextStyle(fontWeight: FontWeight.w500),
+                                        ),                                        
+                                        TextSpan(
+                                          text: '$format',
                                           style: TextStyle(fontWeight: FontWeight.normal),
                                         ),
                                       ],

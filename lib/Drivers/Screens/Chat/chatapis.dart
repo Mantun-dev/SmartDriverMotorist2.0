@@ -39,15 +39,7 @@ class ChatApis {
     print(streamSocket.socket!.connected);
   }
 
-  void sendMessage(
-    String message,
-    String sala,
-    String nombre,
-    String idDriver,
-    String nameDriver,
-    String idDb,
-    String idR,
-  ) async {
+  void sendMessage(String message,String sala,String nombre,String idDriver,String nameDriver,String idDb,String idR,) async {
     DateTime now = DateTime.now();
     String formattedHour = DateFormat('hh:mm a').format(now);
     var formatter = new DateFormat('dd');
@@ -197,6 +189,51 @@ class ChatApis {
       print("Error sending audio: $error");
     }
   }
+
+
+  Future<dynamic> registerCallerAndSendNotification(tripId, callerId,callerIdDevice, callerType, receiverId, receiverType, userId, userType, rol, nameSender)async{
+    Map<String, dynamic> registerUser = {
+      "tripId": tripId,
+      "callerId": callerId,
+      "callerIdDevice": callerIdDevice,
+      "callerType": callerType,
+      "receiverId": receiverId,
+      "receiverType": receiverType
+    };
+
+    Map<String, dynamic> sendNotification = {      
+      "callStatus": "answered",
+      "tripId": tripId,
+      "callerId": callerId,
+      "callerType": callerType,
+      "receiverId": receiverId,
+      "receiverType": receiverType,
+      "userId": userId,
+      "userType": userType,
+      "receptorId": receiverId,
+      "rol": rol,
+      "nameSender": nameSender
+    };
+    var roomIdResponse =  await BaseClient().post('https://admin.smtdriver.com/registerCallerToTrip',registerUser,{"Content-Type": "application/json"},);
+    await BaseClient().post('https://admin.smtdriver.com/sendNotificationToCall',sendNotification,{"Content-Type": "application/json"},);
+    final data = jsonDecode(roomIdResponse);
+    final roomId = data['message'][0]['roomId'];
+    return roomId;
+  }
+
+  Future<dynamic> getDeviceTargetId(rol, receiverId) async{
+    Map<String, dynamic> data = {
+      "receptorId": receiverId,
+      "rol": rol
+    };
+
+    var roomIdResponse = await BaseClient().post('https://admin.smtdriver.com/sendDeviceIdToCall',data,{"Content-Type": "application/json"},);    
+    final dataR = jsonDecode(roomIdResponse);
+    final deviceId = dataR['device']['deviceId'];
+
+    return deviceId;
+  }
+
 
   void getDataUsuarios(dynamic getData) {
     getDataUsuariosVar = getData;

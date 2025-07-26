@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+//import 'package:flutter/scheduler.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/details_solidtrip.dart';
 //import 'package:flutter/scheduler.dart';
 
@@ -6,11 +9,19 @@ import 'package:flutter_auth/Drivers/Screens/HomeDriver/components/itemDriver_Ca
 import 'package:flutter_auth/Drivers/models/DriverData.dart';
 import 'package:flutter_auth/Drivers/models/network.dart';
 import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
+import 'package:flutter_auth/helpers/res_apis.dart';
+import 'package:flutter_auth/providers/device_info.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:package_info/package_info.dart';
+import 'package:flutter_switch/flutter_switch.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
+// import 'package:url_launcher/url_launcher.dart';
+// import 'package:package_info/package_info.dart';
 
+import '../../../../components/progress_indicator.dart';
+import '../../../../helpers/base_client.dart';
 import '../../../../main.dart';
+import '../../../SharePreferences/preferencias_usuario.dart';
 import '../../Chat/listaChas.dart';
 import '../../Details/components/detailsDriver_assignHour.dart';
 import '../../Details/components/details_HoursOut.dart';
@@ -18,7 +29,7 @@ import '../../Details/components/details_TripProgress.dart';
 import '../../Details/components/details_history.dart';
 import '../../DriverProfile/driverProfile.dart';
 //import 'package:new_version/new_version.dart';
-
+import 'package:http/http.dart' as http;
 class Body extends StatefulWidget {
   final DriverData? itemx;
 
@@ -27,6 +38,7 @@ class Body extends StatefulWidget {
   _BodyState createState() => _BodyState();
 }
 
+  late bool status;
 class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
   Future<DriverData>? itemx;
   FocusNode _focusNode = FocusNode();
@@ -34,18 +46,23 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
   List<dynamic>? ventanas;
   List<dynamic>? ventanas2;
   TextEditingController buscarText = TextEditingController();
+  bool light1 = false;
+  String msg = "";  
+  bool status = false;
+  int showButton = 0;
 
   @override
   void initState() {
-    super.initState();
-    //_initPackageInfo();
+    super.initState(); 
+    status = false; 
+    statusWorklog();  
+    saveDeviceId();
     itemx = fetchRefres();
      _focusNode.addListener(_onFocusChange);
     // SchedulerBinding.instance.addPostFrameCallback((_) {
     //   if (mounted) {
     //     setState(() {
-    //       fetchVersion();
-    //       //_showVersionTrue();
+    //       showAlertVersion();
     //     });
     //   }
     // });
@@ -102,39 +119,56 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
     setState(() { });
   }
 
-  fetchVersion() async {
-    final PackageInfo info = await PackageInfo.fromPlatform();
-    String version = "${info.version}";
-    String newVersion = "";
-    print(version);
-    if (newVersion != "") {
-      final dataVersion = version.split(".");
-      final dataNewVersion = newVersion.split(".");
-      List<int> numbersVersion = dataVersion.map(int.parse).toList();
-      List<int> numbersNewVersion = dataNewVersion.map(int.parse).toList();
-      if (numbersVersion[0] == numbersNewVersion[0] &&
-          numbersVersion[1] == numbersNewVersion[1] &&
-          numbersVersion[2] == numbersNewVersion[2]) {
-      } else if (numbersNewVersion == []) {
-        print("Ingresando");
-      } else {
-        print("Hay Nueva version disponible");
-      }
-      print(newVersion.split('.'));
-    } else {
-      print("Version no disponible");
-    }
-  }
+  void saveDeviceId()async{
+    String ip = "https://driver.smtdriver.com";
+    http.Response responses = await http.get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
 
-  _launchURL() async {
-    const url =
-        'https://play.google.com/store/apps/details?id=com.driverapp.devs';
-    if (await canLaunchUrl(Uri.parse(url))) {
-      await launchUrl(Uri.parse(url));
-    } else {
-      throw 'Could not launch $url';
+    try {
+      final data = DriverData.fromJson(json.decode(responses.body));
+      String? deviceId = await getDeviceId();
+      print(deviceId);
+      Map body = {'driverId': data.driverId.toString(), 'deviceId': deviceId.toString() , 'deviceOS': 'Android'};
+      var res = await BaseClient().post(RestApis.registerDevice, body, {"Content-Type": "application/json"});
+      print(res);
+    } catch (e) {
+      print('Error decoding JSON: $e');
+      print('Response body: ${responses.body}');
     }
+
   }
+  // fetchVersion() async {
+  //   final PackageInfo info = await PackageInfo.fromPlatform();
+  //   String version = "${info.version}";
+  //   String newVersion = "";
+  //   print(version);
+  //   if (newVersion != "") {
+  //     final dataVersion = version.split(".");
+  //     final dataNewVersion = newVersion.split(".");
+  //     List<int> numbersVersion = dataVersion.map(int.parse).toList();
+  //     List<int> numbersNewVersion = dataNewVersion.map(int.parse).toList();
+  //     if (numbersVersion[0] == numbersNewVersion[0] &&
+  //         numbersVersion[1] == numbersNewVersion[1] &&
+  //         numbersVersion[2] == numbersNewVersion[2]) {
+  //     } else if (numbersNewVersion == []) {
+  //       print("Ingresando");
+  //     } else {
+  //       print("Hay Nueva version disponible");
+  //     }
+  //     print(newVersion.split('.'));
+  //   } else {
+  //     print("Version no disponible");
+  //   }
+  // }
+
+  // _launchURL() async {
+  //   const url =
+  //       'https://play.google.com/store/apps/details?id=com.driverapp.devs';
+  //   if (await canLaunchUrl(Uri.parse(url))) {
+  //     await launchUrl(Uri.parse(url));
+  //   } else {
+  //     throw 'Could not launch $url';
+  //   }
+  // }
 
   showAlertVersion() async {
     showGeneralDialog(
@@ -148,14 +182,14 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                   child: AlertDialog(
                     content: Container(
                       width: 400,
-                      height: 140,
+                      height: 160,
                       child: Column(
                         children: <Widget>[
                           Icon(Icons.warning,
                               color: Colors.orangeAccent, size: 35.0),
                           SizedBox(height: 10),
                           Text(
-                            'Actualización disponible',
+                            'Se le solicita colocar su hora de entrada laboral:',
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold),
                           ),
@@ -185,9 +219,9 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                                         backgroundColor: Colors.green),
                                     onPressed: () => {
                                       Navigator.pop(context),
-                                      _launchURL(),
+                                     // _launchURL(),
                                     },
-                                    child: Text('Descargar'),
+                                    child: Text('Aceptar'),
                                   ),
                                 ],
                               )
@@ -207,8 +241,58 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
         });
   }
 
+  statusWorklog()async{
+    final prefs = new PreferenciasUsuario();
+    http.Response response = await http.get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
+    final rep = DriverData.fromJson(json.decode(response.body));
+
+    Map data = {"driverId": rep.driverId};
+    var statusApi = await BaseClient().post('https://driver.smtdriver.com/apis/statusWorkLog',data, {"Content-Type": "application/json"});
+    final respStatus= json.decode(statusApi);    
+    setState(() {      
+      msg =   respStatus['message']['recordset'][0]['msg'];
+      respStatus['message']['recordset'][0]['status']==1?status=true:status=false;
+      showButton = respStatus['message']['recordset'][0]['showButton'];    
+    });
+  }
+
+  Future<Map<String, dynamic>> validationWorkLog() async {
+    final prefs = PreferenciasUsuario();
+    http.Response response = await http.get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
+    final rep = DriverData.fromJson(json.decode(response.body));
+
+    Map data = {"driverId": rep.driverId};
+    var status = await BaseClient().post('https://driver.smtdriver.com/apis/validationWorkLog', data, {"Content-Type": "application/json"});
+    final respStatus = json.decode(status);    
+
+    return {
+      'msg': respStatus['message']['recordsets'][0][0]['msg'],
+      'allow': respStatus['message']['recordsets'][0][0]['allow']
+    };
+  }
+
+  registerWorkLog() async {
+    final prefs = PreferenciasUsuario();
+    http.Response response = await http.get(Uri.parse('$ip/apis/refreshingAgentData/${prefs.nombreUsuario}'));
+    final rep = DriverData.fromJson(json.decode(response.body));
+
+    Map data = {"driverId": rep.driverId};
+    var status = await BaseClient().post('https://driver.smtdriver.com/apis/registerWorkLog', data, {"Content-Type": "application/json"});
+    final respStatus = json.decode(status);  
+
+    QuickAlert.show(
+      context: context,
+      type: QuickAlertType.success,
+      title: "¡Listo!",
+      text: respStatus['message']['recordsets'][0][0]['msg'],
+      confirmBtnText: "Cerrar"
+    );    
+    statusWorklog();
+  }
+
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) { 
     super.build(context);
     Size size = MediaQuery.of(context).size;
     return GestureDetector(
@@ -238,9 +322,70 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                       style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ),
-        
-                    SizedBox(height: 25),      
-            
+                  SizedBox(height: 10), 
+                  if(showButton==1)...{
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Flexible(child: Text(msg, style: Theme.of(context).textTheme.labelLarge, )),
+                        SizedBox(width: 10), 
+                        FlutterSwitch(
+                          height: 25,
+                          width: 55,
+                          value: status,
+                          onToggle: (bool value) async{
+                            LoadingIndicatorDialog().show(context);
+                            var result = await validationWorkLog();
+                            LoadingIndicatorDialog().dismiss();
+                            if (result['allow'] == 1) {  
+                              QuickAlert.show(
+                                context: context,
+                                type: QuickAlertType.confirm,
+                                title: status==true?"Finalizar jornada":"Iniciar jornada",
+                                text: status==true?"¿Está seguro de finalizar la jornada laboral?":"¿Está seguro de iniciar la jornada laboral?",
+                                confirmBtnText: 'Confirmar',
+                                cancelBtnText: 'Cancelar',
+                                showCancelBtn: true,  
+                                confirmBtnTextStyle: TextStyle(fontSize: 15, color: Colors.white),
+                                cancelBtnTextStyle:TextStyle(color: Colors.red, fontSize: 15, fontWeight:FontWeight.bold ),
+                                onConfirmBtnTap: () {
+                                  setState(() {                              
+                                    status = value;
+                                  });
+                                  Navigator.pop(context);
+                                  registerWorkLog();
+                                  
+                                },
+                                onCancelBtnTap: () {
+                                  Navigator.pop(context);                                
+                                },
+                              );                                                          
+                            }else{
+                              var snackBar = SnackBar(
+                                  content: Text(result['msg'] +' 🚨',
+                                      style: TextStyle(fontSize: 20)),
+                                  backgroundColor: Colors.red,
+                                  dismissDirection: DismissDirection.up,
+                                  behavior: SnackBarBehavior.floating,
+                                  margin: EdgeInsets.only(
+                                      bottom: MediaQuery.of(context).size.height - 150,
+                                      left: 10,
+                                      right: 10),
+                                );
+                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                            }
+                            
+                          },
+                          inactiveIcon: Icon(Icons.close, color: Colors.black),
+                          activeIcon: Icon(Icons.check, color: Colors.black),
+                          activeColor: Colors.green,
+                          inactiveColor: Colors.red,
+                        ),
+                      ],
+                    ),     
+                    SizedBox(height: 10),      
+                  },
+
                   ventanas2!=null?
                   Stack(
                     children: [

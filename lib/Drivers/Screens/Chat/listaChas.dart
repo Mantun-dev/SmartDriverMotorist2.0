@@ -1,9 +1,9 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' show json;
 
-import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 
 import '../../../components/AppBarPosterior.dart';
 import '../../../components/AppBarSuperior.dart';

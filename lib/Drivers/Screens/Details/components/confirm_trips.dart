@@ -15,10 +15,11 @@ import 'package:flutter_auth/Drivers/models/network.dart';
 import 'package:flutter_auth/Drivers/models/plantillaDriver.dart';
 import 'package:flutter_auth/Drivers/models/registerTripAsCompleted.dart';
 import 'package:flutter_auth/main.dart';
+import 'package:flutter_barcode_scanner_plus/flutter_barcode_scanner_plus.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+// import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'dart:convert' show json;
 import 'package:flutter_auth/constants.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -147,7 +148,9 @@ class _DataTableExample extends State<MyConfirmAgent> {
       enRuta.add(false);
     }
     cargarTotal = true;
-    setState(() {});
+    if (mounted) {      
+      setState(() {});
+    }
 
   }
 
@@ -322,9 +325,11 @@ class _DataTableExample extends State<MyConfirmAgent> {
     gettotalAbordado();
     getInfoViaje();
     Future.delayed(const Duration(seconds: 1), () {
-      setState(() {        
-        getCounterNotification(prefs.tripId);
-      });
+      if (mounted) {
+        setState(() {        
+          getCounterNotification(prefs.tripId);
+        });        
+      }
     });
   }
 
@@ -367,23 +372,26 @@ class _DataTableExample extends State<MyConfirmAgent> {
     return 0;
   }
 
-  void getLocation() async{
+  void getLocation() async{    
+      await fetchAgentsTripInProgress().then((value) => {
 
-    await fetchAgentsTripInProgress().then((value) => {
+        //print(value.trips![1].actualTravel!.tripType),
 
-      //print(value.trips![1].actualTravel!.tripType),
-
-      if(value.trips![1].actualTravel!.tripType=='Entrada'){
-        flagEOS = true,
-        cargarL = true,
-        setState(() {})
-      }else{
-        flagEOS = false,
-        cargarL = true,
-        setState(() {})
-      },
-      
-    });
+        if(value.trips![1].actualTravel!.tripType=='Entrada'){
+          flagEOS = true,
+          cargarL = true,
+          if (mounted) {      
+            setState(() {})
+          }
+        }else{
+          flagEOS = false,
+          cargarL = true,
+          if (mounted) {      
+            setState(() {})
+          }
+        },
+        
+      });
   }
 
   launchSalidasMaps(lat,lng)async{
@@ -581,7 +589,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
         tipo: 1,
         onOkay: () async {
           try {
-            AppSettings.openLocationSettings();
+            AppSettings.openAppSettings();
           } catch (error) {
             print(error);
           }
@@ -946,7 +954,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                   ),
                   child: IconButton(
                     icon: SvgPicture.asset(  
-                      "assets/icons/QR.svg", color: Theme.of(context).primaryColorDark,),
+                      "assets/icons/QR.svg", color: Theme.of(context).primaryColorDark,width: 15,height: 15),
                     onPressed: () async{
                         permisoGeolocalizacion(); 
                         
@@ -1197,86 +1205,133 @@ class _DataTableExample extends State<MyConfirmAgent> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if(data?.driverType=='Motorista')
-                      Center(child: Text('Escanee el código QR del vehículo', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 12),)),
-                    if(data?.driverType=='Motorista')
-                      SizedBox(height: 6,),
+                    if(prefs.driverCompanyId == "")...{
+                      if(data?.driverType=='Motorista')
+                        Center(child: Text('Escanee el código QR del vehículo', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 12),)),
+                      if(data?.driverType=='Motorista')
+                        SizedBox(height: 6,),
+                    },
                     Row(
                       children: [
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).cardTheme.color,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: Theme.of(context).dividerColor,width: 1) // Radio de la esquina
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(left:20.0, right: 10),
-                              child: Row(
-                                children: [
-                                  SvgPicture.asset(  
-                                    "assets/icons/vehiculo.svg",color: Theme.of(context).primaryIconTheme.color,width: 15,height: 15,
-                                  ),
-                                  SizedBox(width: 6),
-                                  Flexible(
-                                    child: TextField(
-                                      enabled: data?.driverType=='Motorista'?false:true,
-                                      style: TextStyle(color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal),
-                                      controller: vehicleController,
-                                      decoration: InputDecoration(
-                                        border: InputBorder.none,
-                                        hintText: 'Vehículo',
-                                        hintStyle: TextStyle(color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal),
+                        if(prefs.driverCompanyId == "")...{
+                            Expanded(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).cardTheme.color,
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(color: Theme.of(context).dividerColor,width: 1) // Radio de la esquina
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left:20.0, right: 10),
+                                  child: Row(
+                                    children: [
+                                      SvgPicture.asset(  
+                                        "assets/icons/vehiculo.svg",color: Theme.of(context).primaryIconTheme.color,width: 15,height: 15,
                                       ),
-                                      onChanged: (value) => tripVehicle,
-                                    ),
+                                      SizedBox(width: 6),
+                                      Flexible(
+                                        child: TextField(
+                                          enabled: data?.driverType=='Motorista'?false:true,
+                                          style: TextStyle(color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal),
+                                          controller: vehicleController,
+                                          decoration: InputDecoration(
+                                            border: InputBorder.none,
+                                            hintText: 'Vehículo',
+                                            hintStyle: TextStyle(color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal),
+                                          ),
+                                          onChanged: (value) => tripVehicle,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ],
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.circular(10.0),
-                            border: Border.all(color: Theme.of(context).primaryColorDark,width: 1)
-                          ),
-                          child: IconButton(
-                            icon: SvgPicture.asset(  
-                              "assets/icons/QR.svg",color: Theme.of(context).primaryColorDark,
+                          
+                        }else...{
+                          Expanded(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).cardTheme.color,
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(color: Theme.of(context).dividerColor,width: 1) // Radio de la esquina
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left:20.0, right: 10),
+                                  child: Row(
+                                    children: [
+                                      SvgPicture.asset(  
+                                        "assets/icons/vehiculo.svg",color: Theme.of(context).primaryIconTheme.color,width: 15,height: 15,
+                                      ),
+                                      SizedBox(width: 6),
+                                      Flexible(
+                                        child: TextField(
+                                          //enabled: data?.driverType=='Motorista'?false:true,
+                                          style: TextStyle(color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal),
+                                          controller: vehicleController,
+                                          decoration: InputDecoration(
+                                            border: InputBorder.none,
+                                            hintText: 'Vehículo',
+                                            hintStyle: TextStyle(color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto', fontWeight: FontWeight.normal),
+                                          ),
+                                          onChanged: (value) {
+                                            tripVehicle = value;
+                                            print(tripVehicle);
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             ),
-                            onPressed: vehicleL==false?null:() async{
-                              String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);
-                              if (codigoQR == "-1") {
-                                return;
-                              } else {
-                                LoadingIndicatorDialog().show(context);
-                                http.Response responseSala = await http.get(Uri.parse('https://app.mantungps.com/3rd/vehicles/$codigoQR'),headers: {"Content-Type": "application/json", "x-api-key": 'a10xhq0p21h3fb9y86hh1oxp66c03f'});
-                                final resp = json.decode(responseSala.body);
-                                LoadingIndicatorDialog().dismiss();
-                                if(resp['type']=='success'){
-                                  if(mounted){
-                                    showDialog(context: context,builder: (context) => vehiculoE(resp, context),);
-                                  }
-                                }else{
-                                  if(mounted){
-                                    WarningSuccessDialog().show(
-                                      navigatorKey.currentContext!,
-                                      title: "Vehículo no valido",
-                                      tipo: 1,
-                                      onOkay: () {},
-                                    );
+                          
+                        },
+                        if(prefs.driverCompanyId == "")...{
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(10.0),
+                              border: Border.all(color: Theme.of(context).primaryColorDark,width: 1)
+                            ),
+                            child: IconButton(
+                              icon: SvgPicture.asset(  
+                                "assets/icons/QR.svg",color: Theme.of(context).primaryColorDark,
+                                width: 15,
+                                      height: 15,
+                              ),
+                              onPressed: vehicleL==false?null:() async{
+                                String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);
+                                if (codigoQR == "-1") {
+                                  return;
+                                } else {
+                                  LoadingIndicatorDialog().show(context);
+                                  http.Response responseSala = await http.get(Uri.parse('https://app.mantungps.com/3rd/vehicles/$codigoQR'),headers: {"Content-Type": "application/json", "x-api-key": 'a10xhq0p21h3fb9y86hh1oxp66c03f'});
+                                  final resp = json.decode(responseSala.body);
+                                  LoadingIndicatorDialog().dismiss();
+                                  if(resp['type']=='success'){
+                                    if(mounted){
+                                      showDialog(context: context,builder: (context) => vehiculoE(resp, context),);
+                                    }
+                                  }else{
+                                    if(mounted){
+                                      WarningSuccessDialog().show(
+                                        navigatorKey.currentContext!,
+                                        title: "Vehículo no valido",
+                                        tipo: 1,
+                                        onOkay: () {},
+                                      );
+                                    }
                                   }
                                 }
                               }
-                            }
+                            ),
                           ),
-                        ),
-                        if (data?.driverType != 'Motorista')
+                          
+                        },
+                        if (data?.driverType != 'Motorista' || prefs.driverCompanyId != "")
                           SizedBox(width: 10,),
-                        if (data?.driverType != 'Motorista')
+                        if (data?.driverType != 'Motorista' || prefs.driverCompanyId != "")
                           Container(decoration: BoxDecoration(
                             color: Colors.transparent,
                             borderRadius: BorderRadius.circular(10.0),
@@ -1285,6 +1340,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
                             child: IconButton(
                             icon: SvgPicture.asset(  
                               "assets/icons/Guardar.svg",color: Theme.of(context).primaryColorDark,
+                              width: 15,
+                                      height: 15,
                             ),
                             onPressed: vehicleL==false?null:() async{
                               LoadingIndicatorDialog().show(context);
@@ -1294,7 +1351,8 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                 "driverId":data2.driverId.toString(),
                                 "tripId": prefs.tripId.toString(),
                                 "vehicleId": "",
-                                "tripVehicle": vehicleController.text
+                                "tripVehicle": vehicleController.text,
+                                "vehicleGroup": ""
                               };
                               http.Response responsed = await http.post(Uri.parse('https://driver.smtdriver.com/apis/editTripVehicle'),body: data);
                               final resp2 = json.decode(responsed.body);
@@ -1341,7 +1399,6 @@ class _DataTableExample extends State<MyConfirmAgent> {
   }
 
   AlertDialog vehiculoE(resp, BuildContext context) {
-    //var size = MediaQuery.of(context).size;
     return AlertDialog(
       backgroundColor: Theme.of(navigatorKey.currentContext!).cardColor,
       shape: OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
@@ -1403,8 +1460,11 @@ class _DataTableExample extends State<MyConfirmAgent> {
                       "driverId": data2.driverId.toString(),
                       "tripId": prefs.tripId.toString(),
                       "vehicleId": resp['vehicle']['_id'],
-                      "tripVehicle":"${resp['vehicle']['name']} [${resp['vehicle']['registrationNumber']}]"
+                      "tripVehicle":"${resp['vehicle']['name']} [${resp['vehicle']['registrationNumber']}]",
+                      "vehicleGroup": "${resp['vehicle']['groups'].isEmpty?'':resp['vehicle']['groups'][0]['groupId']['name']}",
+                      "vehicleOwnerId": "${resp['vehicle']['driverId']==null?-1:resp['vehicle']['driverId']}"
                     };
+
                     http.Response responsed = await http.post(Uri.parse('https://driver.smtdriver.com/apis/editTripVehicle'),body: data);
                     final resp2 = json.decode(responsed.body);
                     LoadingIndicatorDialog().dismiss();
@@ -1988,18 +2048,18 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                               transitionBuilder:(context, a1, a2, widget) {
                                                 return Transform.scale(scale: a1.value,
                                                   child: Opacity(opacity: a1.value,
-                                                    child: AlertDialog(backgroundColor:backgroundColor,
+                                                    child: AlertDialog(
                                                     shape: OutlineInputBorder(borderRadius:BorderRadius.circular(16.0)),
                                                     title: Padding(padding: const EdgeInsets.symmetric(horizontal:25.0),
-                                                    child: Text('¿Razón por la cual no ingresó a la unidad?',
-                                                    style: TextStyle(color: GradiantV_2,fontWeight: FontWeight.bold,fontSize: 20
+                                                    child: Text('Agregue un comentario',
+                                                    style: TextStyle(color: Theme.of(context).primaryColor,fontWeight: FontWeight.bold,fontSize: 20
                                                 )
                                             ),
                                           ),
                                           content:
                                               Container(decoration:BoxDecoration(borderRadius:BorderRadius.all(Radius.circular(15)),
                                               boxShadow: [
-                                                BoxShadow(color: Colors.black.withOpacity(0.2),
+                                                BoxShadow(color: Colors.black.withOpacity(0.1),
                                                   spreadRadius: 0,
                                                   blurStyle:BlurStyle.solid,
                                                   blurRadius:10,
@@ -2017,11 +2077,10 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                             child: Padding(
                                               padding: const EdgeInsets.symmetric(horizontal:15.0),
                                               child:TextField(
-                                                cursorColor:firstColor,
-                                                style: TextStyle(color: Colors.white),
+                                                cursorColor:firstColor,                                                
                                                 decoration: InputDecoration(border: InputBorder.none,
                                                 hintText:'Escriba aquí',
-                                                hintStyle:TextStyle(color: Colors.white70)),
+                                                ),
                                                 controller:check2[index],
                                               ),
                                             ),
@@ -2031,9 +2090,9 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                               mainAxisAlignment:MainAxisAlignment.spaceEvenly,
                                               children: [
                                                 Container(
-                                                  decoration:BoxDecoration(borderRadius: BorderRadius.circular(15)),width: 95,height:40,
+                                                  decoration:BoxDecoration(borderRadius: BorderRadius.circular(6)),width: 95,height:40,
                                                   child:ElevatedButton(
-                                                    style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30), ),elevation: 10,textStyle: TextStyle(color: Colors.white),backgroundColor: Gradiant2),
+                                                    style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6), ),elevation: 10,textStyle: TextStyle(color: Colors.white),backgroundColor: Theme.of(context).primaryColor,),
                                                     onPressed: () async{
                                                             {
                                                               if(check2[index].text.isEmpty){
@@ -2060,8 +2119,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                     }},
                                                     child: Text(
                                                         'Guardar',
-                                                        style: TextStyle(
-                                                            color: backgroundColor,
+                                                        style: TextStyle(                                                            
                                                             fontWeight: FontWeight.bold,
                                                             fontSize: 15)),
                                                   ),
@@ -2074,7 +2132,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                                                       ElevatedButton(
                                                     style: ElevatedButton.styleFrom(
                                                         shape: RoundedRectangleBorder(
-                                                          borderRadius: BorderRadius.circular(30), // <-- Radius
+                                                          borderRadius: BorderRadius.circular(6), // <-- Radius
                                                         ),
                                                         textStyle: TextStyle(color: Colors.white), // foreground
                                                         // foreground
@@ -2699,7 +2757,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
                           tipo: 1,
                          onOkay: () async {
                             try {
-                              AppSettings.openLocationSettings();
+                              AppSettings.openAppSettings();
                             } catch (error) {
                               print(error);
                             }
@@ -2960,7 +3018,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
               if (tripVehicle == '') {
                 WarningSuccessDialog().show(
                   context,
-                  title: "Tiene que ingresar un veiculo",
+                  title: "Tiene que ingresar un vehículo",
                   tipo: 1,
                   onOkay: () {},
                 );

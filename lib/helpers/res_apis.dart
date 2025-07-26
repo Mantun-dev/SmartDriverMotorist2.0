@@ -6,5 +6,6 @@ class RestApis {
   static String messages = 'https://apichat.smtdriver.com/api/mensajes';
   static String audios = 'https://apichat.smtdriver.com/api/audios';
 
+  static String registerDevice = 'https://driver.smtdriver.com/apis/registerSessionAndDeviceDriver';
   //normals apis
 }

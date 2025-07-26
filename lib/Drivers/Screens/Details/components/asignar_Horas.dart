@@ -193,7 +193,32 @@ class _AsignarHorasState extends State<AsignarHoras> {
                                               child: Image.asset(
                                                   'assets/images/results.png'),
                                             ),
+                                          },
+
+                                          if (abc.data![index].companyId == 15) ...{
+                                            Container(
+                                              height: 50,
+                                              child: Image.asset(
+                                                  'assets/images/relaylogo.png'),
+                                            ),
+                                          },
+
+                                          if (abc.data![index].companyId == 16) ...{
+                                            Container(
+                                              height: 50,
+                                              child: Image.asset(
+                                                  'assets/images/TTEC.png'),
+                                            ),
+                                          },
+
+                                          if (abc.data![index].companyId == 18) ...{
+                                            Container(
+                                              height: 50,
+                                              child: Image.asset(
+                                                  'assets/images/GGA.webp'),
+                                            ),
                                           }
+
                                         ],
                                       ),
                                     ),

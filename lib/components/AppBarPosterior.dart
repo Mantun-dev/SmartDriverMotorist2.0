@@ -580,7 +580,7 @@ class _AppBarPosterior extends State<AppBarPosterior> {
     var listaN = await fetchCountNotify();
 
     if(mounted){
-      counter = resp['salas'].length;
+      counter = resp['salas']==null?0:resp['salas'].length;
       totalNotificaciones = listaN[0].total;
       setState(() { 
       });

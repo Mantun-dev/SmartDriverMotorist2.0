@@ -30,6 +30,8 @@
 .pub-cache/
 .pub/
 /build/
+nueva_clave_carga.jks
+upload_certificate.pem
 
 # Web related
 lib/generated_plugin_registrant.dart

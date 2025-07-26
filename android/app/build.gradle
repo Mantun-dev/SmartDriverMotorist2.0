@@ -1,3 +1,9 @@
+// plugins {
+//     id "com.android.application"
+//     id "org.jetbrains.kotlin.android"
+//     id "dev.flutter.flutter-gradle-plugin" // Este reemplaza 'apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"'
+// }
+
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -24,32 +30,65 @@ if (flutterVersionName == null) {
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
-apply plugin: 'com.google.gms.google-services'
+// apply plugin: 'com.google.gms.google-services'
 
-    def keystoreProperties = new Properties()
-    def keystorePropertiesFile = rootProject.file('key.properties')
-    if (keystorePropertiesFile.exists()) {
-        keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-    }
+    // def keystoreProperties = new Properties()
+    // def keystorePropertiesFile = rootProject.file('key.properties')
+    // if (keystorePropertiesFile.exists()) {
+    //     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+    // }
+
+
+
 android {
-    compileSdkVersion 33
+    
+    compileSdkVersion 35
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
 
+    lintOptions {
+        warningsAsErrors true
+        disable 'InvalidPackage'
+        checkReleaseBuilds true
+        abortOnError true
+        lintConfig file("$project.rootDir/gradle/lint.xml")
+        warning 'deprecation'
+    }
+
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.driverapp.devs"
-        versionCode 88
-        minSdkVersion 19
-        targetSdkVersion 33
+        namespace "com.driverapp.devs"
+        versionCode 110
+        minSdkVersion 26
+        targetSdkVersion 34
         multiDexEnabled true
         versionCode flutterVersionCode.toInteger()
-        versionName "2.18.38"
+        versionName "2.18.60"
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+        coreLibraryDesugaringEnabled true
+    }
+    kotlinOptions {
+        jvmTarget = '17' // Ensure Kotlin compiles to JVM 17 bytecode
+    }
+    def keystoreProperties = new Properties()
+    def keystorePropertiesFile = rootProject.file('key.properties')
+    if (keystorePropertiesFile.exists()) {
+        keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+    }
     signingConfigs {
+        debug {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+        }
         release {
             keyAlias keystoreProperties['keyAlias']
             keyPassword keystoreProperties['keyPassword']
@@ -58,8 +97,14 @@ android {
         }
     }
     buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
         release {
+            minifyEnabled false
+            shrinkResources false
             signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }
@@ -69,7 +114,36 @@ flutter {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation platform('com.google.firebase:firebase-bom:28.1.0')
+    // coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'
+    // implementation "androidx.multidex:multidex:2.0.1"
+    // implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    // implementation platform('com.google.firebase:firebase-bom:28.1.0')
+    // implementation 'com.google.firebase:firebase-analytics-ktx'
+
+    // implementation 'com.google.android.play:app-update:2.1.0'
+
+    // implementation 'com.google.android.play:review:2.0.1'
+
+    // implementation "com.google.android.play:asset-delivery:2.2.2"
+    // implementation "com.google.android.play:feature-delivery:2.1.0"
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'
+    implementation "androidx.multidex:multidex:2.0.1"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version" // Puedes probar 'kotlin-stdlib' sin jdk7 si hay problemas
+    // ACTUALIZADO: Versión de Firebase BOM. Asegúrate de que esta sea la última.
+    // La 28.1.0 es MUY antigua. Debes usar la más reciente, por ejemplo 32.x.x
+    implementation platform('com.google.firebase:firebase-bom:32.8.0') // <--- ACTULIZA ESTO
     implementation 'com.google.firebase:firebase-analytics-ktx'
+
+    implementation 'com.google.android.play:app-update:2.1.0'
+    implementation 'com.google.android.play:review:2.0.1'
+    implementation "com.google.android.play:asset-delivery:2.2.2"
+    implementation "com.google.android.play:feature-delivery:2.1.0"
 }
+
+configurations {
+  configureEach {
+      exclude group: 'com.google.android.play', module: 'core'
+  }
+}
+
+apply plugin: 'com.google.gms.google-services'

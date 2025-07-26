@@ -19,7 +19,8 @@ class DriverData {
         this.departmentId,
         this.driverUser,
         this.driverPassword,
-        this.driverCoord
+        this.driverCoord,
+        this.driverCompanyId
     });
 
     int? driverId;
@@ -32,6 +33,7 @@ class DriverData {
     String? driverUser;
     String? driverPassword;
     dynamic driverCoord;
+    dynamic driverCompanyId;
 
     factory DriverData.fromJson(Map<String, dynamic> json) => DriverData(
         driverId: json["driverId"],
@@ -44,6 +46,7 @@ class DriverData {
         driverUser: json["driverUser"],
         driverPassword: json["driverPassword"],
         driverCoord: json["driverCoord"],
+        driverCompanyId: json["driverCompanyId"]
     );
 
     Map<String, dynamic> toJson() => {
@@ -56,6 +59,7 @@ class DriverData {
         "departmentId": departmentId,
         "driverUser": driverUser,
         "driverPassword": driverPassword,
-        "driverCoord": driverCoord
+        "driverCoord": driverCoord,
+        "driverCompanyId": driverCompanyId
     };
 }

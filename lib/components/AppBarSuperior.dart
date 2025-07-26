@@ -168,7 +168,7 @@ class _AppBarSuperior extends State<AppBarSuperior> {
       break;
 
       default:
-      Navigator.push(
+      Navigator.pushAndRemoveUntil(
         context,
         PageRouteBuilder(
           transitionDuration: Duration(milliseconds: 200),
@@ -182,7 +182,7 @@ class _AppBarSuperior extends State<AppBarSuperior> {
             child: child,
            );
           },
-        ),
+        ), (route) => false,
       );
       break;
     }

@@ -122,7 +122,7 @@ Future<TripsList2> fetchAgentsInTravel2() async {
   http.Response responsed =
       await http.get(Uri.parse('$ip/apis/agentsInTravel/${prefs.tripId}'));
   TripsList2.fromJson(json.decode(responsed.body));
-
+  //print(responsed.body);
   if (responsed.statusCode == 200) {
     //print(data1.trips[2].cancelados[0].agentFullname);
     return TripsList2.fromJson(json.decode(responsed.body));
@@ -155,6 +155,7 @@ Future<Profile> fetchRefresProfile() async {
   http.Response response1 =
       await http.get(Uri.parse('$ip/apis/score/${si.driverId}'));
   Profile.fromJson(json.decode(response1.body));
+  print(response1.body);
   if (response1.statusCode == 200) {
     return Profile.fromJson(json.decode(response1.body));
   } else {
