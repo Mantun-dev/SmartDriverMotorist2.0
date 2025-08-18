@@ -491,7 +491,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                                   }
                                   // print(roomId);
                                   // print(deviceIdTarget);
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                       builder: (_) => JitsiCallPage(roomId: roomId.toString(), name: nameDriver!),

@@ -217,6 +217,12 @@ class _AsignarHorasState extends State<AsignarHoras> {
                                               child: Image.asset(
                                                   'assets/images/GGA.webp'),
                                             ),
+                                          },
+                                          if (abc.data![index].companyId == 20) ...{
+                                            Container(
+                                              height: 50,
+                                              child: SvgPicture.asset("assets/images/altiam.svg"),
+                                            ),
                                           }
 
                                         ],

@@ -93,7 +93,7 @@ class PushNotificationServices {
             if (callType == 'Incoming') {
               final callerName = data['userName'] ?? 'Desconocido';
               final roomId = data['roomId'];
-              navigatorKey!.currentState?.push(
+              navigatorKey!.currentState?.pushReplacement(
                 MaterialPageRoute(
                   builder: (_) => JitsiCallPage(roomId: roomId, name: callerName),
                 ),
@@ -119,7 +119,7 @@ class PushNotificationServices {
       final roomId = data['roomId'];
       // Asegurarse de que navigatorKey esté disponible antes de intentar navegar
       if (navigatorKey?.currentState != null) {
-        navigatorKey!.currentState?.push(
+        navigatorKey!.currentState?.pushReplacement(
           MaterialPageRoute(
             builder: (_) => JitsiCallPage(roomId: roomId, name: callerName),
           ),
