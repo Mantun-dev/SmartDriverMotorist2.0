@@ -209,7 +209,7 @@ class _ProcessTripState extends State<ProcessTrip> {
                                           if (abc.data![index].companyId == 20) ...{
                                             Container(
                                               height: 50,
-                                              child: SvgPicture.asset("assets/images/altiam.svg"),
+                                              child: Image.asset("assets/images/altiam2.jpeg"),
                                             ),
                                           }
                                         else...{

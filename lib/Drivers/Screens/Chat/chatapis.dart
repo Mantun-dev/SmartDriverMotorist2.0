@@ -90,8 +90,6 @@ class ChatApis {
         sendNotification,
         {"Content-Type": "application/json"});
 
-
-    
   }
 
   Future<void> sendAudio(String audioPath, String sala, String nombre, String idDriver, String nameDriver, String idDb, String idR) async {

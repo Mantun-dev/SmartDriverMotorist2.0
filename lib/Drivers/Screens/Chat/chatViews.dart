@@ -38,6 +38,8 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
+    print(widget.tripId);
+    print(widget.tipoViaje);
     getCounterNotification(widget.tripId!);
     BackButtonInterceptor.add(myInterceptor);
   }

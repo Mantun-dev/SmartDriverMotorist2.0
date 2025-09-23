@@ -11,7 +11,8 @@ class StreamSocket {
 
   StreamSocket({this.host}) {
     socket = IO.io(
-        'https://$host',
+        // 'https://$host',
+        'http://$host',
         IO.OptionBuilder().setTransports(['websocket'])            
             .setReconnectionAttempts(5)  // Intentará reconectar hasta 5 veces
             .setReconnectionDelay(2000)  // Esperará 2 segundos antes de intentar reconectar  

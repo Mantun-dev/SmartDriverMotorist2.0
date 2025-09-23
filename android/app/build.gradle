@@ -61,12 +61,12 @@ android {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.driverapp.devs"
         namespace "com.driverapp.devs"
-        versionCode 112
+        versionCode 115
         minSdkVersion 26
-        targetSdkVersion 34
+        targetSdkVersion 35
         multiDexEnabled true
         versionCode flutterVersionCode.toInteger()
-        versionName "2.18.62"
+        versionName "2.18.65"
     }
 
     compileOptions {

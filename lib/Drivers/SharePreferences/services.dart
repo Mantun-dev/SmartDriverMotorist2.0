@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Chat/chatscreen.dart';
+import 'package:flutter_auth/providers/IncomingCallScreen.dart';
 // import 'package:flutter_auth/providers/IncomingCallScreen.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rxdart/rxdart.dart';
@@ -93,11 +94,19 @@ class PushNotificationServices {
             if (callType == 'Incoming') {
               final callerName = data['userName'] ?? 'Desconocido';
               final roomId = data['roomId'];
-              navigatorKey!.currentState?.pushReplacement(
+              navigatorKey!.currentState?.push(
                 MaterialPageRoute(
-                  builder: (_) => JitsiCallPage(roomId: roomId, name: callerName),
+                  builder: (_) => IncomingCallAlert(
+                    callerName: callerName,
+                    roomId: roomId
+                  ),
                 ),
               );
+              // navigatorKey!.currentState?.pushReplacement(
+              //   MaterialPageRoute(
+              //     builder: (_) => JitsiCallPage(roomId: roomId, name: callerName),
+              //   ),
+              // );
             } else {
               onNotifications.add(payload);
             }
@@ -174,25 +183,50 @@ class PushNotificationServices {
     }
   }
 
-  static Future _onMessageHandelr(RemoteMessage message) async {
-    _messageStreamController.add(message.data);
-    array = message.data;
-    final data = message.data;
-    final callType = data['callType'];
-    print(data);
-    if (callType == 'Incoming') {
+static Future<void> _onMessageHandelr(RemoteMessage message) async {
+  print('onMessage handler ${message.messageId}');
+
+  final data = message.data;
+  final callType = data['callType'];
+  print(data);
+
+  if (callType == 'Incoming') {
+    // En lugar de mostrar una notificación, navega a la pantalla de alerta
+    final callerName = data['userName'] ?? 'Desconocido';
+    final roomId = data['roomId'];
+
+    // Asegúrate de que el navigatorKey y el estado actual no sean nulos
+    if (navigatorKey?.currentState != null) {
+      // Navega a la pantalla de alerta de llamada entrante
+      navigatorKey!.currentState!.push(
+        MaterialPageRoute(
+          builder: (context) => IncomingCallAlert(
+            callerName: callerName,
+            roomId: roomId,
+          ),
+        ),
+      );
+      print('Navegando a IncomingCallAlert desde _onMessageHandelr');
+    } else {
+      // Si la navegación no es posible (ej. la app se acaba de iniciar),
+      // Muestra la notificación normal como fallback.
       await showIncomingCallNotification(
         callerName: data['userName'],
         payload: jsonEncode(data),
       );
-    } else {
-      showNotification(
-        title: message.notification?.title,
-        body: message.notification?.body,
-        payload: data.toString(),
-      );
+      print('navigatorKey no disponible, mostrando notificación de llamada.');
     }
+  } else {
+    // Para otros tipos de notificaciones, sigue mostrando la notificación normal
+    showNotification(
+      title: message.notification?.title,
+      body: message.notification?.body,
+      payload: data.toString(),
+    );
   }
+
+  _messageStreamController.add(data['type'] ?? 'no data');
+}
 
   static Future _onMessageOpenApp(RemoteMessage message) async {
     _messageStreamController.add(message.data);

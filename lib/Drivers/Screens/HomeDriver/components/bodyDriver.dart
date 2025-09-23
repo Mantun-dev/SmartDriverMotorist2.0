@@ -248,12 +248,14 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
 
     Map data = {"driverId": rep.driverId};
     var statusApi = await BaseClient().post('https://driver.smtdriver.com/apis/statusWorkLog',data, {"Content-Type": "application/json"});
-    final respStatus= json.decode(statusApi);    
-    setState(() {      
-      msg =   respStatus['message']['recordset'][0]['msg'];
-      respStatus['message']['recordset'][0]['status']==1?status=true:status=false;
-      showButton = respStatus['message']['recordset'][0]['showButton'];    
-    });
+    final respStatus= json.decode(statusApi); 
+    if (mounted) {      
+      setState(() {      
+        msg =   respStatus['message']['recordset'][0]['msg'];
+        respStatus['message']['recordset'][0]['status']==1?status=true:status=false;
+        showButton = respStatus['message']['recordset'][0]['showButton'];    
+      });
+    }   
   }
 
   Future<Map<String, dynamic>> validationWorkLog() async {
