@@ -1559,6 +1559,8 @@ class _DriverDescriptionState extends State<DriverDescription>
                               icon: SvgPicture.asset(  
                                     "assets/icons/QR.svg",
                                     color: Theme.of(context).primaryColorDark,
+                                    width: 15,
+                                      height: 15,
                                   ),
                               onPressed: () async{
                                 String codigoQR = await FlutterBarcodeScanner.scanBarcode("#9580FF", "Cancelar", true, ScanMode.QR);
@@ -1738,6 +1740,8 @@ class _DriverDescriptionState extends State<DriverDescription>
                       icon: SvgPicture.asset(  
                         "assets/icons/buscador.svg",
                         color: Colors.white,
+                        width: 15,
+                                      height: 15,
                       ),
                       onPressed: () async{
                         showGeneralDialog(
@@ -1840,6 +1844,8 @@ class _DriverDescriptionState extends State<DriverDescription>
                       icon: SvgPicture.asset(  
                         "assets/icons/QR.svg",
                         color: Colors.white,
+                        width: 15,
+                                      height: 15,
                       ),
                       onPressed: scanBarcodeNormal
                     ),
@@ -1857,6 +1863,8 @@ class _DriverDescriptionState extends State<DriverDescription>
                       icon: SvgPicture.asset(  
                         "assets/icons/Guardar.svg",
                         color: Colors.white,
+                        width: 15,
+                                      height: 15,
                       ),
                       onPressed: () async {
                         

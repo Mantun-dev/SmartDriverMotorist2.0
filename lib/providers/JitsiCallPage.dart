@@ -120,10 +120,11 @@ class _JitsiCallPageState extends State<JitsiCallPage> {
         // Salir de la pantalla cuando la conferencia termine
         if (mounted) {
           //regresar a la pantalla de inicio home
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-                builder: (BuildContext context) => HomeDriverScreen()),
-            (Route<dynamic> route) => false);
+          Navigator.of(context).pop();
+          // Navigator.of(context).pushAndRemoveUntil(
+          //   MaterialPageRoute(
+          //       builder: (BuildContext context) => HomeDriverScreen()),
+          //   (Route<dynamic> route) => false);
         }
       }
     );

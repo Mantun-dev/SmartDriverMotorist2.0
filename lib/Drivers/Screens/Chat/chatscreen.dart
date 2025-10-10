@@ -203,9 +203,14 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     streamSocket.socket!.on('enviar-mensaje2', (data) {
       if (mounted) {
-        Provider.of<ChatProvider>(context, listen: false)
-            .addNewMessage(MessageDriver.fromJson(data));
-        ChatApis().readMessage( widget.idV!, widget.idAgent!, widget.id!);
+        final incomingMessage = MessageDriver.fromJson(data is List ? data[0] : data);
+        
+        if (incomingMessage.sala == widget.idV) {
+          // Si el mensaje es de un solo objeto (lo más común en emisiones en vivo)
+          Provider.of<ChatProvider>(context, listen: false).addNewMessage(incomingMessage);
+          
+          ChatApis().readMessage( widget.idV!, widget.idAgent!, widget.id!);
+        }
       }
     });
   }
@@ -249,17 +254,28 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       print('Nuevo mensaje recibido: $data');
       print(mounted);
       if (mounted) {
-        // Verifica si 'data' es una lista de mensajes
-        if (data is List) {
-            // Si es una lista, itera sobre cada elemento
+        // 1. Convertir el dato a un objeto MessageDriver para acceder a la sala
+        final incomingMessage = MessageDriver.fromJson(data is List ? data[0] : data);
+
+        // 2. APLICAR EL FILTRO DE SALA CRÍTICO
+        // Solo añade el mensaje si su ID de sala coincide con el ID de sala de la pantalla actual.
+        if (incomingMessage.sala == widget.idV) {
+          
+          // El resto de tu lógica de agregar mensaje permanece igual
+          if (data is List) {
             data.forEach((element) {
-                Provider.of<ChatProvider>(context, listen: false).addNewMessage(MessageDriver.fromJson(element));
+              Provider.of<ChatProvider>(context, listen: false).addNewMessage(MessageDriver.fromJson(element));
             });
-        } else {
-            // Si es un solo objeto, agrégalo directamente
-            Provider.of<ChatProvider>(context, listen: false).addNewMessage(MessageDriver.fromJson(data));
+          } else {
+            Provider.of<ChatProvider>(context, listen: false).addNewMessage(incomingMessage);
+          }
+          
+          // Marca como leído solo el mensaje de la sala actual
+          ChatApis().readMessage(widget.idV!, widget.idAgent!, widget.id!);
+          
+        }else{
+          print('Mensaje recibido para otra sala: ${incomingMessage.sala}, actual es: ${widget.idV}');
         }
-        ChatApis().readMessage(widget.idV!, widget.idAgent!, widget.id!);
       }
     }));
 
@@ -503,58 +519,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                                           builder: (_) => JitsiCallPage(roomId: roomId.toString(), name: nameDriver!),
                                         ),
                                       );
-                                    // AWAIT la llamada a validateTripCall y OBTEN el resultado directamente
-                                    // final validationResult = await validateTripCall(widget.idAgent!, 'agent');
-                                    // final int currentAllow = validationResult['allow'] ?? 0; // Default to 0 if null
-                                    // final String currentMsg = validationResult['msg'] ?? 'Mensaje no disponible.';
-        
-                                    // if (currentAllow == 1) {
-                                    //   String? deviceId = await getDeviceId();
-                                    //   if (deviceId == null) {
-                                    //     throw Exception("No se pudo obtener el ID del dispositivo.");
-                                    //   }
-        
-                                    //   // Ejecutar las llamadas API en paralelo
-                                    //   final results = await Future.wait([
-                                    //     ChatApis().registerCallerAndSendNotification(sala.toString(),widget.id! ,deviceId , "driver", widget.idAgent!, "agent", widget.id!, "driver", "agente", nameDriver!
-                                    //     ),
-                                    //     ChatApis().getDeviceTargetId('agente', widget.idAgent!),
-                                    //   ]);
-        
-                                    //   var roomId = results[0];
-                                    //   var deviceIdTarget = results[1];
-        
-                                    //   if (roomId == null || deviceIdTarget == null) {
-                                    //     throw Exception("Error: No se obtuvo roomId o deviceIdTarget de la API.");
-                                    //   }
-                                    //   print(roomId);
-                                    //   print(deviceIdTarget);
-                                    //   Navigator.push(
-                                    //     context,
-                                    //     MaterialPageRoute(
-                                    //       builder: (_) => JitsiCallPage(roomId: roomId.toString(), name: nameDriver!),
-                                    //     ),
-                                    //   );
-                                    //   // Navigator.push(
-                                    //   //   context,
-                                    //   //   MaterialPageRoute(
-                                    //   //     builder: (_) => WebRTCCallPage(
-                                    //   //       selfId: deviceId,
-                                    //   //       targetId: '$deviceIdTarget',
-                                    //   //       isCaller: true,
-                                    //   //       roomId: '$roomId',
-                                    //   //       tripId: sala,
-                                    //   //     ),
-                                    //   //   ),
-                                    //   // );
-                                    // } else {
-                                    //   // Si allow no es 1, mostrar alerta con el mensaje obtenido
-                                    //   QuickAlert.show(
-                                    //     context: context,
-                                    //     type: QuickAlertType.warning,
-                                    //     text: currentMsg, // Usar el mensaje retornado
-                                    //   );
-                                    // }
                                   } catch (e) {
                                     print("Error durante el proceso de llamada: $e");
                                     QuickAlert.show(

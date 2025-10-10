@@ -10,45 +10,81 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rxdart/rxdart.dart';
 import '../../providers/JitsiCallPage.dart';
 
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  print("Handling a background message: ${message.messageId}");
+
+  final callType = message.data['callType'];
+  if (callType == 'Incoming') {
+    // Al recibir la notificación de llamada en segundo plano o cerrado,
+    // disparamos la Notificación Local con fullScreenIntent: true.
+    await PushNotificationServices.showIncomingCallNotification(
+      callerName: message.data['userName'],
+      payload: jsonEncode(message.data),  // Pasar el payload completo para re-navegación
+    );
+  }
+}
+
+@pragma('vm:entry-point')
+void notificationTapBackground(NotificationResponse response) async {
+  final payload = response.payload;
+  if (payload != null) {
+    try {
+      final data = jsonDecode(payload);
+      PushNotificationServices.handleNotificationNavigation(data);
+    } catch (e) {
+      print('Error al decodificar payload en background: $e');
+    }
+  }
+}
+
 class PushNotificationServices {
   static FirebaseMessaging messaging = FirebaseMessaging.instance;
   static String? token;
-  static final StreamController<dynamic> _messageStreamController = StreamController.broadcast();
+  static StreamController<String> _messageStreamController =
+      StreamController.broadcast();
   static Stream<dynamic> get messageStream => _messageStreamController.stream;
-
-  static GlobalKey<NavigatorState>? navigatorKey;
-  static dynamic array;
   static final _notifications = FlutterLocalNotificationsPlugin();
   static final onNotifications = BehaviorSubject<String?>();
+  static dynamic array;
+  static GlobalKey<NavigatorState>? navigatorKey;
 
-  // Método para mostrar notificaciones
+  // --- CONFIGURACIÓN DE CANAL PARA LLAMADAS (Android) ---
+  // Nota: Esto debe estar configurado también a nivel nativo en AndroidManifest.xml
+  static const String _callChannelId = 'call_channel';
+  static const AndroidNotificationChannel _callChannel = AndroidNotificationChannel(
+    _callChannelId, 
+    'Llamadas Entrantes',
+    description: 'Canal de alta prioridad para mostrar llamadas en pantalla completa.',
+    importance: Importance.max,
+    sound: RawResourceAndroidNotificationSound('llamada'), // 'llamada' debe ser el nombre del archivo sin extensión en android/app/src/main/res/raw
+  );
+
+  // Método para mostrar notificaciones (Mantenido)
   static Future<void> showNotification({
     int id = 0,
     String? title,
     String? body,
     String? payload,
   }) async {
-    var details = await _notificationDetails();
+    // Uso de un canal genérico o el canal por defecto si no es una llamada
+    var details = await _notificationDetails(); 
     await _notifications.show(id, title, body, details, payload: payload);
   }
 
-  // Detalles de la notificación para Android e iOS
+  // Detalles de la notificación (Mantenido, pero ahora usamos un canal específico en showIncomingCallNotification)
   static Future<NotificationDetails> _notificationDetails() async {
     return const NotificationDetails(
       android: AndroidNotificationDetails(
         'channel id',
         'channel name',
         channelDescription: 'channel description',
-        importance: Importance.max,
-        priority: Priority.high,
-        // Estas propiedades son específicas de Android y se ignoran en iOS.
-        // Las mantengo para la compatibilidad cruzada, pero no tienen efecto en iOS.
+        importance: Importance.defaultImportance, // Baja la importancia para el canal por defecto
+        priority: Priority.defaultPriority,
       ),
-      // Configuración específica para iOS
       iOS: DarwinNotificationDetails(
-        // Puedes personalizar aquí si necesitas opciones específicas como
-        // presentAlert, presentBadge, presentSound.
-        // Por defecto, se mostrarán las alertas, el sonido y la insignia si están habilitados en los permisos.
         presentAlert: true,
         presentBadge: true,
         presentSound: true,
@@ -56,69 +92,184 @@ class PushNotificationServices {
     );
   }
 
+  // Creación del canal de alta prioridad (Debe llamarse durante la inicialización)
+  static Future<void> _createNotificationChannel() async {
+     await _notifications
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(_callChannel);
+  }
+
   // Inicialización de la notificación y Firebase
-  static Future<void> init({bool initScheduled = false}) async {
-    // Para iOS, no necesitamos crear un "canal" explícitamente como en Android.
-    // La configuración de permisos se maneja de forma diferente.
+  static Future<void> init({bool initScheduled = false,
+    void Function(NotificationResponse)? onDidReceiveBackgroundNotificationResponse,
+  }) async {
+    await _createNotificationChannel(); 
 
-    // Android Initialization Settings
     const android = AndroidInitializationSettings('@mipmap/launcher_icon');
-
-    // iOS Initialization Settings (DarwinInitializationSettings for modern Flutter Local Notifications)
-    // Nota: El sonido para iOS se maneja de manera diferente. Firebase Cloud Messaging (FCM)
-    // envía el sonido directamente en el payload de la notificación APNs.
-    // Para notificaciones locales en iOS con sonido personalizado, necesitas que el archivo de sonido
-    // esté en el Runner/Resources de tu proyecto Xcode.
     const iOS = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
       requestSoundPermission: true,
-      // onDidReceiveLocalNotification: (id, title, body, payload) async {
-      //   // Solo para iOS < 10.0 cuando la app está en primer plano
-      //   // Puedes mostrar una alerta o manejar la notificación aquí.
-      // },
     );
-
     const settings = InitializationSettings(android: android, iOS: iOS);
 
     await _notifications.initialize(
       settings,
       onDidReceiveNotificationResponse: (NotificationResponse response) async {
-        // Este callback reemplaza onSelectNotification para versiones más nuevas.
         final payload = response.payload;
         if (payload != null) {
           try {
-            final data = jsonDecode(payload);
-            final callType = data['callType'];
-
-            if (callType == 'Incoming') {
-              final callerName = data['userName'] ?? 'Desconocido';
-              final roomId = data['roomId'];
-              navigatorKey!.currentState?.push(
-                MaterialPageRoute(
-                  builder: (_) => IncomingCallAlert(
-                    callerName: callerName,
-                    roomId: roomId
-                  ),
-                ),
-              );
-              // navigatorKey!.currentState?.pushReplacement(
-              //   MaterialPageRoute(
-              //     builder: (_) => JitsiCallPage(roomId: roomId, name: callerName),
-              //   ),
-              // );
-            } else {
-              onNotifications.add(payload);
-            }
+            final data = jsonDecode(payload); 
+            handleNotificationNavigation(data); 
           } catch (e) {
             print('Error al decodificar payload: $e');
           }
         }
       },
+      // Usa el callback opcional pasado desde main
+      onDidReceiveBackgroundNotificationResponse: onDidReceiveBackgroundNotificationResponse, 
     );
   }
 
-    // --- NUEVO MÉTODO PARA MANEJAR LA NAVEGACIÓN ---
+  // Solicitar permisos de notificación (Mantenido)
+  static void requestPermission() async {
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print("Permisos de notificación concedidos");
+    } else {
+      print("Permisos de notificación no concedidos");
+    }
+  }
+
+  // Manejar la notificación en segundo plano
+  // 💡 Acción 1: Llama a showIncomingCallNotification que tiene fullScreenIntent
+  static Future<void> _backgroundHandelr(RemoteMessage message) async {
+    print('onBackground handelr ${message.messageId}');
+    final data = message.data;
+    final callType = data['callType'];
+    print(data);
+    
+    // El payload debe contener la información necesaria para navegar
+    final String payload = jsonEncode(data);
+
+    if (callType == 'Incoming') {
+      await showIncomingCallNotification(
+        callerName: data['userName'],
+        payload: payload,
+      );
+    } else {
+      // Notificación normal
+      showNotification(
+        title: message.notification?.title,
+        body: message.notification?.body,
+        payload: payload,
+      );
+    }
+    _messageStreamController.add(message.data['type'] ?? 'no data');
+  }
+
+  // Manejar la notificación en primer plano (Mantenido, navega directamente sin notificación local)
+  static Future<void> _onMessageHandelr(RemoteMessage message) async {
+    print('onMessage handler ${message.messageId}');
+
+    final data = message.data;
+    final callType = data['callType'];
+    print(data);
+
+    if (callType == 'Incoming') {
+      final callerName = data['userName'] ?? 'Desconocido';
+      final roomId = data['roomId'];
+
+      if (navigatorKey?.currentState != null) {
+        navigatorKey!.currentState!.push(
+          MaterialPageRoute(
+            builder: (context) => IncomingCallAlert(
+              callerName: callerName,
+              roomId: roomId,
+            ),
+          ),
+        );
+        print('Navegando a IncomingCallAlert desde _onMessageHandelr (App en primer plano)');
+      } else {
+        // En caso de fallo de navegación (raro en primer plano), mostrar notificación
+        await showIncomingCallNotification(
+          callerName: data['userName'],
+          payload: jsonEncode(data),
+        );
+        print('navigatorKey no disponible, mostrando notificación de llamada como fallback.');
+      }
+    } else {
+      showNotification(
+        title: message.notification?.title,
+        body: message.notification?.body,
+        payload: jsonEncode(data),
+      );
+    }
+    _messageStreamController.add(data['type'] ?? 'no data');
+  }
+
+  // Manejar la notificación al abrir la app (FCM) - Se usa para el caso de cuando la notificación original no fue local.
+  static Future<void> _onMessageOpenApp(RemoteMessage message) async {
+    print('onMessageOpenApp ${message.messageId}');
+    _messageStreamController.add(message.data['type'] ?? 'no data');
+    // 💡 Acción 2: Llamada a la navegación centralizada
+    handleNotificationNavigation(message.data);
+  }
+
+  // --- FUNCIÓN CLAVE PARA LA PANTALLA DE LLAMADA ---
+  static Future<void> showIncomingCallNotification({
+    required String? callerName,
+    required String payload,
+  }) async {
+    // 💡 Acción 1: Usar fullScreenIntent
+    const androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      _callChannelId, // Usar el ID del canal de alta prioridad
+      'Llamadas Entrantes',
+      channelDescription: 'Notificaciones de llamadas entrantes',
+      importance: Importance.max,
+      priority: Priority.max, // Usar máxima prioridad
+      fullScreenIntent: true, // ESTO ES CLAVE para Android
+      visibility: NotificationVisibility.public,
+      ticker: 'Llamada entrante',
+      // Usa el sonido del canal: UriAndroidNotificationSound("assets/tunes/llamada.mp3"),
+      // Si usas RawResourceAndroidNotificationSound('llamada') el archivo debe estar en /res/raw
+      // y configurado en _callChannel
+      playSound: true, 
+    );
+
+    // Para iOS, la implementación de CallKit es necesaria para la experiencia nativa.
+    // Con FLoating solo se logra un banner de alta prioridad.
+    const iOSPlatformChannelSpecifics = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+      sound: 'llamada.mp3', // Asegúrate de que está en Runner/Resources
+    );
+
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+      iOS: iOSPlatformChannelSpecifics,
+    );
+
+    await _notifications.show(
+      // Usar un ID de notificación único para la llamada
+      12345, 
+      'Llamada entrante',
+      '$callerName te está llamando',
+      platformChannelSpecifics,
+      payload: payload, // El payload es CRUCIAL para la navegación
+    );
+  }
+
+  // --- NUEVO MÉTODO PARA MANEJAR LA NAVEGACIÓN (Centralizada) ---
+  // 💡 Acción 2: Se usa al presionar la notificación (onDidReceiveNotificationResponse) 
+  // y al abrir la app desde FCM (onMessageOpenedApp)
   static void handleNotificationNavigation(Map<String, dynamic> data) {
     print('Intentando navegar con data: $data');
     final callType = data['callType'];
@@ -126,19 +277,22 @@ class PushNotificationServices {
     if (callType == 'Incoming') {
       final callerName = data['userName'] ?? 'Desconocido';
       final roomId = data['roomId'];
-      // Asegurarse de que navigatorKey esté disponible antes de intentar navegar
-      if (navigatorKey?.currentState != null) {
-        navigatorKey!.currentState?.pushReplacement(
+      
+      // La navegación solo es posible si el `navigatorKey` está disponible
+      if (navigatorKey?.currentState != null && navigatorKey!.currentState!.mounted) {
+        navigatorKey!.currentState?.push(
           MaterialPageRoute(
-            builder: (_) => JitsiCallPage(roomId: roomId, name: callerName),
+            builder: (_) => IncomingCallAlert(
+              callerName: callerName,
+              roomId: roomId
+            ),
           ),
         );
-        print('Navegando a JitsiCallPage');
+        print('Navegando a IncomingCallAlert por toque de notificación/apertura de app.');
       } else {
-        print('Error: navigatorKey no está disponible para navegar a JitsiCallPage.');
-        // Opcional: Podrías guardar el `data` en SharedPreferences aquí
-        // para navegar una vez que la app esté completamente inicializada
-        array = data; // Guarda el data si no se pudo navegar inmediatamente
+        print('Error: navigatorKey no disponible. Guardando data para manejo en main.');
+        // Si no podemos navegar, guardamos los datos para que sean manejados en la función `main`
+        array = data; 
       }
     } else if (data['type'] == "MESSAGE_NOTIFICATION") {
       if (navigatorKey?.currentState != null) {
@@ -163,140 +317,21 @@ class PushNotificationServices {
     }
   }
 
-  static Future _backgroundHandelr(RemoteMessage message) async {
-    _messageStreamController.add(message.data);
-    array = message.data;
-    final data = message.data;
-    final callType = data['callType'];
-    print(data);
-    if (callType == 'Incoming') {
-      await showIncomingCallNotification(
-        callerName: data['userName'],
-        payload: jsonEncode(data),
-      );
-    } else {
-      showNotification(
-        title: message.notification?.title,
-        body: message.notification?.body,
-        payload: data.toString(),
-      );
-    }
-  }
-
-static Future<void> _onMessageHandelr(RemoteMessage message) async {
-  print('onMessage handler ${message.messageId}');
-
-  final data = message.data;
-  final callType = data['callType'];
-  print(data);
-
-  if (callType == 'Incoming') {
-    // En lugar de mostrar una notificación, navega a la pantalla de alerta
-    final callerName = data['userName'] ?? 'Desconocido';
-    final roomId = data['roomId'];
-
-    // Asegúrate de que el navigatorKey y el estado actual no sean nulos
-    if (navigatorKey?.currentState != null) {
-      // Navega a la pantalla de alerta de llamada entrante
-      navigatorKey!.currentState!.push(
-        MaterialPageRoute(
-          builder: (context) => IncomingCallAlert(
-            callerName: callerName,
-            roomId: roomId,
-          ),
-        ),
-      );
-      print('Navegando a IncomingCallAlert desde _onMessageHandelr');
-    } else {
-      // Si la navegación no es posible (ej. la app se acaba de iniciar),
-      // Muestra la notificación normal como fallback.
-      await showIncomingCallNotification(
-        callerName: data['userName'],
-        payload: jsonEncode(data),
-      );
-      print('navigatorKey no disponible, mostrando notificación de llamada.');
-    }
-  } else {
-    // Para otros tipos de notificaciones, sigue mostrando la notificación normal
-    showNotification(
-      title: message.notification?.title,
-      body: message.notification?.body,
-      payload: data.toString(),
-    );
-  }
-
-  _messageStreamController.add(data['type'] ?? 'no data');
-}
-
-  static Future _onMessageOpenApp(RemoteMessage message) async {
-    _messageStreamController.add(message.data);
-    array = message.data;
-    showNotification(
-      title: message.notification!.title,
-      body: '${message.notification!.body}',
-    );
-  }
-
-  static Future<void> showIncomingCallNotification({
-    required String? callerName,
-    required String payload,
-  }) async {
-    // Para Android, mantenemos la configuración de canal específica para llamadas
-    const androidPlatformChannelSpecifics = AndroidNotificationDetails(
-      'call_channel', // ID de canal único
-      'Llamadas',
-      channelDescription: 'Notificaciones de llamadas entrantes',
-      importance: Importance.max,
-      priority: Priority.high,
-      fullScreenIntent: true, // Propiedad específica de Android
-      visibility: NotificationVisibility.public, // Propiedad específica de Android
-      ticker: 'ticker', // Propiedad específica de Android
-      sound: UriAndroidNotificationSound("assets/tunes/llamada.mp3"), // Sonido personalizado para Android
-      playSound: true,
-    );
-
-    // Para iOS (Darwin), la configuración de sonido para llamadas entrantes
-    // DEBE ser manejada a nivel de payload de FCM (APNs) en tu backend.
-    // FlutterLocalNotificationsPlugin no puede reproducir sonidos de llamada
-    // que se comporten como "ringtone" directamente desde el cliente iOS
-    // si el sonido no está especificado en el payload APNs o si la app
-    // no está en primer plano y el sonido no está configurado como crítico.
-    // El archivo `llamada.mp3` debería ser agregado a Runner/Resources en Xcode
-    // para que un payload de FCM lo pueda referenciar.
-    const iOSPlatformChannelSpecifics = DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-      // Si el sonido 'llamada.mp3' está en tu bundle de recursos de iOS,
-      // y quieres que se reproduzca para notificaciones locales, puedes
-      // especificarlo aquí. Sin embargo, para llamadas entrantes tipo VoIP,
-      // la lógica de sonido más avanzada (como un ringtone prolongado)
-      // se maneja mejor a través de PushKit y CallKit en iOS, que están
-      // fuera del alcance directo de Flutter Local Notifications y requieren
-      // código nativo o plugins específicos de Jitsi/llamadas.
-      // En un escenario real de llamada, el servidor enviaría una notificación APNs
-      // con el campo `sound` apuntando al archivo de sonido en el bundle de la app.
-      sound: 'llamada.mp3', // Asegúrate de que 'llamada.mp3' esté en Runner/Resources en Xcode.
-    );
-
-    const NotificationDetails platformChannelSpecifics = NotificationDetails(
-      android: androidPlatformChannelSpecifics,
-      iOS: iOSPlatformChannelSpecifics, // Incluye la configuración iOS
-    );
-
-    await _notifications.show(
-      12345, // ID único
-      'Llamada entrante',
-      '$callerName te está llamando',
-      platformChannelSpecifics,
-      payload: payload,
-    );
-  }
-
-  static Future initializeApp(GlobalKey<NavigatorState> navigatorKey) async {
+  // Inicialización de la aplicación (Mantenido)
+  static Future<void> initializeApp(GlobalKey<NavigatorState> navigatorKey) async {
     PushNotificationServices.navigatorKey = navigatorKey;
-    await Firebase.initializeApp();
-    await init();
+    
+    // Ya no es necesario llamar a init() aquí, se llama en main()
+    // await init(); // <-- ELIMINAR O COMENTAR
+
+    await Firebase.initializeApp(); 
+    
+    // Quitar la lógica de getInitialMessage() aquí, se maneja en main.dart
+    // RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+    // if (initialMessage != null && initialMessage.data['callType'] == 'Incoming') {
+    //   handleNotificationNavigation(initialMessage.data);
+    // }
+    
     token = await FirebaseMessaging.instance.getToken();
     FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
       token = newToken;
@@ -307,288 +342,13 @@ static Future<void> _onMessageHandelr(RemoteMessage message) async {
     FirebaseMessaging.onMessage.listen(_onMessageHandelr);
     FirebaseMessaging.onMessageOpenedApp.listen(_onMessageOpenApp);
 
-    print(token);
+    print('FCM Token: $token');
   }
 
-  static void navigateToScreen(Map<String, dynamic> data) {
-    if (data['type'] != "AGENT_TRANSFERED") {
-      // prefs.tripId = data.toString();
-      // navigatorKey?.currentState
-      //     ?.push(MaterialPageRoute(builder: (_) => MyAgent()));
-    }
-
-    if (data['type'] == "MESSAGE_NOTIFICATION") {
-      navigatorKey?.currentState?.push(MaterialPageRoute(
-          builder: (_) => ChatScreen(
-                idAgent: data['agentId'].toString(),
-                nombreAgent: data['agentFullname'],
-                nombre: data['driverFullname'],
-                id: data['driverId'],
-                rol: "MOTORISTA",
-                tipoViaje: data['tripType'],
-                idV: data['tripId'],
-                pantalla: true,
-              )));
-    }
-  }
-
-  static closeStreams() {
+  // Cerrar los streams (Mantenido)
+  static void closeStreams() {
     _messageStreamController.close();
   }
 }
+
 // //9B:DA:1E:1E:81:DE:47:80:AC:AD:B5:66:F8:1D:B8:88:64:41:12:EC
-
-// import 'dart:async';
-// import 'dart:convert';
-
-// import 'package:firebase_core/firebase_core.dart';
-// import 'package:firebase_messaging/firebase_messaging.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_auth/Drivers/Screens/Chat/chatscreen.dart';
-// import 'package:flutter_auth/providers/IncomingCallScreen.dart';
-// //import 'package:flutter_auth/Drivers/Screens/Details/components/agents_Trip.dart';
-// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-// import 'package:rxdart/rxdart.dart';
-
-// import '../../providers/JitsiCallPage.dart';
-// //import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
-
-// class PushNotificationServices{
-
-
-//   static FirebaseMessaging messaging = FirebaseMessaging.instance;
-//   static String? token;
-//   static StreamController<dynamic> _messageStreamController = new StreamController.broadcast();
-//   static Stream<dynamic> get messageStream => _messageStreamController.stream;
-//   //final prefs = new PreferenciasUsuario();
-
-//   static GlobalKey<NavigatorState>? navigatorKey;
-//   static dynamic array;
-//   static final _notifications = FlutterLocalNotificationsPlugin();
-//   static final onNotifications = BehaviorSubject<String?>();
-//    // Método para mostrar notificaciones
-//   static Future<void> showNotification({
-//     int id = 0,
-//     String? title,
-//     String? body,
-//     String? payload,
-//   }) async {
-//     var details = await _notificationDetails();
-
-//     // Muestra la notificación
-//     await _notifications.show(id, title, body, details, payload: payload);
-
-//     // Imprimir para confirmar que se ejecuta la notificación
-//     //print("Notificación mostrada: $title - $body");
-//   }
-
-//   // Detalles de la notificación para Android e iOS
-//   static Future<NotificationDetails> _notificationDetails() async {
-//     return const NotificationDetails(
-//       android: AndroidNotificationDetails(
-//         'channel id',
-//         'channel name',
-//         channelDescription: 'channel description',
-//         importance: Importance.max,
-//         priority: Priority.high,
-//       ),
-//       iOS: IOSNotificationDetails(),
-//     );
-//   }
-
-//   // Crear el canal de notificación en Android
-//   static Future<void> _createNotificationChannel() async {
-//     const AndroidNotificationChannel channel = AndroidNotificationChannel(
-//       'channel id', // ID del canal
-//       'channel name', // Nombre del canal
-//       description: 'channel description', // Descripción del canal
-//       importance: Importance.max,
-//       // priority: Priority.high,
-//     );
-//     // Registra el canal en el sistema
-//     await _notifications.resolvePlatformSpecificImplementation<
-//             AndroidFlutterLocalNotificationsPlugin>()
-//         ?.createNotificationChannel(channel);
-//   }
-
-//   // Inicialización de la notificación y Firebase
-//   static Future<void> init({bool initScheduled = false}) async {
-//     await _createNotificationChannel(); // Crea el canal de notificación
-
-//     const android = AndroidInitializationSettings('@mipmap/launcher_icon');
-//     const iOS = IOSInitializationSettings();
-//     const settings = InitializationSettings(android: android, iOS: iOS);
-
-//     await _notifications.initialize(
-//       settings,
-//       onSelectNotification: (payload) async {
-//         if (payload != null) {
-//           try {
-//             final data = jsonDecode(payload);
-//             final callType = data['callType'];
-
-//             if (callType == 'Incoming') {
-//               final callerName = data['userName'] ?? 'Desconocido'; 
-//               final roomId = data['roomId'];               
-//               navigatorKey!.currentState?.push(
-//                   MaterialPageRoute(
-//                     builder: (_) => JitsiCallPage(roomId: roomId, name: callerName),
-//                   ),
-//                 );
-//               } else {
-//                 // Otras notificaciones
-//                 onNotifications.add(payload);
-//               }
-//           } catch (e) {
-//             print('Error al decodificar payload: $e');
-//           }
-//         }
-//       },
-//     );
-//   }
-
-
-//   static Future _backgroundHandelr(RemoteMessage message)async{
-//     //print('onBackground handelr ${message.messageId}'); 
-//     // print('aquí 1');
-//     // print(message.data);
-//     _messageStreamController.add(message.data);
-//     array = message.data;     
-//     final data = message.data;
-//     final callType = data['callType'];
-//     print(data);
-//     if (callType == 'Incoming') {
-//       await showIncomingCallNotification(
-//         callerName: data['userName'],
-//         payload: jsonEncode(data),
-//       );
-//     } else {
-//       // Notificación normal
-//       showNotification(
-//         title: message.notification?.title,
-//         body: message.notification?.body,
-//         payload: data.toString(),
-//       );
-//     }
-//     //navigateToScreen(message.data);          
-//   }
-
-//   static Future _onMessageHandelr(RemoteMessage message)async{
-//     //print('onMessage handelr ${message.messageId}');
-//     // print('aquí 2');
-//     _messageStreamController.add(message.data);
-//     array = message.data; 
-//     final data = message.data;
-//     final callType = data['callType'];
-//     print(data);
-//     if (callType == 'Incoming') {
-//       await showIncomingCallNotification(
-//         callerName: data['userName'],
-//         payload: jsonEncode(data),
-//       );
-//     } else {
-//       // Notificación normal
-//       showNotification(
-//         title: message.notification?.title,
-//         body: message.notification?.body,
-//         payload: data.toString(),
-//       );
-//     }
-//   }
-//   static Future _onMessageOpenApp(RemoteMessage message)async{
-//     //print('onBackground handelr ${message.messageId}');
-//     // print('aquí 3');
-//     // print(message.data);
-//     _messageStreamController.add(message.data); 
-//     array = message.data; 
-//     showNotification(
-//       title: message.notification!.title,
-//       body: '${message.notification!.body}',
-//     );
-//   }
-
-//   static Future<void> showIncomingCallNotification({
-//       required String? callerName,
-//       required String payload,
-//     }) async {
-//       const AndroidNotificationDetails androidPlatformChannelSpecifics =
-//           AndroidNotificationDetails(
-//         'call_channel', // Unique channel ID
-//         'Llamadas',
-//         channelDescription: 'Notificaciones de llamadas entrantes',
-//         importance: Importance.max,
-//         priority: Priority.high,
-//         fullScreenIntent: true,
-//         visibility: NotificationVisibility.public,
-//         ticker: 'ticker',
-//         sound: const UriAndroidNotificationSound("assets/tunes/llamada.mp3"),
-//         playSound: true,
-//       );
-
-//       const NotificationDetails platformChannelSpecifics =
-//           NotificationDetails(android: androidPlatformChannelSpecifics);
-
-//       await _notifications.show(
-//         12345, // ID único
-//         'Llamada entrante',
-//         '$callerName te está llamando',
-//         platformChannelSpecifics,
-//         payload: payload,      
-//       );
-//     }
-
-
-//     static Future initializeApp(GlobalKey<NavigatorState> navigatorKey)async{   
-//     //push notifications
-//     PushNotificationServices.navigatorKey = navigatorKey;
-//     //final prefs = new PreferenciasUsuario();
-//     await Firebase.initializeApp();
-//     await init();
-//     token = await FirebaseMessaging.instance.getToken();
-//     FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
-//     // Manejar la actualización del token de registro
-//     token = newToken;
-//       print("Nuevo token de registro: $token");
-//       // Aquí puedes enviar el nuevo token al servidor de backend para actualizarlo
-//     });
-//     //llamado
-//     FirebaseMessaging.onBackgroundMessage(_backgroundHandelr);
-//     FirebaseMessaging.onMessage.listen(_onMessageHandelr);
-//     FirebaseMessaging.onMessageOpenedApp.listen(_onMessageOpenApp);
-
-
-//     //token = prefs.tokenIdMobile;
-//     print(token);
-//   }
-
-//   static void navigateToScreen(Map<String, dynamic> data) {
-//     if (data['type'] != "AGENT_TRANSFERED") {
-//       //prefs.tripId = data.toString();
-//       // navigatorKey?.currentState
-//       //     ?.push(MaterialPageRoute(builder: (_) => MyAgent()));
-//     }
-
-//     if (data['type'] == "MESSAGE_NOTIFICATION") {  
-//       navigatorKey?.currentState
-//           ?.push(MaterialPageRoute(builder: (_) => ChatScreen(
-//               idAgent: data['agentId'].toString(),
-//               nombreAgent: data['agentFullname'],
-//               nombre: data['driverFullname'],
-//               id: data['driverId'],
-//               rol: "MOTORISTA",
-//               tipoViaje: data['tripType'],
-//               idV: data['tripId'],
-//               pantalla: true,
-//             )));
-      
-//     }
-//   }
-
-//   //static listenNotifications()=> onNotifications.stream.listen(event);
-//   //static event(String? payload)=>Get.to(()=>const MyHomePage());   
-
-//   static closeStreams(){
-//     _messageStreamController.close();
-//   }
-
-// }
