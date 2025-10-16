@@ -254,13 +254,17 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       print('Nuevo mensaje recibido: $data');
       print(mounted);
       if (mounted) {
-        // 1. Convertir el dato a un objeto MessageDriver para acceder a la sala
-        final incomingMessage = MessageDriver.fromJson(data is List ? data[0] : data);
-
-        // 2. APLICAR EL FILTRO DE SALA CRÍTICO
-        // Solo añade el mensaje si su ID de sala coincide con el ID de sala de la pantalla actual.
-        if (incomingMessage.sala == widget.idV) {
-          
+          // 1. Convertir el dato a un objeto MessageDriver para acceder a la sala
+          final incomingMessage = MessageDriver.fromJson(data is List ? data[0] : data);
+          // IDs de la conversación actual que se está mostrando en la pantalla
+          final currentDriverId = widget.id;       // ID del motorista (Tú)
+          final currentAgentId = widget.idAgent;   // ID del agente con el que hablas
+          final senderId = incomingMessage.id;
+          final receiverId = incomingMessage.idReceptor;
+          final isFromCurrentAgent = (senderId == currentAgentId && receiverId == currentDriverId);
+          final isFromCurrentDriver = (senderId == currentDriverId && receiverId == currentAgentId);
+          if (isFromCurrentAgent || isFromCurrentDriver) {
+              
           // El resto de tu lógica de agregar mensaje permanece igual
           if (data is List) {
             data.forEach((element) {

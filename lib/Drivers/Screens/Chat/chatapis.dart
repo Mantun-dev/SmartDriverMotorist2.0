@@ -70,6 +70,7 @@ class ChatApis {
       'sala': sala,
       'user': nameDriver,
       'id': idDriver,
+      "idReceptor": idR,
       'hora': formattedHour,
       'dia': dia,
       'mes': mes,
