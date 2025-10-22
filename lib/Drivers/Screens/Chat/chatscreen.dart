@@ -715,10 +715,64 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                             children: [
                               SizedBox(width: 5),
                               NeumorphicButton(
+                                  margin: EdgeInsets.only(top: 0),
+                                  onPressed: () {
+                                    _messageInputController.text =
+                                        "Buen día";
+                                    if (_messageInputController.text
+                                        .trim()
+                                        .isNotEmpty) {
+                                      _sendMessage();
+                                    }
+                                  },
+                                  style: NeumorphicStyle(
+                                  color: Color.fromRGBO(40, 93, 169, 1),
+                                  shape: NeumorphicShape.flat,
+                                  boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(8)),
+                                  depth: 0, // Quita la sombra estableciendo la profundidad en 0
+                                  border: NeumorphicBorder( // Agrega un borde
+                                    color: Theme.of(context).disabledColor, // Color del borde
+                                    width: 1.0, // Ancho del borde
+                                  ),
+                                ),
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: Text(
+                                    "Buen día",
+                                    style: TextStyle(color: Colors.white),
+                                  )),
+                              SizedBox(width: 5),
+                              NeumorphicButton(
+                                  margin: EdgeInsets.only(top: 0),
+                                  onPressed: () {
+                                    _messageInputController.text =
+                                        "Estoy aquí";
+                                    if (_messageInputController.text
+                                        .trim()
+                                        .isNotEmpty) {
+                                      _sendMessage();
+                                    }
+                                  },
+                                  style: NeumorphicStyle(
+                                  color: Color.fromRGBO(40, 93, 169, 1),
+                                  shape: NeumorphicShape.flat,
+                                  boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(8)),
+                                  depth: 0, // Quita la sombra estableciendo la profundidad en 0
+                                  border: NeumorphicBorder( // Agrega un borde
+                                    color: Theme.of(context).disabledColor, // Color del borde
+                                    width: 1.0, // Ancho del borde
+                                  ),
+                                ),
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: Text(
+                                    "Estoy aquí",
+                                    style: TextStyle(color: Colors.white),
+                                  )),
+                              SizedBox(width: 5),
+                              NeumorphicButton(
                                 margin: EdgeInsets.only(top: 0),
                                 onPressed: () {
                                     _messageInputController.text =
-                                        "Estoy en camino";
+                                        "En camino";
                                     if (_messageInputController.text
                                         .trim()
                                         .isNotEmpty) {
@@ -737,7 +791,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                                 ),
                                 padding: const EdgeInsets.all(12.0),
                                 child: Text(
-                                  "Estoy en camino",
+                                  "En camino",
                                   style: TextStyle(color: Colors.white),
                                 ),
                               ),
@@ -799,33 +853,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                                 ),
                               ),
         
-                              SizedBox(width: 5),
-                              NeumorphicButton(
-                                  margin: EdgeInsets.only(top: 0),
-                                  onPressed: () {
-                                    _messageInputController.text =
-                                        "Estoy aquí";
-                                    if (_messageInputController.text
-                                        .trim()
-                                        .isNotEmpty) {
-                                      _sendMessage();
-                                    }
-                                  },
-                                  style: NeumorphicStyle(
-                                  color: Color.fromRGBO(40, 93, 169, 1),
-                                  shape: NeumorphicShape.flat,
-                                  boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(8)),
-                                  depth: 0, // Quita la sombra estableciendo la profundidad en 0
-                                  border: NeumorphicBorder( // Agrega un borde
-                                    color: Theme.of(context).disabledColor, // Color del borde
-                                    width: 1.0, // Ancho del borde
-                                  ),
-                                ),
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: Text(
-                                    "Estoy aquí",
-                                    style: TextStyle(color: Colors.white),
-                                  )),
+                              
                               SizedBox(width: 5),
                               NeumorphicButton(
                                   margin: EdgeInsets.only(top: 0),

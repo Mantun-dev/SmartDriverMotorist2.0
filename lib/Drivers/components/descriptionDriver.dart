@@ -1704,6 +1704,8 @@ class _DriverDescriptionState extends State<DriverDescription>
                       icon: SvgPicture.asset(  
                         "assets/icons/eliminar.svg",
                         color: Colors.white,
+                        width: 18,
+                                                    height: 18,
                       ),
                       onPressed: () async{
                         confirmationDialog.show(
