@@ -145,6 +145,7 @@ class TripAgent {
     this.neighborhoodReferencePoint,
     this.latitude, // New latitude field
     this.longitude, // New longitude field
+    this.finalVerification,
   });
 
   int? tripId;
@@ -170,6 +171,7 @@ class TripAgent {
   String? neighborhoodReferencePoint;
   double? latitude; // New latitude field
   double? longitude; // New longitude field
+  dynamic finalVerification;
 
   factory TripAgent.fromJson(Map<String, dynamic> json) => TripAgent(
         tripId: json["tripId"],
@@ -195,6 +197,7 @@ class TripAgent {
         neighborhoodReferencePoint: json["neighborhoodReferencePoint"],
         latitude: json["latitude"],
         longitude: json["longitude"],
+        finalVerification: json["finalVerification"]
       );
 
   Map<String, dynamic> toJson() => {
@@ -221,6 +224,7 @@ class TripAgent {
         "neighborhoodReferencePoint": neighborhoodReferencePoint,
         "latitude": latitude,
         "longitude": longitude,
+        "finalVerification": finalVerification,
       };
 }
 

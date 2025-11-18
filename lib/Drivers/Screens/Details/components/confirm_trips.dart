@@ -20,7 +20,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 // import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
-import 'dart:convert' show json;
+import 'dart:convert' show json, jsonEncode;
 import 'package:flutter_auth/constants.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:quickalert/quickalert.dart';
@@ -179,13 +179,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
 
     LoadingIndicatorDialog().dismiss();
     //print(responses.body);
-    if (responses.statusCode == 200 && si.ok!) {
-      new Future.delayed(new Duration(seconds: 2), () {
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-                builder: (BuildContext context) => HomeDriverScreen()),
-            (Route<dynamic> route) => false);
-      });
+    if (responses.statusCode == 200 && si.ok == true) {
       if (mounted) {
         WarningSuccessDialog().show(
           context,
@@ -194,13 +188,39 @@ class _DataTableExample extends State<MyConfirmAgent> {
           onOkay: () {},
         );
       }
+      new Future.delayed(new Duration(seconds: 2), () {
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+                builder: (BuildContext context) => HomeDriverScreen()),
+            (Route<dynamic> route) => false);
+      });      
     } else if (si.ok != true) {
-      WarningSuccessDialog().show(
-        context,
-        title: "${si.message}",
-        tipo: 1,
-        onOkay: () {},
-      );
+      print(si.message);      
+      if (tipoViaje == 'Entrada') {
+        WarningSuccessDialog().show(
+          context,
+          title: "${si.message}",
+          tipo: 1,
+          onOkay: () {},
+        );        
+      }
+      if(tipoViaje == 'Salida' && si.message != 'Debe pasar lista a los agentes que abordaron'){
+        WarningSuccessDialog().show(
+          context,
+          title: "${si.message}",
+          tipo: 1,
+          onOkay: () {},
+        );  
+      }
+      if(tipoViaje == 'Salida' && si.message == 'Debe pasar lista a los agentes que abordaron'){
+        showFullScreenAgentsModal(context, si.message ?? "Error", data.driverId!);
+        WarningSuccessDialog().show(
+          context,
+          title: "${si.message}",
+          tipo: 1,
+          onOkay: () {},
+        );  
+      }
     }
     Map data2 = {"Estado": 'FINALIZADO'};
     String sendData2 = json.encode(data2);
@@ -332,6 +352,299 @@ class _DataTableExample extends State<MyConfirmAgent> {
       }
     });
   }
+
+void showFullScreenAgentsModal(BuildContext context, String message, int driverId) {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    barrierColor: Colors.black.withOpacity(0.4),
+    builder: (context) {
+      return FutureBuilder<TripsList4>(
+        future: fetchAgentsTripInProgress(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError || !snapshot.hasData) {
+            return AlertDialog(
+              title: const Text('Error'),
+              content: Text('No se pudieron cargar los agentes.\n${snapshot.error}'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cerrar'),
+                ),
+              ],
+            );
+          }
+
+          final tripData = snapshot.data!;
+          final agentes = tripData.trips?.first.tripAgent ?? [];
+
+          final agentesFiltrados = <TripAgent>[];
+
+          for (int i = 0; i < agentes.length; i++) {
+            if (traveledB(tripData, i)) {
+              agentesFiltrados.add(agentes[i]);
+            }
+          }
+
+
+          // Construcción de la lista local (mutable)
+          var agentesLocal = agentesFiltrados.map((a) {
+            //hacer solamente cuando el a.traveled == 1
+            String direccion;
+            if (a.agentReferencePoint == null || a.agentReferencePoint == "") {
+              direccion = "${a.neighborhoodName ?? ''}, ${a.townName ?? ''}";
+            } else {
+              direccion =
+                  "${a.agentReferencePoint}, ${a.neighborhoodName ?? ''}, ${a.townName ?? ''}";
+            }
+            bool? presente;
+            final fv = a.finalVerification;
+            // debug
+            print('finalVerification de agente ${a.agentId}:');
+            print(fv);
+
+            if (fv == null) {
+              presente = null;
+            } else if (fv is bool) {
+              presente = fv;
+            } else if (fv is int) {
+              if (fv == 1) presente = true;
+              else if (fv == 0) presente = false;
+              else presente = null;
+            } else if (fv is String) {
+              if (fv == "1") presente = true;
+              else if (fv == "0") presente = false;
+              else if (fv.toLowerCase() == "true") presente = true;
+              else if (fv.toLowerCase() == "false") presente = false;
+              else presente = null;
+            } else {
+              // tipo inesperado
+              presente = null;
+            }
+
+            return {
+              "agentId": a.agentId,
+              "nombre": a.agentFullname ?? "Sin nombre",
+              "direccion": direccion,
+              "presente": presente,
+            };
+          }).toList();
+
+          Future<void> registrarVerificacion(int agentId, int isPresent) async {
+            try {
+              final url = Uri.parse('$ip/apis/registerAgentFinalVerification');
+              final response = await http.post(
+                url,
+                headers: {"Content-Type": "application/json"},
+                body: jsonEncode({
+                  "tripId": prefs.tripId,
+                  "driverId": driverId,
+                  "agentId": agentId,
+                  "isPresent": isPresent
+                }),
+              );
+              if (response.statusCode == 200) {
+                print("✅ Verificación registrada para agente $agentId (isPresent=$isPresent)");
+              } else {
+                print("⚠️ Error al registrar verificación: ${response.body}");
+              }
+            } catch (e) {
+              print("❌ Error en la solicitud: $e");
+            }
+          }
+
+          return StatefulBuilder(
+            builder: (context, setState) {
+              int presentes = agentesLocal.where((a) => a["presente"] == true).length;
+              int ausentes = agentesLocal.where((a) => a["presente"] == false).length;
+
+              return Scaffold(
+                appBar: AppBar(
+                  automaticallyImplyLeading: false,
+                  backgroundColor: Colors.white,
+                  elevation: 1,
+                  title: const Text(
+                    "Verificar agentes abordados",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  centerTitle: true,
+                  actions: [
+                    IconButton(
+                      icon: const Icon(Icons.close, color: Colors.redAccent, size: 30),
+                      onPressed: () => Navigator.pop(context),
+                    )
+                  ],
+                ),
+                backgroundColor: Colors.white,
+                body: Column(
+                  children: [
+                    const SizedBox(height: 6),
+                    Text("Presentes: $presentes"),
+                    Text("Ausentes: $ausentes"),
+                    Text("Total: ${agentesLocal.length}"),
+                    const SizedBox(height: 10),
+
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: agentesLocal.length,
+                        itemBuilder: (context, index) {
+                          dynamic agente = agentesLocal[index];
+                          final bool? estado = agente["presente"];
+
+                          Icon estadoIcono;
+                          if (estado == true) {
+                            estadoIcono = const Icon(Icons.check_circle, color: Colors.green, size: 22);
+                          } else if (estado == false) {
+                            estadoIcono = const Icon(Icons.cancel, color: Colors.red, size: 22);
+                          } else {
+                            estadoIcono = const Icon(Icons.help_outline, color: Colors.grey, size: 22);
+                          }
+
+                          return Card(
+                            elevation: 3,
+                            margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(14),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Nombre
+                                  Row(
+                                    children: [
+                                      estadoIcono,
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Text(
+                                          'Nombre: ${agente["nombre"]}',
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  // Dirección
+                                  Row(
+                                    children: [
+                                      Container(
+                                        width: 18,
+                                        height: 18,
+                                        child: SvgPicture.asset(
+                                          "assets/icons/Casa.svg",
+                                          color: Theme.of(context).primaryIconTheme.color,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Text(
+                                          'Dirección: ${agente["direccion"]}',
+                                          style: const TextStyle(fontSize: 14),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 14),
+                                  // Botones
+                                  Row(
+                                    children: [
+                                      // Botón Presente
+                                      Expanded(
+                                        child: ElevatedButton(
+                                          onPressed: () async {
+                                            // actualizamos UI inmediatamente
+                                            setState(() => agentesLocal[index]["presente"] = true);
+                                            await registrarVerificacion(agente["agentId"], 1); // Presente = 1
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Theme.of(context).primaryColor,
+                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              if (agentesLocal[index]["presente"] == true)
+                                                const Icon(Icons.check, color: Colors.white, size: 18),
+                                              if (agentesLocal[index]["presente"] == true) const SizedBox(width: 6),
+                                              const Text("Presente", style: TextStyle(color: Colors.white, fontSize: 16)),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      // Botón Ausente
+                                      Expanded(
+                                        child: OutlinedButton(
+                                          onPressed: () async {
+                                            setState(() => agentesLocal[index]["presente"] = false);
+                                            await registrarVerificacion(agente["agentId"], 0); // Ausente = 0
+                                          },
+                                          style: OutlinedButton.styleFrom(
+                                            side: const BorderSide(color: Colors.black),
+                                            backgroundColor: Colors.white,
+                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              if (agentesLocal[index]["presente"] == false)
+                                                const Icon(Icons.check, color: Colors.black, size: 18),
+                                              if (agentesLocal[index]["presente"] == false) const SizedBox(width: 6),
+                                              const Text("Ausente", style: TextStyle(color: Colors.black, fontSize: 16)),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                bottomNavigationBar: Container(
+                  padding: const EdgeInsets.all(16),
+                  child: ElevatedButton(
+                    onPressed: ()async {
+                      Navigator.pop(context);
+                      http.Response responses = await http.get(Uri.parse(
+                      '$ip/apis/validateTripAsCompletedFinal/${prefs.tripId}/1'));
+                      final si = Driver2.fromJson(json.decode(responses.body));
+                      if (responses.statusCode == 200 && si.ok == true) {                        
+                        fetchRegisterTripCompleted();
+                      } else if (si.ok != true) {
+                        fetchRegisterTripCompleted();
+                        //return;
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      backgroundColor: Theme.of(context).primaryColor,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                    child: const Text("Finalizar", style: TextStyle(color: Colors.white, fontSize: 18)),
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      );
+    },
+  );
+}
 
   void getCounterNotification(String tripId) async {
     
@@ -600,16 +913,18 @@ class _DataTableExample extends State<MyConfirmAgent> {
   }
 
   respError(resp){
-    LoadingIndicatorDialog().dismiss();
-    if(resp['type']=='error'){
-      WarningSuccessDialog().show(
-        context,
-        title: '${resp['msg']}',
-        tipo: 1,
-        onOkay: () {},
-      ); 
-      return;
-    } 
+    if (mounted) {      
+      LoadingIndicatorDialog().dismiss();
+      if(resp['type']=='error'){
+        WarningSuccessDialog().show(
+          context,
+          title: '${resp['msg']}',
+          tipo: 1,
+          onOkay: () {},
+        ); 
+        return;
+      } 
+    }
   }
 
   respMsg(resp){

@@ -53,8 +53,10 @@ class LoadingIndicatorDialog {
 
   dismiss() {
     if(isDisplayed) {
-      Navigator.pop(_context);
-      isDisplayed = false;
+      if(_context.mounted){
+        Navigator.pop(_context);
+        isDisplayed = false;
+      }
     }
   }
 }
