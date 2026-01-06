@@ -9,6 +9,9 @@ MessageDriver messageFromJson(String str) =>
 
 String messageToJson(MessageDriver data) => json.encode(data.toJson());
 
+enum MessageStatus { sending, sent, delivered, read }
+
+
 class MessageDriver {
   MessageDriver(
       {this.user,
@@ -24,6 +27,8 @@ class MessageDriver {
       this.leido,
       this.id2,
       this.mostrarF,
+      this.tempId,
+      this.status = MessageStatus.sending,
     });
 
   String? user;
@@ -39,6 +44,8 @@ class MessageDriver {
   bool? leido;
   dynamic id2;
   bool? mostrarF;
+  dynamic tempId;
+  MessageStatus status;
 
   factory MessageDriver.fromJson(Map<String, dynamic> json) => MessageDriver(
       mensaje: json["mensaje"],
@@ -54,6 +61,8 @@ class MessageDriver {
       leido: json["leido"],
       id2: json["id2"],
       mostrarF: json["mostrarF"], 
+      tempId: json["tempId"],
+      status: json["leido"] == true ? MessageStatus.read : MessageStatus.sent,
     );
 
   Map<String, dynamic> toJson() => {
@@ -69,6 +78,51 @@ class MessageDriver {
         "tipo": tipo,
         "leido": leido,
         "id2": id2,
+        "tempId": tempId,
         "mostrarF": mostrarF,
       };
+
+      // --- Modificación en message_chat.dart ---
+
+      MessageDriver copyWith({
+          String? user,
+          dynamic sala,
+          dynamic id,
+          String? mensaje,
+          // 🛑 ¡AÑADIR TODOS ESTOS CAMPOS COMO PARÁMETROS AQUÍ! 🛑
+          dynamic hora,
+          dynamic dia,
+          dynamic mes,
+          dynamic idReceptor,
+          dynamic ao,
+          // --------------------------------------------------------
+          String? tipo,
+          bool? leido,
+          dynamic id2,
+          bool? mostrarF,
+          dynamic tempId,
+          MessageStatus? status, // Permite actualizar solo el status
+      }) {
+          return MessageDriver(
+              user: user ?? this.user,
+              sala: sala ?? this.sala,
+              id: id ?? this.id,
+              mensaje: mensaje ?? this.mensaje,
+              
+              // 🛑 Propagar los valores 🛑
+              hora: hora ?? this.hora, 
+              dia: dia ?? this.dia,
+              mes: mes ?? this.mes,
+              idReceptor: idReceptor ?? this.idReceptor,
+              ao: ao ?? this.ao,
+              // -----------------------
+              
+              tipo: tipo ?? this.tipo,
+              leido: leido ?? this.leido,
+              id2: id2 ?? this.id2,
+              mostrarF: mostrarF ?? this.mostrarF,
+              tempId: tempId ?? this.tempId,
+              status: status ?? this.status, // Actualización clave
+          );
+      }
 }

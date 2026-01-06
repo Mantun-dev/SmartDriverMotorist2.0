@@ -1,9 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_auth/Drivers/Screens/Chat/socketChat.dart';
+import 'package:flutter_auth/Drivers/models/message_chat.dart';
+import 'package:flutter_auth/main.dart';
+import 'package:flutter_auth/providers/chat.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../../../helpers/base_client.dart';
 import '../../../helpers/res_apis.dart';
 
@@ -39,7 +43,7 @@ class ChatApis {
     print(streamSocket.socket!.connected);
   }
 
-  void sendMessage(String message,String sala,String nombre,String idDriver,String nameDriver,String idDb,String idR,) async {
+ void sendMessage(String message,String sala,String nombre,String idDriver,String nameDriver,String idDb,String idR,String tempMessageId) async {
     DateTime now = DateTime.now();
     String formattedHour = DateFormat('hh:mm a').format(now);
     var formatter = new DateFormat('dd');
@@ -63,8 +67,13 @@ class ChatApis {
         };
 
     // Map str = json.decode(sendMessage);
-    await BaseClient().post(
+    BaseClient().post(
         RestApis.messages, sendMessage, {"Content-Type": "application/json"});
+
+    Provider.of<ChatProvider>(navigatorKey.currentState!.context, listen: false).updateMessageStatus(
+            tempMessageId, // Usamos el ID TEMPORAL
+            MessageStatus.sent 
+        );
     streamSocket.socket!.emit('enviar-mensaje2', {
       'mensaje': message,
       'sala': sala,
@@ -75,7 +84,8 @@ class ChatApis {
       'dia': dia,
       'mes': mes,
       'año': anio,
-      "leido": false
+      "leido": false,
+      'tempId': tempMessageId
     });
     Map sendNotification = {
       "receiverId": idR,
@@ -93,7 +103,8 @@ class ChatApis {
 
   }
 
-  Future<void> sendAudio(String audioPath, String sala, String nombre, String idDriver, String nameDriver, String idDb, String idR) async {
+
+  Future<void> sendAudio(String audioPath, String sala, String nombre, String idDriver, String nameDriver, String idDb, String idR,String tempMessageId) async {
     try {
       DateTime now = DateTime.now();
       String formattedHour = DateFormat('hh:mm a').format(now);
@@ -103,11 +114,11 @@ class ChatApis {
       String mes = formatter2.format(now);
       var formatter3 = new DateFormat('yy');
       String anio = formatter3.format(now);
-
+      
       if (await File(audioPath).exists()) {
         var request = http.MultipartRequest(
           'POST',
-          Uri.parse(RestApis.audios), // Reemplaza con la URL correcta
+          Uri.parse(RestApis.audios), 
         );
 
         var audioFile = File(audioPath);
@@ -115,16 +126,19 @@ class ChatApis {
           print('Archivo de audio no encontrado en la ruta especificada.');
           return;
         }
-        print( audioFile.path.split('/').last);
-        // Agregar el archivo de audio al campo de archivo en la solicitud
-        request.files.add(
-          http.MultipartFile(
-            'audio', // Nombre del campo que se espera en el servidor
-            audioFile.readAsBytes().asStream(),
-            audioFile.lengthSync(),
-            filename: audioFile.path.split('/').last, // Obtener el nombre del archivo
-          ),
+        
+        // --- INICIO DEL CAMBIO ---
+        // 1. Usar http.MultipartFile.fromPath
+        var multipartFile = await http.MultipartFile.fromPath(
+          'audio', // Nombre del campo que se espera en el servidor
+          audioPath,
+          filename: audioFile.path.split('/').last,
         );
+        
+        // 2. Agregar el archivo de audio (MultipartFile)
+        request.files.add(multipartFile);
+        
+        // --- FIN DEL CAMBIO ---
 
         var response = await request.send();
           String responseBody = await response.stream.bytesToString();
@@ -160,12 +174,14 @@ class ChatApis {
             'sala': sala,
             'user': nameDriver,
             'id': idDriver,
+            "idReceptor": idR,
             'hora': formattedHour,
             'tipo': 'AUDIO',
             'dia': dia,
             'mes': mes,
             'año': anio,
-            "leido": false
+            "leido": false,
+            'tempId': tempMessageId
           });
           Map sendNotification = {
             "receiverId": idR,

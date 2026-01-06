@@ -22,11 +22,13 @@ import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart';
 //import 'package:flutter_auth/constants.dart';
 // import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
+import 'package:record/record.dart';
 // import 'package:record/record.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:url_launcher/url_launcher.dart';
@@ -85,7 +87,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   // final StreamSocket streamSocket = StreamSocket(host: '192.168.0.9:3000');
   bool activateMic = false;
   late AudioPlayer _audioPlayer;
-  // late Record _audioRecord;
+  late AudioRecorder _audioRecord;
   List<String> _audioList = [];
   String filePathP = '';
   bool _isCalling = false;
@@ -95,23 +97,56 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   
   // MQTTManager? mqttManager;
 
-  _sendMessage() {  
-    if (streamSocket.socket!.disconnected) {
-      print('Socket desconectado, intentando reconectar...');
-      streamSocket.socket!.connect();
-    }  
-    ChatApis().sendMessage(_messageInputController.text.trim(), sala.toString(),
-        nameAgent!, widget.id!, nameDriver!, idDb!, widget.idAgent!);
+ _sendMessage() {
+  final messageText = _messageInputController.text.trim();
+  if (messageText.isEmpty) return; 
 
-    _messageInputController.clear();
-  }
+  // 1. Generar ID temporal único para rastreo
+  final tempId = DateTime.now().millisecondsSinceEpoch.toString(); 
+  final now = DateTime.now();
+  final formattedHour = DateFormat('hh:mm a').format(now);
+  
+  // 2. Crear el mensaje local PENDIENTE
+  final pendingMessage = MessageDriver(
+      id: widget.id, // <--- CLAVE: ID REAL del emisor (Tú) para la alineación
+      idReceptor: widget.idAgent,
+      user: nameDriver,
+      mensaje: messageText,
+      // ... (otros campos de fecha/tipo)
+      dia: DateFormat('dd').format(now), // -> Ejemplo: "10"
+      mes: DateFormat('MM').format(now), // -> Ejemplo: "12"
+      ao: DateFormat('yy').format(now),  // -> Ejemplo: "25"
+      hora: formattedHour,
+      leido: false, 
+      status: MessageStatus.sending, // PENDIENTE (RELOJ)
+      tempId: tempId, // <--- ID TEMPORAL para actualización
+  );
+
+  // 3. Añadir el mensaje PENDIENTE al Provider inmediatamente
+  Provider.of<ChatProvider>(context, listen: false).addNewMessage(pendingMessage);
+  
+  _messageInputController.clear();
+  
+  // 4. Llamar a la función de envío real
+  ChatApis().sendMessage(
+      messageText,
+      sala.toString(),
+      nameAgent!,
+      widget.id!, // idDriver (ID real del motorista)
+      nameDriver!,
+      idDb!,
+      widget.idAgent!, // idR
+      tempId // <--- Pasamos el ID temporal
+  );
+}
 
   void _sendAudio(String audioPath) async {
     if (await File(audioPath).exists()) {
       try {
-
+        // 1. Generar ID temporal único para rastreo
+        final tempId = DateTime.now().millisecondsSinceEpoch.toString(); 
         ChatApis().sendAudio(audioPath, sala.toString(),
-        nameAgent!, widget.id!, nameDriver!, idDb!, widget.idAgent!);
+        nameAgent!, widget.id!, nameDriver!, idDb!, widget.idAgent!, tempId);
       } catch (e) {
         // Handle any error during compression or sending
         print('Error al enviar el audio: $e');
@@ -138,7 +173,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     _audioPlayer = AudioPlayer();
-    // _audioRecord = Record();
+    _audioRecord = AudioRecorder();
     recargar=0;
     WidgetsBinding.instance.addObserver(this);
     ChatApis().dataLogin(widget.id!, widget.rol!, widget.nombre!, widget.idV!,
@@ -252,36 +287,57 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   void datas() {
     streamSocket.socket!.on('enviar-mensaje2', ((data) {
       print('Nuevo mensaje recibido: $data');
-      print(mounted);
       if (mounted) {
-          // 1. Convertir el dato a un objeto MessageDriver para acceder a la sala
           final incomingMessage = MessageDriver.fromJson(data is List ? data[0] : data);
-          // IDs de la conversación actual que se está mostrando en la pantalla
-          final currentDriverId = widget.id;       // ID del motorista (Tú)
-          final currentAgentId = widget.idAgent;   // ID del agente con el que hablas
-          final senderId = incomingMessage.id;
+          final currentDriverId = widget.id;
+          
+          // El ID del mensaje ahora contiene el ID REAL del emisor (Tu ID o el del Agente)
+          final senderId = incomingMessage.id; 
           final receiverId = incomingMessage.idReceptor;
-          final isFromCurrentAgent = (senderId == currentAgentId && receiverId == currentDriverId);
-          final isFromCurrentDriver = (senderId == currentDriverId && receiverId == currentAgentId);
+          
+          final isFromCurrentAgent = (senderId == widget.idAgent && receiverId == currentDriverId);
+          final isFromCurrentDriver = (senderId == currentDriverId && receiverId == widget.idAgent);
+          
+          // CLAVE: El servidor nos devuelve el ID temporal que enviamos
+          final receivedTempId = incomingMessage.tempId; 
+
           if (isFromCurrentAgent || isFromCurrentDriver) {
               
-          // El resto de tu lógica de agregar mensaje permanece igual
-          if (data is List) {
-            data.forEach((element) {
-              Provider.of<ChatProvider>(context, listen: false).addNewMessage(MessageDriver.fromJson(element));
-            });
+              // 🛑 A. SI ES TU PROPIO MENSAJE RE-EMITIDO (ECHO) 🛑
+              if (isFromCurrentDriver && receivedTempId != null) {
+                  // Ya está en la lista (lo agregaste en _sendMessage).
+                  // ¡Simplemente actualizamos su estado!
+                  
+                  // Actualizar a MessageStatus.delivered/read (Doble check)
+                  Provider.of<ChatProvider>(context, listen: false).updateMessageStatus(
+                      receivedTempId, 
+                      MessageStatus.delivered // Ya fue emitido y retransmitido
+                  );
+                  print('🟢 Mensaje propio actualizado (Echo). ID: $receivedTempId');
+
+              } 
+              // 🛑 B. SI ES UN MENSAJE NUEVO (Del AGENTE) 🛑
+              else if (isFromCurrentAgent) {
+                  // Es un mensaje nuevo que viene del otro usuario. Hay que agregarlo.
+                  
+                  if (data is List) {
+                      data.forEach((element) {
+                          Provider.of<ChatProvider>(context, listen: false).addNewMessage(MessageDriver.fromJson(element));
+                      });
+                  } else {
+                      Provider.of<ChatProvider>(context, listen: false).addNewMessage(incomingMessage);
+                  }
+                  
+                  // Marca como leído el mensaje del agente
+                  ChatApis().readMessage(widget.idV!, widget.idAgent!, widget.id!);
+              }
+              // Si no es un echo tuyo ni un mensaje del agente, no hacemos nada (por seguridad/otros flujos)
+
           } else {
-            Provider.of<ChatProvider>(context, listen: false).addNewMessage(incomingMessage);
+              print('Mensaje recibido para otra sala: ${incomingMessage.sala}, actual es: ${widget.idV}');
           }
-          
-          // Marca como leído solo el mensaje de la sala actual
-          ChatApis().readMessage(widget.idV!, widget.idAgent!, widget.id!);
-          
-        }else{
-          print('Mensaje recibido para otra sala: ${incomingMessage.sala}, actual es: ${widget.idV}');
-        }
       }
-    }));
+}));
 
     // El listener de cargarM sí usa .clear() porque es para cargar la lista completa
     streamSocket.socket!.on('cargarM', ((listM) {
@@ -332,7 +388,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   void dispose() {
     super.dispose();
     _audioPlayer.dispose();
-    // _audioRecord.dispose();
+    _audioRecord.dispose();
     _messageInputController.dispose();
 
     //creación del dispose para removerlo después del evento
@@ -364,6 +420,11 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     String url = 'google.navigation:q=$destination&mode=d';
     await launchUrl(Uri.parse(url));
   }
+
+
+
+
+
   @override
   Widget build(BuildContext context) {
 
@@ -657,38 +718,60 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                                                   mainAxisSize: MainAxisSize.min,
                                                   children: [
                                                     Expanded(child: SizedBox()),
-                                                    if (message.id ==
-                                                        widget.id)
-                                                      Text(
-                                                        message.hora,
-                                                        style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontSize: 10),
-                                                      ),
-                                                    if (message.id !=
-                                                        widget.id)
-                                                      Text(
-                                                        message.hora,
-                                                        style: TextStyle(
-                                                            color: Theme.of(context).primaryColorDark,
-                                                            fontSize: 10),
-                                                      ),
-                                                    SizedBox(
-                                                      width: 5,
+                                                    // Muestra la hora
+                                                    Text(
+                                                      message.hora,
+                                                      style: TextStyle(
+                                                          color: message.id == widget.id 
+                                                              ? Colors.white 
+                                                              : Theme.of(context).primaryColorDark,
+                                                          fontSize: 10),
                                                     ),
-                                                    if (message.id ==
-                                                        widget.id)
-                                                      Icon(
-                                                        message.leido == true
-                                                            ? Icons.done_all
-                                                            : Icons.done,
-                                                        size: 16,
-                                                        color: message.leido == true
-                                                            ? Color.fromRGBO(0, 255, 255, 1)
-                                                            : Colors.grey,
-                                                      )
+                                                    const SizedBox(width: 5),
+                                                    // SISTEMA UNIFICADO DE ESTADOS (Solo si el mensaje es mío)
+                                                    if (message.id == widget.id)
+                                                      Builder(
+                                                        builder: (context) {
+                                                          switch (message.status) {
+                                                            case MessageStatus.sending:
+                                                              return const Icon(
+                                                                Icons.access_time, // RELOJ (Subiendo/Enviando)
+                                                                size: 16,
+                                                                color: Colors.grey,
+                                                              );
+                                                            case MessageStatus.sent:
+                                                              return const Icon(
+                                                                Icons.done, // CHECK SIMPLE (En el servidor)
+                                                                size: 16,
+                                                                color: Colors.grey,
+                                                              );
+                                                            case MessageStatus.delivered:
+                                                              // Si ya llegó pero no se ha leído, mostramos doble check gris
+                                                              return const Icon(
+                                                                Icons.done_all, 
+                                                                size: 16,
+                                                                color: Colors.grey,
+                                                              );
+                                                            case MessageStatus.read:
+                                                              return const Icon(
+                                                                Icons.done_all, // DOBLE CHECK AZUL (Leído)
+                                                                size: 16,
+                                                                color: Color.fromRGBO(0, 255, 255, 1),
+                                                              );
+                                                            default:
+                                                              // Fallback por si acaso: usar el campo 'leido' tradicional
+                                                              return Icon(
+                                                                message.leido == true ? Icons.done_all : Icons.done,
+                                                                size: 16,
+                                                                color: message.leido == true 
+                                                                    ? const Color.fromRGBO(0, 255, 255, 1) 
+                                                                    : Colors.grey,
+                                                              );
+                                                          }
+                                                        },
+                                                      ),
                                                   ],
-                                                ),
+                                                )
                                               },
                                             ],
                                           ),
@@ -1066,7 +1149,7 @@ Future<bool> checkAudioPermission() async {
     try {
       final cacheDir = await getTemporaryDirectory();
       String filePath = '${cacheDir.path}/${sala}_recording${_audioList.length + 1}.m4a';
-      // await _audioRecord.start(path: filePath, encoder: AudioEncoder.aacLc);
+      await _audioRecord.start(const RecordConfig(), path: filePath);
 
       setState(() {
         filePathP = filePath;
@@ -1085,31 +1168,42 @@ Future<bool> checkAudioPermission() async {
     }
   }
 
-  void stopRecording() async {
-    try {
-      // await _audioRecord.stop();
+void stopRecording() async {
+  try {
+    // 1. DETENER la grabación. Esto garantiza que el archivo se guarde 
+    // y devuelve la ruta confirmada del archivo finalizado.
+    String? recordedFilePath = await _audioRecord.stop();
 
-      String recordedFilePath = filePathP;
-
-      // Verificar si el archivo existe
+    if (recordedFilePath != null) {
+      // 2. PAUSA OBLIGATORIA: Esperar un momento para que el sistema operativo 
+      // y el plugin cierren el archivo completamente. Esto soluciona el 
+      // error de Content-Length.
+      await Future.delayed(const Duration(milliseconds: 500)); 
+      
+      // 3. Verificar que el archivo existe y no está vacío
       File audioFile = File(recordedFilePath);
-      if (await audioFile.exists()) {
+      if (await audioFile.exists() && await audioFile.length() > 0) {
+        
+        // 4. Enviar el archivo
         _sendAudio(recordedFilePath);
-        print(filePathP);
+        print('Grabación enviada desde: $recordedFilePath');
+        
         setState(() {
+          // Ya no necesitas 'filePathP' aquí, pero actualizas el estado
           activateMic = false;
           _audioList.add('audio');
         });
-
       } else {
-        print('El archivo de audio no existe');
+        // Manejo del error si se detuvo pero el archivo está dañado o vacío
+        print('El archivo se detuvo, pero no se encontró o estaba vacío.');
       }
-    } catch (e) {
-      // Manejo más detallado de errores
-      print('Error al detener la grabación o enviar el audio: $e');
+    } else {
+       print('La grabación no pudo ser detenida o no devolvió una ruta válida.');
     }
+  } catch (e) {
+    print('Error al detener la grabación: $e');
   }
-
+}
 }
 
 class AudioData {
