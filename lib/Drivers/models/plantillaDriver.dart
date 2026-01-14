@@ -58,6 +58,15 @@ List<PlantillaDriver> plantillaDriver = [
       imageMain: "assets/images/history.svg",
       color: backgroundColor),
   PlantillaDriver(
+      id: 7,
+      title: "Confirmar agente",
+      name: '234',
+      size: 20,
+      description: dummyText7,
+      image: "assets/icons/confirm_user.svg",
+      imageMain: "assets/images/adduser.svg",
+      color: backgroundColor),    
+  PlantillaDriver(
       id: 5,
       title: "Viajes ejecutivos",
       name: '234',
@@ -73,6 +82,15 @@ List<PlantillaDriver> plantillaDriver = [
       size: 20,
       description: dummyText6,
       image: "assets/icons/viaje_proceso.svg",
+      imageMain: "assets/icons/viaje_proceso.svg",
+      color: backgroundColor),
+  PlantillaDriver(
+      id: 7,
+      title: "Confirmar agente",
+      name: '234',
+      size: 20,
+      description: dummyText7,
+      image: "assets/icons/confirm_user.svg",
       imageMain: "assets/images/adduser.svg",
       color: backgroundColor),
 ];
@@ -88,3 +106,5 @@ String dummyText4 = "Revisa tus viajes realizados";
 String dummyText5 = "Revisa tu programación";
 
 String dummyText6 = "prueba 5 we";
+
+String dummyText7 = "Escanea y confirma agentes";

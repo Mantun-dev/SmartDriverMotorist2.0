@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_auth/Drivers/Screens/Details/components/agent_Confirm_Before.dart';
 //import 'package:flutter/scheduler.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/details_solidtrip.dart';
 //import 'package:flutter/scheduler.dart';
@@ -58,6 +59,7 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
     statusWorklog();  
     saveDeviceId();
     itemx = fetchRefres();
+    print(itemx);
      _focusNode.addListener(_onFocusChange);
     // SchedulerBinding.instance.addPostFrameCallback((_) {
     //   if (mounted) {
@@ -454,7 +456,7 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                                   crossAxisCount: 2,
                                   shrinkWrap: true,
                                   physics: NeverScrollableScrollPhysics(),
-                                    children: List.generate(4, (index) {
+                                    children: List.generate(snapshot.data!.driverCoord==true ? 5 : 4, (index) {
                                       return ItemDriverCard(
                                           plantillaDriver: plantillaDriver[index],
                                           press: () {
@@ -528,8 +530,23 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                                                   },
                                                 ),
                                               );
-                                            } else if (plantillaDriver[index] == plantillaDriver[4]) {
-                                              _noDisponible(context);
+                                            }else if (plantillaDriver[index] == plantillaDriver[4]) {
+                                              Navigator.push(
+                                                context,
+                                                PageRouteBuilder(
+                                                  transitionDuration: Duration(milliseconds: 200),
+                                                  pageBuilder: (_, __, ___) => DetailsAgentConfirmBefore(plantillaDriver: plantillaDriver[index]),                                  
+                                                  transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                                    return SlideTransition(
+                                                      position: Tween<Offset>(
+                                                        begin: Offset(1.0, 0.0),
+                                                        end: Offset.zero,
+                                                      ).animate(animation),
+                                                      child: child,
+                                                    );
+                                                  },
+                                                ),
+                                              );
                                             }
                                           });
                                     }),
@@ -541,7 +558,9 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                                   crossAxisCount: 2,
                                   shrinkWrap: true,
                                   physics: NeverScrollableScrollPhysics(),
-                                children: List.generate(plantillaDriver.length-2, (index) {
+                                children: List.generate(snapshot.data!.driverCoord==true ? 5 : 4
+                                  // plantillaDriver.length-2
+                                  , (index) {
                                   return ItemDriverCard(
                                     viajeSolido: false,
                                       plantillaDriver: plantillaDriver[index],
@@ -616,16 +635,12 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                                                   },
                                                 ),
                                               );
-                                            }
-                                            else if (plantillaDriver[index].id == 5) {
-                                              _noDisponible(context);
-                                            }
-                                            else if (plantillaDriver[index].id == 6) {
+                                            }else if (plantillaDriver[index].id == 4) {
                                               Navigator.push(
                                                 context,
                                                 PageRouteBuilder(
                                                   transitionDuration: Duration(milliseconds: 200),
-                                                  pageBuilder: (_, __, ___) => DetailsSolidTrip(plantillaDriver: plantillaDriver[index]),                                  
+                                                  pageBuilder: (_, __, ___) => DetailsDriverTripInProgress(plantillaDriver: plantillaDriver[index]),                                  
                                                   transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
                                                     return SlideTransition(
                                                       position: Tween<Offset>(
@@ -638,6 +653,28 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                                                 ),
                                               );
                                             }
+                                            
+                                            // else if (plantillaDriver[index].id == 5) {
+                                            //   _noDisponible(context);
+                                            // }
+                                            // else if (plantillaDriver[index].id == 6) {
+                                            //   Navigator.push(
+                                            //     context,
+                                            //     PageRouteBuilder(
+                                            //       transitionDuration: Duration(milliseconds: 200),
+                                            //       pageBuilder: (_, __, ___) => DetailsSolidTrip(plantillaDriver: plantillaDriver[index]),                                  
+                                            //       transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                            //         return SlideTransition(
+                                            //           position: Tween<Offset>(
+                                            //             begin: Offset(1.0, 0.0),
+                                            //             end: Offset.zero,
+                                            //           ).animate(animation),
+                                            //           child: child,
+                                            //         );
+                                            //       },
+                                            //     ),
+                                            //   );
+                                            // }
                                       });
                                 })
                               );

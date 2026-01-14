@@ -5,6 +5,7 @@
 
 // import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_auth/Drivers/Screens/Details/components/ConfirmBeforeTripDriver.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/asignar_Horas.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/confirm_trips.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/databases.dart';
@@ -1465,6 +1466,9 @@ class _DriverDescriptionState extends State<DriverDescription>
         ] else if (widget.plantillaDriver.id == 6) ...[
           _mostrarQuintaVentana(context),
           SizedBox(height: 120.0),
+        ] else if (widget.plantillaDriver.id == 7) ...[
+          _mostrarSeptimaVentana(context),
+          SizedBox(height: 120.0),
         ]
       ],
     );
@@ -2591,6 +2595,10 @@ class _DriverDescriptionState extends State<DriverDescription>
 
   Widget _mostrarCuartaVentana() {
     return HistoryTripDriver();
+  }
+
+  Widget _mostrarSeptimaVentana(BuildContext context) {
+    return ConfirmBeforeTripDriver();
   }
 
   Widget _mostrarQuintaVentana(BuildContext context) {

@@ -337,6 +337,20 @@ class _AppBarSuperior extends State<AppBarSuperior> {
               ),
             ),
 
+            if(item==5)
+            Expanded(
+              child: Center(
+                child: Text(
+                  "Confirmar Agente",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.normal,
+                    fontSize: 21
+                  ),
+                ),
+              ),
+            ),
+
             if(item==44)
             Expanded(
               child: Center(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_auth/Drivers/Screens/Details/components/agent_Confirm_Before.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/details_HoursOut.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/details_TripProgress.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/details_history.dart';
@@ -144,6 +145,60 @@ class _DriverMenuLateralState extends State<DriverMenuLateral> {
           Divider(
             color: Colors.white,
           ),
+          FutureBuilder<DriverData>(
+            future: itemx,
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.hasData) {
+                print('menuuu');
+                print(snapshot.data.driverCoord);
+                if (snapshot.data.driverCoord == true) {
+                  return Column(
+                    children: [
+                      InkWell(
+                        onTap: (){
+                          Navigator.push(
+                            context,
+                            PageRouteBuilder(
+                              transitionDuration: Duration(milliseconds: 200),
+                              pageBuilder: (_, __, ___) => DetailsAgentConfirmBefore(plantillaDriver: plantillaDriver[4]),                                  
+                              transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                return SlideTransition(
+                                  position: Tween<Offset>(
+                                    begin: Offset(1.0, 0.0),
+                                    end: Offset.zero,
+                                  ).animate(animation),
+                                  child: child,
+                                );
+                              },
+                            ),
+                          );
+                        },
+                        child: Column(crossAxisAlignment:CrossAxisAlignment.end,
+                          children: <Widget>[
+                            Padding(padding: const EdgeInsets.fromLTRB(14,20,20,0),
+                            child: Row(
+                              children: [
+                                Icon(Icons.person_add_alt, color: Colors.white),
+                                SizedBox(width: 15,),
+                                Flexible(child: Text('Confirmar Agente ',style: TextStyle(color: Colors.white,fontSize: 18.0)),),
+                              ],
+                              ),
+                            ),                       
+                          ],
+                        ),
+                      ),
+                      Divider(
+                        color: Colors.white,
+                      ),
+                    ],
+                  );
+                }
+                return Container();
+              } else {
+                return Center(child: CircularProgressIndicator());
+              }
+            },
+          ),          
           InkWell(
             onTap: (){
               Navigator.pushReplacement(context,MaterialPageRoute(builder: (_) => DetailsDriverHistory(plantillaDriver: plantillaDriver[3]))).then((_) =>DetailsDriverHoursOut(plantillaDriver: plantillaDriver[2]));
