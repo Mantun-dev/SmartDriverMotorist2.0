@@ -92,10 +92,15 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
           'ruta': 3,
         },
         {
-          'nombre': 'Viajes ejecutivos',
-          'icono': 'assets/icons/ejecutivo.svg',
-          'ruta': 4,
+          'nombre': 'Confirmar agentes',
+          'icono': 'assets/icons/confirm_user.svg',
+          'ruta': 7,
         },
+        // {
+        //   'nombre': 'Viajes ejecutivos',
+        //   'icono': 'assets/icons/ejecutivo.svg',
+        //   'ruta': 4,
+        // },
         {
           'nombre': 'Chats',
           'icono': 'assets/icons/chats.svg',
@@ -910,9 +915,9 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
         );
       break;
 
-      case 4:
-        _noDisponible(context);
-      break;
+      // case 4:
+      //   _noDisponible(context);
+      // break;
 
       case 5:
       Navigator.push(
@@ -952,6 +957,25 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
           ),
         );
       break;
+
+      case 7:
+        Navigator.push(
+          context,
+          PageRouteBuilder(
+            transitionDuration: Duration(milliseconds: 200 ), // Adjust the animation duration as needed
+            pageBuilder: (_, __, ___) => DetailsAgentConfirmBefore(plantillaDriver: plantillaDriver[4]),
+            transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+              return SlideTransition(
+                position: Tween<Offset>(
+                  begin: Offset(1.0, 0.0),
+                  end: Offset.zero,
+                ).animate(animation),
+                child: child,
+              );
+            },
+          ),
+        );
+        break;
     }
   }
 

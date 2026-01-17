@@ -1,5 +1,7 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_auth/Drivers/Screens/Details/components/agent_Confirm_Before.dart';
+import 'package:flutter_auth/Drivers/models/DriverData.dart';
 //import 'package:flutter_auth/components/progress_indicator.dart';
 import 'package:flutter_auth/components/warning_dialog.dart';
 import 'package:flutter_auth/main.dart';
@@ -37,12 +39,13 @@ class _AppBarSuperior extends State<AppBarSuperior> {
   final prefs = new PreferenciasUsuario();
   ConfirmationLoadingDialog loadingDialog = ConfirmationLoadingDialog();
   ConfirmationDialog confirmationDialog = ConfirmationDialog();
-
+  Future<DriverData>? itemx;
   _AppBarSuperior({this.item});
 
   @override
   void initState() {
     super.initState();
+    itemx = fetchRefres();
   }
   
   void ruta(){
@@ -817,89 +820,163 @@ class _AppBarSuperior extends State<AppBarSuperior> {
                                 ),
                               },
 
-                              SizedBox(height: 18),                                                     
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 2),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Navigator.pop(context);
-                                      showGeneralDialog(
-                                        barrierColor: Colors.black.withOpacity(0.5),
-                                        transitionBuilder: (context, a1, a2, widget) {
-                                          return Transform.scale(
-                                            scale: a1.value,
-                                            child: Opacity(
-                                              opacity: a1.value,
-                                              child: AlertDialog(
-                                                backgroundColor: Theme.of(contextP).cardColor,
-                                                shape: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(16.0),
-                                                  borderSide: BorderSide( // Add this line to specify the border color
-                                                    color: Theme.of(context).disabledColor, // Change the color to the desired color
-                                                    width: 2.0, // You can also adjust the border width if needed
-                                                  ),
-                                                ),
-                                                title: Center(
-                                                    child: Text('Página disponible \n\t\t\t\tpróximamente', style: Theme.of(contextP).textTheme.bodyMedium!.copyWith(fontSize: 16),)),
-                                                actions: [
-                                                  Center(
-                                                    child: TextButton(
-                                                      style: TextButton.styleFrom(
-                                                        textStyle: TextStyle(
-                                                          color: Colors.white,
-                                                        ),
-                                                        backgroundColor: Colors.red,
+                              FutureBuilder<DriverData>(
+                                future: itemx,
+                                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                                  if (snapshot.hasData) {                                    
+                                    if (snapshot.data.driverCoord == true || snapshot.data.driverCoord == 'true') {
+                                        return Column(
+                                          children: [
+                                          SizedBox(height: 18),                                                   
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(vertical: 2),
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                  
+                                                Navigator.push(
+                                                            navigatorKey.currentContext!,
+                                                            PageRouteBuilder(
+                                                              transitionDuration: Duration(milliseconds: 200),
+                                                              pageBuilder: (_, __, ___) => DetailsAgentConfirmBefore(plantillaDriver: plantillaDriver[4]),                                  
+                                                              transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                                                return SlideTransition(
+                                                                  position: Tween<Offset>(
+                                                                    begin: Offset(1.0, 0.0),
+                                                                    end: Offset.zero,
+                                                                  ).animate(animation),
+                                                                  child: child,
+                                                                );
+                                                              },
+                                                            ),
+                                                          );
+                                                                              
+                                                },
+                                                child: Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Row(
+                                                        children: [
+                                                          Container(
+                                                            width: 18,
+                                                      height: 18,
+                                                            child: SvgPicture.asset(
+                                                              "assets/icons/confirm_user.svg",
+                                                              color: prefs.tema ? Colors.white : const Color.fromRGBO(40, 93, 169, 1),
+                                                            ),
+                                                          ),
+                                                          Text(' Confirmar agente', 
+                                                            style: Theme.of(contextP).textTheme.bodyMedium!.copyWith(fontSize: 16, color: prefs.tema ? Colors.white : Colors.black),
+                                                          ),
+                                                        ],
                                                       ),
-                                                      onPressed: () => {
-                                                        Navigator.pop(context),
-                                                      },
-                                                      child: Text('Cerrar', style: Theme.of(contextP).textTheme.bodyMedium!.copyWith(fontSize: 16, color: Colors.white)),
                                                     ),
-                                                  ),
-                                                ],
+                                                    Container(
+                                                      width: 18,
+                                                      height: 18,
+                                                      child: SvgPicture.asset(
+                                                        "assets/icons/flechader.svg",
+                                                        color: prefs.tema ? Colors.white : const Color.fromRGBO(40, 93, 169, 1),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
                                             ),
-                                          );
-                                        },
-                                        transitionDuration: Duration(milliseconds: 200),
-                                        barrierDismissible: true,
-                                        barrierLabel: '',
-                                        context: context,
-                                        pageBuilder: (context, animation1, animation2) {
-                                          return Text('');
-                                        });
-                                    },
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: Row(
-                                            children: [
-                                              Container(
-                                                width: 18,
-                                          height: 18,
-                                                child: SvgPicture.asset(
-                                                  "assets/icons/ejecutivo.svg",
-                                                  color: prefs.tema ? Colors.white : const Color.fromRGBO(40, 93, 169, 1),
-                                                ),
-                                              ),
-                                              Text(' Viajes de ejecutivos', 
-                                                style: Theme.of(contextP).textTheme.bodyMedium!.copyWith(fontSize: 16, color: prefs.tema ? Colors.white : Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Container(
-                                          width: 18,
-                                          height: 18,
-                                          child: SvgPicture.asset(
-                                            "assets/icons/flechader.svg",
-                                            color: prefs.tema ? Colors.white : const Color.fromRGBO(40, 93, 169, 1),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
+                                          ],
+                                        );                                     
+                                    }else{
+                                      return Container();
+                                    }
+                                  } else {
+                                    return Center(child: CircularProgressIndicator());
+                                  }
+                                },
+                              ),  
+
+                              // SizedBox(height: 18),                                                     
+                              //   Padding(
+                              //     padding: const EdgeInsets.symmetric(vertical: 2),
+                              //     child: GestureDetector(
+                              //       onTap: () {
+                              //         Navigator.pop(context);
+                              //         showGeneralDialog(
+                              //           barrierColor: Colors.black.withOpacity(0.5),
+                              //           transitionBuilder: (context, a1, a2, widget) {
+                              //             return Transform.scale(
+                              //               scale: a1.value,
+                              //               child: Opacity(
+                              //                 opacity: a1.value,
+                              //                 child: AlertDialog(
+                              //                   backgroundColor: Theme.of(contextP).cardColor,
+                              //                   shape: OutlineInputBorder(
+                              //                     borderRadius: BorderRadius.circular(16.0),
+                              //                     borderSide: BorderSide( // Add this line to specify the border color
+                              //                       color: Theme.of(context).disabledColor, // Change the color to the desired color
+                              //                       width: 2.0, // You can also adjust the border width if needed
+                              //                     ),
+                              //                   ),
+                              //                   title: Center(
+                              //                       child: Text('Página disponible \n\t\t\t\tpróximamente', style: Theme.of(contextP).textTheme.bodyMedium!.copyWith(fontSize: 16),)),
+                              //                   actions: [
+                              //                     Center(
+                              //                       child: TextButton(
+                              //                         style: TextButton.styleFrom(
+                              //                           textStyle: TextStyle(
+                              //                             color: Colors.white,
+                              //                           ),
+                              //                           backgroundColor: Colors.red,
+                              //                         ),
+                              //                         onPressed: () => {
+                              //                           Navigator.pop(context),
+                              //                         },
+                              //                         child: Text('Cerrar', style: Theme.of(contextP).textTheme.bodyMedium!.copyWith(fontSize: 16, color: Colors.white)),
+                              //                       ),
+                              //                     ),
+                              //                   ],
+                              //                 ),
+                              //               ),
+                              //             );
+                              //           },
+                              //           transitionDuration: Duration(milliseconds: 200),
+                              //           barrierDismissible: true,
+                              //           barrierLabel: '',
+                              //           context: context,
+                              //           pageBuilder: (context, animation1, animation2) {
+                              //             return Text('');
+                              //           });
+                              //       },
+                              //       child: Row(
+                              //         children: [
+                              //           Expanded(
+                              //             child: Row(
+                              //               children: [
+                              //                 Container(
+                              //                   width: 18,
+                              //             height: 18,
+                              //                   child: SvgPicture.asset(
+                              //                     "assets/icons/ejecutivo.svg",
+                              //                     color: prefs.tema ? Colors.white : const Color.fromRGBO(40, 93, 169, 1),
+                              //                   ),
+                              //                 ),
+                              //                 Text(' Viajes de ejecutivos', 
+                              //                   style: Theme.of(contextP).textTheme.bodyMedium!.copyWith(fontSize: 16, color: prefs.tema ? Colors.white : Colors.black),
+                              //                 ),
+                              //               ],
+                              //             ),
+                              //           ),
+                              //           Container(
+                              //             width: 18,
+                              //             height: 18,
+                              //             child: SvgPicture.asset(
+                              //               "assets/icons/flechader.svg",
+                              //               color: prefs.tema ? Colors.white : const Color.fromRGBO(40, 93, 169, 1),
+                              //             ),
+                              //           ),
+                              //         ],
+                              //       ),
+                              //     ),
+                              //   ),
                               
                               SizedBox(height: 12),      
                               Padding(

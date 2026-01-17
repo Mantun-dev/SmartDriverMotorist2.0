@@ -15,6 +15,7 @@ class WarningSuccessDialog {
 
   show(BuildContext context, {
     required String title,
+    String? message, // <--- Nuevo parámetro opcional (no required)
     required int tipo,
     required VoidCallback onOkay,
   }) {
@@ -24,15 +25,11 @@ class WarningSuccessDialog {
     Color containerC = Color.fromRGBO(40, 93, 169, 1);
     
     String iconAsset = 
-      tipo == 1 ?
-        "assets/icons/advertencia.svg"
-      : tipo == 2?
-        "assets/icons/check.svg"
-      : 
-      tipo == 4?
-        "assets/icons/QR.svg"
-      : 
-        "assets/icons/info.svg";
+      tipo == 1 ? "assets/icons/advertencia.svg"
+      : tipo == 2? "assets/icons/check.svg"
+      : tipo == 4? "assets/icons/QR.svg"
+      : "assets/icons/info.svg";
+      
     Size size = MediaQuery.of(context).size;
 
     showDialog<void>(
@@ -48,10 +45,9 @@ class WarningSuccessDialog {
             backgroundColor: Colors.transparent,
             content: SingleChildScrollView(
               child: Column(
-
                 children: [
                   Container(
-                    width: size.width*0.9,
+                    width: size.width * 0.9,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(10.0),
@@ -59,7 +55,7 @@ class WarningSuccessDialog {
                       ),
                       color: containerC,
                     ),
-                    child: tipo == 1? 
+                    child: tipo == 1 ? 
                     Padding(
                       padding: const EdgeInsets.only(top: 50, bottom: 50),
                       child: SvgPicture.asset(
@@ -67,13 +63,13 @@ class WarningSuccessDialog {
                         height: 60,
                         color: Colors.white,
                       ),
-                    ): 
+                    ) : 
                     Padding(
                       padding: const EdgeInsets.only(top: 30, bottom: 30),
                       child: Container(
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 4.0), // Borde blanco
+                          border: Border.all(color: Colors.white, width: 4.0),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(20.0),
@@ -87,9 +83,8 @@ class WarningSuccessDialog {
                     ),
                   ),
 
-
                   Container(
-                    width: size.width*0.9,
+                    width: size.width * 0.9,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.only(
                         bottomLeft: Radius.circular(10.0),
@@ -103,9 +98,27 @@ class WarningSuccessDialog {
                         child: Text(
                           title,
                           textAlign: TextAlign.center,
-                          style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(fontSize: 14, fontWeight: FontWeight.w500)
+                          style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(
+                            fontSize: 16, 
+                            fontWeight: FontWeight.bold // Un poco más resaltado para el título
+                          )
                         ),
                       ),
+                      
+                      // Si el mensaje no es nulo y no está vacío, se muestra
+                      if (message != null && message.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10, left: 15, right: 15),
+                          child: Text(
+                            message,
+                            textAlign: TextAlign.center,
+                            style: Theme.of(navigatorKey.currentContext!).textTheme.bodyMedium!.copyWith(
+                              fontSize: 14, 
+                              fontWeight: FontWeight.w400
+                            )
+                          ),
+                        ),
+
                       Padding(
                         padding: const EdgeInsets.only(top: 20, bottom: 20),
                         child: TextButton(

@@ -95,8 +95,8 @@ class _ConfirmBeforeTripDriverState extends State<ConfirmBeforeTripDriver> {
         // Éxito: Mostrar diálogo y limpiar/regresar
         WarningSuccessDialog().show(
           context,
-          title: "${resp['title']} ${resp['message']}",
-          // message: "${resp['message']}",
+          title: "${resp['title']}",
+          message: "Agente confirmado con éxito",
           tipo: 0, // Tipo éxito
           onOkay: () {
             setState(() {
@@ -278,9 +278,9 @@ Widget build(BuildContext context) {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "Tipo de Viaje",
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+              Text(
+                "Tipo de Viaje:",
+                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
               ),
               const SizedBox(height: 8),
               Container(
@@ -298,7 +298,11 @@ Widget build(BuildContext context) {
                     items: ["Entrada", "Salida"].map((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
-                        child: Text(value, style: const TextStyle(fontSize: 15)),
+                        child: Text(value, style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18, // Ligeramente más pequeño para evitar scroll
+                          color: Colors.black,
+                        ),),
                       );
                     }).toList(),
                     onChanged: (val) {
@@ -320,7 +324,7 @@ Widget build(BuildContext context) {
           child: Column(
             children: [
               const Text(
-                "¿Confirma para la siguiente hora?",
+                "¿Confirmar para la siguiente hora?",
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 12),
