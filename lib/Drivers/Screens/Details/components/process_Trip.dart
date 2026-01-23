@@ -211,6 +211,14 @@ class _ProcessTripState extends State<ProcessTrip> {
                                               height: 50,
                                               child: Image.asset("assets/images/altiam2.jpeg"),
                                             ),
+                                          },
+                                          if (abc.data![index].companyId == 21) ...{
+                                            Container(
+                                              height: 50,
+                                              child: Image.asset(
+                                                  'assets/images/corpstartek.webp'
+                                              ),
+                                            ),
                                           }
                                         else...{
                                           Container(

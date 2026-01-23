@@ -43,7 +43,7 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 android {
     
     compileSdkVersion 35
-
+    ndkVersion "27.0.12077973"
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
@@ -61,12 +61,12 @@ android {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.driverapp.devs"
         namespace "com.driverapp.devs"
-        versionCode 127
+        versionCode 136
         minSdkVersion 26
         targetSdkVersion 35
         multiDexEnabled true
         versionCode flutterVersionCode.toInteger()
-        versionName "2.18.77"
+        versionName "2.18.82"
     }
 
     compileOptions {
