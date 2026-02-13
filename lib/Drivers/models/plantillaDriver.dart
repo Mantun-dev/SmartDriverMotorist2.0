@@ -65,6 +65,15 @@ List<PlantillaDriver> plantillaDriver = [
       description: dummyText7,
       image: "assets/icons/confirm_user.svg",
       imageMain: "assets/images/adduser.svg",
+      color: backgroundColor),        
+  PlantillaDriver(
+      id: 8,
+      title: "Mi disponibilidad",
+      name: '234',
+      size: 20,
+      description: dummyText8,
+      image: "assets/icons/disponibilidad.svg",
+      imageMain: "assets/images/adduser.svg",
       color: backgroundColor),    
   PlantillaDriver(
       id: 5,
@@ -108,3 +117,5 @@ String dummyText5 = "Revisa tu programación";
 String dummyText6 = "prueba 5 we";
 
 String dummyText7 = "Escanea y confirma agentes";
+
+String dummyText8 = "Reporta ausencias o días libres";

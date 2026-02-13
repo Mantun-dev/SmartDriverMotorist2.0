@@ -9,6 +9,7 @@ import 'package:flutter_auth/Drivers/Screens/Details/components/ConfirmBeforeTri
 import 'package:flutter_auth/Drivers/Screens/Details/components/asignar_Horas.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/confirm_trips.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/databases.dart';
+import 'package:flutter_auth/Drivers/Screens/Details/components/disponibilityAgentPage.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/history_TripDriver.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/process_Trip.dart';
 import 'package:flutter_auth/Drivers/SharePreferences/preferencias_usuario.dart';
@@ -1469,6 +1470,9 @@ class _DriverDescriptionState extends State<DriverDescription>
         ] else if (widget.plantillaDriver.id == 7) ...[
           _mostrarSeptimaVentana(context),
           SizedBox(height: 120.0),
+        ] else if (widget.plantillaDriver.id == 8) ...[
+          _mostrarOctavaVentana(context),
+          SizedBox(height: 120.0),
         ]
       ],
     );
@@ -2599,6 +2603,10 @@ class _DriverDescriptionState extends State<DriverDescription>
 
   Widget _mostrarSeptimaVentana(BuildContext context) {
     return ConfirmBeforeTripDriver();
+  }
+
+  Widget _mostrarOctavaVentana(BuildContext context) {
+    return AvailabilityScreen();
   }
 
   Widget _mostrarQuintaVentana(BuildContext context) {

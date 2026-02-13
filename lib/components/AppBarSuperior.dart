@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/agent_Confirm_Before.dart';
+import 'package:flutter_auth/Drivers/Screens/Details/components/disponibilityAgent.dart';
 import 'package:flutter_auth/Drivers/models/DriverData.dart';
 //import 'package:flutter_auth/components/progress_indicator.dart';
 import 'package:flutter_auth/components/warning_dialog.dart';
@@ -168,6 +169,34 @@ class _AppBarSuperior extends State<AppBarSuperior> {
           },
         ),
       );
+      break;
+
+      case 6:
+        Navigator.push(
+                                            context,
+                                            PageRouteBuilder(
+                                              transitionDuration: const Duration(milliseconds: 200),
+                                              pageBuilder: (_, __, ___) => DisponibilityAgent(plantillaDriver: plantillaDriver[5]),
+                                              transitionsBuilder: (_, animation, __, child) => SlideTransition(
+                                                position: Tween<Offset>(begin: const Offset(1.0, 0.0), end: Offset.zero).animate(animation),
+                                                child: child,
+                                              ),
+                                            ),
+                                          );
+      break;
+
+      case 5:
+        Navigator.push(
+                                            context,
+                                            PageRouteBuilder(
+                                              transitionDuration: const Duration(milliseconds: 200),
+                                              pageBuilder: (_, __, ___) => DetailsAgentConfirmBefore(plantillaDriver: plantillaDriver[4]),
+                                              transitionsBuilder: (_, animation, __, child) => SlideTransition(
+                                                position: Tween<Offset>(begin: const Offset(1.0, 0.0), end: Offset.zero).animate(animation),
+                                                child: child,
+                                              ),
+                                            ),
+                                          ); 
       break;
 
       default:
@@ -340,19 +369,61 @@ class _AppBarSuperior extends State<AppBarSuperior> {
               ),
             ),
 
+            
+
             if(item==5)
-            Expanded(
-              child: Center(
-                child: Text(
-                  "Confirmar Agente",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.normal,
-                    fontSize: 21
-                  ),
-                ),
-              ),
-            ),
+              FutureBuilder<DriverData>(
+                      future: itemx,
+                      builder: (BuildContext context, AsyncSnapshot snapshot) {
+                        if (snapshot.hasData) {                                    
+                          if (snapshot.data.driverCoord == true || snapshot.data.driverCoord == "true") {
+                              return Expanded(
+                                child: Center(
+                                  child: Text(
+                                    "Confirmar Agente",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 21
+                                    ),
+                                  ),
+                                ),
+                              );                                     
+                          }else{
+                            return Container();
+                          }
+                        } else {
+                          return Center(child: CircularProgressIndicator());
+                        }
+                      },
+                    ), 
+
+            if(item==6)
+                  FutureBuilder<DriverData>(
+                    future: itemx,
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      if (snapshot.hasData) {                                    
+                        if (snapshot.data.driverType != "Motorista") {
+                            return Expanded(
+                              child: Center(
+                                child: Text(
+                                  "Mi disponibilidad",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 21
+                                  ),
+                                ),
+                              ),
+                            );                                     
+                        }else{
+                          return Container();
+                        }
+                      } else {
+                        return Center(child: CircularProgressIndicator());
+                      }
+                    },
+                  ),               
 
             if(item==44)
             Expanded(
@@ -382,7 +453,7 @@ class _AppBarSuperior extends State<AppBarSuperior> {
             ),
           ),
 
-          if(item==6)
+          if(item==62)
           Expanded(
             child: Center(
               child: Text(
@@ -819,6 +890,79 @@ class _AppBarSuperior extends State<AppBarSuperior> {
                                   ),
                                 ),
                               },
+                              FutureBuilder<DriverData>(
+                                future: itemx,
+                                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                                  if (snapshot.hasData) {                                    
+                                    if (snapshot.data.driverType != "Motorista") {
+                                        return Column(
+                                          children: [
+                                          SizedBox(height: 18),                                                   
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(vertical: 2),
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                  
+                                                Navigator.push(
+                                                            navigatorKey.currentContext!,
+                                                            PageRouteBuilder(
+                                                              transitionDuration: Duration(milliseconds: 200),
+                                                              pageBuilder: (_, __, ___) => DisponibilityAgent(plantillaDriver: plantillaDriver[5]),                                  
+                                                              transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                                                return SlideTransition(
+                                                                  position: Tween<Offset>(
+                                                                    begin: Offset(1.0, 0.0),
+                                                                    end: Offset.zero,
+                                                                  ).animate(animation),
+                                                                  child: child,
+                                                                );
+                                                              },
+                                                            ),
+                                                          );
+                                                                              
+                                                },
+                                                child: Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Row(
+                                                        children: [
+                                                          Container(
+                                                            width: 18,
+                                                      height: 18,
+                                                            child: SvgPicture.asset(
+                                                              "assets/icons/confirm_user.svg",
+                                                              color: prefs.tema ? Colors.white : const Color.fromRGBO(40, 93, 169, 1),
+                                                            ),
+                                                          ),
+                                                          Text(' Mi disponibilidad', 
+                                                            style: Theme.of(contextP).textTheme.bodyMedium!.copyWith(fontSize: 16, color: prefs.tema ? Colors.white : Colors.black),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    Container(
+                                                      width: 18,
+                                                      height: 18,
+                                                      child: SvgPicture.asset(
+                                                        "assets/icons/flechader.svg",
+                                                        color: prefs.tema ? Colors.white : const Color.fromRGBO(40, 93, 169, 1),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        );                                     
+                                    }else{
+                                      return Container();
+                                    }
+                                  } else {
+                                    return Center(child: CircularProgressIndicator());
+                                  }
+                                },
+                              ), 
 
                               FutureBuilder<DriverData>(
                                 future: itemx,

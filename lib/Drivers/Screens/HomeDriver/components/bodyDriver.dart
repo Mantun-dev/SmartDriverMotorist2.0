@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/agent_Confirm_Before.dart';
 //import 'package:flutter/scheduler.dart';
 import 'package:flutter_auth/Drivers/Screens/Details/components/details_solidtrip.dart';
+import 'package:flutter_auth/Drivers/Screens/Details/components/disponibilityAgent.dart';
 //import 'package:flutter/scheduler.dart';
 
 import 'package:flutter_auth/Drivers/Screens/HomeDriver/components/itemDriver_Card.dart';
@@ -451,271 +452,182 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                   SizedBox(height: 15),      
               
                   FutureBuilder<DriverData>(
-                        future: itemx,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          if (snapshot.data!.departmentId != 2) {
-                            return Column(
-                              children: [
-                                GridView.count(
-                                  crossAxisCount: 2,
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                    children: List.generate(snapshot.data!.driverCoord==true ? 5 : 4, (index) {
-                                      return ItemDriverCard(
-                                          plantillaDriver: plantillaDriver[index],
-                                          press: () {
-                                            setPantallaP(0);
-                                            // si.method();
-                                            if (plantillaDriver[index] == plantillaDriver[0]) {
-                                              Navigator.push(
-                                                context,
-                                                PageRouteBuilder(
-                                                  transitionDuration: Duration(milliseconds: 200),
-                                                  pageBuilder: (_, __, ___) => DetailsDriverHour(plantillaDriver: plantillaDriver[index]),                                  
-                                                  transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-                                                    return SlideTransition(
-                                                      position: Tween<Offset>(
-                                                        begin: Offset(1.0, 0.0),
-                                                        end: Offset.zero,
-                                                      ).animate(animation),
-                                                      child: child,
-                                                    );
-                                                  },
-                                                ),
-                                              );
-                                            } else if (plantillaDriver[index] == plantillaDriver[1]) {
-                                              Navigator.push(
-                                                context,
-                                                PageRouteBuilder(
-                                                  transitionDuration: Duration(milliseconds: 200),
-                                                  pageBuilder: (_, __, ___) => DetailsDriverTripInProgress(plantillaDriver: plantillaDriver[index]),                                  
-                                                  transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-                                                    return SlideTransition(
-                                                      position: Tween<Offset>(
-                                                        begin: Offset(1.0, 0.0),
-                                                        end: Offset.zero,
-                                                      ).animate(animation),
-                                                      child: child,
-                                                    );
-                                                  },
-                                                ),
-                                              );
-                                            } else if (plantillaDriver[index] == plantillaDriver[2]) {
-                                              Navigator.push(
-                                                context,
-                                                PageRouteBuilder(
-                                                  transitionDuration: Duration(milliseconds: 200),
-                                                  pageBuilder: (_, __, ___) => DetailsDriverHoursOut(plantillaDriver: plantillaDriver[index]),                                  
-                                                  transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-                                                    return SlideTransition(
-                                                      position: Tween<Offset>(
-                                                        begin: Offset(1.0, 0.0),
-                                                        end: Offset.zero,
-                                                      ).animate(animation),
-                                                      child: child,
-                                                    );
-                                                  },
-                                                ),
-                                              );
-                                            } else if (plantillaDriver[index] == plantillaDriver[3]) {
-                                              Navigator.push(
-                                                context,
-                                                PageRouteBuilder(
-                                                  transitionDuration: Duration(milliseconds: 200),
-                                                  pageBuilder: (_, __, ___) => DetailsDriverHistory(plantillaDriver: plantillaDriver[index]),                                  
-                                                  transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-                                                    return SlideTransition(
-                                                      position: Tween<Offset>(
-                                                        begin: Offset(1.0, 0.0),
-                                                        end: Offset.zero,
-                                                      ).animate(animation),
-                                                      child: child,
-                                                    );
-                                                  },
-                                                ),
-                                              );
-                                            }else if (plantillaDriver[index] == plantillaDriver[4]) {
-                                              Navigator.push(
-                                                context,
-                                                PageRouteBuilder(
-                                                  transitionDuration: Duration(milliseconds: 200),
-                                                  pageBuilder: (_, __, ___) => DetailsAgentConfirmBefore(plantillaDriver: plantillaDriver[index]),                                  
-                                                  transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-                                                    return SlideTransition(
-                                                      position: Tween<Offset>(
-                                                        begin: Offset(1.0, 0.0),
-                                                        end: Offset.zero,
-                                                      ).animate(animation),
-                                                      child: child,
-                                                    );
-                                                  },
-                                                ),
-                                              );
-                                            }
-                                          });
-                                    }),
-                                  ),
-                              ],
-                            );
-                          }else{
-                            return GridView.count(
-                                  crossAxisCount: 2,
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                children: List.generate(snapshot.data!.driverCoord==true ? 5 : 4
-                                  // plantillaDriver.length-2
-                                  , (index) {
-                                  return ItemDriverCard(
-                                    viajeSolido: false,
-                                      plantillaDriver: plantillaDriver[index],
-                                      press: () {
-                                        setPantallaP(0);
-                                        // si.method();
-                                        if (plantillaDriver[index] == plantillaDriver[0]) {
-                                              Navigator.push(
-                                                context,
-                                                PageRouteBuilder(
-                                                  transitionDuration: Duration(milliseconds: 200),
-                                                  pageBuilder: (_, __, ___) => DetailsDriverHour(plantillaDriver: plantillaDriver[index]),                                  
-                                                  transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-                                                    return SlideTransition(
-                                                      position: Tween<Offset>(
-                                                        begin: Offset(1.0, 0.0),
-                                                        end: Offset.zero,
-                                                      ).animate(animation),
-                                                      child: child,
-                                                    );
-                                                  },
-                                                ),
-                                              );
-                                            } else if (plantillaDriver[index] == plantillaDriver[1]) {
-                                              Navigator.push(
-                                                context,
-                                                PageRouteBuilder(
-                                                  transitionDuration: Duration(milliseconds: 200),
-                                                  pageBuilder: (_, __, ___) => DetailsDriverTripInProgress(plantillaDriver: plantillaDriver[index]),                                  
-                                                  transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-                                                    return SlideTransition(
-                                                      position: Tween<Offset>(
-                                                        begin: Offset(1.0, 0.0),
-                                                        end: Offset.zero,
-                                                      ).animate(animation),
-                                                      child: child,
-                                                    );
-                                                  },
-                                                ),
-                                              );
-                                            } else if (plantillaDriver[index] == plantillaDriver[2]) {
-                                              Navigator.push(
-                                                context,
-                                                PageRouteBuilder(
-                                                  transitionDuration: Duration(milliseconds: 200),
-                                                  pageBuilder: (_, __, ___) => DetailsDriverHoursOut(plantillaDriver: plantillaDriver[index]),                                  
-                                                  transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-                                                    return SlideTransition(
-                                                      position: Tween<Offset>(
-                                                        begin: Offset(1.0, 0.0),
-                                                        end: Offset.zero,
-                                                      ).animate(animation),
-                                                      child: child,
-                                                    );
-                                                  },
-                                                ),
-                                              );
-                                            } else if (plantillaDriver[index] == plantillaDriver[3]) {
-                                              Navigator.push(
-                                                context,
-                                                PageRouteBuilder(
-                                                  transitionDuration: Duration(milliseconds: 200),
-                                                  pageBuilder: (_, __, ___) => DetailsDriverHistory(plantillaDriver: plantillaDriver[index]),                                  
-                                                  transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-                                                    return SlideTransition(
-                                                      position: Tween<Offset>(
-                                                        begin: Offset(1.0, 0.0),
-                                                        end: Offset.zero,
-                                                      ).animate(animation),
-                                                      child: child,
-                                                    );
-                                                  },
-                                                ),
-                                              );
-                                            }else if (plantillaDriver[index].id == 4) {
-                                              Navigator.push(
-                                                context,
-                                                PageRouteBuilder(
-                                                  transitionDuration: Duration(milliseconds: 200),
-                                                  pageBuilder: (_, __, ___) => DetailsDriverTripInProgress(plantillaDriver: plantillaDriver[index]),                                  
-                                                  transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-                                                    return SlideTransition(
-                                                      position: Tween<Offset>(
-                                                        begin: Offset(1.0, 0.0),
-                                                        end: Offset.zero,
-                                                      ).animate(animation),
-                                                      child: child,
-                                                    );
-                                                  },
-                                                ),
-                                              );
-                                            }
-                                            
-                                            // else if (plantillaDriver[index].id == 5) {
-                                            //   _noDisponible(context);
-                                            // }
-                                            // else if (plantillaDriver[index].id == 6) {
-                                            //   Navigator.push(
-                                            //     context,
-                                            //     PageRouteBuilder(
-                                            //       transitionDuration: Duration(milliseconds: 200),
-                                            //       pageBuilder: (_, __, ___) => DetailsSolidTrip(plantillaDriver: plantillaDriver[index]),                                  
-                                            //       transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-                                            //         return SlideTransition(
-                                            //           position: Tween<Offset>(
-                                            //             begin: Offset(1.0, 0.0),
-                                            //             end: Offset.zero,
-                                            //           ).animate(animation),
-                                            //           child: child,
-                                            //         );
-                                            //       },
-                                            //     ),
-                                            //   );
-                                            // }
-                                      });
-                                })
-                              );
+                    future: itemx,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        // if (snapshot.data!.departmentId != 2) {
+                          
+                          // ---------------------------------------------------------
+                          // PASO 1: DEFINIR LA LÓGICA DE ÍNDICES VISIBLES
+                          // ---------------------------------------------------------
+                          List<int> indicesVisibles = [0, 1, 2, 3]; // Los primeros 4 siempre van
+
+                          // "si el driverCoord es true necesito mostrar hasta el 5 elemento" (Índice 4)
+                          if (snapshot.data!.driverCoord == true) {
+                            indicesVisibles.add(4);
                           }
-                        } else {
-                          return WillPopScope(
-                            onWillPop: () async => false,
-                            child: SimpleDialog(
-                               elevation: 20,
-                              backgroundColor: Theme.of(context).cardColor,
-                              children: [
-                                Center(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      const Padding(
-                                        padding: EdgeInsets.only(left: 16, top: 16, right: 16),
-                                        child: CircularProgressIndicator(),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(16),
-                                        child: Text(
-                                          'Cargando menú...', 
-                                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18),
+
+                          // "si driverType es distinto de Motorista... mostrar el último (Índice 5)"
+                          // Esto cumple tu requisito: si NO es coord, se saltará el 4 y agregará el 5 
+                          // (quedando: 0, 1, 2, 3, 5).
+                          if (snapshot.data!.driverType != "Motorista") {
+                            indicesVisibles.add(5);
+                          }
+
+                          // Ordenamos la lista para que los botones salgan en orden (0,1,2,3,4,5)
+                          indicesVisibles.sort(); 
+                          // ---------------------------------------------------------
+
+                          return Column(
+                            children: [
+                              GridView.count(
+                                crossAxisCount: 2,
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                // PASO 2: USAR .map PARA RECORRER SOLO LOS ÍNDICES APROBADOS
+                                children: indicesVisibles.map((indexReal) {
+                                  return ItemDriverCard(
+                                    plantillaDriver: plantillaDriver[indexReal],
+                                    press: () {
+                                      setPantallaP(0);
+                                      
+                                      // LÓGICA DE NAVEGACIÓN
+                                      // Usamos 'plantillaDriver[indexReal]' para comparar
+                                      if (plantillaDriver[indexReal] == plantillaDriver[0]) {
+                                        Navigator.push(
+                                          context,
+                                          PageRouteBuilder(
+                                            transitionDuration: const Duration(milliseconds: 200),
+                                            pageBuilder: (_, __, ___) => DetailsDriverHour(plantillaDriver: plantillaDriver[indexReal]),
+                                            transitionsBuilder: (_, animation, __, child) => SlideTransition(
+                                              position: Tween<Offset>(begin: const Offset(1.0, 0.0), end: Offset.zero).animate(animation),
+                                              child: child,
+                                            ),
                                           ),
-                                      )
-                                    ],
-                                  ),
-                                )
-                              ] ,
-                            ),
+                                        );
+                                      } else if (plantillaDriver[indexReal] == plantillaDriver[1]) {
+                                        Navigator.push(
+                                          context,
+                                          PageRouteBuilder(
+                                            transitionDuration: const Duration(milliseconds: 200),
+                                            pageBuilder: (_, __, ___) => DetailsDriverTripInProgress(plantillaDriver: plantillaDriver[indexReal]),
+                                            transitionsBuilder: (_, animation, __, child) => SlideTransition(
+                                              position: Tween<Offset>(begin: const Offset(1.0, 0.0), end: Offset.zero).animate(animation),
+                                              child: child,
+                                            ),
+                                          ),
+                                        );
+                                      } else if (plantillaDriver[indexReal] == plantillaDriver[2]) {
+                                        Navigator.push(
+                                          context,
+                                          PageRouteBuilder(
+                                            transitionDuration: const Duration(milliseconds: 200),
+                                            pageBuilder: (_, __, ___) => DetailsDriverHoursOut(plantillaDriver: plantillaDriver[indexReal]),
+                                            transitionsBuilder: (_, animation, __, child) => SlideTransition(
+                                              position: Tween<Offset>(begin: const Offset(1.0, 0.0), end: Offset.zero).animate(animation),
+                                              child: child,
+                                            ),
+                                          ),
+                                        );
+                                      } else if (plantillaDriver[indexReal] == plantillaDriver[3]) {
+                                        Navigator.push(
+                                          context,
+                                          PageRouteBuilder(
+                                            transitionDuration: const Duration(milliseconds: 200),
+                                            pageBuilder: (_, __, ___) => DetailsDriverHistory(plantillaDriver: plantillaDriver[indexReal]),
+                                            transitionsBuilder: (_, animation, __, child) => SlideTransition(
+                                              position: Tween<Offset>(begin: const Offset(1.0, 0.0), end: Offset.zero).animate(animation),
+                                              child: child,
+                                            ),
+                                          ),
+                                        );
+                                      } else if (plantillaDriver[indexReal] == plantillaDriver[4]) {
+                                        // Validación extra que tenías (solo si es coord o si se mostró por error)
+                                        if (snapshot.data!.driverCoord == true) {
+                                          Navigator.push(
+                                            context,
+                                            PageRouteBuilder(
+                                              transitionDuration: const Duration(milliseconds: 200),
+                                              pageBuilder: (_, __, ___) => DetailsAgentConfirmBefore(plantillaDriver: plantillaDriver[indexReal]),
+                                              transitionsBuilder: (_, animation, __, child) => SlideTransition(
+                                                position: Tween<Offset>(begin: const Offset(1.0, 0.0), end: Offset.zero).animate(animation),
+                                                child: child,
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      } else if (plantillaDriver[indexReal] == plantillaDriver[5]) {
+                                        // Validación extra que tenías
+                                        // if (snapshot.data!.driverType != "Motorista") {
+                                        // }
+                                          Navigator.push(
+                                            context,
+                                            PageRouteBuilder(
+                                              transitionDuration: const Duration(milliseconds: 200),
+                                              pageBuilder: (_, __, ___) => DisponibilityAgent(plantillaDriver: plantillaDriver[indexReal]),
+                                              transitionsBuilder: (_, animation, __, child) => SlideTransition(
+                                                position: Tween<Offset>(begin: const Offset(1.0, 0.0), end: Offset.zero).animate(animation),
+                                                child: child,
+                                              ),
+                                            ),
+                                          );
+                                      }
+                                    },
+                                  );
+                                }).toList(), // Convertimos el map a List<Widget>
+                              ),
+                            ],
                           );
-                        }
-                      },
-                    ),
-                  
+                        // } else {
+                        //   // ... Tu código del else (GridView simple para deptId == 2) ...
+                        //   return GridView.count(
+                        //       crossAxisCount: 2,
+                        //       shrinkWrap: true,
+                        //       physics: const NeverScrollableScrollPhysics(),
+                        //       children: List.generate(6, (index) {
+                        //           // ... tu lógica existente para el else ...
+                        //           return ItemDriverCard(
+                        //             viajeSolido: false,
+                        //             plantillaDriver: plantillaDriver[index],
+                        //             press: () { 
+                        //                 // ... Copia tu lógica de navegación existente aquí ...
+                        //             }
+                        //           );
+                        //       })
+                        //   );
+                        // }
+                      } else {
+                        // Loading State
+                        return WillPopScope(
+                          onWillPop: () async => false,
+                          child: SimpleDialog(
+                            elevation: 20,
+                            backgroundColor: Theme.of(context).cardColor,
+                            children: [
+                              Center(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Padding(
+                                      padding: EdgeInsets.only(left: 16, top: 16, right: 16),
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(16),
+                                      child: Text(
+                                        'Cargando menú...',
+                                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 18),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        );
+                      }
+                    },
+                  ),
                   SizedBox(height: 15),  
                 ],
               ),
