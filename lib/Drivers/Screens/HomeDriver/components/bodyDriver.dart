@@ -396,58 +396,58 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
                     SizedBox(height: 10),      
                   },
 
-                  ventanas2!=null?
-                  Stack(
-                    children: [
-                      if(isMenuOpen==true && ventanas2!.length>0)
-                        Padding(
-                          padding: const EdgeInsets.only(top:40.0),
-                          child: menu(size, context),
-                        ),
+                  // ventanas2!=null?
+                  // Stack(
+                  //   children: [
+                  //     if(isMenuOpen==true && ventanas2!.length>0)
+                  //       Padding(
+                  //         padding: const EdgeInsets.only(top:40.0),
+                  //         child: menu(size, context),
+                  //       ),
             
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).cardColor,
-                          borderRadius: BorderRadius.circular(10.0),
-                          border: Border.all(
-                            width: 2,
-                            color: Theme.of(context).disabledColor
-                          )
-                        ),
-                        child: TextField(
-                          style: Theme.of(context).textTheme.bodyMedium,
-                          controller: buscarText,
-                          onChanged: (value) {
+                  //     Container(
+                  //       decoration: BoxDecoration(
+                  //         color: Theme.of(context).cardColor,
+                  //         borderRadius: BorderRadius.circular(10.0),
+                  //         border: Border.all(
+                  //           width: 2,
+                  //           color: Theme.of(context).disabledColor
+                  //         )
+                  //       ),
+                  //       child: TextField(
+                  //         style: Theme.of(context).textTheme.bodyMedium,
+                  //         controller: buscarText,
+                  //         onChanged: (value) {
         
-                            if(value.isEmpty)
-                              ventanas2=ventanas;
-                            else
-                              ventanas2=ventanas!.where((ventana) {
-                                String nombre = ventana['nombre'].toString().toLowerCase();
-                                return nombre.contains(value.toLowerCase());
-                              }).toList();
+                  //           if(value.isEmpty)
+                  //             ventanas2=ventanas;
+                  //           else
+                  //             ventanas2=ventanas!.where((ventana) {
+                  //               String nombre = ventana['nombre'].toString().toLowerCase();
+                  //               return nombre.contains(value.toLowerCase());
+                  //             }).toList();
         
-                            setState(() {});
-                          },
-                          focusNode: _focusNode,
-                          decoration: InputDecoration(
-                            prefixIcon: SvgPicture.asset(  
-                              "assets/icons/buscador.svg",
-                              color: Theme.of(context).primaryIconTheme.color,
-                              width: 25,
-                              height: 25,
-                            ),
-                            hintText: 'Buscar',
-                            hintStyle: TextStyle(
-                              color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto'
-                            ),
-                            border: InputBorder.none,
-                          ),
-                        ),
-                      ),
+                  //           setState(() {});
+                  //         },
+                  //         focusNode: _focusNode,
+                  //         decoration: InputDecoration(
+                  //           prefixIcon: SvgPicture.asset(  
+                  //             "assets/icons/buscador.svg",
+                  //             color: Theme.of(context).primaryIconTheme.color,
+                  //             width: 25,
+                  //             height: 25,
+                  //           ),
+                  //           hintText: 'Buscar',
+                  //           hintStyle: TextStyle(
+                  //             color: Theme.of(context).hintColor, fontSize: 15, fontFamily: 'Roboto'
+                  //           ),
+                  //           border: InputBorder.none,
+                  //         ),
+                  //       ),
+                  //     ),
                       
-                    ],
-                  ):Text(''),
+                  //   ],
+                  // ):Text(''),
               
                   SizedBox(height: 15),      
               

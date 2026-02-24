@@ -65,6 +65,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
   bool traveled1 = true;
   final prefs = new PreferenciasUsuario();
   String ip = "https://driver.smtdriver.com";
+  // String ip = "http://192.168.0.12:5000";
   var tripId;
   bool? permiso;
   final int comp = 1;
@@ -153,6 +154,70 @@ class _DataTableExample extends State<MyConfirmAgent> {
     }
 
   }
+
+    Future<void> fetchTestAlerts(String agentId, String tripId) async {
+    // 1. Mostrar loading
+
+
+    // try {
+      // 2. Preparar los datos (usamos JSON para soportar los valores BIT/bool correctamente)
+      Map<String, dynamic> data = {
+        'agentId': agentId,
+        'tripId': tripId,
+        'isAssigningAgentHour': 0, // Puede ser true, false o null
+        'isMarkingOutboundBoarding': 1
+      };
+
+      print(data);
+      // 3. Petición HTTP
+      http.Response response = await http.post(
+        Uri.parse('$ip/apis/getTestAlerts'),
+        body: json.encode(data),
+        headers: {"Content-Type": "application/json"},
+      );
+
+      // 4. Decodificar respuesta
+      final dynamic decodedResp = json.decode(response.body);
+      print(decodedResp);
+      // Asumiendo que usas la clase Driver para mapear o una estructura similar
+      // Si la respuesta solo trae ok, message, title, puedes usar el Map directamente
+      bool ok = decodedResp['ok'] ?? false;
+      String message = decodedResp['message'] ?? 'Sin mensaje';
+      String title = 'Alerta';
+
+
+      if (response.statusCode == 200) {
+        if (mounted) {
+          if (mounted && message.trim().isNotEmpty) { 
+            WarningSuccessDialog().show(
+              navigatorKey.currentContext!,
+              title: title, // El "msg" que viene del SP
+              message: message,
+              tipo: ok ? 2 : 1,
+              onOkay: () {
+                // Navigator.of(navigatorKey.currentContext!).pop();
+              },
+            );
+          }           
+        }
+      } else {
+        print("Error en la respuesta: ${response.statusCode} - ${response.body}");
+      }
+
+    // } 
+    // catch (error) {
+    //   print("Error en fetchTestAlerts: $error");
+    //   if (mounted) {
+    //     WarningSuccessDialog().show(
+    //       navigatorKey.currentContext!,
+    //       title: 'Error de conexión con el servidor',
+    //       tipo: 1,
+    //       onOkay: () {},
+    //     );
+    //   }
+    // }
+  }
+
 
 
 
@@ -1023,7 +1088,7 @@ void showFullScreenAgentsModal(BuildContext context, String message, int driverI
                                               LoadingIndicatorDialog().show(context);                                      
                                               Map data =   {'agentUser':agentEmployeeId.text, 'tripId':tripId.toString(),'itsManualSearch':"1"};                                      
                                               http.Response response = await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/validateCheckIn'), body: data);
-
+                                              
                                               final resp = json.decode(response.body);                                             
                                               if(mounted){
                                                 respError(resp);
@@ -1063,7 +1128,7 @@ void showFullScreenAgentsModal(BuildContext context, String message, int driverI
                                                         }
                                       
                                                         Map datas2 = {"agentId": data1.agent!.agentId.toString(),"tripId": abc.data!.trips![1].actualTravel!.tripId.toString(),"tripHour": abc.data!.trips![1].actualTravel!.tripHour.toString()};
-                                      
+                                                        
                                                         final sendDatas = await http.post(Uri.parse('$ip/apis/registerAgentTripEntryByDriver'),body: datas2);                                      
                                                         final dataR = json.decode(sendDatas.body);
                                                                             
@@ -1109,7 +1174,9 @@ void showFullScreenAgentsModal(BuildContext context, String message, int driverI
                                                               context,
                                                               title: 'Se agregó el agente ${itemAbordaje.trips![0].tripAgent![indexP].agentFullname} al viaje.',
                                                               tipo: 2,
-                                                              onOkay: () {},
+                                                              onOkay: () {
+                                                                fetchTestAlerts(data1.agent!.agentId.toString(), tripId.toString());
+                                                              },
                                                             );                                                              
                                                           } 
                                                         }
@@ -1175,7 +1242,7 @@ void showFullScreenAgentsModal(BuildContext context, String message, int driverI
                                                       'actionName':'Abordaje'
                                                     };
                                                     
-                                                  
+                                                   
                                                   await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
                                                   agentEmployeeId.text='';
                                                   abc.data!.trips![0].tripAgent![index].commentDriver=null;                                                         
@@ -1188,7 +1255,9 @@ void showFullScreenAgentsModal(BuildContext context, String message, int driverI
                                                     context,
                                                     title: 'El agente ${abc.data!.trips![0].tripAgent![index].agentFullname} ha abordado.',
                                                     tipo: 2,
-                                                    onOkay: () {},
+                                                    onOkay: () {
+                                                       fetchTestAlerts(abc.data!.trips![0].tripAgent![index].agentId.toString(), tripId.toString());
+                                                    },
                                                   );  
                                                   setState(() { });
                                                   },
@@ -1280,7 +1349,7 @@ void showFullScreenAgentsModal(BuildContext context, String message, int driverI
                           LoadingIndicatorDialog().show(context);
                           Map data =   {'agentUser':codigoQR,'tripId':tripId.toString()};
                           http.Response response = await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/validateCheckIn'), body: data);
-
+                          
                           final resp = json.decode(response.body);
 
                           if(mounted){
@@ -1331,7 +1400,7 @@ void showFullScreenAgentsModal(BuildContext context, String message, int driverI
                                     }
 
                                     Map datas2 = {"agentId": data1.agent!.agentId.toString(),"tripId": abc.data!.trips![1].actualTravel!.tripId.toString(),"tripHour": abc.data!.trips![1].actualTravel!.tripHour.toString()};
-
+                                    
                                     final sendDatas = await http.post(Uri.parse('$ip/apis/registerAgentTripEntryByDriver'),body: datas2);
 
                                     final dataR = json.decode(sendDatas.body);
@@ -1380,7 +1449,9 @@ void showFullScreenAgentsModal(BuildContext context, String message, int driverI
                                             context,
                                             title: "Se agregó el agente ${itemAbordaje.trips![0].tripAgent![indexP].agentFullname} al viaje.",
                                             tipo: 2,
-                                            onOkay: () {},
+                                            onOkay: () {
+                                              fetchTestAlerts(data1.agent!.agentId.toString(), tripId.toString());
+                                            },
                                           );
                                           
                                         } 
@@ -1443,7 +1514,7 @@ void showFullScreenAgentsModal(BuildContext context, String message, int driverI
                                   'longitude':position.longitude.toString(),
                                   'actionName':'Abordaje'
                                 };
-
+                                
                                 await http.post(Uri.parse('https://driver.smtdriver.com/apis/agents/registerTripAction'), body: data);
                                 LoadingIndicatorDialog().dismiss();                              
                                 abc.data!.trips![0].tripAgent![index].commentDriver=null;
@@ -1454,7 +1525,9 @@ void showFullScreenAgentsModal(BuildContext context, String message, int driverI
                                   context,
                                   title: "El agente ${abc.data!.trips![0].tripAgent![index].agentFullname} ha abordado.",
                                   tipo: 2,
-                                  onOkay: () {},
+                                  onOkay: () {
+                                    fetchTestAlerts(abc.data!.trips![0].tripAgent![index].agentId.toString(), tripId.toString());
+                                  },
                                 );
                                 setState(() { });
                               },

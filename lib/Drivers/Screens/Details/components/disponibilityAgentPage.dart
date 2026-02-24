@@ -154,7 +154,7 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
           
           // Estado con punto verde
           Padding(
-            padding: const EdgeInsets.only(left: 2),
+            padding: const EdgeInsets.only(left: 3),
             child: Row(
               children: [
                 const Icon(Icons.circle, color: Colors.green, size: 14),
@@ -218,9 +218,6 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Divider(height: 1, color: Color(0xFFEEEEEE)),
-                  const SizedBox(height: 12),
-                  
                   // MOSTRAR NOTAS
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 8),
@@ -396,6 +393,10 @@ class _NewAbsenceScreenState extends State<NewAbsenceScreen> {
       initialDate: DateTime.now(),
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
+      //personalizar texto idioma español
+      helpText: isStart ? "Selecciona fecha de inicio" : "Selecciona fecha final",
+      cancelText: "Cancelar",
+      confirmText: "Aceptar",      
     );
     if (picked != null) {
       setState(() {

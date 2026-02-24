@@ -551,52 +551,64 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                               : Text(''),
                               SizedBox(width: 5),
                                 InkWell(
-                                  onTap: _isCalling ? null : () async {
-                                  setState(() {
-                                    _isCalling = true; // Mostrar indicador de carga
-                                  });
-        
-                                  try {
-        
-                                      String? deviceId = await getDeviceId();
-                                      if (deviceId == null) {
-                                        throw Exception("No se pudo obtener el ID del dispositivo.");
-                                      }
-        
-                                      // Ejecutar las llamadas API en paralelo
-                                      final results = await Future.wait([
-                                        ChatApis().registerCallerAndSendNotification(sala.toString(),widget.id! ,deviceId , "driver", widget.idAgent!, "agent", widget.id!, "driver", "agente", nameDriver!
-                                        ),
-                                        ChatApis().getDeviceTargetId('agente', widget.idAgent!),
-                                      ]);
-        
-                                      var roomId = results[0];
-                                      // var deviceIdTarget = results[1];
-        
-                                      if (roomId == null) {
-                                        throw Exception("Error: No se obtuvo roomId o deviceIdTarget de la API.");
-                                      }
-                                      // print(roomId);
-                                      // print(deviceIdTarget);
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) => JitsiCallPage(roomId: roomId.toString(), name: nameDriver!),
-                                        ),
-                                      );
-                                  } catch (e) {
-                                    print("Error durante el proceso de llamada: $e");
+                                  onTap: () {
+                                    //alerta en mantenimiento llamada
                                     QuickAlert.show(
                                       context: context,
-                                      type: QuickAlertType.error,
-                                      text: "Error al iniciar la llamada: $e",
+                                      type: QuickAlertType.info,
+                                      text: "En mantenimiento 🚧",
+                                      confirmBtnText: "Aceptar",
+                                      onConfirmBtnTap: () {
+                                        Navigator.of(context).pop();
+                                      },
                                     );
-                                  } finally {
-                                    setState(() {
-                                      _isCalling = false; // Ocultar indicador de carga
-                                    });
-                                  }
-                                },
+                                  },
+                                //   onTap: _isCalling ? null : () async {
+                                //   setState(() {
+                                //     _isCalling = true; // Mostrar indicador de carga
+                                //   });
+        
+                                //   try {
+        
+                                //       String? deviceId = await getDeviceId();
+                                //       if (deviceId == null) {
+                                //         throw Exception("No se pudo obtener el ID del dispositivo.");
+                                //       }
+        
+                                //       // Ejecutar las llamadas API en paralelo
+                                //       final results = await Future.wait([
+                                //         ChatApis().registerCallerAndSendNotification(sala.toString(),widget.id! ,deviceId , "driver", widget.idAgent!, "agent", widget.id!, "driver", "agente", nameDriver!
+                                //         ),
+                                //         ChatApis().getDeviceTargetId('agente', widget.idAgent!),
+                                //       ]);
+        
+                                //       var roomId = results[0];
+                                //       // var deviceIdTarget = results[1];
+        
+                                //       if (roomId == null) {
+                                //         throw Exception("Error: No se obtuvo roomId o deviceIdTarget de la API.");
+                                //       }
+                                //       // print(roomId);
+                                //       // print(deviceIdTarget);
+                                //       Navigator.pushReplacement(
+                                //         context,
+                                //         MaterialPageRoute(
+                                //           builder: (_) => JitsiCallPage(roomId: roomId.toString(), name: nameDriver!),
+                                //         ),
+                                //       );
+                                //   } catch (e) {
+                                //     print("Error durante el proceso de llamada: $e");
+                                //     QuickAlert.show(
+                                //       context: context,
+                                //       type: QuickAlertType.error,
+                                //       text: "Error al iniciar la llamada: $e",
+                                //     );
+                                //   } finally {
+                                //     setState(() {
+                                //       _isCalling = false; // Ocultar indicador de carga
+                                //     });
+                                //   }
+                                // },
                                 child: Icon(Icons.call,
                                   color: Theme.of(context).textTheme.titleMedium!.color,
                                 ),

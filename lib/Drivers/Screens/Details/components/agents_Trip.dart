@@ -61,6 +61,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
   var tripVehicle = '';
   bool vehicleL = false;
   final prefs = new PreferenciasUsuario();
+  // String ip = "http://192.168.0.12:5000";
   String ip = "https://driver.smtdriver.com";
   dynamic flagalert;
 
@@ -94,6 +95,68 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
     
   }
 
+  Future<void> fetchTestAlerts(String agentId, String tripId) async {
+    // 1. Mostrar loading
+
+
+    // try {
+      // 2. Preparar los datos (usamos JSON para soportar los valores BIT/bool correctamente)
+      Map<String, dynamic> data = {
+        'agentId': agentId,
+        'tripId': tripId,
+        'isAssigningAgentHour': 1, // Puede ser true, false o null
+        'isMarkingOutboundBoarding': 0
+      };
+
+      print(data);
+      // 3. Petición HTTP
+      http.Response response = await http.post(
+        Uri.parse('$ip/apis/getTestAlerts'),
+        body: json.encode(data),
+        headers: {"Content-Type": "application/json"},
+      );
+
+      // 4. Decodificar respuesta
+      final dynamic decodedResp = json.decode(response.body);
+      print(decodedResp);
+      // Asumiendo que usas la clase Driver para mapear o una estructura similar
+      // Si la respuesta solo trae ok, message, title, puedes usar el Map directamente
+      bool ok = decodedResp['ok'] ?? false;
+      String message = decodedResp['message'] ?? 'Sin mensaje';
+      String title =  'Alerta';
+
+
+      if (response.statusCode == 200) {
+        if (mounted) {
+          if (mounted && message.trim().isNotEmpty) { 
+            WarningSuccessDialog().show(
+              navigatorKey.currentContext!,
+              title: title, // El "msg" que viene del SP
+              message: message,
+              tipo: ok ? 2 : 1,
+              onOkay: () {
+                // Navigator.of(navigatorKey.currentContext!).pop();
+              },
+            );
+          }           
+        }
+      } else {
+        print("Error en la respuesta: ${response.statusCode} - ${response.body}");
+      }
+
+    // } catch (error) {
+    //   print("Error en fetchTestAlerts: $error");
+    //   if (mounted) {
+    //     WarningSuccessDialog().show(
+    //       navigatorKey.currentContext!,
+    //       title: 'Error de conexión con el servidor',
+    //       tipo: 1,
+    //       onOkay: () {},
+    //     );
+    //   }
+    // }
+  }
+
   Future<Driver> fetchHours(
       String agentId, String agentTripHour, String tripId) async {
         LoadingIndicatorDialog().show(context);      
@@ -122,7 +185,9 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
           navigatorKey.currentContext!,
           title: '${resp.message}',
           tipo: 2,
-          onOkay: () {},
+          onOkay: () {
+            fetchTestAlerts(agentId,tripId);
+          },
         );
 
         _refresh();
@@ -1419,7 +1484,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                               shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
                                             ),
                                             onPressed: () async{
-                                              var time =await showTimePicker(context: context,initialTime:TimeOfDay.now(),);                                                 
+                                              var time =await showTimePicker(context: context,initialTime:TimeOfDay.now(),);  
                                               validateHour(abc.data!.trips![0].agentes![index].agentId.toString(), abc.data!.trips![0].agentes![index].tripId.toString(), time);
                                               DateTimeField.convert(flagalert);                                           
                                             },

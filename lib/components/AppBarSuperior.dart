@@ -42,11 +42,21 @@ class _AppBarSuperior extends State<AppBarSuperior> {
   ConfirmationDialog confirmationDialog = ConfirmationDialog();
   Future<DriverData>? itemx;
   _AppBarSuperior({this.item});
+  //variable tipo string motorista
+  String? motorista;
+  dynamic driverCoord;
 
   @override
   void initState() {
     super.initState();
     itemx = fetchRefres();
+
+    fetchRefres().then((data) {
+      setState(() {
+        motorista = data.driverType;
+        driverCoord = data.driverCoord;
+      });
+    });
   }
   
   void ruta(){
@@ -172,31 +182,41 @@ class _AppBarSuperior extends State<AppBarSuperior> {
       break;
 
       case 6:
-        Navigator.push(
-                                            context,
-                                            PageRouteBuilder(
-                                              transitionDuration: const Duration(milliseconds: 200),
-                                              pageBuilder: (_, __, ___) => DisponibilityAgent(plantillaDriver: plantillaDriver[5]),
-                                              transitionsBuilder: (_, animation, __, child) => SlideTransition(
-                                                position: Tween<Offset>(begin: const Offset(1.0, 0.0), end: Offset.zero).animate(animation),
-                                                child: child,
-                                              ),
-                                            ),
-                                          );
+        Navigator.pushAndRemoveUntil(
+        context,
+        PageRouteBuilder(
+          transitionDuration: Duration(milliseconds: 200),
+          pageBuilder: (_, __, ___) => HomeDriverScreen(),
+          transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+            return SlideTransition(
+              position: Tween<Offset>(
+                begin: Offset(-1.0, 0.0),
+                end: Offset.zero,
+              ).animate(animation),
+            child: child,
+           );
+          },
+        ), (route) => false,
+      );
       break;
 
       case 5:
-        Navigator.push(
-                                            context,
-                                            PageRouteBuilder(
-                                              transitionDuration: const Duration(milliseconds: 200),
-                                              pageBuilder: (_, __, ___) => DetailsAgentConfirmBefore(plantillaDriver: plantillaDriver[4]),
-                                              transitionsBuilder: (_, animation, __, child) => SlideTransition(
-                                                position: Tween<Offset>(begin: const Offset(1.0, 0.0), end: Offset.zero).animate(animation),
-                                                child: child,
-                                              ),
-                                            ),
-                                          ); 
+        Navigator.pushAndRemoveUntil(
+        context,
+        PageRouteBuilder(
+          transitionDuration: Duration(milliseconds: 200),
+          pageBuilder: (_, __, ___) => HomeDriverScreen(),
+          transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+            return SlideTransition(
+              position: Tween<Offset>(
+                begin: Offset(-1.0, 0.0),
+                end: Offset.zero,
+              ).animate(animation),
+            child: child,
+           );
+          },
+        ), (route) => false,
+      );
       break;
 
       default:
@@ -371,59 +391,33 @@ class _AppBarSuperior extends State<AppBarSuperior> {
 
             
 
-            if(item==5)
-              FutureBuilder<DriverData>(
-                      future: itemx,
-                      builder: (BuildContext context, AsyncSnapshot snapshot) {
-                        if (snapshot.hasData) {                                    
-                          if (snapshot.data.driverCoord == true || snapshot.data.driverCoord == "true") {
-                              return Expanded(
-                                child: Center(
-                                  child: Text(
-                                    "Confirmar Agente",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.normal,
-                                      fontSize: 21
-                                    ),
-                                  ),
-                                ),
-                              );                                     
-                          }else{
-                            return Container();
-                          }
-                        } else {
-                          return Center(child: CircularProgressIndicator());
-                        }
-                      },
-                    ), 
+            if(item==5 && driverCoord == true || item==5 && driverCoord == "true")
+              Expanded(
+                child: Center(
+                  child: Text(
+                    "Confirmar Agente",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.normal,
+                      fontSize: 21
+                    ),
+                  ),
+                ),
+              ),
 
-            if(item==6)
-                  FutureBuilder<DriverData>(
-                    future: itemx,
-                    builder: (BuildContext context, AsyncSnapshot snapshot) {
-                      if (snapshot.hasData) {                                    
-                        if (snapshot.data.driverType != "Motorista") {
-                            return Expanded(
-                              child: Center(
-                                child: Text(
-                                  "Mi disponibilidad",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.normal,
-                                    fontSize: 21
-                                  ),
-                                ),
-                              ),
-                            );                                     
-                        }else{
-                          return Container();
-                        }
-                      } else {
-                        return Center(child: CircularProgressIndicator());
-                      }
-                    },
-                  ),               
+                if(item==6 && motorista != "Motorista")
+                  Expanded(
+                    child: Center(
+                      child: Text(
+                        "Mi disponibilidad",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.normal,
+                          fontSize: 21
+                        ),
+                      ),
+                    ),
+                  ),          
 
             if(item==44)
             Expanded(

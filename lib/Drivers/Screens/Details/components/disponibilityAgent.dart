@@ -44,7 +44,7 @@ class _DisponibilityAgentState extends State<DisponibilityAgent> {
                         },
                         child: Body(plantillaDriver: widget.plantillaDriver)),
                       ),
-                      SafeArea(child: AppBarPosterior(item:-1)),
+                      SafeArea(child: AppBarPosterior(item:6)),
                     ],
                   ),
                 ),
