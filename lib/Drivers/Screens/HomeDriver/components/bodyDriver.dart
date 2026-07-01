@@ -259,9 +259,9 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin<Body> {
     final respStatus= json.decode(statusApi); 
     if (mounted) {      
       setState(() {      
-        msg =   respStatus['message']['recordset'][0]['msg'];
-        respStatus['message']['recordset'][0]['status']==1?status=true:status=false;
-        showButton = respStatus['message']['recordset'][0]['showButton'];    
+        msg =   ''??respStatus['message']['recordset'][0]['msg'];
+        // respStatus['message']['recordset'][0]['status']==1?status=true:status=false;
+        showButton = 0??respStatus['message']['recordset'][0]['showButton'];    
       });
     }   
   }

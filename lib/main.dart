@@ -175,10 +175,10 @@ class _MyAppState extends State<MyApp> {
     }
 
     PushNotificationServices.messageStream.listen((event) {       
-      if (event['type'] == "AGENT_TRANSFERED") {
-        prefs.tripId = event['tripId'].toString();        
-        navigatorKey.currentState?.pushReplacement(MaterialPageRoute(builder: (_) => MyConfirmAgent())).then((_) => MyConfirmAgent());
-      }
+      // if (event['type'] == "AGENT_TRANSFERED") {
+      //   prefs.tripId = event['tripId'].toString();        
+      //   navigatorKey.currentState?.pushReplacement(MaterialPageRoute(builder: (_) => MyConfirmAgent())).then((_) => MyConfirmAgent());
+      // }
 
     });
 

@@ -1485,7 +1485,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                             ),
                                             onPressed: () async{
                                               var time =await showTimePicker(context: context,initialTime:TimeOfDay.now(),);  
-                                              validateHour(abc.data!.trips![0].agentes![index].agentId.toString(), abc.data!.trips![0].agentes![index].tripId.toString(), time);
+                                              validateHour(abc.data!.trips![0].agentes![index].agentId.toString(), abc.data!.trips![0].agentes![index].tripId.toString(), time, abc.data!.trips![3].viajeActual?.tripHour ?? "");
                                               DateTimeField.convert(flagalert);                                           
                                             },
                                             child: Row(
@@ -2168,31 +2168,123 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
   }
 
 
-  validateHour(String agentId, String tripId, dynamic time)async{
+  validateHour(String agentId, String tripId, dynamic time, String tripHour)async{
     //var time =await showTimePicker(context: context,initialTime:TimeOfDay.now(),);   
     if(time==null){
       return;
     } 
     String _eventTime = now.toString().substring(10, 15);
     _eventTime = time.toString().substring(10, 15);
-    if (time!= null) {      
-      confirmationDialog.show(
-        context,
-        title: '¿Es correcta la hora $_eventTime del agente?',
-        type: "0",
-        onConfirm: () async {
-          setState(() {   
-            fetchHours(agentId,_eventTime,tripId);
-          });                                                
-                                            
+
+    bool showCustomAlert = false;
+    String formattedTripHour = "";
+    String formattedAgentHour = "";
+
+    try {
+      if (tripHour.isNotEmpty && tripHour != "null") {
+        List<String> tripHourParts = tripHour.split(":");
+        int tHour = int.parse(tripHourParts[0]);
+        bool isTripAM = tHour < 12;
+        String amPmTrip = isTripAM ? "a.m." : "p.m.";
+        int tHour12 = tHour % 12 == 0 ? 12 : tHour % 12;
+        formattedTripHour = "$tHour12:${tripHourParts[1]} $amPmTrip";
+
+        bool isAgentAM = time.hour < 12;
+        String amPmAgent = isAgentAM ? "a.m." : "p.m.";
+        int aHour12 = time.hour % 12 == 0 ? 12 : time.hour % 12;
+        formattedAgentHour = "$aHour12:${time.minute.toString().padLeft(2, '0')} $amPmAgent";
+
+        if (isTripAM != isAgentAM) {
+          showCustomAlert = true;
+        }
+      }
+    } catch (e) {
+      print("Error parsing tripHour: $e");
+    }
+
+    if (showCustomAlert) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext dialogContext) {
+          return AlertDialog(
+            backgroundColor: Theme.of(context).cardColor,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+            title: Text('⚠️ Confirma la hora de encuentro', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+            content: RichText(
+              text: TextSpan(
+                style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.black, fontSize: 16),
+                children: [
+                  TextSpan(text: 'El viaje está programado para la siguiente hora: '),
+                  TextSpan(text: '$formattedTripHour', style: TextStyle(fontWeight: FontWeight.bold)),
+                  TextSpan(text: '. ¿Está seguro de asignarle la hora de encuentro '),
+                  TextSpan(text: '$formattedAgentHour', style: TextStyle(fontWeight: FontWeight.bold)),
+                  TextSpan(text: ' al agente?'),
+                ],
+              ),
+            ),
+            actionsAlignment: MainAxisAlignment.center,
+            actions: [
+              TextButton(
+                style: ButtonStyle(
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                      side: BorderSide(color: Colors.black),
+                    ),
+                  ),
+                  backgroundColor: MaterialStateProperty.all(Colors.transparent),
+                ),
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                  setState(() {            
+                    flagalert = time;                                            
+                  });
+                },
+                child: Text('No', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16, fontWeight: FontWeight.bold)),
+              ),
+              SizedBox(width: 10),
+              TextButton(
+                style: ButtonStyle(
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                      side: BorderSide(color: Color.fromRGBO(40, 93, 169, 1)),
+                    ),
+                  ),
+                  backgroundColor: MaterialStateProperty.all(Color.fromRGBO(40, 93, 169, 1)),
+                ),
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                  setState(() {   
+                    fetchHours(agentId, _eventTime, tripId);
+                  });
+                },
+                child: Text('Sí', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+              ),
+            ],
+          );
         },
-        onCancel: () {
-          setState(() {            
-            flagalert = time;                                            
-          });
-        },
-      );                                                         
-    }                                                                                                  
+      );
+    } else {
+      if (time!= null) {      
+        confirmationDialog.show(
+          context,
+          title: '¿Es correcta la hora $_eventTime del agente?',
+          type: "0",
+          onConfirm: () async {
+            setState(() {   
+              fetchHours(agentId,_eventTime,tripId);
+            });                                                
+          },
+          onCancel: () {
+            setState(() {            
+              flagalert = time;                                            
+            });
+          },
+        );                                                         
+      }                                                                                                  
+    }
   }
 
   
