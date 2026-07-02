@@ -383,6 +383,8 @@ class _TripsState extends State<Trips> {
                                 ),
                                 child: Text('Ver viaje',style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white, fontSize: 16)),
                                   onPressed: () {
+                                    // 🛠️ Aquí se modificó: Se guarda la hora del viaje en caché para la alerta de confirmación AM/PM
+                                    prefs.tripHours = abc.data![index].hora.toString();
                                     fetchAgentsInTravel2(abc.data![index].tripId.toString());
                                   },
                                 ),

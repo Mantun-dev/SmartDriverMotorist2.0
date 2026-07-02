@@ -1484,8 +1484,8 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
                                               shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(10)),
                                             ),
                                             onPressed: () async{
-                                              var time =await showTimePicker(context: context,initialTime:TimeOfDay.now(),);  
-                                              validateHour(abc.data!.trips![0].agentes![index].agentId.toString(), abc.data!.trips![0].agentes![index].tripId.toString(), time, abc.data!.trips![3].viajeActual?.tripHour ?? "");
+                                              var time = await showTimePicker(context: context,initialTime:TimeOfDay.now(),);  
+                                              validateHour(abc.data!.trips![0].agentes![index].agentId.toString(), abc.data!.trips![0].agentes![index].tripId.toString(), time);
                                               DateTimeField.convert(flagalert);                                           
                                             },
                                             child: Row(
@@ -2168,7 +2168,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
   }
 
 
-  validateHour(String agentId, String tripId, dynamic time, String tripHour)async{
+  validateHour(String agentId, String tripId, dynamic time)async{
     //var time =await showTimePicker(context: context,initialTime:TimeOfDay.now(),);   
     if(time==null){
       return;
@@ -2177,22 +2177,17 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
     _eventTime = time.toString().substring(10, 15);
 
     bool showCustomAlert = false;
-    String formattedTripHour = "";
-    String formattedAgentHour = "";
+    // 🛠️ Aquí se modificó: Se obtienen las horas en caché para la alerta AM/PM
+    String formattedTripHour = prefs.tripHours;
+    // 🛠️ Aquí se modificó: Lógica de conversión a formato 12h (AM/PM) para ser usada en las alertas
+    bool isAgentAM = time.hour < 12;
+    String amPmAgent = isAgentAM ? "a.m." : "p.m.";
+    int aHour12 = time.hour % 12 == 0 ? 12 : time.hour % 12;
+    String formattedAgentHour = "$aHour12:${time.minute.toString().padLeft(2, '0')} $amPmAgent";
 
     try {
-      if (tripHour.isNotEmpty && tripHour != "null") {
-        List<String> tripHourParts = tripHour.split(":");
-        int tHour = int.parse(tripHourParts[0]);
-        bool isTripAM = tHour < 12;
-        String amPmTrip = isTripAM ? "a.m." : "p.m.";
-        int tHour12 = tHour % 12 == 0 ? 12 : tHour % 12;
-        formattedTripHour = "$tHour12:${tripHourParts[1]} $amPmTrip";
-
-        bool isAgentAM = time.hour < 12;
-        String amPmAgent = isAgentAM ? "a.m." : "p.m.";
-        int aHour12 = time.hour % 12 == 0 ? 12 : time.hour % 12;
-        formattedAgentHour = "$aHour12:${time.minute.toString().padLeft(2, '0')} $amPmAgent";
+      if (formattedTripHour.isNotEmpty && formattedTripHour != "null") {
+        bool isTripAM = formattedTripHour.toLowerCase().contains("am") || formattedTripHour.toLowerCase().contains("a.m.");
 
         if (isTripAM != isAgentAM) {
           showCustomAlert = true;
@@ -2203,6 +2198,7 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
     }
 
     if (showCustomAlert) {
+      // 🛠️ Aquí se modificó: Se muestra la alerta personalizada para confirmar la discrepancia AM/PM
       showDialog(
         context: context,
         barrierDismissible: false,
@@ -2270,7 +2266,8 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
       if (time!= null) {      
         confirmationDialog.show(
           context,
-          title: '¿Es correcta la hora $_eventTime del agente?',
+          // 🛠️ Aquí se modificó: Se ajustó el título para mostrar la hora en formato 12h (AM/PM)
+          title: '¿Es correcta la hora $formattedAgentHour del agente?',
           type: "0",
           onConfirm: () async {
             setState(() {   
