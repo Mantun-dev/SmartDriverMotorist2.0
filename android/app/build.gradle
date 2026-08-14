@@ -61,12 +61,12 @@ android {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.driverapp.devs"
         namespace "com.driverapp.devs"
-        versionCode 149
+        versionCode 153
         minSdkVersion 26
         targetSdkVersion 35
         multiDexEnabled true
         versionCode flutterVersionCode.toInteger()
-        versionName "2.18.91"
+        versionName "2.18.93"
     }
 
     compileOptions {
@@ -77,6 +77,13 @@ android {
     kotlinOptions {
         jvmTarget = '17' // Ensure Kotlin compiles to JVM 17 bytecode
     }
+    
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging true
+        }
+    }
+    
     def keystoreProperties = new Properties()
     def keystorePropertiesFile = rootProject.file('key.properties')
     if (keystorePropertiesFile.exists()) {

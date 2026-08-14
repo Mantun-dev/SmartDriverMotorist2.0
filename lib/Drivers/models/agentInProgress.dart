@@ -74,8 +74,8 @@ class ActualTravel {
   int? notTraveled;
   int? totalAgents;
   String? neighborhoodReferencePoint;
-  double? latitude; // New latitude field
-  double? longitude; // New longitude field
+  dynamic latitude; // New latitude field
+  dynamic longitude; // New longitude field
 
   factory ActualTravel.fromJson(Map<String, dynamic> json) => ActualTravel(
         tripId: json["tripId"],
@@ -146,6 +146,7 @@ class TripAgent {
     this.latitude, // New latitude field
     this.longitude, // New longitude field
     this.finalVerification,
+    this.requiresPin,
   });
 
   int? tripId;
@@ -169,9 +170,10 @@ class TripAgent {
   String? hourForTrip;
   dynamic didntGetOut;
   String? neighborhoodReferencePoint;
-  double? latitude; // New latitude field
-  double? longitude; // New longitude field
+  dynamic latitude; // New latitude field
+  dynamic longitude; // New longitude field
   dynamic finalVerification;
+  dynamic requiresPin;
 
   factory TripAgent.fromJson(Map<String, dynamic> json) => TripAgent(
         tripId: json["tripId"],
@@ -197,7 +199,8 @@ class TripAgent {
         neighborhoodReferencePoint: json["neighborhoodReferencePoint"],
         latitude: json["latitude"],
         longitude: json["longitude"],
-        finalVerification: json["finalVerification"]
+        finalVerification: json["finalVerification"],
+        requiresPin: json["requiresPin"]
       );
 
   Map<String, dynamic> toJson() => {
@@ -225,6 +228,7 @@ class TripAgent {
         "latitude": latitude,
         "longitude": longitude,
         "finalVerification": finalVerification,
+        "requiresPin": requiresPin,
       };
 }
 

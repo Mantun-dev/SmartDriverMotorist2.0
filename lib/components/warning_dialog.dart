@@ -3,10 +3,8 @@ import 'package:flutter_auth/main.dart';
 import 'package:flutter_svg/svg.dart';
 
 class WarningSuccessDialog {
+  // Cambio: Se eliminaron las variables _context e isDisplayed para evitar bloqueos por estado Singleton
   static final WarningSuccessDialog _singleton = WarningSuccessDialog._internal();
-  late BuildContext _context;
-  bool isDisplayed = false;
-
   factory WarningSuccessDialog() {
     return _singleton;
   }
@@ -19,9 +17,6 @@ class WarningSuccessDialog {
     required int tipo,
     required VoidCallback onOkay,
   }) {
-    if (isDisplayed) {
-      return;
-    }
     Color containerC = Color.fromRGBO(40, 93, 169, 1);
     
     String iconAsset = 
@@ -36,8 +31,6 @@ class WarningSuccessDialog {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        _context = context;
-        isDisplayed = true;
         return WillPopScope(
           onWillPop: () async => false,
           child: AlertDialog(
@@ -133,7 +126,8 @@ class WarningSuccessDialog {
                           ),
                           onPressed: () {
                             onOkay();
-                            dismiss();
+                            // Cambio: Se cierra el diálogo independientemente de cualquier estado estático
+                            Navigator.of(context).pop();
                           },
                           child: Text(
                             'Ok',
@@ -154,12 +148,5 @@ class WarningSuccessDialog {
         );
       },
     );
-  }
-
-  dismiss() {
-    if (isDisplayed) {
-      Navigator.pop(_context);
-      isDisplayed = false;
-    }
   }
 }

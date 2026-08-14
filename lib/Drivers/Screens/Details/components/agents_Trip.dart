@@ -131,12 +131,10 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
           if (mounted && message.trim().isNotEmpty) { 
             WarningSuccessDialog().show(
               navigatorKey.currentContext!,
-              title: title, // El "msg" que viene del SP
+              title: title,
               message: message,
               tipo: ok ? 2 : 1,
-              onOkay: () {
-                // Navigator.of(navigatorKey.currentContext!).pop();
-              },
+              onOkay: () {},
             );
           }           
         }
@@ -199,6 +197,17 @@ class _DataTableExample extends State<MyAgent> with WidgetsBindingObserver {
         WarningSuccessDialog().show(
           navigatorKey.currentContext!,
           title: '${resp.message}',
+          tipo: 1,
+          onOkay: () {},
+        );
+      }
+    } else {
+      LoadingIndicatorDialog().dismiss();    
+      confirmationDialog.dismiss();   
+      if(mounted){
+        WarningSuccessDialog().show(
+          navigatorKey.currentContext!,
+          title: 'Error de servidor (${response.statusCode})',
           tipo: 1,
           onOkay: () {},
         );

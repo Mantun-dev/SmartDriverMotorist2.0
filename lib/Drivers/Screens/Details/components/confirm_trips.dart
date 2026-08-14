@@ -20,7 +20,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 // import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
-import 'dart:convert' show json, jsonEncode;
+import 'dart:convert' show json, jsonEncode, jsonDecode;
 import 'package:flutter_auth/constants.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:quickalert/quickalert.dart';
@@ -194,9 +194,7 @@ class _DataTableExample extends State<MyConfirmAgent> {
               title: title, // El "msg" que viene del SP
               message: message,
               tipo: ok ? 2 : 1,
-              onOkay: () {
-                // Navigator.of(navigatorKey.currentContext!).pop();
-              },
+              onOkay: () {},
             );
           }           
         }
@@ -490,34 +488,81 @@ void showFullScreenAgentsModal(BuildContext context, String message, int driverI
               presente = null;
             }
 
+            int rPin = 0;
+            if (a.requiresPin != null) {
+              if (a.requiresPin is int) rPin = a.requiresPin;
+              else if (a.requiresPin is String) rPin = int.tryParse(a.requiresPin) ?? 0;
+            }
+
             return {
               "agentId": a.agentId,
               "nombre": a.agentFullname ?? "Sin nombre",
               "direccion": direccion,
               "presente": presente,
+              "requiresPin": rPin,
             };
           }).toList();
 
-          Future<void> registrarVerificacion(int agentId, int isPresent) async {
+          Future<bool> registrarVerificacion(int agentId, int isPresent, {String? pin}) async {
+            LoadingIndicatorDialog().show(context);
             try {
               final url = Uri.parse('$ip/apis/registerAgentFinalVerification');
+              print("Registrando verificación para agente $agentId con estado $isPresent y PIN $pin");
+              
+              Map<String, dynamic> bodyParams = {
+                // Cambio: Forzamos parseo a int para evitar problemas de tipos 'String' en la BD
+                "tripId": int.tryParse(prefs.tripId.toString()) ?? 0,
+                "driverId": int.tryParse(driverId.toString()) ?? 0,
+                "agentId": agentId,
+                "isPresent": isPresent
+              };
+
+              if (pin != null) {
+                bodyParams["boardingPin"] = pin;
+              }
+              print("Cuerpo de la solicitud: $bodyParams");
               final response = await http.post(
                 url,
                 headers: {"Content-Type": "application/json"},
-                body: jsonEncode({
-                  "tripId": prefs.tripId,
-                  "driverId": driverId,
-                  "agentId": agentId,
-                  "isPresent": isPresent
-                }),
+                body: jsonEncode(bodyParams),
               );
+              
+              LoadingIndicatorDialog().dismiss();
+
               if (response.statusCode == 200) {
+                final jsonResp = jsonDecode(response.body);
+                if (jsonResp["allow"] == 0) {
+                  print("⚠️ Error al registrar verificación (allow=0): ${response.body}");
+                  WarningSuccessDialog().show(
+                    context,
+                    title: jsonResp["message"] ?? "El PIN ingresado es incorrecto",
+                    tipo: 1,
+                    onOkay: () {},
+                  );
+                  return false;
+                }
                 print("✅ Verificación registrada para agente $agentId (isPresent=$isPresent)");
+                return true;
               } else {
-                print("⚠️ Error al registrar verificación: ${response.body}");
+                print("⚠️ Error HTTP al registrar verificación: ${response.body}");
+                WarningSuccessDialog().show(
+                  context,
+                  title: "Error de conexión con el servidor",
+                  tipo: 1,
+                  onOkay: () {},
+                );
+                return false;
               }
             } catch (e) {
+              LoadingIndicatorDialog().dismiss();
               print("❌ Error en la solicitud: $e");
+              WarningSuccessDialog().show(
+                context,
+                title: "Error de red",
+                tipo: 1,
+                onOkay: () {},
+              );
+              return false;
             }
           }
 
@@ -625,9 +670,83 @@ void showFullScreenAgentsModal(BuildContext context, String message, int driverI
                                       Expanded(
                                         child: ElevatedButton(
                                           onPressed: () async {
-                                            // actualizamos UI inmediatamente
-                                            setState(() => agentesLocal[index]["presente"] = true);
-                                            await registrarVerificacion(agente["agentId"], 1); // Presente = 1
+                                            if (agente["requiresPin"] == 1) {
+                                              String inputPin = "";
+                                              bool? pinDialogResult = await showDialog<bool>(
+                                                context: context,
+                                                barrierDismissible: false,
+                                                builder: (BuildContext context) {
+                                                  return AlertDialog(
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.circular(15),
+                                                    ),
+                                                    title: Text("Validación de Agente", style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor)),
+                                                    content: Column(
+                                                      mainAxisSize: MainAxisSize.min,
+                                                      children: [
+                                                        // Cambio: Mostrar dinámicamente el nombre del agente en el texto
+                                                        Text("Ingrese el PIN de ${agente["nombre"]}"),
+                                                        const SizedBox(height: 15),
+                                                        TextField(
+                                                          keyboardType: TextInputType.number,
+                                                          maxLength: 4,
+                                                          // Cambio: Se cambia obscureText a false para hacer visible el PIN y hintText a "1234"
+                                                          obscureText: false,
+                                                          textAlign: TextAlign.center,
+                                                          style: const TextStyle(fontSize: 24, letterSpacing: 8, fontWeight: FontWeight.bold),
+                                                          decoration: InputDecoration(
+                                                            hintText: "1234",
+                                                            border: OutlineInputBorder(
+                                                              borderRadius: BorderRadius.circular(10),
+                                                            ),
+                                                            focusedBorder: OutlineInputBorder(
+                                                              borderRadius: BorderRadius.circular(10),
+                                                              borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 2),
+                                                            ),
+                                                          ),
+                                                          onChanged: (val) {
+                                                            inputPin = val;
+                                                          },
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    actions: [
+                                                      TextButton(
+                                                        onPressed: () => Navigator.pop(context, false),
+                                                        child: const Text("Cancelar", style: TextStyle(color: Colors.grey, fontSize: 16)),
+                                                      ),
+                                                      ElevatedButton(
+                                                        onPressed: () => Navigator.pop(context, true),
+                                                        style: ElevatedButton.styleFrom(
+                                                          backgroundColor: Theme.of(context).primaryColor,
+                                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                                        ),
+                                                        child: const Text("Confirmar", style: TextStyle(color: Colors.white, fontSize: 16)),
+                                                      ),
+                                                    ],
+                                                  );
+                                                }
+                                              );
+                                              
+                                              if (pinDialogResult == true && inputPin.length == 4) {
+                                                bool success = await registrarVerificacion(agente["agentId"], 1, pin: inputPin);
+                                                if (success) {
+                                                  setState(() => agentesLocal[index]["presente"] = true);
+                                                }
+                                              } else if (pinDialogResult == true && inputPin.length != 4) {
+                                                WarningSuccessDialog().show(
+                                                  context,
+                                                  title: "El PIN debe tener 4 dígitos",
+                                                  tipo: 1,
+                                                  onOkay: () {},
+                                                );
+                                              }
+                                            } else {
+                                              bool success = await registrarVerificacion(agente["agentId"], 1);
+                                              if (success) {
+                                                setState(() => agentesLocal[index]["presente"] = true);
+                                              }
+                                            }
                                           },
                                           style: ElevatedButton.styleFrom(
                                             backgroundColor: Theme.of(context).primaryColor,
@@ -649,8 +768,10 @@ void showFullScreenAgentsModal(BuildContext context, String message, int driverI
                                       Expanded(
                                         child: OutlinedButton(
                                           onPressed: () async {
-                                            setState(() => agentesLocal[index]["presente"] = false);
-                                            await registrarVerificacion(agente["agentId"], 0); // Ausente = 0
+                                            bool success = await registrarVerificacion(agente["agentId"], 0); // Ausente = 0
+                                            if (success) {
+                                              setState(() => agentesLocal[index]["presente"] = false);
+                                            }
                                           },
                                           style: OutlinedButton.styleFrom(
                                             side: const BorderSide(color: Colors.black),
@@ -683,6 +804,17 @@ void showFullScreenAgentsModal(BuildContext context, String message, int driverI
                   padding: const EdgeInsets.all(16),
                   child: ElevatedButton(
                     onPressed: ()async {
+                      bool faltan = agentesLocal.any((a) => a["presente"] == null);
+                      if (faltan) {
+                        WarningSuccessDialog().show(
+                          context,
+                          title: "Debe pasar lista a todos los agentes antes de finalizar el viaje",
+                          tipo: 1,
+                          onOkay: () {},
+                        );
+                        return;
+                      }
+
                       Navigator.pop(context);
                       http.Response responses = await http.get(Uri.parse(
                       '$ip/apis/validateTripAsCompletedFinal/${prefs.tripId}/1'));
@@ -1137,8 +1269,9 @@ void showFullScreenAgentsModal(BuildContext context, String message, int driverI
                                                           if(mounted){
                                                             Navigator.pop(context);
                                                             Navigator.pop(context);
+                                                            // Cambio: Se usa navigatorKey.currentContext! para evitar un "deactivated widget ancestor"
                                                             WarningSuccessDialog().show(
-                                                              context,
+                                                              navigatorKey.currentContext!,
                                                               title: '${dataR['message']}',
                                                               tipo: 1,
                                                               onOkay: () {},
@@ -1171,7 +1304,7 @@ void showFullScreenAgentsModal(BuildContext context, String message, int driverI
                                                           if(mounted){                                                            
                                                             Navigator.push(context,MaterialPageRoute(builder: (context) => MyConfirmAgent(),));                                      
                                                             WarningSuccessDialog().show(
-                                                              context,
+                                                              navigatorKey.currentContext!,
                                                               title: 'Se agregó el agente ${itemAbordaje.trips![0].tripAgent![indexP].agentFullname} al viaje.',
                                                               tipo: 2,
                                                               onOkay: () {
@@ -1190,7 +1323,7 @@ void showFullScreenAgentsModal(BuildContext context, String message, int driverI
                                                   }else{
                                                     LoadingIndicatorDialog().dismiss();
                                                     WarningSuccessDialog().show(
-                                                      context,
+                                                      navigatorKey.currentContext!,
                                                       title: '${resp['msg']}',
                                                       tipo: 1,
                                                       onOkay: () {},
@@ -1227,7 +1360,8 @@ void showFullScreenAgentsModal(BuildContext context, String message, int driverI
                                                   onConfirmBtnTap: () async{
                                                     Navigator.pop(context);
                                       
-                                                    LoadingIndicatorDialog().show(context);
+                                                    // Cambio: Se usa navigatorKey.currentContext! en vez de "context" debido a que la alerta anterior ya cerró su scope
+                                                    LoadingIndicatorDialog().show(navigatorKey.currentContext!);
                                       
                                                     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
                                                             
@@ -1252,7 +1386,7 @@ void showFullScreenAgentsModal(BuildContext context, String message, int driverI
                                                   LoadingIndicatorDialog().dismiss();
                                                                                           
                                                   WarningSuccessDialog().show(
-                                                    context,
+                                                    navigatorKey.currentContext!,
                                                     title: 'El agente ${abc.data!.trips![0].tripAgent![index].agentFullname} ha abordado.',
                                                     tipo: 2,
                                                     onOkay: () {
@@ -2485,8 +2619,9 @@ void showFullScreenAgentsModal(BuildContext context, String message, int driverI
                                                             {
                                                               if(check2[index].text.isEmpty){
                                                                 Navigator.pop(context);
+                                                                // Cambio: Evitamos el contexto muerto en QR usando el context global
                                                                 WarningSuccessDialog().show(
-                                                                  context,
+                                                                  navigatorKey.currentContext!,
                                                                   title: "No puede ir vacío la observación",
                                                                   tipo: 1,
                                                                   onOkay: () {},
